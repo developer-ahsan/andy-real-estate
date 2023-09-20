@@ -1,8 +1,10 @@
 <div class="w-full">
     <ngx-skeleton-loader count="15" appearance="line" animation="pulse" *ngIf="isLoading">
     </ngx-skeleton-loader>
+
     <div class="row" *ngIf="!isLoading">
         <div class="col-12 my-2">
+
             <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
                 <div class="w-full">
                     <div class="p-6 sm:p-8 lg:p-10 w-full">
@@ -27,28 +29,53 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr *ngFor="let item of purchases">
-                                        <td valign="top">{{item.fk_orderLineID}}</td>
-                                        <td valign="top">{{(orderDetail.orderDate | date:'MM/dd/yyyy') || '---'}}</td>
-                                        <td valign="top">{{item.fk_orderLineID}}</td>
-                                        <td valign="top">{{item.companyName}}</td>
-                                        <td valign="top">{{item.quantity}} X {{item.productNumber}} -
-                                            {{item.productName}}
-                                        </td>
-                                        <td valign="top">{{item.Customer}}</td>
-                                        <td valign="top">
-                                            <span class="text-red-500 font-bold" *ngIf="!item.shippingDate">x</span>
-                                            <span *ngIf="item.shippingDate">{{item.shippingDate | date:
-                                                'MM-dd-yyyy'}}</span>
-                                        </td>
-                                        <td valign="top">
-                                            <span class="text-red-500 font-bold" *ngIf="!item.trackingNumber">x</span>
-                                            <span *ngIf="item.trackingNumber">{{item.trackingNumber}}</span>
-                                        </td>
-                                        <td valign="top"><a
-                                                href="https://admin.consolidus.com/ssadm/controller/view/system/tempDocs/purchaseOrder-{{orderDetail.pk_orderID}}-{{item.pk_sentPOID}}_{{date}}.pdf"
-                                                target="_blank">PDF</a></td>
-                                    </tr>
+
+                                    <ng-container *ngFor="let item of purchases">
+                                        <tr>
+                                            <td valign="top">
+                                                <a id="Download-PDF"
+                                                    href="https://assets.consolidus.com/globalAssets/Orders/purchaseOrders/{{orderDetail.pk_orderID}}/{{item.fileID}}.html"
+                                                    target="_blank">{{item.pk_orderLineID}}</a>
+
+                                            </td>
+                                            <td valign="top">{{(item.dateSent | date:'MM/dd/yyyy') || '---'}}</td>
+                                            <td valign="top">{{item.realOLID}}</td>
+                                            <td valign="top">{{item.companyName}}</td>
+                                            <td valign="top">{{item.quantity}} X {{item.productNumber}} -
+                                                {{item.productName}}
+                                            </td>
+                                            <td valign="top">{{item.userCompanyName}}</td>
+                                            <td valign="top">
+                                                <span class="text-red-500 font-bold" *ngIf="!item.shippingDate">x</span>
+                                                <span *ngIf="item.shippingDate">{{item.shippingDate | date:
+                                                    'MM-dd-yyyy'}}</span>
+                                            </td>
+                                            <td valign="top">
+                                                <span class="text-red-500 font-bold"
+                                                    *ngIf="!item.trackingNumber">x</span>
+                                                <span *ngIf="item.trackingNumber">{{item.trackingNumber}}</span>
+                                            </td>
+                                            <td valign="top">
+                                                <span
+                                                    (click)="downloadPDF(orderDetail.pk_orderID,item.fileID,item.fileDate)"
+                                                    class="cursor-pointer">PDF</span>
+                                                <!-- <a
+                                                    href="https://admin.consolidus.com/ssadm/controller/view/system/tempDocs/purchaseOrder-{{orderDetail.pk_orderID}}-{{item.fileID}}_{{item.fileDate}}.pdf"
+                                                    target="_blank">PDF</a> -->
+                                            </td>
+                                        </tr>
+                                        <!-- <ng-container>
+                                            <tr>
+                                                <td colspan="9">
+                                                    <div id="Download{{item.fileID}}" #downloadContainer>
+                                                        <iframe [src]="sanitizeUrl(orderDetail.pk_orderID, item.fileID)"
+                                                            width="100%" height="100%"></iframe>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </ng-container> -->
+                                    </ng-container>
+
                                 </tbody>
                             </table>
                         </div>

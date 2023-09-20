@@ -860,6 +860,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
           this.dataSource2 = imprint["data"];
           this.dataSource2Length = imprint["totalRecords"];
         };
+        this.deleteLoader = false;
         this.isEditImprintScreen = false;
         this.isLoading = false;
         this._inventoryService.run = null;
@@ -872,6 +873,7 @@ export class ImprintComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
       }, err => {
         this.isLoading = false;
+        this.deleteLoader = false;
         this.addImprintLoader = false;
         this._changeDetectorRef.markForCheck();
 
@@ -1232,28 +1234,29 @@ export class ImprintComponent implements OnInit, OnDestroy {
 
   deletAllImprints(): void {
     const { pk_productID } = this.selectedProduct;
+    let payload: DeleteProductImprint = {
+      productID: pk_productID,
+      delete_product_imprint: true
+    }
 
     this.deleteLoader = true;
-    this._inventoryService.deleteImprints(pk_productID)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((response) => {
+    this._inventoryService.putProductsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      const message = res["success"] == "true"
+        ? "Product imprints successfully removed"
+        : "An error occurred, try again!"
 
-        const message = response["success"] === true
-          ? "Product imprints successfully removed"
-          : "An error occurred, try again!"
-
-        this.deleteLoader = false;
-
-        this._snackBar.open(message, '', {
-          horizontalPosition: 'center',
-          verticalPosition: 'bottom',
-          duration: 3500
-        });
-
-        this.ngOnInit();
-        // Mark for Check
-        this._changeDetectorRef.markForCheck();
+      this.page = 1;
+      this.getImprints(this.page);
+      this._snackBar.open(message, '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
       });
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.deleteLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
   }
 
   onToggleAllow(event: MatSlideToggleChange) {

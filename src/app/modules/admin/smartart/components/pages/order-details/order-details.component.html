@@ -105,10 +105,11 @@
                                 <div><b>Address:</b> {{orderData.billingAddress}} {{orderData.billingCity}}</div>
                                 <div><b>Phone:</b> {{orderData.billingPhone}}</div>
                                 <div><b>Email:</b>
-                                    <div *ngIf="orderData.sessionProofEmails.length > 0">
+                                    <!-- <div *ngIf="orderData.sessionProofEmails.length > 0">
                                         <p *ngFor="let email of orderData.sessionProofEmails">{{email}}</p>
-                                    </div>
-                                    <p *ngIf="orderData.sessionProofEmails.length == 0">
+                                    </div> -->
+                                    <!-- *ngIf="orderData.sessionProofEmails.length == 0" -->
+                                    <p>
                                         {{orderData.sessionArtworkEmail}}</p>
                                 </div>
                                 <div><b>Designer notes: </b>

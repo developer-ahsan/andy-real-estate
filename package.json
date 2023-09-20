@@ -6,7 +6,7 @@
     "scripts": {
         "ng": "ng",
         "start": "set NODE_OPTIONS=--max_old_space_size=8192 && ng serve --proxy-config proxy.conf.json",
-        "build": "set NODE_OPTIONS=--max_old_space_size=8192 && ng build --output-hashing=all",
+        "build": "set NODE_OPTIONS=--max_old_space_size=8192 && ng build --output-hashing=all --configuration=production ",
         "test": "ng test",
         "lint": "ng lint",
         "e2e": "ng e2e"
@@ -45,6 +45,8 @@
         "exceljs": "^4.3.0",
         "firebase": "^9.8.3",
         "highlight.js": "10.7.2",
+        "html-to-pdfmake": "^2.4.25",
+        "html2pdf.js": "^0.10.1",
         "image-conversion": "^2.1.1",
         "jspdf": "^2.2.0",
         "lodash-es": "4.17.21",

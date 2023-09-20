@@ -324,6 +324,8 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     }
   }
   updateComments() {
+    const { storeName } = this.orderData;
+    const { shippingCompanyName } = this.orderDataPO
     if (this.ngComment != '') {
       this.isCommentsLoader = true;
       let payload: AddComment = {
@@ -331,6 +333,8 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
         order_id: this.orderData.fk_orderID,
         orderManageLoggedInUserName: this.ordermanageUserData.firstName + ' ' + this.ordermanageUserData.lastName,
         recipients: this.selectedEmailRecipients,
+        store_name: storeName,
+        company_name: shippingCompanyName,
         post_comment: true
       }
       this._OrderManageService.PostAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -339,6 +343,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
           this.orderData.internalComments = this.orderData.internalComments + comment;
           this._OrderManageService.snackBar(res["message"]);
           this.ngComment = '';
+          this.selectedEmailRecipients = [];
         }
         this.isCommentsLoader = false;
         this._changeDetectorRef.markForCheck();

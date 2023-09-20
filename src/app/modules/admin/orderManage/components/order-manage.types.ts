@@ -114,8 +114,10 @@ export interface UpdateInHandsDate {
 export interface AddComment {
     comment: string;
     order_id: number;
-    recipients: string[];
     orderManageLoggedInUserName: string;
+    recipients: string[];
+    store_name: string;
+    company_name: string;
     post_comment: boolean;
 };
 export interface UpdateTracking {

@@ -465,3 +465,17 @@ export interface updateArtworkStatus {
     blnRespond: boolean;
     update_artwork_status: boolean;
 };
+export interface UpdateStoreOrder {
+    store_id: number;
+    order_id: number;
+    update_order_store: boolean;
+};
+
+export interface SentPurchaseOrders {
+    purchase_orders_ids: purchaseOrders[];
+    sent_purchase_orders: boolean;
+};
+interface purchaseOrders {
+    dateLastModified: string;
+    purchase_order_id: string;
+};

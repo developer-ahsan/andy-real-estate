@@ -1,10 +1,12 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { map, takeUntil } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
 import { OrdersService } from 'app/modules/admin/apps/orders/orders-components/orders.service';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
+import { UpdateStoreOrder } from '../orders.types';
 
 @Component({
     selector: 'orders-details',
@@ -30,12 +32,16 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
     drawerOpened: boolean = true;
     @ViewChild("panel") panel;
 
+    allStores: any;
+    ngSelectedStore: any;
+    updateStoreLoader: boolean = false;
     /**
      * Constructor
      */
     constructor(
         private _changeDetectorRef: ChangeDetectorRef,
         private _orderService: OrdersService,
+        private _commonService: DashboardsService,
         private route: ActivatedRoute,
         private _router: Router,
         private _fuseMediaWatcherService: FuseMediaWatcherService,
@@ -66,6 +72,7 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
 
         // get Order Details
         this.getOrderDetails();
+        this.getAllStores();
 
         // Subscribe to media changes
         this._fuseMediaWatcherService.onMediaChange$
@@ -85,6 +92,14 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
+    }
+    getAllStores() {
+        this._commonService.storesData$.pipe(
+            takeUntil(this._unsubscribeAll),
+            map(res => res["data"].filter(element => element.blnActive))
+        ).subscribe(filteredData => {
+            this.allStores = filteredData;
+        });
     }
     getOrderDetails() {
         this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(order => {
@@ -135,6 +150,7 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
                     }
                 }
                 this.routes = this._orderService.navigationLabels;
+                this.ngSelectedStore = this.selectedOrderDetail.fk_storeID;
             } else {
                 this._orderService.snackBar('Please check order number');
             }
@@ -187,5 +203,24 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
     backToOrdersScreen(): void {
         this.isLoading = true;
         this._router.navigate(['/apps/orders']);
+    }
+    updateStoreOrder() {
+        this.updateStoreLoader = true;
+        let payload: UpdateStoreOrder = {
+            store_id: this.ngSelectedStore,
+            order_id: this.selectedOrderDetail.pk_orderID,
+            update_order_store: true
+        }
+        this._orderService.updateOrderCalls(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+            let index = this.allStores.findIndex(store => store.pk_storeID == this.ngSelectedStore);
+            this.selectedOrderDetail.fk_storeID = this.ngSelectedStore;
+            this.selectedOrderDetail.storeName = this.allStores[index].storeName;
+            this._orderService.snackBar(res["message"]);
+            this.updateStoreLoader = false;
+            this._changeDetectorRef.markForCheck();
+        }, err => {
+            this.updateStoreLoader = false;
+            this._changeDetectorRef.markForCheck();
+        });
     }
 }

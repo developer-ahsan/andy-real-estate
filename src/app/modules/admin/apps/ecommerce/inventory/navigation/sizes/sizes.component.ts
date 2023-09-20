@@ -230,7 +230,7 @@ export class SizesComponent implements OnInit, OnDestroy {
     let productSizeObj = [];
     for (const element of this.allSizes) {
       if (element.checked) {
-        if (element.weight == '' || element.unitsPerWeight == '') {
+        if (!element.weight || !element.unitsPerWeight) {
           this._snackBar.open('Please check sizes values it should be greater than 0', '', {
             horizontalPosition: 'center',
             verticalPosition: 'bottom',

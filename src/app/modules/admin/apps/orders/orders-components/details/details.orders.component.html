@@ -53,13 +53,31 @@
         </mat-drawer>
 
         <div class="sub-sidenav-content bg-light p-2" #topScrollAnchor>
-            <mat-icon class="subnav-menu-icon ml-1" svgIcon="heroicons_outline:menu" (click)="toggleDrawer()">
-            </mat-icon>
+            <div class="flex justify-between">
+                <mat-icon class="subnav-menu-icon ml-1" svgIcon="heroicons_outline:menu" (click)="toggleDrawer()">
+                </mat-icon>
+                <div class="flex justify-end space-x-2">
+                    <mat-form-field class="min-w-100">
+                        <mat-select matInput [(ngModel)]="ngSelectedStore">
+                            <mat-option *ngFor="let item of allStores"
+                                [value]="item.pk_storeID">{{item.storeName}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <button style="border-radius: 10px;" mat-button mat-flat-button color="primary" class="min-w-30"
+                        [disabled]="updateStoreLoader" (click)="updateStoreOrder()" [disabled]="updateStoreLoader">
+                        <span *ngIf="!updateStoreLoader">Update Store</span>
+                        <mat-progress-spinner *ngIf="updateStoreLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                    </button>
+                </div>
+            </div>
             <ng-template #myCard>
+
                 <div class="bg-card shadow p-4" *ngIf="selectedOrderDetail">
                     <div class="flex mr-7" style="justify-content: space-between;">
                         <div class="text-2xl font-bold">Order <span
-                                class="text-xl">{{selectedOrderDetail.pk_orderID}}</span></div>
+                                class="text-xl">{{selectedOrderDetail.pk_orderID}}</span>
+                        </div>
                         <div>
                             <span *ngIf="selectedOrderDetail?.OrderStatus == 'Processing'"
                                 class="text-xs px-2.5 py-0.5 rounded-full tracking-wide bg-red-200 text-red-800 dark:bg-red-600 dark:text-red-50">

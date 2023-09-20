@@ -820,7 +820,13 @@ export interface commentObj {
     internal_comment: boolean;
 }
 export interface DeleteProductImprint {
-    imprintID: number[];
+    // imprintID: number[];
     productID: number;
     delete_product_imprint: boolean;
+};
+
+export interface DeleteProductSingleImprint {
+    productID: number;
+    imprintID: number;
+    delete_product_single_imprint: boolean;
 };

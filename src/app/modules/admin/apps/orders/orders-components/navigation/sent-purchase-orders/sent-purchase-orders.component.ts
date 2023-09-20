@@ -1,13 +1,10 @@
-import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
 import { OrdersService } from 'app/modules/admin/apps/orders/orders-components/orders.service';
-import { jsPDF } from "jspdf";
-import html2canvas from 'html2canvas';
 import { takeUntil } from 'rxjs/operators';
-import { OrdersList } from 'app/modules/admin/apps/orders/orders-components/orders.types';
+import { OrdersList, SentPurchaseOrders } from 'app/modules/admin/apps/orders/orders-components/orders.types';
 import { Subject } from 'rxjs';
 import moment from 'moment';
 import { SmartArtService } from 'app/modules/admin/smartart/components/smartart.service';
-
 interface OrdersPurchases {
   company: string;
   supplies: boolean;
@@ -37,15 +34,17 @@ export class SentOrdersPurchasesComponent implements OnInit {
   grandTotalPrice: number;
 
   totalShippingCost = 0;
-  date = moment().format('MM-DD-yyyy-hh-mm-ss');
   purchases: any;
+  poFiles = []; iframeContent: string;
+
   constructor(
     private _orderService: OrdersService,
     private _smartartService: SmartArtService,
-    private _changeDetectorRef: ChangeDetectorRef
+    private _changeDetectorRef: ChangeDetectorRef,
   ) { }
 
   ngOnInit(): void {
+
     this.isLoading = true;
     this.getOrderDetail();
     this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -54,10 +53,11 @@ export class SentOrdersPurchasesComponent implements OnInit {
       res["data"].forEach((element, index) => {
         value.push(element.pk_orderLineID);
         if (index == res["data"].length - 1) {
-          this.getPurchaseOrders(value.toString());
+          // this.getPurchaseOrders(value);
         }
       });
     });
+
   }
   getOrderDetail() {
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -71,12 +71,20 @@ export class SentOrdersPurchasesComponent implements OnInit {
       this._changeDetectorRef.markForCheck();
     })
   }
-  getPurchaseOrders(value) {
-    let params = {
+  getPurchaseOrders() {
+    let value = [];
+    this.poFiles.forEach(element => {
+      value.push({
+        dateLastModified: element.DATELASTMODIFIED,
+        purchase_order_id: element.ID
+      });
+    });
+
+    let params: SentPurchaseOrders = {
       sent_purchase_orders: true,
-      order_line_id: value
+      purchase_orders_ids: value
     }
-    this._orderService.getOrderCommonCall(params)
+    this._orderService.orderPostCalls(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((purchases) => {
         this.purchases = purchases["data"];
@@ -94,7 +102,9 @@ export class SentOrdersPurchasesComponent implements OnInit {
     }
     this._changeDetectorRef.markForCheck();
     this._smartartService.getFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(files => {
-      console.log(files);
+      this.poFiles = files["data"];
+      this.getPurchaseOrders();
+
       this._changeDetectorRef.markForCheck();
     }, err => {
       this._changeDetectorRef.markForCheck();
@@ -161,23 +171,22 @@ export class SentOrdersPurchasesComponent implements OnInit {
   viewPurchaseOrder(): void {
     this.isView = !this.isView;
   }
-
-  public exportHtmlToPDF() {
-    let data = document.getElementById('htmltable');
-    const file_name = `PurchasesReport_56165.pdf`;
-    html2canvas(data).then(canvas => {
-
-      let docWidth = 208;
-      let docHeight = canvas.height * docWidth / canvas.width;
-
-      const contentDataURL = canvas.toDataURL('image/png')
-      let doc = new jsPDF('p', 'mm', 'a4');
-      let position = 0;
-      doc.addImage(contentDataURL, 'PNG', 0, position, docWidth, docHeight)
-
-      doc.save(file_name);
+  downloadPDF(orderID, fileID, date) {
+    let payload = {
+      url: `https://assets.consolidus.com/globalAssets/Orders/purchaseOrders/${orderID}/${fileID}.html`,
+      date: date,
+      htmlToPDF: true
+    }
+    this._orderService.orderPostCalls(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe((res: any) => {
+      const blob = new Blob([res], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = date + '.pdf';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
     });
   }
-
 }
 

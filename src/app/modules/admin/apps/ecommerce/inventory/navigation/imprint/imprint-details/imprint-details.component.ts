@@ -8,7 +8,7 @@ import { User } from 'app/core/user/user.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import moment from 'moment';
 import { AuthService } from 'app/core/auth/auth.service';
-import { AddDuplicateImprint, DeleteProductImprint } from '../../../inventory.types';
+import { AddDuplicateImprint, DeleteProductImprint, DeleteProductSingleImprint } from '../../../inventory.types';
 import { stringify } from 'crypto-js/enc-base64';
 
 @Component({
@@ -299,10 +299,10 @@ export class ImprintDetailsComponent implements OnInit, OnDestroy {
   }
   deleteImprintById() {
     this.isDeleteLoader = true;
-    let payload: DeleteProductImprint = {
-      imprintID: [this.imprint.pk_imprintID],
+    let payload: DeleteProductSingleImprint = {
+      imprintID: this.imprint.pk_imprintID,
       productID: this.imprint.fk_productID,
-      delete_product_imprint: true
+      delete_product_single_imprint: true
     }
     this._inventoryService.updateProductsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"] == 'true') {
