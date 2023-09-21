@@ -59,7 +59,8 @@
                                         [svgIcon]="'heroicons_solid:trending-down'"></mat-icon>
                                     <div
                                         class="flex items-center ml-1 lg:ml-0 lg:mt-0.5 text-md leading-none whitespace-nowrap text-secondary">
-                                        <span class="font-medium text-green-500">{{ytDDataMain.ytdPercent}}%</span>
+                                        <span class="font-medium text-green-500"
+                                            [ngClass]="{'text-red-500': ytDDataMain.ytdPercent < 0}">{{ytDDataMain.ytdPercent}}%</span>
                                     </div>
                                 </div>
                             </div>
@@ -96,7 +97,8 @@
                                         [svgIcon]="'heroicons_solid:trending-down'"></mat-icon>
                                     <div
                                         class="flex items-center ml-1 lg:ml-0 lg:mt-0.5 text-md leading-none whitespace-nowrap text-secondary">
-                                        <span class="font-medium text-green-500">{{ytDDataMain.mtdPercent}}%</span>
+                                        <span class="font-medium text-green-500"
+                                            [ngClass]="{'text-red-500': ytDDataMain.mtdPercent < 0}">{{ytDDataMain.mtdPercent}}%</span>
                                     </div>
                                 </div>
                             </div>
@@ -129,7 +131,8 @@
                                         [svgIcon]="'heroicons_solid:trending-down'"></mat-icon>
                                     <div
                                         class="flex items-center ml-1 lg:ml-0 lg:mt-0.5 text-md leading-none whitespace-nowrap text-secondary">
-                                        <span class="font-medium text-green-500">{{ytDDataMain.wtdPercent}}%</span>
+                                        <span class="font-medium text-green-500"
+                                            [ngClass]="{'text-red-500': ytDDataMain.wtdPercent < 0}">{{ytDDataMain.wtdPercent}}%</span>
                                     </div>
                                 </div>
                             </div>
@@ -296,139 +299,132 @@
                 <div *ngIf="!isPerformanceLoader">
                     <div class="text-lg font-medium tracking-tight leading-6 truncate">Portfolio Performance</div>
                     <div class="flex flex-col flex-auto mt-2 overflow-x-auto">
-                        <table mat-table [dataSource]="programPerformanceData" class="w-full border-t">
-                            <!-- Type -->
-                            <ng-container matColumnDef="store">
-                                <th mat-header-cell *matHeaderCellDef>
-                                    Store
-                                </th>
-                                <td mat-cell *matCellDef="let element">
-                                    {{element.storeName}}
-                                </td>
-                            </ng-container>
-
-                            <!-- Total -->
-                            <ng-container matColumnDef="sales">
-                                <th mat-header-cell *matHeaderCellDef>
-                                    Sales
-                                </th>
-                                <td mat-cell *matCellDef="let element">
-                                    <span class="font-medium text-right">
-                                        {{element.monthlyEarnings | currency}}
-                                    </span>
-                                </td>
-                            </ng-container>
-
-                            <!-- Expenses amount -->
-                            <ng-container matColumnDef="py">
-                                <th mat-header-cell *matHeaderCellDef>
-                                    <div class="flex">
-                                        <span>PY</span>
-                                        <mat-icon class="icon-size-4 ml-1" matTooltip="Previous year sales"
-                                            [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                                    </div>
-                                </th>
-                                <td mat-cell *matCellDef="let element">
-                                    {{element.previousYearSales | currency}}
-                                </td>
-                            </ng-container>
-
-                            <!-- Expenses percentage -->
-                            <ng-container matColumnDef="percent">
-                                <th mat-header-cell *matHeaderCellDef>
-                                    (%)
-                                </th>
-                                <td mat-cell *matCellDef="let element">
-                                    <div class="flex" *ngIf="element.color == 'red'">
-                                        <mat-icon class="icon-size-5 text-red-500"
-                                            [svgIcon]="'heroicons_solid:trending-down'"></mat-icon>
-                                        <span class="text-red-500">{{element.percent}}%</span>
-                                    </div>
-                                    <div class="flex" *ngIf="element.color == 'green'">
-                                        <mat-icon class="icon-size-5 text-green-500"
-                                            [svgIcon]="'heroicons_solid:trending-up'"></mat-icon>
-                                        <span class="text-green-500">{{element.percent}}%</span>
-                                    </div>
-                                    <div class="flex" *ngIf="element.color == 'gray'">
-                                        <span>{{element.percent}}%</span>
-                                    </div>
-                                </td>
-                            </ng-container>
-
-                            <!-- Remaining amount -->
-                            <ng-container matColumnDef="difference">
-                                <th mat-header-cell *matHeaderCellDef>
-                                    <div class="flex">
-                                        <span>Diff</span>
-                                        <mat-icon class="icon-size-4  ml-1" matTooltip="Sales Difference"
-                                            [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                                    </div>
-                                </th>
-                                <td mat-cell *matCellDef="let element">
-                                    <span *ngIf="element.color == 'green'"
-                                        class="text-green-500">{{element.difference.toFixed(2) |
-                                        currency}}</span>
-                                    <span *ngIf="element.color == 'red'"
-                                        class="text-red-500">({{element.difference.toFixed(2) |
-                                        currency}})</span>
-                                    <span *ngIf="element.color == 'gray'">{{element.difference.toFixed(2) |
-                                        currency}}</span>
-                                </td>
-                            </ng-container>
-
-                            <!-- Remaining percentage -->
-                            <ng-container matColumnDef="n_sales">
-                                <th mat-header-cell *matHeaderCellDef>
-                                    <div class="flex">
-                                        <span>NS</span>
-                                        <mat-icon class="icon-size-4 ml-1" matTooltip="Number of sales"
-                                            [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                                    </div>
-                                </th>
-                                <td mat-cell *matCellDef="let element">
-                                    {{element.NS}}
-                                </td>
-                            </ng-container>
-                            <ng-container matColumnDef="pyns">
-                                <th mat-header-cell *matHeaderCellDef>
-                                    <div class="flex">
-                                        <span>PYNS</span>
-                                        <mat-icon class="icon-size-4 ml-1" matTooltip="previous year number of sales"
-                                            [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                                    </div>
-                                </th>
-                                <td mat-cell *matCellDef="let element">
-                                    {{element.PYNS.toFixed(2)}}
-                                </td>
-                            </ng-container>
-                            <ng-container matColumnDef="avg">
-                                <th mat-header-cell *matHeaderCellDef>
-                                    <div class="flex">
-                                        <span>AVG</span>
-                                        <mat-icon class="icon-size-4 ml-1" matTooltip="Average sales"
-                                            [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                                    </div>
-                                </th>
-                                <td mat-cell *matCellDef="let element">
-                                    {{element.avg.toFixed(2) | currency}}
-                                </td>
-                            </ng-container>
-                            <ng-container matColumnDef="margin">
-                                <th mat-header-cell *matHeaderCellDef>
-                                    Margin
-                                </th>
-                                <td mat-cell *matCellDef="let element">
-                                    {{element.margin.toFixed(2)}}%
-                                </td>
-                            </ng-container>
-                            <tr mat-header-row *matHeaderRowDef="programPerformanceColumns"></tr>
-                            <tr mat-row *matRowDef="let row; columns: programPerformanceColumns;"></tr>
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Store</th>
+                                    <th>Sales</th>
+                                    <th>
+                                        <div class="flex">
+                                            <span>PY</span>
+                                            <mat-icon class="icon-size-4 ml-1" matTooltip="Previous year sales"
+                                                [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                        </div>
+                                    </th>
+                                    <th>%</th>
+                                    <th>
+                                        <div class="flex">
+                                            <span>Diff</span>
+                                            <mat-icon class="icon-size-4 ml-1" matTooltip="Sales the difference"
+                                                [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="flex">
+                                            <span>NS</span>
+                                            <mat-icon class="icon-size-4 ml-1" matTooltip="Number of sales"
+                                                [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="flex">
+                                            <span>PYNS</span>
+                                            <mat-icon class="icon-size-4 ml-1"
+                                                matTooltip="Previous year number of sales"
+                                                [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="flex">
+                                            <span>Diff</span>
+                                            <mat-icon class="icon-size-4 ml-1" matTooltip="Number. Sales the difference"
+                                                [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="flex">
+                                            <span>AVG</span>
+                                            <mat-icon class="icon-size-4 ml-1" matTooltip="Average Sale"
+                                                [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                        </div>
+                                    </th>
+                                    <th>Margin</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of programPerformanceData">
+                                    <td>{{item.storeName}}</td>
+                                    <td>{{item.SALES | currency}}</td>
+                                    <td>{{item.PY | currency}}</td>
+                                    <td>
+                                        <div *ngIf="item.percent != 0">
+                                            <div class="flex align-items-center" *ngIf="!item.blnPercent">
+                                                <mat-icon class="icon-size-5 text-red-500"
+                                                    [svgIcon]="'heroicons_solid:trending-down'"></mat-icon>
+                                                <span class="text-red-500">{{item.percent}}%</span>
+                                            </div>
+                                            <div class="flex align-items-center" *ngIf="item.blnPercent">
+                                                <mat-icon class="icon-size-5 text-green-500"
+                                                    [svgIcon]="'heroicons_solid:trending-up'"></mat-icon>
+                                                <span class="text-green-500">{{item.percent}}%</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex" *ngIf="item.percent == 0">
+                                            <span>{{item.percent}}%</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span *ngIf="item?.DIFF >= 0" class="text-green-500">
+                                            {{item?.DIFF | currency}}
+                                        </span>
+                                        <span *ngIf="item?.DIFF < 0" class="text-red-500">
+                                            ({{(item?.DIFF * - 1) | currency}})
+                                        </span>
+                                    </td>
+                                    <td>{{item.NS}}</td>
+                                    <td>{{item.PYNS}}</td>
+                                    <td>{{item.NS_DIFF}}</td>
+                                    <td>{{item.AVG | currency}}</td>
+                                    <td>{{item.MARGIN}} %</td>
+                                </tr>
+                                <tr class="columnHeader2" class="font-bold">
+                                    <th>Grand Total</th>
+                                    <th>{{totalStoreSummary?.SALES | currency}}</th>
+                                    <th *ngIf="blnCost">{{totalStoreSummary?.COST | currency}}</th>
+                                    <th>{{totalStoreSummary?.PY | currency}}</th>
+                                    <th>
+                                        <div *ngIf="totalStoreSummary.PERCENT != 0">
+                                            <div class="flex align-items-center" *ngIf="!totalStoreSummary.blnPercent">
+                                                <mat-icon class="icon-size-5 text-red-500"
+                                                    [svgIcon]="'heroicons_solid:trending-down'"></mat-icon>
+                                                <span class="text-red-500">{{totalStoreSummary.PERCENT}}%</span>
+                                            </div>
+                                            <div class="flex align-items-center" *ngIf="totalStoreSummary.blnPercent">
+                                                <mat-icon class="icon-size-5 text-green-500"
+                                                    [svgIcon]="'heroicons_solid:trending-up'"></mat-icon>
+                                                <span class="text-green-500">{{totalStoreSummary.PERCENT}}%</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex" *ngIf="totalStoreSummary.PERCENT == 0">
+                                            <span>{{totalStoreSummary.PERCENT}}%</span>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <span *ngIf="totalStoreSummary?.DIFF >= 0" class="text-green-500">
+                                            {{totalStoreSummary?.DIFF | currency}}
+                                        </span>
+                                        <span *ngIf="totalStoreSummary?.DIFF < 0" class="text-red-500">
+                                            ({{(totalStoreSummary?.DIFF * - 1) | currency}})
+                                        </span>
+                                    </th>
+                                    <th>{{totalStoreSummary?.NS}}</th>
+                                    <th>{{totalStoreSummary?.PYNS}}</th>
+                                    <th>{{totalStoreSummary?.N_DIFF}}</th>
+                                    <th>{{(totalStoreSummary?.AVG) | currency}} (AVG)</th>
+                                    <th>{{totalStoreSummary?.MARGIN}}%</th>
+                                </tr>
+                            </tbody>
                         </table>
-                        <mat-paginator #paginator
-                            class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                            [length]="totalPerformanceRecords" [pageIndex]="0" [pageSize]="20"
-                            (page)="getNextPortfolioData($event)" [hidePageSize]="true">
-                        </mat-paginator>
 
                     </div>
                 </div>

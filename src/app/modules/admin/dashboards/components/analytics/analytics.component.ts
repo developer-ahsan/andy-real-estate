@@ -62,12 +62,15 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     public chartOptions2: Partial<ChartOptions1>;
     chartGithubIssues: ApexOptions = {};
     programPerformanceData = [];
-    programPerformanceColumns: string[] = ['store', 'sales', 'py', 'percent', 'difference', 'n_sales', 'pyns', 'avg', 'margin'];
+    totalStoreSummary: any;
+
     pagePerformance = 1;
     totalPerformanceRecords = 0;
     isPerformanceLoader: boolean;
     isYTDLoader: boolean = false;
     ytDDataMain: any;
+
+    userData: any;
     /**
      * Constructor
      */
@@ -77,7 +80,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
         private _changeDetectorRef: ChangeDetectorRef,
         private _router: Router
     ) {
-        let user = this._authService.parseJwt(this._authService.accessToken);
+        this.userData = this._authService.parseJwt(this._authService.accessToken);
         this._analyticsService.dataProject$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((data) => {
@@ -304,80 +307,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
             }
         };
     }
-    getYTDData() {
-        this._analyticsService.ytdData$.pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-            this._changeDetectorRef.markForCheck();
-        })).subscribe(res => {
-            this.ytDDataMain = res["data"][0];
-            let ytdPercent = Math.round(((this.ytDDataMain.YTD - this.ytDDataMain.LAST_YTD) / this.ytDDataMain.LAST_YTD) * 100);
-            let mtdPercent = Math.round(((this.ytDDataMain.MTD - this.ytDDataMain.LAST_MTD) / this.ytDDataMain.LAST_MTD) * 100);
-            let wtdPercent = Math.round(((this.ytDDataMain.WTD - this.ytDDataMain.LAST_WTD) / this.ytDDataMain.LAST_WTD) * 100);
-            this.ytDDataMain.ytdPercent = ytdPercent;
-            this.ytDDataMain.mtdPercent = mtdPercent;
-            this.ytDDataMain.wtdPercent = wtdPercent;
-        }, err => {
 
-        });
-    }
-    getNextPortfolioData(event) {
-        const { previousPageIndex, pageIndex } = event;
-        if (pageIndex > previousPageIndex) {
-            this.pagePerformance++;
-        } else {
-            this.pagePerformance--;
-        };
-        this.getPortfolioData(this.pagePerformance);
-    };
-    getPortfolioData(page) {
-        let params = {
-            stores_per_employee: true,
-            size: 20,
-            page: page,
-            user_id: 78
-        }
-        this._analyticsService.getDashboardData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-            this.isPerformanceLoader = false;
-            this._changeDetectorRef.markForCheck();
-        })).subscribe(res => {
-            this.programPerformanceData = res["data"];
-            this.totalPerformanceRecords = res["totalRecords"];
-            this.programPerformanceData.forEach(element => {
-                if (element.previousYearSales == 0) {
-                    element.percent = 0
-                } else {
-                    element.percent = Math.round(Number(100 - (element.monthlyEarnings / element.previousYearSales) * 100));
-                }
-                if (element.percent == 0) {
-                    element.percent = 0;
-                    element.color = 'gray';
-                }
-                if (element.percent < 0) {
-                    element.percent = element.percent * -1;
-                    element.color = 'green';
-                } else if (element.percent > 0) {
-                    element.color = 'red'
-                } else {
-                    element.color = 'gray';
-                }
-                element.difference = Number(element.monthlyEarnings - element.previousYearSales);
-                if (!element.difference) {
-                    element.difference = 0;
-                }
-                if (element.difference < 0) {
-                    element.difference = Math.abs(element.difference);
-                }
-                element.avg = Number(element.monthlyEarnings / element.NS);
-                if (!element.avg) {
-                    element.avg = 0;
-                }
-                element.margin = Number(((element.price - element.cost) / element.price) * 100);
-                if (!element.margin) {
-                    element.margin = 0;
-                }
-            });
-        }, err => {
-        });
-    }
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
     // -----------------------------------------------------------------------------------------------------
@@ -389,7 +319,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
         // Get the data
         this.isYTDLoader = true;
         this.getYTDData();
-        this.getPortfolioData(1);
+        this.getPortfolioData();
 
 
         this._analyticsService.data$
@@ -419,6 +349,103 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     }
     calledScreen(screen) {
         this.mainScreen = screen;
+    }
+    getYTDData() {
+        this._analyticsService.ytdData$.pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+            this._changeDetectorRef.markForCheck();
+        })).subscribe(res => {
+            this.ytDDataMain = res["data"][0];
+            let ytdPercent = Math.round(((this.ytDDataMain.YTD - this.ytDDataMain.LAST_YTD) / this.ytDDataMain.LAST_YTD) * 100);
+            let mtdPercent = Math.round(((this.ytDDataMain.MTD - this.ytDDataMain.LAST_MTD) / this.ytDDataMain.LAST_MTD) * 100);
+            let wtdPercent = Math.round(((this.ytDDataMain.WTD - this.ytDDataMain.LAST_WTD) / this.ytDDataMain.LAST_WTD) * 100);
+            this.ytDDataMain.ytdPercent = ytdPercent;
+            this.ytDDataMain.mtdPercent = mtdPercent;
+            this.ytDDataMain.wtdPercent = wtdPercent;
+        }, err => {
+
+        });
+    }
+    getPortfolioData() {
+        let params = {
+            portfolio_performance: true,
+            user_id: 78
+        }
+        this.totalStoreSummary = {
+            SALES: 0,
+            PY: 0,
+            percent: 0,
+            DIFF: 0,
+            N_DIFF: 0,
+            NS: 0,
+            PYNS: 0,
+            AVG: 0,
+            MARGIN: 0,
+            COST: 0,
+            PRICE: 0,
+            TAX: 0,
+            blnPercent: false
+        }
+        this._analyticsService.getDashboardData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+            this.isPerformanceLoader = false;
+            this._changeDetectorRef.markForCheck();
+        })).subscribe(res => {
+            this.programPerformanceData = res["data"];
+            this.programPerformanceData.forEach(element => {
+                if (element.SALES > element.PY) {
+                    element.blnPercent = true;
+                    const diff = element.SALES - element.PY;
+                    if (element.PY == 0) {
+                        element.percent = 100;
+                    } else {
+                        element.percent = Math.round((diff / element.PY) * 100);
+                    }
+                } else if (element.SALES < element.PY) {
+                    element.blnPercent = false;
+                    const diff = element.PY - element.SALES;
+                    if (element.SALES == 0) {
+                        element.percent = 100;
+                    } else {
+                        element.percent = Math.round((diff / element.PY) * 100);
+                    }
+                } else {
+                    element.percent = 0;
+                }
+                this.totalStoreSummary.SALES += element.SALES;
+                this.totalStoreSummary.PY += element.PY;
+                this.totalStoreSummary.NS += element.NS;
+                this.totalStoreSummary.PYNS += element.PYNS;
+                this.totalStoreSummary.COST += element.cost;
+                this.totalStoreSummary.PRICE += element.price;
+                this.totalStoreSummary.TAX += element.tax;
+            });
+            if (this.totalStoreSummary.SALES > this.totalStoreSummary.PY) {
+                this.totalStoreSummary.blnPercent = true;
+                const diff = this.totalStoreSummary.SALES - this.totalStoreSummary.PY;
+                if (this.totalStoreSummary.PY == 0) {
+                    this.totalStoreSummary.PERCENT = 100;
+                } else {
+                    this.totalStoreSummary.PERCENT = Math.round((diff / this.totalStoreSummary.PY) * 100);
+                }
+            } else if (this.totalStoreSummary.SALES < this.totalStoreSummary.PY) {
+                this.totalStoreSummary.blnPercent = false;
+                const diff = this.totalStoreSummary.PY - this.totalStoreSummary.SALES;
+                if (this.totalStoreSummary.SALES == 0) {
+                    this.totalStoreSummary.PERCENT = 100;
+                } else {
+                    this.totalStoreSummary.PERCENT = Math.round((diff / this.totalStoreSummary.PY) * 100);
+                }
+            } else {
+                this.totalStoreSummary.PERCENT = 0;
+            }
+            this.totalStoreSummary.N_DIFF = Math.abs((this.totalStoreSummary?.PYNS - this.totalStoreSummary?.NS));
+            this.totalStoreSummary.AVG = this.totalStoreSummary.SALES / this.totalStoreSummary.NS;
+            this.totalStoreSummary.MARGIN = Math.ceil(((this.totalStoreSummary.PRICE - this.totalStoreSummary.COST) / this.totalStoreSummary.PRICE) * 10000) / 100;
+            this.totalStoreSummary.DIFF = this.totalStoreSummary.SALES - this.totalStoreSummary.PY;
+        }, err => {
+        });
+    }
+    getPerformanceData() {
+
     }
 
     /**

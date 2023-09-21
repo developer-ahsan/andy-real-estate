@@ -6,7 +6,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
         id: 'apps',
         title: 'Admin',
         type: 'group',
-        subtitle: 'Unique dashboard designs',
+        subtitle: 'Reporting dashboard',
         icon: 'heroicons_outline:home',
         children: [
             {
@@ -17,14 +17,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 children: [
                     {
                         id: 'apps.reports.store-sales',
-                        title: 'Manager/Employee',
+                        title: 'Employee Dashboard',
                         type: 'basic',
                         icon: 'mat_outline:analytics',
                         link: '/dashboards/analytics',
                     },
                     {
                         id: 'apps.reports.store-sales',
-                        title: 'Company Overview',
+                        title: 'Manager Dashboard', //Company Overview
                         type: 'basic',
                         icon: 'heroicons_outline:view-boards',
                         link: '/dashboards/overview',
