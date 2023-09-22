@@ -59,7 +59,7 @@ export class GeneratorsComponent implements OnInit {
         const samples = getSampleOrders.split(',,');
         samples.forEach(sample => {
           const [orderID, cost, firstName, lastName, companyName, locationName, orderDate, storeCode, storeName, storeID, storeUserID, blnSampleConverted, sampleComment, days, priority] = sample.split('::');
-          this.pendingQuotes.push({
+          this.sampleStatus.push({
             orderID: Number(orderID), orderDate, storeCode, storeName, storeUserID: Number(storeUserID), storeID: Number(storeID), firstName, lastName, locationName, companyName, blnSampleConverted, cost: Number(cost), days, priority, sampleComment
           })
         });

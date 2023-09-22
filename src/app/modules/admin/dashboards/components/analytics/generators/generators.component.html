@@ -117,14 +117,14 @@
         <div class="flex justify-between border-b mt-4">
             <div class="text-lg font-medium tracking-tight leading-6 truncate ">Sample Status</div>
         </div>
-        <div class="mt-2" *ngIf="!getSampleOrders.length">
+        <div class="mt-2" *ngIf="!sampleStatus.length">
             <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
                 <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
                 </mat-icon>
                 No data available in table.
             </fuse-alert>
         </div>
-        <div class="overflow-x-auto" *ngIf="getSampleOrders.length">
+        <div class="overflow-x-auto" *ngIf="sampleStatus.length">
             <table datatable class="table table-striped">
                 <thead>
                     <tr>
@@ -139,7 +139,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let item of getSampleOrders; trackBy: trackByCartId" [ngClass]="{
+                    <tr *ngFor="let item of sampleStatus; trackBy: trackByCartId" [ngClass]="{
                         'background-color-e0f0d5': item?.priority > 0,
                         'background-color-ffcaca': item.inHandsDate != 'N/A',
                         'background-color-feee84': item.blnReorder
