@@ -18,28 +18,169 @@
             <hr class="m-0 h-2" style="background: #e0f0d5;">
         </div>
     </div>
-    <div>
+    <div *ngIf="isLoading" class="my-5">
+        <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
+            'background-color': '#dedede'
+          }">
+        </ngx-skeleton-loader>
+    </div>
+    <!-- Pending Quotes -->
+    <div *ngIf="!isLoading">
         <div class="flex justify-between border-b mt-4">
             <div class="text-lg font-medium tracking-tight leading-6 truncate ">Pending Quotes</div>
         </div>
-        <div class="mt-2">
+        <div class="mt-2" *ngIf="!pendingQuotes.length">
             <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
                 <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
                 </mat-icon>
                 No data available in table.
             </fuse-alert>
         </div>
+        <div class="overflow-x-auto" *ngIf="pendingQuotes.length">
+            <table datatable class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Store</th>
+                        <th>Total</th>
+                        <th>Quote</th>
+                        <th>Customer</th>
+                        <th>Created</th>
+                        <th>In-Hands</th>
+                        <th>
+                            <div class="flex align-items-center">
+                                <span>LT</span>
+                                <mat-icon class="icon-size-4 ml-1"
+                                    matTooltip="Last touch (last time an email was sent to the customer from this dashboard)"
+                                    [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                            </div>
+                        </th>
+                        <th>Priority</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of pendingQuotes; trackBy: trackByCartId" [ngClass]="{
+                        'background-color-e0f0d5': item?.priority > 0,
+                        'background-color-ffcaca': item.inHandsDate != 'N/A',
+                        'background-color-feee84': item.blnReorder
+                      }">
+                        <td>{{item.storeCode}}</td>
+                        <td>{{item.price | currency}}</td>
+                        <td>{{item.cartID}}</td>
+                        <td>
+                            {{item.firstName + ' ' + item.lastName}}
+                            <span *ngIf="item.locationName != 'N/A'"> - {{item.locationName}}</span>
+                            <span *ngIf="item.companyName != 'N/A'"> - {{item.companyName}}</span>
+                        </td>
+                        <td>
+                            <ng-container *ngIf="item.cartDate != 'N/A'; else na">
+                                {{ item.cartDate | date: 'MM/dd/yyyy' }}
+                            </ng-container>
+                            <ng-template #na>---</ng-template>
+                        </td>
+                        <td>
+                            <ng-container *ngIf="item.inHandsDate != 'N/A'; else na">
+                                {{ item.inHandsDate | date: 'MM/dd/yyyy' }}
+                            </ng-container>
+                            <ng-template #na>---</ng-template>
+                        </td>
+                        <td>
+                            <div *ngIf="item.followUp != 'N/A'">{{item.followUp | date:
+                                "MM/dd/yyyy '@' hh:mm a"}}</div>
+                            <div *ngIf="item.followUp == 'N/A'">---</div>
+                        </td>
+                        <td>
+                            <mat-checkbox matTooltip="Mark Priority"></mat-checkbox>
+                        </td>
+                        <td>
+                            <div class="flex space-x-1 align-items-center">
+                                <mat-button-toggle>
+                                    <mat-icon svgIcon="mat_outline:brush" matTooltip="Artwork Details"></mat-icon>
+                                </mat-button-toggle>
+                                <mat-button-toggle>
+                                    <mat-icon svgIcon="mat_outline:email"
+                                        matTooltip="Send an email to customer"></mat-icon>
+                                </mat-button-toggle>
+                                <mat-button-toggle>
+                                    <mat-icon svgIcon="mat_outline:delete" matTooltip="Remove"></mat-icon>
+                                </mat-button-toggle>
+
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
-    <div>
+    <!-- Samples -->
+    <div *ngIf="!isLoading">
         <div class="flex justify-between border-b mt-4">
             <div class="text-lg font-medium tracking-tight leading-6 truncate ">Sample Status</div>
         </div>
-        <div class="mt-2">
+        <div class="mt-2" *ngIf="!getSampleOrders.length">
             <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
                 <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
                 </mat-icon>
                 No data available in table.
             </fuse-alert>
+        </div>
+        <div class="overflow-x-auto" *ngIf="getSampleOrders.length">
+            <table datatable class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Store</th>
+                        <th>Value</th>
+                        <th>Order</th>
+                        <th>Date</th>
+                        <th>Customer</th>
+                        <th>Days</th>
+                        <th>Priority</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of getSampleOrders; trackBy: trackByCartId" [ngClass]="{
+                        'background-color-e0f0d5': item?.priority > 0,
+                        'background-color-ffcaca': item.inHandsDate != 'N/A',
+                        'background-color-feee84': item.blnReorder
+                      }">
+                        <td>{{item.storeCode}}</td>
+                        <td>{{item.cost | currency}}</td>
+                        <td>{{item.orderID}}</td>
+                        <td>
+                            <ng-container *ngIf="item.orderDate != 'N/A'; else na">
+                                {{ item.orderDate | date: 'MM/dd/yyyy' }}
+                            </ng-container>
+                            <ng-template #na>---</ng-template>
+                        </td>
+                        <td>
+                            {{item.days}}
+                        </td>
+                        <td>
+                            <mat-checkbox matTooltip="Mark Priority"></mat-checkbox>
+                        </td>
+                        <td>
+                            <div class="flex space-x-1 align-items-center">
+                                <mat-button-toggle>
+                                    <mat-icon svgIcon="mat_outline:comment" matTooltip="sample Comments"></mat-icon>
+                                </mat-button-toggle>
+
+                                <mat-button-toggle>
+                                    <mat-icon svgIcon="mat_outline:email"
+                                        matTooltip="Send an email to customer"></mat-icon>
+                                </mat-button-toggle>
+                                <mat-button-toggle>
+                                    <mat-icon svgIcon="mat_outline:check"
+                                        matTooltip="Mark this sample order as converted"></mat-icon>
+                                </mat-button-toggle>
+                                <mat-button-toggle>
+                                    <mat-icon svgIcon="mat_outline:delete" matTooltip="Remove"></mat-icon>
+                                </mat-button-toggle>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
     <div>

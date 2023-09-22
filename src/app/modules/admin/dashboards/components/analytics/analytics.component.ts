@@ -2,14 +2,29 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
-import { ApexAxisChartSeries, ApexChart, ApexDataLabels, ApexFill, ApexLegend, ApexNonAxisChartSeries, ApexOptions, ApexPlotOptions, ApexResponsive, ApexStroke, ApexTooltip, ApexXAxis, ApexYAxis, ChartComponent } from 'ng-apexcharts';
+import { ApexAxisChartSeries, ApexChart, ApexDataLabels, ApexFill, ApexGrid, ApexLegend, ApexNonAxisChartSeries, ApexOptions, ApexPlotOptions, ApexResponsive, ApexStroke, ApexTheme, ApexTitleSubtitle, ApexTooltip, ApexXAxis, ApexYAxis, ChartComponent } from 'ng-apexcharts';
 import { DashboardsService } from '../../dashboard.service';
 import { AuthService } from 'app/core/auth/auth.service';
+import moment from 'moment';
 export type ChartOptions = {
     series: ApexNonAxisChartSeries;
     chart: ApexChart;
     responsive: ApexResponsive[];
     labels: any;
+    colors: string[];
+    dataLabels: ApexDataLabels;
+    yaxis: ApexYAxis;
+
+};
+export type PerformanceChartOptions = {
+    series: ApexNonAxisChartSeries;
+    chart: ApexChart;
+    responsive: ApexResponsive[];
+    labels: any;
+    colors: string[];
+    yaxis: ApexYAxis;
+    theme: ApexTheme;
+    title: ApexTitleSubtitle;
 };
 export type ChartOptions1 = {
     series: ApexAxisChartSeries;
@@ -17,15 +32,32 @@ export type ChartOptions1 = {
     dataLabels: ApexDataLabels;
     plotOptions: ApexPlotOptions;
     yaxis: ApexYAxis;
+    colors: string[];
     xaxis: ApexXAxis;
     fill: ApexFill;
     tooltip: ApexTooltip;
     stroke: ApexStroke;
     legend: ApexLegend;
+    title: ApexTitleSubtitle;
+};
+export type AnnualChartOptions = {
+    series: ApexAxisChartSeries;
+    chart: ApexChart;
+    yaxis: ApexYAxis;
+    xaxis: ApexXAxis;
+    dataLabels: ApexDataLabels;
+    colors: string[];
+    grid: ApexGrid;
+    tooltip: ApexTooltip;
+    stroke: ApexStroke;
+    title: ApexTitleSubtitle;
 };
 @Component({
     selector: 'analytics',
     templateUrl: './analytics.component.html',
+    styles: [`#myChart .apexcharts-legend {
+        display: none !important;
+    }`],
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -57,20 +89,48 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     // Pie Chart
     @ViewChild("chart") chart: ChartComponent;
     public chartOptions: Partial<ChartOptions>;
+    public performanceChartOptions: Partial<PerformanceChartOptions>;
     @ViewChild("chart1") chart1: ChartComponent;
-    public chartOptions1: Partial<ChartOptions1>;
+    public ytdChart: Partial<ChartOptions1>;
+    public quarterChart: Partial<ChartOptions1>;
+    annualChartOptions: Partial<AnnualChartOptions>;
     public chartOptions2: Partial<ChartOptions1>;
-    chartGithubIssues: ApexOptions = {};
+    programPortfolioData = [];
     programPerformanceData = [];
     totalStoreSummary: any;
 
     pagePerformance = 1;
     totalPerformanceRecords = 0;
     isPerformanceLoader: boolean;
+    isPortfolioLoader: boolean;
     isYTDLoader: boolean = false;
     ytDDataMain: any;
 
     userData: any;
+    storesData: any;
+    yourPerformanceData: any = {
+        allStoresGraphLoader: false,
+        allSeriesData: [],
+        allSeriesLabel: [],
+        allColors: [],
+        q1Loader: false,
+        q1Earnings: 0,
+        q1SeriesData: [],
+        q1SeriesLabel: [],
+        q1Colors: [],
+        q2Loader: false,
+        q2SeriesData: [],
+        q2SeriesLabel: [],
+        q2Colors: [],
+        q3Loader: false,
+        q3SeriesData: [],
+        q3SeriesLabel: [],
+        q3Colors: [],
+        q4Loader: false,
+        q4SeriesData: [],
+        q4SeriesLabel: [],
+        q4Colors: [],
+    };
     /**
      * Constructor
      */
@@ -81,50 +141,179 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
         private _router: Router
     ) {
         this.userData = this._authService.parseJwt(this._authService.accessToken);
-        this._analyticsService.dataProject$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((data) => {
-
-                // Store the data
-                this.testData = data;
-
-                // Prepare the chart data
-                this._prepareChartData();
-            });
-        this.chartOptions = {
-            series: [44, 55, 13, 43, 22],
+        this.performanceChartOptions = {
+            series: [25, 15, 44, 55, 41, 17],
             chart: {
-                width: 380,
+                width: "70%",
                 type: "pie"
             },
-            labels: ["Team A", "Team B", "Team C", "Team D", "Team E"],
+            colors: [],
+            labels: [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday"
+            ],
+            theme: {
+                monochrome: {
+                    enabled: false
+                }
+            },
+            title: {
+                text: ""
+            },
             responsive: [
                 {
                     breakpoint: 480,
                     options: {
                         chart: {
                             width: 200
-                        },
+                        }
+                    }
+                },
+                {
+                    breakpoint: 0, // Add a default breakpoint for larger screens
+                    options: {
                         legend: {
-                            position: "bottom"
+                            show: false // Hide legend for all screen sizes
                         }
                     }
                 }
-            ]
+            ],
+            yaxis: {
+                labels: {
+                    formatter: function (val) {
+                        return '$' + `${val.toLocaleString()}`;
+                    },
+                },
+            },
         }
-        this.chartOptions1 = {
+        this.chartOptions = {
+            series: [25, 15, 44, 55, 41, 17],
+            chart: {
+                width: "50%",
+                type: "pie"
+            },
+            colors: [],
+            labels: [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday"
+            ],
+            responsive: [
+                {
+                    breakpoint: 480,
+                    options: {
+                        chart: {
+                            width: 200
+                        }
+                    }
+                },
+                {
+                    breakpoint: 0, // Add a default breakpoint for larger screens
+                    options: {
+                        legend: {
+                            show: false // Hide legend for all screen sizes
+                        }
+                    }
+                }
+            ],
+            yaxis: {
+                labels: {
+                    formatter: function (val) {
+                        return '$' + `${val.toLocaleString()}`;
+                    },
+                },
+            },
+        }
+        this.ytdChart = {
+            series: [
+            ],
+            chart: {
+                type: "bar",
+                height: 350
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: "55%"
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            colors: [],
+            stroke: {
+                show: true,
+                width: 2,
+                colors: ["transparent"]
+            },
+            xaxis: {
+                categories: [
+                ]
+            },
+            yaxis: {
+                labels: {
+                    formatter: function (val) {
+                        return '$' + `${val.toLocaleString()}`;
+                    },
+                },
+            },
+            fill: {
+                opacity: 1
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return '$' + `${val.toLocaleString()}`;
+                    },
+                }
+            },
+            title: {
+                text: "YTD Sales",
+                align: "left"
+            },
+        };
+        this.quarterChart = {
             series: [
                 {
-                    name: "Net Profit",
-                    data: [44, 55, 57, 56, 61, 58, 63, 60, 66]
+                    "name": "1",
+                    data: [
+                        161070.8812,
+                        168645.3247,
+                        274948.0738
+                    ]
                 },
                 {
-                    name: "Revenue",
-                    data: [76, 85, 101, 98, 87, 105, 91, 114, 94]
+                    name: "2",
+                    data: [
+                        116023.1558,
+                        268538.4856,
+                        337882.7501,
+                    ]
                 },
                 {
-                    name: "Free Cash Flow",
-                    data: [35, 41, 36, 26, 45, 48, 52, 53, 41]
+                    name: "3",
+                    data: [
+                        250311.6733,
+                        340202.86,
+                        273543.5929,
+
+                    ]
+                },
+                {
+                    name: "4",
+                    data: [
+                        218198.2745,
+                        320052.1767,
+                        0,
+
+                    ]
                 }
             ],
             chart: {
@@ -146,22 +335,14 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
                 colors: ["transparent"]
             },
             xaxis: {
-                categories: [
-                    "Feb",
-                    "Mar",
-                    "Apr",
-                    "May",
-                    "Jun",
-                    "Jul",
-                    "Aug",
-                    "Sep",
-                    "Oct"
-                ]
+                categories: [1, 2, 3, 4]
             },
             yaxis: {
-                title: {
-                    text: "$ (thousands)"
-                }
+                labels: {
+                    formatter: function (val) {
+                        return '$' + `${val.toLocaleString()}`;
+                    },
+                },
             },
             fill: {
                 opacity: 1
@@ -169,142 +350,64 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
             tooltip: {
                 y: {
                     formatter: function (val) {
-                        return "$ " + val + " thousands";
-                    }
+                        return '$' + `${val.toLocaleString()}`;
+                    },
                 }
-            }
+            },
+            colors: [],
+            title: {
+                text: "Quarterly Sales",
+                align: "left"
+            },
         };
-        this.chartOptions2 = {
+        this.annualChartOptions = {
             series: [
                 {
-                    name: "2022",
-                    data: [40, 55, 57, 56, 61, 58, 63, 60, 66]
-                },
-                {
-                    name: "2023",
-                    data: [44, 55, 57, 56, 61, 58, 63, 60, 66]
+                    name: "Sales",
+                    data: []
                 }
             ],
             chart: {
-                type: "bar",
-                height: 350
-            },
-            plotOptions: {
-                bar: {
-                    horizontal: false,
-                    columnWidth: "55%"
-                }
-            },
-            dataLabels: {
-                enabled: false
-            },
-            stroke: {
-                show: true,
-                width: 2,
-                colors: ["transparent"]
-            },
-            xaxis: {
-                categories: [
-                    "Feb",
-                    "Mar",
-                    "Apr",
-                    "May",
-                    "Jun",
-                    "Jul",
-                    "Aug",
-                    "Sep",
-                    "Oct"
-                ]
-            },
-            yaxis: {
-                title: {
-                    text: "$ (thousands)"
-                }
-            },
-            fill: {
-                opacity: 1
-            },
-            tooltip: {
-                y: {
-                    formatter: function (val) {
-                        return "$ " + val + " thousands";
-                    }
-                }
-            }
-        };
-        this.chartGithubIssues = {
-            chart: {
-                fontFamily: 'inherit',
-                foreColor: 'inherit',
-                height: '100%',
-                type: 'line',
-                toolbar: {
-                    show: false
-                },
+                height: 350,
+                type: "line",
                 zoom: {
                     enabled: false
                 }
             },
-            colors: ['#64748B', '#94A3B8'],
             dataLabels: {
-                enabled: true,
-                enabledOnSeries: [0],
-                background: {
-                    borderWidth: 0
-                }
-            },
-            grid: {
-                borderColor: 'var(--fuse-border)'
-            },
-            labels: this.testData.githubIssues.labels,
-            legend: {
-                show: false
-            },
-            plotOptions: {
-                bar: {
-                    columnWidth: '50%'
-                }
-            },
-            series: this.testData.githubIssues.series,
-            states: {
-                hover: {
-                    filter: {
-                        type: 'darken',
-                        value: 0.75
-                    }
-                }
+                enabled: false
             },
             stroke: {
-                width: [3, 0]
+                curve: "straight"
             },
-            tooltip: {
-                followCursor: true,
-                theme: 'dark'
+            colors: [],
+            title: {
+                text: "Annual Total Sales",
+                align: "left"
+            },
+            grid: {
+                row: {
+                    colors: ["#f3f3f3", "transparent"], // takes an array which will be repeated on columns
+                    opacity: 0.5
+                }
             },
             xaxis: {
-                axisBorder: {
-                    show: false
-                },
-                axisTicks: {
-                    color: 'var(--fuse-border)'
-                },
-                labels: {
-                    style: {
-                        colors: 'var(--fuse-text-secondary)'
-                    }
-                },
-                tooltip: {
-                    enabled: false
+                categories: []
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return '$' + `${val.toLocaleString()}`;
+                    },
                 }
             },
             yaxis: {
                 labels: {
-                    offsetX: -16,
-                    style: {
-                        colors: 'var(--fuse-text-secondary)'
-                    }
-                }
-            }
+                    formatter: function (val) {
+                        return '$' + `${val.toLocaleString()}`;
+                    },
+                },
+            },
         };
     }
 
@@ -318,34 +421,11 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         // Get the data
         this.isYTDLoader = true;
+        this.isPortfolioLoader = true;
+        this.isPerformanceLoader = true;
         this.getYTDData();
         this.getPortfolioData();
-
-
-        this._analyticsService.data$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((data) => {
-
-                // Store the data
-                this.data = data;
-
-                // Prepare the chart data
-                this._prepareChartData();
-            });
-
-        // Attach SVG fill fixer to all ApexCharts
-        window['Apex'] = {
-            chart: {
-                events: {
-                    mounted: (chart: any, options?: any) => {
-                        this._fixSvgFill(chart.el);
-                    },
-                    updated: (chart: any, options?: any) => {
-                        this._fixSvgFill(chart.el);
-                    }
-                }
-            }
-        };
+        this.getPerformanceData();
     }
     calledScreen(screen) {
         this.mainScreen = screen;
@@ -366,9 +446,16 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
         });
     }
     getPortfolioData() {
+        this.yourPerformanceData.allStoresGraphLoader = true;
+        this.yourPerformanceData.q1Loader = true;
+        this.yourPerformanceData.q2Loader = true;
+        this.yourPerformanceData.q3Loader = true;
+        this.yourPerformanceData.q4Loader = true;
+
+        this.storesData = [];
         let params = {
             portfolio_performance: true,
-            user_id: 78
+            email: this.userData.email
         }
         this.totalStoreSummary = {
             SALES: 0,
@@ -386,11 +473,15 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
             blnPercent: false
         }
         this._analyticsService.getDashboardData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-            this.isPerformanceLoader = false;
+            this.isPortfolioLoader = false;
             this._changeDetectorRef.markForCheck();
         })).subscribe(res => {
-            this.programPerformanceData = res["data"];
-            this.programPerformanceData.forEach(element => {
+            this.programPortfolioData = res["data"];
+            this.programPortfolioData.forEach(element => {
+                // Add data to Chrt
+                this.yourPerformanceData.allSeriesData.push(element.SALES);
+                this.yourPerformanceData.allSeriesLabel.push(element.storeName);
+                this.storesData.push({ storeName: element.storeName, pk_storeID: element.storeID });
                 if (element.SALES > element.PY) {
                     element.blnPercent = true;
                     const diff = element.SALES - element.PY;
@@ -441,11 +532,146 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
             this.totalStoreSummary.AVG = this.totalStoreSummary.SALES / this.totalStoreSummary.NS;
             this.totalStoreSummary.MARGIN = Math.ceil(((this.totalStoreSummary.PRICE - this.totalStoreSummary.COST) / this.totalStoreSummary.PRICE) * 10000) / 100;
             this.totalStoreSummary.DIFF = this.totalStoreSummary.SALES - this.totalStoreSummary.PY;
+            this.yourPerformanceData.allStoresGraphLoader = false;
+            this._changeDetectorRef.markForCheck();
         }, err => {
         });
     }
     getPerformanceData() {
+        let params = {
+            program_performance: true,
+            email: this.userData.email
+        }
+        this._analyticsService.getDashboardData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+            this.isPerformanceLoader = false;
+            this.yourPerformanceData.q1Loader = false;
+            this.yourPerformanceData.q2Loader = false;
+            this.yourPerformanceData.q3Loader = false;
+            this.yourPerformanceData.q4Loader = false;
+            this._changeDetectorRef.markForCheck();
+        })).subscribe(res => {
+            this.programPerformanceData = [];
+            let stores = [];
+            const { ytd, annual, quarter } = res["data"];
+            ytd.forEach(element => {
+                const { earnings, reportColor, orderDate, pk_storeID, storeName } = element;
+                const existingStore = stores.find(store => store.pk_storeID === pk_storeID);
+                const ytdValues = {
+                    earnings: earnings, reportColor: reportColor, orderDate: orderDate
+                }
+                if (!existingStore) {
+                    stores.push({
+                        storeName: storeName, pk_storeID: pk_storeID,
+                        ytdSeries: [{ name: 'Sales', data: [earnings] }],
+                        xaxis: { categories: [orderDate] },
+                        colors: ['#' + reportColor],
+                        ytd: [ytdValues],
+                        annual: [],
+                        annualSeries: [{ name: 'Sales', data: [] }],
+                        anuualxaxis: { categories: [] },
+                        annualColors: [],
+                        quarter: [],
+                        quarterSeries: [{ name: '', data: [] }, { name: '', data: [] }, { name: '', data: [] }],
+                        quarterxaxis: { categories: [1, 2, 3, 4] },
+                        quarterColors: [],
+                    });
+                } else {
+                    existingStore.ytd.push(ytdValues);
+                    existingStore.ytdSeries[0].data.push(earnings);
+                    existingStore.xaxis.categories.push(orderDate);
+                    existingStore.colors.push('#' + reportColor);
+                }
+            });
+            annual.forEach(element => {
+                const { total, year, reportColor, pk_storeID, storeName } = element;
+                const existingStore = stores.find(store => store.pk_storeID === pk_storeID);
+                const annualValues = {
+                    total: total, reportColor: reportColor, year: year
+                }
+                if (!existingStore) {
+                    stores.push({
+                        storeName: storeName, pk_storeID: pk_storeID,
+                        annualSeries: [{ data: [total] }],
+                        anuualxaxis: { categories: [year] },
+                        annualColors: ['#' + reportColor],
+                        ytdSeries: [],
+                        xaxis: { categories: [] },
+                        colors: [],
+                        ytd: [], annual: [annualValues], quarter: []
+                    });
+                } else {
+                    existingStore.annual.push(annualValues);
+                    existingStore.annualSeries[0].data.push(total);
+                    existingStore.anuualxaxis.categories.push(year);
+                    existingStore.annualColors.push('#' + reportColor);
+                }
+            });
+            quarter.forEach(element => {
+                const { orderYear, orderQuarter, earnings, reportColor, pk_storeID, storeName } = element;
+                const existingStore = stores.find(store => store.pk_storeID === pk_storeID);
 
+                if (!existingStore.quarter) {
+                    existingStore.quarter = {};
+                }
+
+                if (!existingStore.quarter[orderYear]) {
+                    existingStore.quarter[orderYear] = [];
+                }
+
+                const quarterValues = {
+                    earnings: earnings,
+                    reportColor: reportColor,
+                    year: orderYear,
+                    orderQuarter: orderQuarter
+                };
+
+                const existingQuarter = existingStore.quarter[orderYear].find(q => q.quarter === orderQuarter);
+
+                if (existingQuarter) {
+                    existingQuarter.data.push(quarterValues);
+                } else {
+                    existingStore.quarter[orderYear].push({ quarter: orderQuarter, data: quarterValues });
+                }
+
+                existingStore.quarterColors.push('#' + reportColor);
+            });
+            const year: any = moment().year();
+            stores.forEach(store => {
+                this.yourPerformanceData.allColors.push(store.colors[0]);
+                let quarters = Object.keys(store.quarter);
+                quarters.forEach((quarter, index) => {
+                    store.quarterSeries[index].name = quarter;
+                    store.quarterColors[index] = '#' + store.quarter[quarter][index].data.reportColor;
+                    store.quarter[quarter].forEach(element => {
+                        store.quarterSeries[index].data.push(element.data.earnings);
+                        if (year == quarter) {
+                            if (element.quarter == 1) {
+                                this.yourPerformanceData.q1Earnings += element.data.earnings;
+                                this.yourPerformanceData.q1SeriesData.push(element.data.earnings);
+                                this.yourPerformanceData.q1SeriesLabel.push(store.storeName);
+                                this.yourPerformanceData.q1Colors.push('#' + element.data.reportColor);
+                            } else if (element.quarter == 2) {
+                                this.yourPerformanceData.q2SeriesData.push(element.data.earnings);
+                                this.yourPerformanceData.q2SeriesLabel.push(store.storeName);
+                                this.yourPerformanceData.q2Colors.push('#' + element.data.reportColor);
+                            } else if (element.quarter == 3) {
+                                this.yourPerformanceData.q3SeriesData.push(element.data.earnings);
+                                this.yourPerformanceData.q3SeriesLabel.push(store.storeName);
+                                this.yourPerformanceData.q3Colors.push('#' + element.data.reportColor);
+                            } else if (element.quarter == 4) {
+                                this.yourPerformanceData.q3SeriesData.push(element.data.earnings);
+                                this.yourPerformanceData.q3SeriesLabel.push(store.storeName);
+                                this.yourPerformanceData.q3Colors.push('#' + element.data.reportColor);
+                            }
+                        }
+                    });
+                });
+            });
+            console.log(this.yourPerformanceData);
+            this.programPerformanceData = stores;
+            this._changeDetectorRef.markForCheck();
+        })
+        this._changeDetectorRef.markForCheck();
     }
 
     /**
@@ -457,567 +683,10 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
         this._unsubscribeAll.complete();
     }
 
-    // -----------------------------------------------------------------------------------------------------
-    // @ Public methods
-    // -----------------------------------------------------------------------------------------------------
-
-    /**
-     * Track by function for ngFor loops
-     *
-     * @param index
-     * @param item
-     */
-    trackByFn(index: number, item: any): any {
-        return item.id || index;
+    trackByItemId(index: number, item: any): string {
+        return item.pk_storeID; // Replace with the actual unique identifier
     }
-
-    // -----------------------------------------------------------------------------------------------------
-    // @ Private methods
-    // -----------------------------------------------------------------------------------------------------
-
-    /**
-     * Fix the SVG fill references. This fix must be applied to all ApexCharts
-     * charts in order to fix 'black color on gradient fills on certain browsers'
-     * issue caused by the '<base>' tag.
-     *
-     * Fix based on https://gist.github.com/Kamshak/c84cdc175209d1a30f711abd6a81d472
-     *
-     * @param element
-     * @private
-     */
-    private _fixSvgFill(element: Element): void {
-        // Current URL
-        const currentURL = this._router.url;
-
-        // 1. Find all elements with 'fill' attribute within the element
-        // 2. Filter out the ones that doesn't have cross reference so we only left with the ones that use the 'url(#id)' syntax
-        // 3. Insert the 'currentURL' at the front of the 'fill' attribute value
-        Array.from(element.querySelectorAll('*[fill]'))
-            .filter(el => el.getAttribute('fill').indexOf('url(') !== -1)
-            .forEach((el) => {
-                const attrVal = el.getAttribute('fill');
-                el.setAttribute('fill', `url(${currentURL}${attrVal.slice(attrVal.indexOf('#'))}`);
-            });
-    }
-
-    /**
-     * Prepare the chart data from the data
-     *
-     * @private
-     */
-    private _prepareChartData(): void {
-        // Visitors
-        this.chartVisitors = {
-            chart: {
-                animations: {
-                    speed: 400,
-                    animateGradually: {
-                        enabled: false
-                    }
-                },
-                fontFamily: 'inherit',
-                foreColor: 'inherit',
-                width: '100%',
-                height: '100%',
-                type: 'area',
-                toolbar: {
-                    show: false
-                },
-                zoom: {
-                    enabled: false
-                }
-            },
-            colors: ['#818CF8'],
-            dataLabels: {
-                enabled: false
-            },
-            fill: {
-                colors: ['#312E81']
-            },
-            grid: {
-                show: true,
-                borderColor: '#334155',
-                padding: {
-                    top: 10,
-                    bottom: -40,
-                    left: 0,
-                    right: 0
-                },
-                position: 'back',
-                xaxis: {
-                    lines: {
-                        show: true
-                    }
-                }
-            },
-            series: this.data.visitors.series,
-            stroke: {
-                width: 2
-            },
-            tooltip: {
-                followCursor: true,
-                theme: 'dark',
-                x: {
-                    format: 'MMM dd, yyyy'
-                },
-                y: {
-                    formatter: (value: number): string => `${value}`
-                }
-            },
-            xaxis: {
-                axisBorder: {
-                    show: false
-                },
-                axisTicks: {
-                    show: false
-                },
-                crosshairs: {
-                    stroke: {
-                        color: '#475569',
-                        dashArray: 0,
-                        width: 2
-                    }
-                },
-                labels: {
-                    offsetY: -20,
-                    style: {
-                        colors: '#CBD5E1'
-                    }
-                },
-                tickAmount: 20,
-                tooltip: {
-                    enabled: false
-                },
-                type: 'datetime'
-            },
-            yaxis: {
-                axisTicks: {
-                    show: false
-                },
-                axisBorder: {
-                    show: false
-                },
-                min: min => min - 750,
-                max: max => max + 250,
-                tickAmount: 5,
-                show: false
-            }
-        };
-
-        // Conversions
-        this.chartConversions = {
-            chart: {
-                animations: {
-                    enabled: false
-                },
-                fontFamily: 'inherit',
-                foreColor: 'inherit',
-                height: '100%',
-                type: 'area',
-                sparkline: {
-                    enabled: true
-                }
-            },
-            colors: ['#38BDF8'],
-            fill: {
-                colors: ['#38BDF8'],
-                opacity: 0.5
-            },
-            series: this.data.conversions.series,
-            stroke: {
-                curve: 'smooth'
-            },
-            tooltip: {
-                followCursor: true,
-                theme: 'dark'
-            },
-            xaxis: {
-                type: 'category',
-                categories: this.data.conversions.labels
-            },
-            yaxis: {
-                labels: {
-                    formatter: val => val.toString()
-                }
-            }
-        };
-
-        // Impressions
-        this.chartImpressions = {
-            chart: {
-                animations: {
-                    enabled: false
-                },
-                fontFamily: 'inherit',
-                foreColor: 'inherit',
-                height: '100%',
-                type: 'area',
-                sparkline: {
-                    enabled: true
-                }
-            },
-            colors: ['#34D399'],
-            fill: {
-                colors: ['#34D399'],
-                opacity: 0.5
-            },
-            series: this.data.impressions.series,
-            stroke: {
-                curve: 'smooth'
-            },
-            tooltip: {
-                followCursor: true,
-                theme: 'dark'
-            },
-            xaxis: {
-                type: 'category',
-                categories: this.data.impressions.labels
-            },
-            yaxis: {
-                labels: {
-                    formatter: val => val.toString()
-                }
-            }
-        };
-
-        // Visits
-        this.chartVisits = {
-            chart: {
-                animations: {
-                    enabled: false
-                },
-                fontFamily: 'inherit',
-                foreColor: 'inherit',
-                height: '100%',
-                type: 'area',
-                sparkline: {
-                    enabled: true
-                }
-            },
-            colors: ['#FB7185'],
-            fill: {
-                colors: ['#FB7185'],
-                opacity: 0.5
-            },
-            series: this.data.visits.series,
-            stroke: {
-                curve: 'smooth'
-            },
-            tooltip: {
-                followCursor: true,
-                theme: 'dark'
-            },
-            xaxis: {
-                type: 'category',
-                categories: this.data.visits.labels
-            },
-            yaxis: {
-                labels: {
-                    formatter: val => val.toString()
-                }
-            }
-        };
-
-        // Visitors vs Page Views
-        this.chartVisitorsVsPageViews = {
-            chart: {
-                animations: {
-                    enabled: false
-                },
-                fontFamily: 'inherit',
-                foreColor: 'inherit',
-                height: '100%',
-                type: 'area',
-                toolbar: {
-                    show: false
-                },
-                zoom: {
-                    enabled: false
-                }
-            },
-            colors: ['#64748B', '#94A3B8'],
-            dataLabels: {
-                enabled: false
-            },
-            fill: {
-                colors: ['#64748B', '#94A3B8'],
-                opacity: 0.5
-            },
-            grid: {
-                show: false,
-                padding: {
-                    bottom: -40,
-                    left: 0,
-                    right: 0
-                }
-            },
-            legend: {
-                show: false
-            },
-            series: this.data.visitorsVsPageViews.series,
-            stroke: {
-                curve: 'smooth',
-                width: 2
-            },
-            tooltip: {
-                followCursor: true,
-                theme: 'dark',
-                x: {
-                    format: 'MMM dd, yyyy'
-                }
-            },
-            xaxis: {
-                axisBorder: {
-                    show: false
-                },
-                labels: {
-                    offsetY: -20,
-                    rotate: 0,
-                    style: {
-                        colors: 'var(--fuse-text-secondary)'
-                    }
-                },
-                tickAmount: 3,
-                tooltip: {
-                    enabled: false
-                },
-                type: 'datetime'
-            },
-            yaxis: {
-                labels: {
-                    style: {
-                        colors: 'var(--fuse-text-secondary)'
-                    }
-                },
-                max: max => max + 250,
-                min: min => min - 250,
-                show: false,
-                tickAmount: 5
-            }
-        };
-
-        // New vs. returning
-        this.chartNewVsReturning = {
-            chart: {
-                animations: {
-                    speed: 400,
-                    animateGradually: {
-                        enabled: false
-                    }
-                },
-                fontFamily: 'inherit',
-                foreColor: 'inherit',
-                height: '100%',
-                type: 'donut',
-                sparkline: {
-                    enabled: true
-                }
-            },
-            colors: ['#3182CE', '#63B3ED'],
-            labels: this.data.newVsReturning.labels,
-            plotOptions: {
-                pie: {
-                    customScale: 0.9,
-                    expandOnClick: false,
-                    donut: {
-                        size: '70%'
-                    }
-                }
-            },
-            series: this.data.newVsReturning.series,
-            states: {
-                hover: {
-                    filter: {
-                        type: 'none'
-                    }
-                },
-                active: {
-                    filter: {
-                        type: 'none'
-                    }
-                }
-            },
-            tooltip: {
-                enabled: true,
-                fillSeriesColor: false,
-                theme: 'dark',
-                custom: ({
-                    seriesIndex,
-                    w
-                }) => `<div class="flex items-center h-8 min-h-8 max-h-8 px-3">
-                                            <div class="w-3 h-3 rounded-full" style="background-color: ${w.config.colors[seriesIndex]};"></div>
-                                            <div class="ml-2 text-md leading-none">${w.config.labels[seriesIndex]}:</div>
-                                            <div class="ml-2 text-md font-bold leading-none">${w.config.series[seriesIndex]}%</div>
-                                        </div>`
-            }
-        };
-
-        // Gender
-        this.chartGender = {
-            chart: {
-                animations: {
-                    speed: 400,
-                    animateGradually: {
-                        enabled: false
-                    }
-                },
-                fontFamily: 'inherit',
-                foreColor: 'inherit',
-                height: '100%',
-                type: 'donut',
-                sparkline: {
-                    enabled: true
-                }
-            },
-            colors: ['#319795', '#4FD1C5'],
-            labels: this.data.gender.labels,
-            plotOptions: {
-                pie: {
-                    customScale: 0.9,
-                    expandOnClick: false,
-                    donut: {
-                        size: '70%'
-                    }
-                }
-            },
-            series: this.data.gender.series,
-            states: {
-                hover: {
-                    filter: {
-                        type: 'none'
-                    }
-                },
-                active: {
-                    filter: {
-                        type: 'none'
-                    }
-                }
-            },
-            tooltip: {
-                enabled: true,
-                fillSeriesColor: false,
-                theme: 'dark',
-                custom: ({
-                    seriesIndex,
-                    w
-                }) => `<div class="flex items-center h-8 min-h-8 max-h-8 px-3">
-                                            <div class="w-3 h-3 rounded-full" style="background-color: ${w.config.colors[seriesIndex]};"></div>
-                                            <div class="ml-2 text-md leading-none">${w.config.labels[seriesIndex]}:</div>
-                                            <div class="ml-2 text-md font-bold leading-none">${w.config.series[seriesIndex]}%</div>
-                                        </div>`
-            }
-        };
-
-        // Age
-        this.chartAge = {
-            chart: {
-                animations: {
-                    speed: 400,
-                    animateGradually: {
-                        enabled: false
-                    }
-                },
-                fontFamily: 'inherit',
-                foreColor: 'inherit',
-                height: '100%',
-                type: 'donut',
-                sparkline: {
-                    enabled: true
-                }
-            },
-            colors: ['#DD6B20', '#F6AD55'],
-            labels: this.data.age.labels,
-            plotOptions: {
-                pie: {
-                    customScale: 0.9,
-                    expandOnClick: false,
-                    donut: {
-                        size: '70%'
-                    }
-                }
-            },
-            series: this.data.age.series,
-            states: {
-                hover: {
-                    filter: {
-                        type: 'none'
-                    }
-                },
-                active: {
-                    filter: {
-                        type: 'none'
-                    }
-                }
-            },
-            tooltip: {
-                enabled: true,
-                fillSeriesColor: false,
-                theme: 'dark',
-                custom: ({
-                    seriesIndex,
-                    w
-                }) => `<div class="flex items-center h-8 min-h-8 max-h-8 px-3">
-                                            <div class="w-3 h-3 rounded-full" style="background-color: ${w.config.colors[seriesIndex]};"></div>
-                                            <div class="ml-2 text-md leading-none">${w.config.labels[seriesIndex]}:</div>
-                                            <div class="ml-2 text-md font-bold leading-none">${w.config.series[seriesIndex]}%</div>
-                                        </div>`
-            }
-        };
-
-        // Language
-        this.chartLanguage = {
-            chart: {
-                animations: {
-                    speed: 400,
-                    animateGradually: {
-                        enabled: false
-                    }
-                },
-                fontFamily: 'inherit',
-                foreColor: 'inherit',
-                height: '100%',
-                type: 'donut',
-                sparkline: {
-                    enabled: true
-                }
-            },
-            colors: ['#805AD5', '#B794F4'],
-            labels: this.data.language.labels,
-            plotOptions: {
-                pie: {
-                    customScale: 0.9,
-                    expandOnClick: false,
-                    donut: {
-                        size: '70%'
-                    }
-                }
-            },
-            series: this.data.language.series,
-            states: {
-                hover: {
-                    filter: {
-                        type: 'none'
-                    }
-                },
-                active: {
-                    filter: {
-                        type: 'none'
-                    }
-                }
-            },
-            tooltip: {
-                enabled: true,
-                fillSeriesColor: false,
-                theme: 'dark',
-                custom: ({
-                    seriesIndex,
-                    w
-                }) => `<div class="flex items-center h-8 min-h-8 max-h-8 px-3">
-                                            <div class="w-3 h-3 rounded-full" style="background-color: ${w.config.colors[seriesIndex]};"></div>
-                                            <div class="ml-2 text-md leading-none">${w.config.labels[seriesIndex]}:</div>
-                                            <div class="ml-2 text-md font-bold leading-none">${w.config.series[seriesIndex]}%</div>
-                                        </div>`
-            }
-        };
+    trackByIndex(index: number, item: any): number {
+        return index;
     }
 }

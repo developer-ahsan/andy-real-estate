@@ -13,45 +13,316 @@
             <p>Group Order</p>
             <hr class="m-0 h-2" style="background: #fca769;">
         </div>
+        <div class="mr-2">
+            <p>Priority</p>
+            <hr class="m-0 h-2" style="background: #e0f0d5;">
+        </div>
     </div>
-    <div>
+    <div *ngIf="isApprovalLoader" class="my-5">
+        <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
+            'background-color': '#dedede'
+          }">
+        </ngx-skeleton-loader>
+    </div>
+    <!-- Orders waiting for artwork -->
+    <div *ngIf="!isApprovalLoader">
         <div class="flex justify-between border-b mt-4">
-            <div class="text-lg font-medium tracking-tight leading-6 truncate ">Orders waiting for artwork
+            <div class="text-lg font-medium tracking-tight leading-6 truncate">Orders waiting for artwork <span
+                    class="badge badge-secondary ml-2" *ngIf="!isApprovalLoader">{{approvalOrders.length}}</span>
+            </div>
+            <div>
+                <div class="flex align-items-center">
+                    <span>What is this</span>
+                    <mat-icon class="icon-size-4 ml-1"
+                        matTooltip="These are orders that have yet to be proofed, or are awaiting artwork approval. Click an order to learn more about its status."
+                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                </div>
             </div>
         </div>
-        <div class="mt-2">
-            <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
-                <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
-                </mat-icon>
-                There are currently no keywords for your customers around this time last year.
-            </fuse-alert>
-        </div>
-    </div>
-    <div>
-        <div class="flex justify-between border-b mt-4">
-            <div class="text-lg font-medium tracking-tight leading-6 truncate ">Orders waiting for payment
+        <div>
+            <div class="mt-2" *ngIf="approvalOrders.length == 0">
+                <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
+                    <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
+                    </mat-icon>
+                    There are currently no keywords for your customers around this time last year.
+                </fuse-alert>
+            </div>
+            <div class="overflow-x-auto" *ngIf="approvalOrders.length">
+                <table datatable class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Store</th>
+                            <th>Order</th>
+                            <th>Date</th>
+                            <th>Total</th>
+                            <th>
+                                <div class="flex align-items-center">
+                                    <span>Days</span>
+                                    <mat-icon class="icon-size-4 ml-1"
+                                        matTooltip="How long this has been sitting on hold or in follow up for approval, in hours"
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <th>Customer</th>
+                            <th>
+                                <div class="flex align-items-center">
+                                    <span>LT</span>
+                                    <mat-icon class="icon-size-4 ml-1"
+                                        matTooltip="Last touch (last time an email was sent to the customer from this dashboard)"
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <th>Priority</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of approvalOrders; trackBy: trackByOrderId" [ngClass]="{
+                            'background-color-e0f0d5': item?.priority > 0,
+                            'background-color-fca769': item.groupOrderID != 'N/A',
+                            'background-color-ffcaca': item.inHandsDate != 'N/A',
+                            'background-color-feee84': item.blnReorder
+                          }">
+                            <td>{{item.storeCode}}</td>
+                            <td>{{item.orderID}}</td>
+                            <td>
+                                <ng-container *ngIf="item.orderDate != 'N/A'; else na">
+                                    {{ item.orderDate | date: 'MM/dd/yyyy' }}
+                                </ng-container>
+                                <ng-template #na>---</ng-template>
+                            </td>
+                            <td>{{item.total | currency}}</td>
+                            <td>{{item.days}}</td>
+                            <td>
+                                {{item.firstName + ' ' + item.lastName}}
+                                <span *ngIf="item.locationName != 'N/A'"> - {{item.locationName}}</span>
+                                <span *ngIf="item.companyName != 'N/A'"> - {{item.companyName}}</span>
+                            </td>
+                            <td>
+                                <div *ngIf="item.artworkNotification != 'N/A'">{{item.artworkNotification | date:
+                                    "MM/dd/yyyy '@' hh:mm a"}}</div>
+                                <div *ngIf="item.artworkNotification == 'N/A'">---</div>
+                            </td>
+                            <td>
+                                <mat-checkbox matTooltip="Mark Priority"></mat-checkbox>
+                            </td>
+                            <td>
+                                <div class="flex space-x-1 align-items-center">
+                                    <mat-button-toggle>
+                                        <mat-icon svgIcon="mat_outline:comment" matTooltip="Order Comments"></mat-icon>
+                                    </mat-button-toggle>
+
+                                    <mat-button-toggle>
+                                        <mat-icon svgIcon="mat_outline:email"
+                                            matTooltip="Send Email to the customer"></mat-icon>
+                                    </mat-button-toggle>
+
+                                    <mat-button-toggle>
+                                        <mat-icon svgIcon="mat_outline:calendar_today"
+                                            matTooltip="Reschedule"></mat-icon>
+                                    </mat-button-toggle>
+
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
-        <div class="mt-2">
+    </div>
+    <!-- Orders waiting for payment -->
+    <div *ngIf="!isApprovalLoader">
+        <div class="flex justify-between border-b mt-4">
+            <div class="text-lg font-medium tracking-tight leading-6 truncate">Orders waiting for payment <span
+                    class="badge badge-secondary ml-2">{{awaitingOrders.length}}</span>
+            </div>
+            <div>
+                <div class="flex align-items-center">
+                    <span>What is this</span>
+                    <mat-icon class="icon-size-4 ml-1"
+                        matTooltip="Orders here are unpaid, and artwork has been approved.  Please reach out to the customer to obtain payment or comment on the order to let Order Processing know the status if you have not done so recently."
+                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                </div>
+            </div>
+        </div>
+        <div class="mt-2" *ngIf="awaitingOrders.length">
             <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
                 <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
                 </mat-icon>
                 There are currently no keywords for your customers around this time last year.
             </fuse-alert>
+        </div>
+        <div class="overflow-x-auto" *ngIf="awaitingOrders.length">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Store</th>
+                        <th>Order</th>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th>
+                            <div class="flex align-items-center">
+                                <span>Days</span>
+                                <mat-icon class="icon-size-4 ml-1"
+                                    matTooltip="How long this has been sitting on hold or in follow up for approval, in hours"
+                                    [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                            </div>
+                        </th>
+                        <th>Customer</th>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>
+                            <div class="flex align-items-center">
+                                <span>LT</span>
+                                <mat-icon class="icon-size-4 ml-1"
+                                    matTooltip="Last touch (last time an email was sent to the customer from this dashboard)"
+                                    [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                            </div>
+                        </th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of awaitingOrders; trackBy: trackByOrderId" [ngClass]="{
+                        'background-color-e0f0d5': item.priority > 0,
+                        'background-color-fca769': item.groupOrderID != 'N/A',
+                        'background-color-ffcaca': item.inHandsDate != 'N/A',
+                        'background-color-feee84': item.blnReorder
+                      }">
+                        <td>{{item.storeCode}} {{item.inHandsDate}}</td>
+                        <td>{{item.orderID}}</td>
+                        <td>
+                            <ng-container *ngIf="item.orderDate != 'N/A'; else na">
+                                {{ item.orderDate | date: 'MM/dd/yyyy' }}
+                            </ng-container>
+                            <ng-template #na>---</ng-template>
+                        </td>
+                        <td>{{item.total | currency}}</td>
+                        <td>{{item.days}}</td>
+                        <td>
+                            {{item.firstName + ' ' + item.lastName}}
+                            <span *ngIf="item.locationName != 'N/A'"> - {{item.locationName}}</span>
+                            <span *ngIf="item.companyName != 'N/A'"> - {{item.companyName}}</span>
+                        </td>
+                        <td>
+                            <span class="{{item.status?.statusColor}}">{{item.status?.statusValue}}</span>
+                        </td>
+                        <td>
+                            <div *ngIf="item.paymentNotification != 'N/A'">{{item.paymentNotification | date:
+                                "MM/dd/yyyy '@' hh:mm a"}}</div>
+                            <div *ngIf="item.paymentNotification == 'N/A'">---</div>
+                        </td>
+                        <td>
+                            <mat-checkbox matTooltip="Mark Priority"></mat-checkbox>
+                        </td>
+                        <td>
+                            <div class="flex space-x-1 align-items-center">
+                                <mat-button-toggle>
+                                    <mat-icon svgIcon="mat_outline:comment" matTooltip="Order Comments"></mat-icon>
+                                </mat-button-toggle>
+
+                                <mat-button-toggle>
+                                    <mat-icon svgIcon="mat_outline:email"
+                                        matTooltip="Send Email to the customer"></mat-icon>
+                                </mat-button-toggle>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
-    <div>
+    <!-- All orders still processing (one year) -->
+    <div *ngIf="!isApprovalLoader">
         <div class="flex justify-between border-b mt-4">
-            <div class="text-lg font-medium tracking-tight leading-6 truncate ">All orders still processing
-                (one
-                year)</div>
+            <div class="text-lg font-medium tracking-tight leading-6 truncate">All orders still processing (one
+                year)<span class="badge badge-secondary ml-2">{{processingOrders.length}}</span>
+            </div>
+            <div>
+                <div class="flex align-items-center">
+                    <span>What is this</span>
+                    <mat-icon class="icon-size-4 ml-1"
+                        matTooltip="These are all open orders which have not shipped.  These orders can be awaiting artwork for initial proof, or have both payment and artwork approval, but we are holding for one reason or another, or the order is in production and has not shipped."
+                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                </div>
+            </div>
         </div>
-        <div class="mt-2">
+        <div class="mt-2" *ngIf="!processingOrders.length">
             <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
                 <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
                 </mat-icon>
                 There are currently no keywords for your customers around this time last year.
             </fuse-alert>
+        </div>
+        <div class="overflow-x-auto" *ngIf="processingOrders.length">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Store</th>
+                        <th>Order</th>
+                        <th>Date</th>
+                        <th>In-Hands</th>
+                        <th>Total</th>
+                        <th>Customer</th>
+                        <th>Paid</th>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of processingOrders; trackBy: trackByOrderId" [ngClass]="{
+                        'background-color-e0f0d5': item?.priority > 0,
+                        'background-color-fca769': item.groupOrderID != 'N/A',
+                        'background-color-ffcaca': item.inHandsDate != 'N/A',
+                        'background-color-feee84': item.blnReorder
+                      }">
+                        <td>{{item.storeCode}}</td>
+                        <td>{{item.orderID}}</td>
+                        <td>
+                            <ng-container *ngIf="item.orderDate != 'N/A'; else na">
+                                {{ item.orderDate | date: 'MM/dd/yyyy' }}
+                            </ng-container>
+                            <ng-template #na>---</ng-template>
+                        </td>
+                        <td>
+                            <ng-container *ngIf="item.inHandsDate != 'N/A'; else na">
+                                {{ item.inHandsDate | date: 'MM/dd/yyyy' }}
+                            </ng-container>
+                            <ng-template #na>---</ng-template>
+                        </td>
+                        <td>{{item.total | currency}}</td>
+                        <td>
+                            {{item.firstName + ' ' + item.lastName}}
+                            <span *ngIf="item.locationName != 'N/A'"> - {{item.locationName}}</span>
+                            <span *ngIf="item.companyName != 'N/A'"> - {{item.companyName}}</span>
+                        </td>
+                        <td>
+                            <mat-icon *ngIf="item.paymentDate !== 'N/A'" svgIcon="mat_outline:check"
+                                class="text-green-700"></mat-icon>
+                            <mat-icon class="text-red-700" *ngIf="item.paymentDate == 'N/A'"
+                                svgIcon="mat_outline:close"></mat-icon>
+                        </td>
+                        <td>
+                            <span class="{{item.status?.statusColor}}">{{item.status?.statusValue}}</span>
+                        </td>
+                        <td>
+                            <mat-checkbox matTooltip="Mark Priority"></mat-checkbox>
+                        </td>
+                        <td>
+                            <div class="flex space-x-1 align-items-center">
+                                <mat-button-toggle>
+                                    <mat-icon svgIcon="mat_outline:comment" matTooltip="Order Comments"></mat-icon>
+                                </mat-button-toggle>
+
+                                <mat-button-toggle>
+                                    <span>Details</span>
+                                </mat-button-toggle>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

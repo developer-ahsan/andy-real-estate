@@ -1830,6 +1830,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     goForward(stepper: MatStepper) {
         const { selectedIndex } = stepper;
         if (selectedIndex === 0) {
+            console.log(selectedIndex);
             if (!this.selectedItems) {
                 this._snackBar.open("Please select a supplier", '', {
                     horizontalPosition: 'center',
@@ -1838,7 +1839,38 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 });
                 return;
             };
-
+            let params = {
+                product_number: this.productNumberText,
+                check: true,
+                supplier_id: this.supplierId
+            }
+            this.checkProductExistOrNotLoader = true;
+            this._inventoryService.getProductsData(params)
+                .pipe(takeUntil(this._unsubscribeAll))
+                .subscribe((response: any) => {
+                    const isDataExist = response["data_exists"];
+                    this.checkProductExistOrNotLoader = false;
+                    if (isDataExist) {
+                        this._snackBar.open(`This product already exists under ${response["data"][0].companyName}`, '', {
+                            horizontalPosition: 'center',
+                            verticalPosition: 'bottom',
+                            duration: 3500
+                        });
+                        return;
+                        // Mark for check
+                    } else {
+                        stepper.next();
+                    }
+                    this._changeDetectorRef.markForCheck();
+                }, err => {
+                    this._snackBar.open("Something went wrong", '', {
+                        horizontalPosition: 'center',
+                        verticalPosition: 'bottom',
+                        duration: 3500
+                    });
+                    this.checkProductExistOrNotLoader = false;
+                    this._changeDetectorRef.markForCheck();
+                });
         };
 
         if (selectedIndex === 1) {
@@ -1985,8 +2017,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             //     this.imprintPayload = payload;
             // };
         };
-
-        stepper.next();
+        if (selectedIndex != 0) {
+            stepper.next();
+        }
     };
 
     selectionChange(event) {

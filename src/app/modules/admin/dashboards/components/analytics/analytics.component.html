@@ -167,7 +167,7 @@
                             </div>
                             <div class="flex items-start mt-2">
                                 <div class="text-4xl font-bold tracking-tight leading-none">
-                                    {{data.visitorsVsPageViews.overallScore}}</div>
+                                    10</div>
                                 <div class="flex items-center ml-2">
                                     <mat-icon class="icon-size-5 text-green-500"
                                         [svgIcon]="'heroicons_solid:arrow-circle-up'"></mat-icon>
@@ -184,7 +184,7 @@
                             </div>
                             <div class="flex items-start mt-2">
                                 <div class="text-4xl font-bold tracking-tight leading-none">
-                                    {{data.visitorsVsPageViews.averageRatio | number:'1.0-0'}}%</div>
+                                    10%</div>
                                 <div class="flex items-center ml-2">
                                     <mat-icon class="icon-size-5 text-red-500"
                                         [svgIcon]="'heroicons_solid:arrow-circle-down'"></mat-icon>
@@ -201,7 +201,7 @@
                             </div>
                             <div class="flex items-start mt-2">
                                 <div class="text-4xl font-bold tracking-tight leading-none">
-                                    {{data.visitorsVsPageViews.predictedRatio | number:'1.0-0'}}%</div>
+                                    10%</div>
                                 <div class="flex items-center ml-2">
                                     <mat-icon class="icon-size-5 text-green-500"
                                         [svgIcon]="'heroicons_solid:arrow-circle-up'"></mat-icon>
@@ -218,48 +218,127 @@
                             <div class="text-lg font-medium tracking-tight leading-6 truncate border-b">Year To Date
                                 Sales,
                                 By Store ($0.00)</div>
-                            <div id="chart">
-                                <apx-chart [series]="chartOptions.series" [chart]="chartOptions.chart"
-                                    [labels]="chartOptions.labels" [responsive]="chartOptions.responsive"></apx-chart>
+                            <div class="text-center mt-2"
+                                *ngIf="yourPerformanceData.allStoresGraphLoader || isPortfolioLoader || isPerformanceLoader">
+                                <img src="assets/loader2.gif" class="w-40" />
+                            </div>
+                            <div id="myChart"
+                                *ngIf="!yourPerformanceData.allStoresGraphLoader && !isPortfolioLoader && !isPerformanceLoader">
+                                <div *ngIf="!programPortfolioData.length">
+                                    <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
+                                        <mat-icon class="icon-size-5" fuseAlertIcon
+                                            [svgIcon]="'heroicons_solid:lock-open'">
+                                        </mat-icon>
+                                        There is no data to show for this quarter.
+                                    </fuse-alert>
+                                </div>
+                                <apx-chart *ngIf="programPortfolioData.length" [yaxis]="performanceChartOptions.yaxis"
+                                    [series]="yourPerformanceData.allSeriesData" [chart]="performanceChartOptions.chart"
+                                    [labels]="yourPerformanceData.allSeriesLabel"
+                                    [colors]="yourPerformanceData.allColors" [title]="performanceChartOptions.title"
+                                    [theme]="performanceChartOptions.theme"
+                                    [responsive]="performanceChartOptions.responsive"></apx-chart>
                             </div>
                         </div>
                         <div class="col-12 col-md-8">
                             <div class="row">
                                 <div class="col-12 col-md-6">
-                                    <div class="text-lg font-medium tracking-tight leading-6 truncate border-b">Q1</div>
-                                    <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
-                                        <mat-icon class="icon-size-5" fuseAlertIcon
-                                            [svgIcon]="'heroicons_solid:lock-open'">
-                                        </mat-icon>
-                                        There is no data to show for this quarter.
-                                    </fuse-alert>
+                                    <div class="text-lg font-medium tracking-tight leading-6 truncate border-b">Q1 <span
+                                            *ngIf="!yourPerformanceData.q1Loader">({{yourPerformanceData.q1Earnings |
+                                            currency}})</span></div>
+                                    <div class="text-center mt-2"
+                                        *ngIf="yourPerformanceData.q1Loader || isPortfolioLoader || isPerformanceLoader">
+                                        <img src="assets/loader2.gif" class="w-20" />
+                                    </div>
+                                    <div id="myChart"
+                                        *ngIf="!yourPerformanceData.q1Loader && !isPortfolioLoader && !isPerformanceLoader">
+                                        <div *ngIf="!yourPerformanceData.q1SeriesData.length">
+                                            <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
+                                                <mat-icon class="icon-size-5" fuseAlertIcon
+                                                    [svgIcon]="'heroicons_solid:lock-open'">
+                                                </mat-icon>
+                                                There is no data to show for this quarter.
+                                            </fuse-alert>
+                                        </div>
+                                        <apx-chart *ngIf="yourPerformanceData.q1SeriesData.length"
+                                            [series]="yourPerformanceData.q1SeriesData" [chart]="chartOptions.chart"
+                                            [labels]="yourPerformanceData.q1SeriesLabel" [yaxis]="chartOptions.yaxis"
+                                            [colors]="yourPerformanceData.q1Colors" [title]="chartOptions.title"
+                                            [theme]="chartOptions.theme"
+                                            [responsive]="chartOptions.responsive"></apx-chart>
+                                    </div>
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <div class="text-lg font-medium tracking-tight leading-6 truncate border-b">Q2</div>
-                                    <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
-                                        <mat-icon class="icon-size-5" fuseAlertIcon
-                                            [svgIcon]="'heroicons_solid:lock-open'">
-                                        </mat-icon>
-                                        There is no data to show for this quarter.
-                                    </fuse-alert>
+                                    <div class="text-center mt-2"
+                                        *ngIf="yourPerformanceData.q2Loader || isPortfolioLoader || isPerformanceLoader">
+                                        <img src="assets/loader2.gif" class="w-20" />
+                                    </div>
+                                    <div id="myChart"
+                                        *ngIf="!yourPerformanceData.q2Loader && !isPortfolioLoader && !isPerformanceLoader">
+                                        <div *ngIf="!yourPerformanceData.q2SeriesData.length">
+                                            <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
+                                                <mat-icon class="icon-size-5" fuseAlertIcon
+                                                    [svgIcon]="'heroicons_solid:lock-open'">
+                                                </mat-icon>
+                                                There is no data to show for this quarter.
+                                            </fuse-alert>
+                                        </div>
+                                        <apx-chart *ngIf="yourPerformanceData.q2SeriesData.length"
+                                            [series]="yourPerformanceData.q2SeriesData" [chart]="chartOptions.chart"
+                                            [labels]="yourPerformanceData.q2SeriesLabel" [yaxis]="chartOptions.yaxis"
+                                            [colors]="yourPerformanceData.q2Colors" [title]="chartOptions.title"
+                                            [theme]="chartOptions.theme"
+                                            [responsive]="chartOptions.responsive"></apx-chart>
+                                    </div>
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <div class="text-lg font-medium tracking-tight leading-6 truncate border-b">Q3</div>
-                                    <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
-                                        <mat-icon class="icon-size-5" fuseAlertIcon
-                                            [svgIcon]="'heroicons_solid:lock-open'">
-                                        </mat-icon>
-                                        There is no data to show for this quarter.
-                                    </fuse-alert>
+                                    <div class="text-center mt-2"
+                                        *ngIf="yourPerformanceData.q3Loader || isPortfolioLoader || isPerformanceLoader">
+                                        <img src="assets/loader2.gif" class="w-20" />
+                                    </div>
+                                    <div id="myChart"
+                                        *ngIf="!yourPerformanceData.q3Loader && !isPortfolioLoader && !isPerformanceLoader">
+                                        <div *ngIf="!yourPerformanceData.q3SeriesData.length">
+                                            <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
+                                                <mat-icon class="icon-size-5" fuseAlertIcon
+                                                    [svgIcon]="'heroicons_solid:lock-open'">
+                                                </mat-icon>
+                                                There is no data to show for this quarter.
+                                            </fuse-alert>
+                                        </div>
+                                        <apx-chart *ngIf="yourPerformanceData.q3SeriesData.length"
+                                            [series]="yourPerformanceData.q3SeriesData" [chart]="chartOptions.chart"
+                                            [labels]="yourPerformanceData.q3SeriesLabel" [yaxis]="chartOptions.yaxis"
+                                            [colors]="yourPerformanceData.q3Colors" [title]="chartOptions.title"
+                                            [theme]="chartOptions.theme"
+                                            [responsive]="chartOptions.responsive"></apx-chart>
+                                    </div>
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <div class="text-lg font-medium tracking-tight leading-6 truncate border-b">Q4</div>
-                                    <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
-                                        <mat-icon class="icon-size-5" fuseAlertIcon
-                                            [svgIcon]="'heroicons_solid:lock-open'">
-                                        </mat-icon>
-                                        There is no data to show for this quarter.
-                                    </fuse-alert>
+                                    <div class="text-center mt-2"
+                                        *ngIf="yourPerformanceData.q4Loader || isPortfolioLoader || isPerformanceLoader">
+                                        <img src="assets/loader2.gif" class="w-20" />
+                                    </div>
+                                    <div id="myChart"
+                                        *ngIf="!yourPerformanceData.q4Loader && !isPortfolioLoader && !isPerformanceLoader">
+                                        <div *ngIf="!yourPerformanceData.q4SeriesData.length">
+                                            <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
+                                                <mat-icon class="icon-size-5" fuseAlertIcon
+                                                    [svgIcon]="'heroicons_solid:lock-open'">
+                                                </mat-icon>
+                                                There is no data to show for this quarter.
+                                            </fuse-alert>
+                                        </div>
+                                        <apx-chart *ngIf="yourPerformanceData.q4SeriesData.length"
+                                            [series]="yourPerformanceData.q4SeriesData" [chart]="chartOptions.chart"
+                                            [labels]="yourPerformanceData.q4SeriesLabel" [yaxis]="chartOptions.yaxis"
+                                            [colors]="yourPerformanceData.q4Colors" [title]="chartOptions.title"
+                                            [theme]="chartOptions.theme"
+                                            [responsive]="chartOptions.responsive"></apx-chart>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -290,15 +369,21 @@
 
             <!-- Portfolio Performance -->
             <div class="flex flex-col flex-auto mt-8 p-6 bg-card shadow rounded-2xl overflow-hidden w-full">
-                <div *ngIf="isPerformanceLoader">
+                <div *ngIf="isPortfolioLoader">
                     <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
                         'background-color': '#dedede'
                       }">
                     </ngx-skeleton-loader>
                 </div>
-                <div *ngIf="!isPerformanceLoader">
+                <div *ngIf="!isPortfolioLoader">
                     <div class="text-lg font-medium tracking-tight leading-6 truncate">Portfolio Performance</div>
-                    <div class="flex flex-col flex-auto mt-2 overflow-x-auto">
+                    <fuse-alert *ngIf="!programPortfolioData.length" class="my-2" [appearance]="'soft'"
+                        [type]="'warning'">
+                        <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
+                        </mat-icon>
+                        There is no performance data to show.
+                    </fuse-alert>
+                    <div class="flex flex-col flex-auto mt-2 overflow-x-auto" *ngIf="programPortfolioData.length">
                         <table class="table table-striped">
                             <thead>
                                 <tr>
@@ -352,7 +437,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr *ngFor="let item of programPerformanceData">
+                                <tr *ngFor="let item of programPortfolioData;trackBy: trackByIndex">
                                     <td>{{item.storeName}}</td>
                                     <td>{{item.SALES | currency}}</td>
                                     <td>{{item.PY | currency}}</td>
@@ -431,46 +516,62 @@
             </div>
             <!-- Program Performance -->
             <div class="flex flex-col flex-auto mt-8 p-6 bg-card shadow rounded-2xl overflow-hidden w-full">
-                <div class="text-lg font-medium tracking-tight leading-6 truncate">Program Performance</div>
-                <div class="mt-2">
-                    <img class="w-50" src="https://assets.consolidus.com/globalAssets/Stores/mastheads/145.gif">
-                    <div class="row">
-                        <div class="col-md-4 col-12">
-                            <div class="font-medium text-secondary">YTD</div>
-                            <div id="chart1">
-                                <apx-chart [series]="chartOptions1.series" [chart]="chartOptions1.chart"
-                                    [dataLabels]="chartOptions1.dataLabels" [plotOptions]="chartOptions1.plotOptions"
-                                    [yaxis]="chartOptions1.yaxis" [legend]="chartOptions1.legend"
-                                    [fill]="chartOptions1.fill" [stroke]="chartOptions1.stroke"
-                                    [tooltip]="chartOptions1.tooltip" [xaxis]="chartOptions1.xaxis"></apx-chart>
-                            </div>
-                        </div>
-                        <div class="col-md-4 col-12 ">
-                            <div class="flex flex-col flex-auto">
-                                <div class="font-medium text-secondary">YTD By Quarter</div>
-                                <div class="flex flex-col flex-auto">
-                                    <apx-chart [series]="chartOptions2.series" [chart]="chartOptions2.chart"
-                                        [dataLabels]="chartOptions2.dataLabels"
-                                        [plotOptions]="chartOptions2.plotOptions" [yaxis]="chartOptions2.yaxis"
-                                        [legend]="chartOptions2.legend" [fill]="chartOptions2.fill"
-                                        [stroke]="chartOptions2.stroke" [tooltip]="chartOptions2.tooltip"
-                                        [xaxis]="chartOptions2.xaxis"></apx-chart>
+                <div *ngIf="isPerformanceLoader">
+                    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
+                        'background-color': '#dedede'
+                      }">
+                    </ngx-skeleton-loader>
+                </div>
+                <div *ngIf="!isPerformanceLoader">
+                    <div class="text-lg font-medium tracking-tight leading-6 truncate">Program Performance</div>
+                    <fuse-alert *ngIf="!programPerformanceData.length" class="my-2" [appearance]="'soft'"
+                        [type]="'warning'">
+                        <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
+                        </mat-icon>
+                        There is no program performance data to show.
+                    </fuse-alert>
+                    <div class="my-2" *ngFor="let item of programPerformanceData; let last=last;trackBy: trackByItemId"
+                        [ngClass]="{'border-b': !last}">
+                        <img class="w-50 my-2"
+                            src="https://assets.consolidus.com/globalAssets/Stores/mastheads/{{item.pk_storeID}}.gif">
+                        <div class="row">
+                            <div class="col-md-4 col-12">
+                                <!-- <div class="font-medium text-secondary">YTD</div> -->
+                                <div id="chart1">
+                                    <apx-chart [series]="item.ytdSeries" [chart]="ytdChart.chart"
+                                        [dataLabels]="ytdChart.dataLabels" [colors]="item.colors"
+                                        [plotOptions]="ytdChart.plotOptions" [yaxis]="ytdChart.yaxis"
+                                        [legend]="ytdChart.legend" [fill]="ytdChart.fill" [stroke]="ytdChart.stroke"
+                                        [tooltip]="ytdChart.tooltip" [xaxis]="item.xaxis"
+                                        [title]="ytdChart.title"></apx-chart>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-md-4 col-12 ">
-                            <div class="flex flex-col flex-auto">
-                                <div class="font-medium text-secondary">Annual Total Sales</div>
+                            <div class="col-md-4 col-12 ">
                                 <div class="flex flex-col flex-auto">
-                                    <apx-chart class="flex-auto w-full h-80" [chart]="chartGithubIssues.chart"
-                                        [colors]="chartGithubIssues.colors" [dataLabels]="chartGithubIssues.dataLabels"
-                                        [grid]="chartGithubIssues.grid" [labels]="chartGithubIssues.labels"
-                                        [legend]="chartGithubIssues.legend"
-                                        [plotOptions]="chartGithubIssues.plotOptions"
-                                        [series]="chartGithubIssues.series['last-week']"
-                                        [states]="chartGithubIssues.states" [stroke]="chartGithubIssues.stroke"
-                                        [tooltip]="chartGithubIssues.tooltip" [xaxis]="chartGithubIssues.xaxis"
-                                        [yaxis]="chartGithubIssues.yaxis"></apx-chart>
+                                    <!-- <div class="font-medium text-secondary">YTD By Quarter</div> -->
+                                    <div class="flex flex-col flex-auto">
+                                        <div id="chart2">
+                                            <apx-chart [series]="item.quarterSeries" [chart]="quarterChart.chart"
+                                                [dataLabels]="quarterChart.dataLabels" [colors]="item.quarterColors"
+                                                [plotOptions]="quarterChart.plotOptions" [yaxis]="quarterChart.yaxis"
+                                                [legend]="quarterChart.legend" [fill]="quarterChart.fill"
+                                                [stroke]="quarterChart.stroke" [tooltip]="quarterChart.tooltip"
+                                                [xaxis]="quarterChart.xaxis" [title]="quarterChart.title"></apx-chart>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 ">
+                                <div class="flex flex-col flex-auto">
+                                    <!-- <div class="font-medium text-secondary">Annual Total Sales</div> -->
+                                    <div class="flex flex-col flex-auto">
+                                        <apx-chart [series]="item.annualSeries" [chart]="annualChartOptions.chart"
+                                            [colors]="item.annualColors" [xaxis]="item.anuualxaxis"
+                                            [dataLabels]="annualChartOptions.dataLabels"
+                                            [grid]="annualChartOptions.grid" [stroke]="annualChartOptions.stroke"
+                                            [title]="annualChartOptions.title" [tooltip]="annualChartOptions.tooltip"
+                                            [yaxis]="annualChartOptions.yaxis"></apx-chart>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -480,11 +581,11 @@
         </div>
         <!-- Order Status Report -->
         <div *ngIf="mainScreen == 'status'" class="w-full">
-            <app-order-status-report></app-order-status-report>
+            <app-order-status-report [userData]="userData" [storesData]="storesData"> </app-order-status-report>
         </div>
         <!-- Generators -->
         <div *ngIf="mainScreen == 'generator'" class="w-full">
-            <app-order-generators></app-order-generators>
+            <app-order-generators [userData]="userData"></app-order-generators>
         </div>
     </div>
 

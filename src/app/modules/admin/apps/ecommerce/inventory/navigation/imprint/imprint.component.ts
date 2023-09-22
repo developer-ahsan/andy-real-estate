@@ -16,7 +16,11 @@ import { DeleteProductImprint } from '../../inventory.types';
 
 @Component({
   selector: 'app-imprint',
-  templateUrl: './imprint.component.html'
+  templateUrl: './imprint.component.html',
+  styles: [`::ng-deep {.my-snack-bar button {
+    background-color: gray;
+    color: white;}
+}`]
 })
 export class ImprintComponent implements OnInit, OnDestroy {
   selectedProduct: any;
@@ -1241,17 +1245,25 @@ export class ImprintComponent implements OnInit, OnDestroy {
 
     this.deleteLoader = true;
     this._inventoryService.putProductsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      const message = res["success"] == "true"
-        ? "Product imprints successfully removed"
-        : "An error occurred, try again!"
-
+      let message = '';
+      if (res["success"]) {
+        message = res["message"];
+        this._snackBar.open(message, '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+      } else {
+        message = res["message"];
+        this._snackBar.open(message, 'Dismiss', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 8000
+        });
+      }
       this.page = 1;
       this.getImprints(this.page);
-      this._snackBar.open(message, '', {
-        horizontalPosition: 'center',
-        verticalPosition: 'bottom',
-        duration: 3500
-      });
+
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.deleteLoader = false;

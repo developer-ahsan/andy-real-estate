@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { retry, tap } from 'rxjs/operators';
 import { environment } from 'environments/environment';
 
 @Injectable({
@@ -141,6 +141,40 @@ export class DashboardsService {
     getDashboardData(params): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.dashboard, {
             params: params
-        });
+        }).pipe(retry(3));
     };
+    getStatusValue(statusValues: any) {
+        let statusColor = '';
+        let statusValue = '';
+        let status = statusValues.split('|');
+        status.forEach(element => {
+            let status = Number(element);
+            if (status == 1 || status == 2 || status == 3 || status == 4) {
+                statusValue = 'Processing';
+                statusColor = 'text-red-500';
+            } else if (status == 5) {
+                statusValue = 'Shipped';
+                statusColor = 'text-green-500';
+            } else if (status == 6) {
+                statusValue = 'Delivered';
+                statusColor = 'text-green-500';
+            } else if (status == 7) {
+                statusValue = 'P.O. Needed';
+                statusColor = 'text-purple-500';
+            } else if (status == 8) {
+                statusValue = 'Picked up';
+                statusColor = 'text-green-500';
+            } else if (status == 10) {
+                statusValue = 'Awaiting Group Order';
+                statusColor = 'text-orange-500';
+            } else {
+                statusValue = 'N/A';
+            }
+        });
+        let result = {
+            statusColor: statusColor,
+            statusValue: statusValue
+        }
+        return result;
+    }
 }
