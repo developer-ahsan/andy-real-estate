@@ -41,7 +41,7 @@ export class GeneratorsComponent implements OnInit {
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       let getQuotes = res["data"][0][0].getQuotes;
-      let getSampleOrders = res["data"][1][0].getQuotes;
+      let getSampleOrders = res["data"][1][0].getSampleOrders;
       // let stillProcessingOrders = res["data"][4][0].stillProcessingOrders;
       console.log(res)
       // getQuotes

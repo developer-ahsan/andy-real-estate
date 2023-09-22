@@ -154,6 +154,11 @@
                             <ng-template #na>---</ng-template>
                         </td>
                         <td>
+                            {{item.firstName + ' ' + item.lastName}}
+                            <span *ngIf="item.locationName != 'N/A'"> - {{item.locationName}}</span>
+                            <span *ngIf="item.companyName != 'N/A'"> - {{item.companyName}}</span>
+                        </td>
+                        <td>
                             {{item.days}}
                         </td>
                         <td>
