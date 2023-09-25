@@ -13,3 +13,7 @@
 .background-color-feee84 {
     background-color: #feee84 !important;
 }
+
+table.dataTable>thead .sorting {
+    position: unset !important;
+}

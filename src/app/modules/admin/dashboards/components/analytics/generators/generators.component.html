@@ -1,228 +1,472 @@
-<div class="flex flex-col flex-auto mt-8 p-6 bg-card shadow rounded-2xl overflow-hidden w-full">
-    <div class="text-lg font-medium tracking-tight leading-6 truncate">Color Keys</div>
-    <div class="mt-2 flex">
-        <div class="mr-2">
-            <p>Rush Orders</p>
-            <hr class="m-0 h-2" style="background: #ffcaca;">
-        </div>
-        <div class="mr-2">
-            <p>Reorder</p>
-            <hr class="m-0 h-2" style="background: #feee84;">
-        </div>
-        <div class="mr-2">
-            <p>Group Order</p>
-            <hr class="m-0 h-2" style="background: #fca769;">
-        </div>
-        <div class="mr-2">
-            <p>Priority</p>
-            <hr class="m-0 h-2" style="background: #e0f0d5;">
+<div class="flex flex-col flex-auto mt-8  overflow-hidden w-full space-y-2">
+    <!-- Color Keys -->
+    <div class="p-6 bg-card shadow rounded-2xl">
+        <div class="text-lg font-medium tracking-tight leading-6 truncate">Color Keys</div>
+        <div class="mt-2 flex">
+            <div class="mr-2">
+                <p>Rush Orders</p>
+                <hr class="m-0 h-2" style="background: #ffcaca;">
+            </div>
+            <div class="mr-2">
+                <p>Reorder</p>
+                <hr class="m-0 h-2" style="background: #feee84;">
+            </div>
+            <div class="mr-2">
+                <p>Group Order</p>
+                <hr class="m-0 h-2" style="background: #fca769;">
+            </div>
+            <div class="mr-2">
+                <p>Priority</p>
+                <hr class="m-0 h-2" style="background: #e0f0d5;">
+            </div>
         </div>
     </div>
-    <div *ngIf="isLoading" class="my-5">
-        <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
+    <!-- Loader -->
+    <div class="p-6 bg-card shadow rounded-2xl" *ngIf="isLoading">
+        <div class="my-5">
+            <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
             'background-color': '#dedede'
           }">
-        </ngx-skeleton-loader>
+            </ngx-skeleton-loader>
+        </div>
     </div>
     <!-- Pending Quotes -->
-    <div *ngIf="!isLoading">
-        <div class="flex justify-between border-b mt-4">
-            <div class="text-lg font-medium tracking-tight leading-6 truncate ">Pending Quotes</div>
-        </div>
-        <div class="mt-2" *ngIf="!pendingQuotes.length">
-            <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
-                <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
-                </mat-icon>
-                No data available in table.
-            </fuse-alert>
-        </div>
-        <div class="overflow-x-auto" *ngIf="pendingQuotes.length">
-            <table datatable class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Store</th>
-                        <th>Total</th>
-                        <th>Quote</th>
-                        <th>Customer</th>
-                        <th>Created</th>
-                        <th>In-Hands</th>
-                        <th>
-                            <div class="flex align-items-center">
-                                <span>LT</span>
-                                <mat-icon class="icon-size-4 ml-1"
-                                    matTooltip="Last touch (last time an email was sent to the customer from this dashboard)"
-                                    [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                            </div>
-                        </th>
-                        <th>Priority</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let item of pendingQuotes; trackBy: trackByCartId" [ngClass]="{
+    <div class="p-6 bg-card shadow rounded-2xl" *ngIf="!isLoading">
+        <div>
+            <div class="flex justify-between border-b mt-4">
+                <div class="text-xl font-bold tracking-tight leading-6 truncate">Pending Quotes
+                </div>
+                <div>
+                    <div class="flex align-items-center">
+                        <span>What is this</span>
+                        <mat-icon class="icon-size-4 ml-1"
+                            matTooltip="This is a list of all outstanding quotes in your customer\'s accounts."
+                            [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-2" *ngIf="!pendingQuotes.length">
+                <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
+                    <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
+                    </mat-icon>
+                    No data available in table.
+                </fuse-alert>
+            </div>
+            <div class="overflow-x-auto mt-2" *ngIf="pendingQuotes.length">
+                <table datatable class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Store</th>
+                            <th>Total</th>
+                            <th>Quote</th>
+                            <th>Customer</th>
+                            <th>Created</th>
+                            <th>In-Hands</th>
+                            <th>
+                                <div class="flex align-items-center">
+                                    <span>LT</span>
+                                    <mat-icon class="icon-size-4 ml-1"
+                                        matTooltip="Last touch (last time an email was sent to the customer from this dashboard)"
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <th>Priority</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of pendingQuotes; trackBy: trackByCartId" [ngClass]="{
                         'background-color-e0f0d5': item?.priority > 0,
                         'background-color-ffcaca': item.inHandsDate != 'N/A',
                         'background-color-feee84': item.blnReorder
                       }">
-                        <td>{{item.storeCode}}</td>
-                        <td>{{item.price | currency}}</td>
-                        <td>{{item.cartID}}</td>
-                        <td>
-                            {{item.firstName + ' ' + item.lastName}}
-                            <span *ngIf="item.locationName != 'N/A'"> - {{item.locationName}}</span>
-                            <span *ngIf="item.companyName != 'N/A'"> - {{item.companyName}}</span>
-                        </td>
-                        <td>
-                            <ng-container *ngIf="item.cartDate != 'N/A'; else na">
-                                {{ item.cartDate | date: 'MM/dd/yyyy' }}
-                            </ng-container>
-                            <ng-template #na>---</ng-template>
-                        </td>
-                        <td>
-                            <ng-container *ngIf="item.inHandsDate != 'N/A'; else na">
-                                {{ item.inHandsDate | date: 'MM/dd/yyyy' }}
-                            </ng-container>
-                            <ng-template #na>---</ng-template>
-                        </td>
-                        <td>
-                            <div *ngIf="item.followUp != 'N/A'">{{item.followUp | date:
-                                "MM/dd/yyyy '@' hh:mm a"}}</div>
-                            <div *ngIf="item.followUp == 'N/A'">---</div>
-                        </td>
-                        <td>
-                            <mat-checkbox matTooltip="Mark Priority"></mat-checkbox>
-                        </td>
-                        <td>
-                            <div class="flex space-x-1 align-items-center">
-                                <mat-button-toggle>
-                                    <mat-icon svgIcon="mat_outline:brush" matTooltip="Artwork Details"></mat-icon>
-                                </mat-button-toggle>
-                                <mat-button-toggle>
-                                    <mat-icon svgIcon="mat_outline:email"
-                                        matTooltip="Send an email to customer"></mat-icon>
-                                </mat-button-toggle>
-                                <mat-button-toggle>
-                                    <mat-icon svgIcon="mat_outline:delete" matTooltip="Remove"></mat-icon>
-                                </mat-button-toggle>
+                            <td>{{item.storeCode}}</td>
+                            <td>{{item.price | currency}}</td>
+                            <td>{{item.cartID}}</td>
+                            <td>
+                                {{item.firstName + ' ' + item.lastName}}
+                                <span *ngIf="item.locationName != 'N/A'"> - {{item.locationName}}</span>
+                                <span *ngIf="item.companyName != 'N/A'"> - {{item.companyName}}</span>
+                            </td>
+                            <td>
+                                <ng-container *ngIf="item.cartDate != 'N/A'; else na">
+                                    {{ item.cartDate | date: 'MM/dd/yyyy' }}
+                                </ng-container>
+                                <ng-template #na>---</ng-template>
+                            </td>
+                            <td>
+                                <ng-container *ngIf="item.inHandsDate != 'N/A'; else na">
+                                    {{ item.inHandsDate | date: 'MM/dd/yyyy' }}
+                                </ng-container>
+                                <ng-template #na>---</ng-template>
+                            </td>
+                            <td>
+                                <div *ngIf="item.followUp != 'N/A'">{{item.followUp | date:
+                                    "MM/dd/yyyy '@' hh:mm a"}}</div>
+                                <div *ngIf="item.followUp == 'N/A'">---</div>
+                            </td>
+                            <td>
+                                <mat-checkbox matTooltip="Mark Priority"></mat-checkbox>
+                            </td>
+                            <td>
+                                <div class="flex space-x-1 align-items-center">
+                                    <mat-button-toggle>
+                                        <mat-icon svgIcon="mat_outline:brush" matTooltip="Artwork Details"></mat-icon>
+                                    </mat-button-toggle>
+                                    <mat-button-toggle>
+                                        <mat-icon svgIcon="mat_outline:email"
+                                            matTooltip="Send an email to customer"></mat-icon>
+                                    </mat-button-toggle>
+                                    <mat-button-toggle>
+                                        <mat-icon svgIcon="mat_outline:delete" matTooltip="Remove"></mat-icon>
+                                    </mat-button-toggle>
 
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
     <!-- Samples -->
-    <div *ngIf="!isLoading">
-        <div class="flex justify-between border-b mt-4">
-            <div class="text-lg font-medium tracking-tight leading-6 truncate ">Sample Status</div>
+    <div class="p-6 bg-card shadow rounded-2xl" *ngIf="!isLoading">
+        <div *ngIf="!isLoading">
+            <div class="flex justify-between border-b mt-4">
+                <div class="text-xl font-bold tracking-tight leading-6 truncate">Sample Status
+                </div>
+                <div>
+                    <div class="flex align-items-center">
+                        <span>What is this</span>
+                        <mat-icon class="icon-size-4 ml-1"
+                            matTooltip="In this area, you see sample orders that were delivered within the past 3 months.  This will help you monitor the success of your sample orders."
+                            [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-2" *ngIf="!sampleStatus.length">
+                <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
+                    <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
+                    </mat-icon>
+                    No data available in table.
+                </fuse-alert>
+            </div>
+            <div class="overflow-x-auto mt-2" *ngIf="sampleStatus.length">
+                <table datatable class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Store</th>
+                            <th>Value</th>
+                            <th>Order</th>
+                            <th>Date</th>
+                            <th>Customer</th>
+                            <th>Days</th>
+                            <th>Priority</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of sampleStatus; trackBy: trackByCartId" [ngClass]="{
+                        'background-color-e0f0d5': item?.priority > 0
+                      }">
+                            <td>{{item.storeCode}}</td>
+                            <td>{{item.cost | currency}}</td>
+                            <td>{{item.orderID}}</td>
+                            <td>
+                                <ng-container *ngIf="item.orderDate != 'N/A'; else na">
+                                    {{ item.orderDate | date: 'MM/dd/yyyy' }}
+                                </ng-container>
+                                <ng-template #na>---</ng-template>
+                            </td>
+                            <td>
+                                {{item.firstName + ' ' + item.lastName}}
+                                <span *ngIf="item.locationName != 'N/A'"> - {{item.locationName}}</span>
+                                <span *ngIf="item.companyName != 'N/A'"> - {{item.companyName}}</span>
+                            </td>
+                            <td>
+                                {{item.days}}
+                            </td>
+                            <td>
+                                <mat-checkbox matTooltip="Mark Priority"></mat-checkbox>
+                            </td>
+                            <td>
+                                <div class="flex space-x-1 align-items-center">
+                                    <mat-button-toggle>
+                                        <mat-icon svgIcon="mat_outline:comment" matTooltip="sample Comments"></mat-icon>
+                                    </mat-button-toggle>
+
+                                    <mat-button-toggle>
+                                        <mat-icon svgIcon="mat_outline:email"
+                                            matTooltip="Send an email to customer"></mat-icon>
+                                    </mat-button-toggle>
+                                    <mat-button-toggle>
+                                        <mat-icon svgIcon="mat_outline:check"
+                                            matTooltip="Mark this sample order as converted"></mat-icon>
+                                    </mat-button-toggle>
+                                    <mat-button-toggle>
+                                        <mat-icon svgIcon="mat_outline:delete" matTooltip="Remove"></mat-icon>
+                                    </mat-button-toggle>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <div class="mt-2" *ngIf="!sampleStatus.length">
-            <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
-                <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
-                </mat-icon>
-                No data available in table.
-            </fuse-alert>
-        </div>
-        <div class="overflow-x-auto" *ngIf="sampleStatus.length">
-            <table datatable class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Store</th>
-                        <th>Value</th>
-                        <th>Order</th>
-                        <th>Date</th>
-                        <th>Customer</th>
-                        <th>Days</th>
-                        <th>Priority</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let item of sampleStatus; trackBy: trackByCartId" [ngClass]="{
+    </div>
+    <!-- Around This year -->
+    <div class="p-6 bg-card shadow rounded-2xl" *ngIf="!isLoading">
+        <div>
+            <div class="flex justify-between border-b mt-4">
+                <div class="text-xl font-bold tracking-tight leading-6 truncate">Around This Time Last Year
+                </div>
+                <div>
+                    <div class="flex align-items-center">
+                        <span>What is this</span>
+                        <mat-icon class="icon-size-4 ml-1"
+                            matTooltip="In this area, you see orders that were placed about 11 months ago.  Here is an opportunity to remind your customers about annual events."
+                            [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-2" *ngIf="!ordersThisYear.length">
+                <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
+                    <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
+                    </mat-icon>
+                    There are currently no orders for your customers around this time last year.
+                </fuse-alert>
+            </div>
+            <div class="overflow-x-auto mt-2" *ngIf="ordersThisYear.length">
+                <table datatable class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Store</th>
+                            <th>Order</th>
+                            <th>Total</th>
+                            <th>Date</th>
+                            <th>Customer</th>
+                            <th>Products</th>
+                            <th>
+                                <div class="flex align-items-center">
+                                    <span>MRP</span>
+                                    <mat-icon class="icon-size-4 ml-1" matTooltip="Most recent purchases"
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <th>
+                                <div class="flex align-items-center">
+                                    <span>LT</span>
+                                    <mat-icon class="icon-size-4 ml-1"
+                                        matTooltip="Last touch (last time an email was sent to the customer from this dashboard)"
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <th>Priority</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of ordersThisYear; trackBy: trackByCartId" [ngClass]="{
                         'background-color-e0f0d5': item?.priority > 0,
                         'background-color-ffcaca': item.inHandsDate != 'N/A',
                         'background-color-feee84': item.blnReorder
                       }">
-                        <td>{{item.storeCode}}</td>
-                        <td>{{item.cost | currency}}</td>
-                        <td>{{item.orderID}}</td>
-                        <td>
-                            <ng-container *ngIf="item.orderDate != 'N/A'; else na">
-                                {{ item.orderDate | date: 'MM/dd/yyyy' }}
-                            </ng-container>
-                            <ng-template #na>---</ng-template>
-                        </td>
-                        <td>
-                            {{item.firstName + ' ' + item.lastName}}
-                            <span *ngIf="item.locationName != 'N/A'"> - {{item.locationName}}</span>
-                            <span *ngIf="item.companyName != 'N/A'"> - {{item.companyName}}</span>
-                        </td>
-                        <td>
-                            {{item.days}}
-                        </td>
-                        <td>
-                            <mat-checkbox matTooltip="Mark Priority"></mat-checkbox>
-                        </td>
-                        <td>
-                            <div class="flex space-x-1 align-items-center">
-                                <mat-button-toggle>
-                                    <mat-icon svgIcon="mat_outline:comment" matTooltip="sample Comments"></mat-icon>
-                                </mat-button-toggle>
+                            <td>{{item.storeCode}}</td>
+                            <td>{{item.pk_orderID}}</td>
+                            <td>{{item.total | currency}}</td>
+                            <td>{{item.orderDate | date: 'MM/dd/yyyy'}}</td>
+                            <td>
+                                {{item.firstName + ' ' + item.lastName}}
+                                <span *ngIf="item.locationName"> - {{item.locationName}}</span>
+                                <span *ngIf="item.companyName"> - {{item.companyName}}</span>
+                            </td>
+                            <td>{{item.products}}</td>
+                            <td>
+                                <ng-container *ngIf="item.inHandsDate != 'N/A'; else na">
+                                    {{ item.inHandsDate | date: 'MM/dd/yyyy' }}
+                                </ng-container>
+                                <ng-template #na>---</ng-template>
+                            </td>
+                            <td>
+                                <div *ngIf="item.dashboardReorderLastTouch">{{item.dashboardReorderLastTouch | date:
+                                    "MM/dd/yyyy '@' hh:mm a"}}</div>
+                                <div *ngIf="!item.dashboardReorderLastTouch">---</div>
+                            </td>
+                            <td>
+                                <mat-checkbox matTooltip="Mark Priority"></mat-checkbox>
+                            </td>
+                            <td>
+                                <div class="flex space-x-1 align-items-center">
+                                    <mat-button-toggle>
+                                        <mat-icon svgIcon="mat_outline:email"
+                                            matTooltip="Send an email to customer"></mat-icon>
+                                    </mat-button-toggle>
+                                    <mat-button-toggle>
+                                        <mat-icon svgIcon="mat_outline:delete" matTooltip="Remove"></mat-icon>
+                                    </mat-button-toggle>
 
-                                <mat-button-toggle>
-                                    <mat-icon svgIcon="mat_outline:email"
-                                        matTooltip="Send an email to customer"></mat-icon>
-                                </mat-button-toggle>
-                                <mat-button-toggle>
-                                    <mat-icon svgIcon="mat_outline:check"
-                                        matTooltip="Mark this sample order as converted"></mat-icon>
-                                </mat-button-toggle>
-                                <mat-button-toggle>
-                                    <mat-icon svgIcon="mat_outline:delete" matTooltip="Remove"></mat-icon>
-                                </mat-button-toggle>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <div>
-        <div class="flex justify-between border-b mt-4">
-            <div class="text-lg font-medium tracking-tight leading-6 truncate ">Around This Time Last Year
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
-        <div class="mt-2">
-            <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
-                <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
-                </mat-icon>
-                There are currently no orders for your customers around this time last year.
-            </fuse-alert>
+    </div>
+    <!-- Keywords -->
+    <div class="p-6 bg-card shadow rounded-2xl" *ngIf="!isLoading">
+        <div>
+            <div class="flex justify-between border-b mt-4">
+                <div class="text-xl font-bold tracking-tight leading-6 truncate">Keyword Searches
+                </div>
+                <div>
+                    <div class="flex align-items-center">
+                        <span>What is this</span>
+                        <mat-icon class="icon-size-4 ml-1"
+                            matTooltip="In this area, you can see searches that were conducted on your stores within the last 30 days.  Are your customers getting good search results?  Are you offering what they are looking for?  If you would like more detailed numbers, visit the Keyword Search link at the Store level in admin."
+                            [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-between border-b mt-4">
+                <div class="text-xl font-bold tracking-tight leading-6 truncate ">Keyword Searches</div>
+            </div>
+            <div class="mt-2" *ngIf="!keywordsData.length">
+                <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
+                    <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
+                    </mat-icon>
+                    There are currently no keywords for your customers around this time last year.
+                </fuse-alert>
+            </div>
+            <div class="overflow-x-auto mt-2" *ngIf="keywordsData.length">
+                <table datatable class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Store</th>
+                            <th>Search Term</th>
+                            <th>Frequency</th>
+                            <th>Results</th>
+                            <th>Days Ago</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of ordersThisYear; trackBy: trackByCartId">
+                            <td>{{item.storeCode}}</td>
+                            <td>{{item.keyword}}</td>
+                            <td>{{item.frequency}}</td>
+                            <td>{{item.result}}</td>
+                            <td>
+                                {{item.days}}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-    <div>
-        <div class="flex justify-between border-b mt-4">
-            <div class="text-lg font-medium tracking-tight leading-6 truncate ">Keyword Searches</div>
-        </div>
-        <div class="mt-2">
-            <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
-                <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
-                </mat-icon>
-                There are currently no keywords for your customers around this time last year.
-            </fuse-alert>
-        </div>
-    </div>
-    <div>
-        <div class="flex justify-between border-b mt-4">
-            <div class="text-lg font-medium tracking-tight leading-6 truncate ">Post-Sale Activity</div>
-        </div>
-        <div class="mt-2">
-            <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
-                <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
-                </mat-icon>
-                There are currently no keywords for your customers around this time last year.
-            </fuse-alert>
+    <!-- Post Actvivty -->
+    <div class="p-6 bg-card shadow rounded-2xl" *ngIf="!isLoading">
+        <div>
+            <div class="flex justify-between border-b mt-4">
+                <div class="text-xl font-bold tracking-tight leading-6 truncate">Post-Sale Activity (<a
+                        href="https://admin.consolidus.com/ssadm/controller/view/system/images/keys-to-success.pdf"
+                        target="_blank">The 5 Keys to a Successful Follow-Up Call</a>)
+                </div>
+                <div>
+                    <div class="flex align-items-center">
+                        <span>What is this</span>
+                        <mat-icon class="icon-size-4 ml-1"
+                            matTooltip="This area is an opportunity to follow up with customers for product/service reviews, or to get referrals from customers.  Orders show up here after clients have received an email asking them for a review of an order that was shipped two weeks ago."
+                            [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-2" *ngIf="!activityData.length">
+                <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
+                    <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
+                    </mat-icon>
+                    There are currently no keywords for your customers around this time last year.
+                </fuse-alert>
+            </div>
+            <div class="overflow-x-auto mt-2" *ngIf="activityData.length">
+                <table datatable class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Store</th>
+                            <th>Order</th>
+                            <th>Customer</th>
+                            <th>Phone</th>
+                            <th>Date</th>
+                            <th>Products</th>
+                            <th>
+                                <div class="flex align-items-center">
+                                    <span>R</span>
+                                    <mat-icon class="icon-size-4 ml-1"
+                                        matTooltip="Number of items on this order that have been reviewed."
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <th>
+                                <div class="flex align-items-center">
+                                    <span>LT</span>
+                                    <mat-icon class="icon-size-4 ml-1"
+                                        matTooltip="Last touch (last time an email was sent to the customer from this dashboard)"
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <th>Priority</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of activityData; trackBy: trackByCartId" [ngClass]="{
+                        'background-color-e0f0d5': item?.priority > 0,
+                        'background-color-ffcaca': item.inHandsDate != 'N/A',
+                        'background-color-feee84': item.blnReorder
+                      }">
+                            <td>{{item.storeCode}}</td>
+                            <td>{{item.pk_orderID}}</td>
+                            <td>
+                                {{item.firstName + ' ' + item.lastName}}
+                                <span *ngIf="item.locationName"> - {{item.locationName}}</span>
+                                <span *ngIf="item.companyName"> - {{item.companyName}}</span>
+                            </td>
+                            <td>{{item.dayPhone}}</td>
+                            <td>{{item.orderDate | date: 'MM/dd/yyyy'}}</td>
+                            <td>{{item?.products}}</td>
+                            <td>0</td>
+                            <td>
+                                <div *ngIf="item.dashboardFollowUpLastTouch">{{item.dashboardFollowUpLastTouch | date:
+                                    "MM/dd/yyyy '@' hh:mm a"}}</div>
+                                <div *ngIf="!item.dashboardFollowUpLastTouch">---</div>
+                            </td>
+                            <td>
+                                <mat-checkbox matTooltip="Mark Priority"></mat-checkbox>
+                            </td>
+                            <td>
+                                <div class="flex space-x-1 align-items-center">
+                                    <mat-button-toggle>
+                                        <mat-icon svgIcon="mat_outline:note_alt"
+                                            matTooltip="Send a survey to customer"></mat-icon>
+                                    </mat-button-toggle>
+                                    <mat-button-toggle>
+                                        <mat-icon svgIcon="mat_outline:info"
+                                            matTooltip="Create an incident report"></mat-icon>
+                                    </mat-button-toggle>
+                                    <mat-button-toggle>
+                                        <mat-icon svgIcon="mat_outline:email"
+                                            matTooltip="Send an email to customer"></mat-icon>
+                                    </mat-button-toggle>
+                                    <mat-button-toggle>
+                                        <mat-icon svgIcon="mat_outline:delete" matTooltip="Remove"></mat-icon>
+                                    </mat-button-toggle>
+
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

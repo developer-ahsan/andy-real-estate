@@ -40,32 +40,60 @@ export class GeneratorsComponent implements OnInit {
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
-      let getQuotes = res["data"][0][0].getQuotes;
-      let getSampleOrders = res["data"][1][0].getSampleOrders;
-      // let stillProcessingOrders = res["data"][4][0].stillProcessingOrders;
-      console.log(res)
-      // getQuotes
-      if (getQuotes) {
-        const quotes = getQuotes.split(',,');
-        quotes.forEach(quote => {
-          const [cartID, cartDate, inHandsDate, storeID, blnReorder, storeUserID, price, tax, firstName, lastName, phone, companyName, locationName, storeCode, storeName, followUp, priority] = quote.split('::');
-          this.pendingQuotes.push({
-            cartID: Number(cartID), cartDate, blnReorder: Number(blnReorder), inHandsDate, storeCode, storeName, storeUserID: Number(storeUserID), storeID: Number(storeID), firstName, lastName, locationName, companyName, followUp, price: Number(price), tax: Number(tax), phone, priority
-          })
-        });
-      }
-      // getSampleOrders
-      if (getSampleOrders) {
-        const samples = getSampleOrders.split(',,');
-        samples.forEach(sample => {
-          const [orderID, cost, firstName, lastName, companyName, locationName, orderDate, storeCode, storeName, storeID, storeUserID, blnSampleConverted, sampleComment, days, priority] = sample.split('::');
-          this.sampleStatus.push({
-            orderID: Number(orderID), orderDate, storeCode, storeName, storeUserID: Number(storeUserID), storeID: Number(storeID), firstName, lastName, locationName, companyName, blnSampleConverted, cost: Number(cost), days, priority, sampleComment
-          })
-        });
-      }
+      this.ordersThisYear = res["data"][2];
+      this.activityData = res["data"][4];
+      this.processQuotes(res);
+      this.processSampleOrders(res);
+      this.processKeywords(res);
+
       this._changeDetectorRef.markForCheck();
     })
+  }
+  private processQuotes(res: any): void {
+    const getQuotes = res?.data?.[0]?.[0]?.getQuotes || '';
+    const quotes = getQuotes.split(',,');
+    this.pendingQuotes = quotes.map(quote => {
+      const [
+        cartID, cartDate, inHandsDate, storeID, blnReorder,
+        storeUserID, price, tax, firstName, lastName,
+        phone, companyName, locationName, storeCode, storeName,
+        followUp, priority
+      ] = quote.split('::');
+      return {
+        cartID: Number(cartID), cartDate, blnReorder: Number(blnReorder),
+        inHandsDate, storeCode, storeName, storeUserID: Number(storeUserID),
+        storeID: Number(storeID), firstName, lastName, locationName, companyName,
+        followUp, price: Number(price), tax: Number(tax), phone, priority
+      };
+    });
+  }
+
+  private processSampleOrders(res: any): void {
+    const getSampleOrders = res?.data?.[1]?.[0]?.getSampleOrders || '';
+    const samples = getSampleOrders.split(',,');
+    this.sampleStatus = samples.map(sample => {
+      const [
+        orderID, cost, firstName, lastName, companyName,
+        locationName, orderDate, storeCode, storeName,
+        storeID, storeUserID, blnSampleConverted, sampleComment,
+        days, priority
+      ] = sample.split('::');
+      return {
+        orderID: Number(orderID), orderDate, storeCode, storeName,
+        storeUserID: Number(storeUserID), storeID: Number(storeID),
+        firstName, lastName, locationName, companyName, blnSampleConverted,
+        cost: Number(cost), days, priority, sampleComment
+      };
+    });
+  }
+
+  private processKeywords(res: any): void {
+    const getKeywords = res?.data?.[3]?.[0]?.keywords || '';
+    const samples = getKeywords.split(',,');
+    this.keywordsData = samples.map(sample => {
+      const [storeCode, storeName, protocol, keyword, frequency, result, days] = sample.split('::');
+      return { storeCode, storeName, protocol, keyword, frequency, result, days };
+    });
   }
   trackByCartId(index: number, item: any): any {
     return index;

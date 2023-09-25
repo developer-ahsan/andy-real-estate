@@ -1,33 +1,39 @@
-<div class="flex flex-col flex-auto mt-8 p-6 bg-card shadow rounded-2xl overflow-hidden w-full">
-    <div class="text-lg font-medium tracking-tight leading-6 truncate">Color Keys</div>
-    <div class="mt-2 flex">
-        <div class="mr-2">
-            <p>Rush Orders</p>
-            <hr class="m-0 h-2" style="background: #ffcaca;">
-        </div>
-        <div class="mr-2">
-            <p>Reorder</p>
-            <hr class="m-0 h-2" style="background: #feee84;">
-        </div>
-        <div class="mr-2">
-            <p>Group Order</p>
-            <hr class="m-0 h-2" style="background: #fca769;">
-        </div>
-        <div class="mr-2">
-            <p>Priority</p>
-            <hr class="m-0 h-2" style="background: #e0f0d5;">
+<div class="flex flex-col flex-auto mt-8  overflow-hidden w-full space-y-2">
+    <!-- Color Keys -->
+    <div class="p-6 bg-card shadow rounded-2xl">
+        <div class="text-lg font-medium tracking-tight leading-6 truncate">Color Keys</div>
+        <div class="mt-2 flex">
+            <div class="mr-2">
+                <p>Rush Orders</p>
+                <hr class="m-0 h-2" style="background: #ffcaca;">
+            </div>
+            <div class="mr-2">
+                <p>Reorder</p>
+                <hr class="m-0 h-2" style="background: #feee84;">
+            </div>
+            <div class="mr-2">
+                <p>Group Order</p>
+                <hr class="m-0 h-2" style="background: #fca769;">
+            </div>
+            <div class="mr-2">
+                <p>Priority</p>
+                <hr class="m-0 h-2" style="background: #e0f0d5;">
+            </div>
         </div>
     </div>
-    <div *ngIf="isApprovalLoader" class="my-5">
-        <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
+    <!-- Loader -->
+    <div class="p-6 bg-card shadow rounded-2xl" *ngIf="isApprovalLoader">
+        <div class="my-5">
+            <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
             'background-color': '#dedede'
           }">
-        </ngx-skeleton-loader>
+            </ngx-skeleton-loader>
+        </div>
     </div>
     <!-- Orders waiting for artwork -->
-    <div *ngIf="!isApprovalLoader">
+    <div *ngIf="!isApprovalLoader" class="p-6 bg-card shadow rounded-2xl">
         <div class="flex justify-between border-b mt-4">
-            <div class="text-lg font-medium tracking-tight leading-6 truncate">Orders waiting for artwork <span
+            <div class="text-xl font-bold tracking-tight leading-6 truncate">Orders waiting for artwork <span
                     class="badge badge-secondary ml-2" *ngIf="!isApprovalLoader">{{approvalOrders.length}}</span>
             </div>
             <div>
@@ -39,7 +45,7 @@
                 </div>
             </div>
         </div>
-        <div>
+        <div class="mt-2">
             <div class="mt-2" *ngIf="approvalOrders.length == 0">
                 <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
                     <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
@@ -83,20 +89,34 @@
                             'background-color-ffcaca': item.inHandsDate != 'N/A',
                             'background-color-feee84': item.blnReorder
                           }">
-                            <td>{{item.storeCode}}</td>
-                            <td>{{item.orderID}}</td>
+                            <td>
+                                <a target="_blank" class="text-blue-700 cursor-pointer"
+                                    [routerLink]="['/apps/stores',item.storeID]">{{item.storeCode}}</a>
+                            </td>
+                            <td>
+                                <a target="_blank" class="text-blue-700 cursor-pointer"
+                                    [routerLink]="['/apps/orders',item.orderID]">{{item.orderID}}</a>
+                            </td>
                             <td>
                                 <ng-container *ngIf="item.orderDate != 'N/A'; else na">
-                                    {{ item.orderDate | date: 'MM/dd/yyyy' }}
+                                    <a target="_blank" class="text-blue-700 cursor-pointer"
+                                        [routerLink]="['/apps/orders',item.orderID]">{{ item.orderDate | date:
+                                        'MM/dd/yyyy' }}</a>
                                 </ng-container>
                                 <ng-template #na>---</ng-template>
                             </td>
-                            <td>{{item.total | currency}}</td>
+                            <td>
+                                <a target="_blank" class="text-blue-700 cursor-pointer"
+                                    [routerLink]="['/apps/orders',item.orderID]">{{item.total | currency}}</a>
+                            </td>
                             <td>{{item.days}}</td>
                             <td>
-                                {{item.firstName + ' ' + item.lastName}}
-                                <span *ngIf="item.locationName != 'N/A'"> - {{item.locationName}}</span>
-                                <span *ngIf="item.companyName != 'N/A'"> - {{item.companyName}}</span>
+                                <a target="_blank" class="text-blue-700 cursor-pointer"
+                                    [routerLink]="['/apps/customers',item.storeUserID]">
+                                    {{item.firstName + ' ' + item.lastName}}
+                                    <span *ngIf="item.locationName != 'N/A'"> - {{item.locationName}}</span>
+                                    <span *ngIf="item.companyName != 'N/A'"> - {{item.companyName}}</span>
+                                </a>
                             </td>
                             <td>
                                 <div *ngIf="item.artworkNotification != 'N/A'">{{item.artworkNotification | date:
@@ -108,7 +128,7 @@
                             </td>
                             <td>
                                 <div class="flex space-x-1 align-items-center">
-                                    <mat-button-toggle>
+                                    <mat-button-toggle (click)="openOrderComments(item)">
                                         <mat-icon svgIcon="mat_outline:comment" matTooltip="Order Comments"></mat-icon>
                                     </mat-button-toggle>
 
@@ -131,9 +151,9 @@
         </div>
     </div>
     <!-- Orders waiting for payment -->
-    <div *ngIf="!isApprovalLoader">
+    <div *ngIf="!isApprovalLoader" class="p-6 bg-card shadow rounded-2xl">
         <div class="flex justify-between border-b mt-4">
-            <div class="text-lg font-medium tracking-tight leading-6 truncate">Orders waiting for payment <span
+            <div class="text-xl font-bold tracking-tight leading-6 truncate">Orders waiting for payment <span
                     class="badge badge-secondary ml-2">{{awaitingOrders.length}}</span>
             </div>
             <div>
@@ -152,8 +172,8 @@
                 There are currently no keywords for your customers around this time last year.
             </fuse-alert>
         </div>
-        <div class="overflow-x-auto" *ngIf="awaitingOrders.length">
-            <table class="table table-striped">
+        <div class="overflow-x-auto mt-2" *ngIf="awaitingOrders.length">
+            <table datatable class="table table-striped">
                 <thead>
                     <tr>
                         <th>Store</th>
@@ -233,9 +253,9 @@
         </div>
     </div>
     <!-- All orders still processing (one year) -->
-    <div *ngIf="!isApprovalLoader">
+    <div *ngIf="!isApprovalLoader" class="p-6 bg-card shadow rounded-2xl">
         <div class="flex justify-between border-b mt-4">
-            <div class="text-lg font-medium tracking-tight leading-6 truncate">All orders still processing (one
+            <div class="text-xl font-bold tracking-tight leading-6 truncate">All orders still processing (one
                 year)<span class="badge badge-secondary ml-2">{{processingOrders.length}}</span>
             </div>
             <div>
@@ -254,8 +274,8 @@
                 There are currently no keywords for your customers around this time last year.
             </fuse-alert>
         </div>
-        <div class="overflow-x-auto" *ngIf="processingOrders.length">
-            <table class="table table-striped">
+        <div class="overflow-x-auto mt-2" *ngIf="processingOrders.length">
+            <table class="table table-striped" datatable>
                 <thead>
                     <tr>
                         <th>Store</th>

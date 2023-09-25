@@ -21,6 +21,7 @@ export class OrderStatusComponent implements OnInit {
   approvalOrders: any;
   awaitingOrders: any;
   processingOrders: any;
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _dashboardService: DashboardsService,
@@ -78,11 +79,12 @@ export class OrderStatusComponent implements OnInit {
           })
         });
       }
-      console.log(this.approvalOrders);
-      console.log(this.awaitingOrders);
-      console.log(this.processingOrders);
       this._changeDetectorRef.markForCheck();
     })
+  }
+  openOrderComments(item) {
+    const url = `/apps/orders/${item.storeUserID}/comments`;
+    window.open(url, '_blank');
   }
   trackByOrderId(index: number, item: any): string {
     return item.orderID;
