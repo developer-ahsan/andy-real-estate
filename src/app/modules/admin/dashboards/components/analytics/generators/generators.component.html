@@ -33,7 +33,7 @@
     <!-- Pending Quotes -->
     <div class="p-6 bg-card shadow rounded-2xl" *ngIf="!isLoading">
         <div>
-            <div class="flex justify-between border-b mt-4">
+            <div class="flex justify-between">
                 <div class="text-xl font-bold tracking-tight leading-6 truncate">Pending Quotes
                 </div>
                 <div>
@@ -52,7 +52,7 @@
                     No data available in table.
                 </fuse-alert>
             </div>
-            <div class="overflow-x-auto mt-2" *ngIf="pendingQuotes.length">
+            <div class="overflow-x-auto mt-4" *ngIf="pendingQuotes.length">
                 <table datatable class="table table-striped">
                     <thead>
                         <tr>
@@ -80,13 +80,23 @@
                         'background-color-ffcaca': item.inHandsDate != 'N/A',
                         'background-color-feee84': item.blnReorder
                       }">
-                            <td>{{item.storeCode}}</td>
-                            <td>{{item.price | currency}}</td>
-                            <td>{{item.cartID}}</td>
                             <td>
-                                {{item.firstName + ' ' + item.lastName}}
-                                <span *ngIf="item.locationName != 'N/A'"> - {{item.locationName}}</span>
-                                <span *ngIf="item.companyName != 'N/A'"> - {{item.companyName}}</span>
+                                <a target="_blank" class="text-blue-700 cursor-pointer"
+                                    [routerLink]="['/apps/stores',item.storeID]">{{item.storeCode}}</a>
+                            </td>
+                            <td>{{item.price | currency}}</td>
+                            <td>
+                                <a target="_blank" class="text-blue-700 cursor-pointer"
+                                    [routerLink]="['/apps/quotes',item.cartID]">{{item.cartID}}</a>
+                            </td>
+                            <td>
+                                <a target="_blank" class="text-blue-700 cursor-pointer"
+                                    [routerLink]="['/apps/customers',item.storeUserID]">
+                                    {{item.firstName + ' ' + item.lastName}}
+                                    <span *ngIf="item.locationName != 'N/A'"> - {{item.locationName}}</span>
+                                    <span *ngIf="item.companyName != 'N/A'"> - {{item.companyName}}</span>
+                                </a>
+
                             </td>
                             <td>
                                 <ng-container *ngIf="item.cartDate != 'N/A'; else na">
@@ -132,7 +142,7 @@
     <!-- Samples -->
     <div class="p-6 bg-card shadow rounded-2xl" *ngIf="!isLoading">
         <div *ngIf="!isLoading">
-            <div class="flex justify-between border-b mt-4">
+            <div class="flex justify-between">
                 <div class="text-xl font-bold tracking-tight leading-6 truncate">Sample Status
                 </div>
                 <div>
@@ -151,7 +161,7 @@
                     No data available in table.
                 </fuse-alert>
             </div>
-            <div class="overflow-x-auto mt-2" *ngIf="sampleStatus.length">
+            <div class="overflow-x-auto mt-4" *ngIf="sampleStatus.length">
                 <table datatable class="table table-striped">
                     <thead>
                         <tr>
@@ -217,7 +227,7 @@
     <!-- Around This year -->
     <div class="p-6 bg-card shadow rounded-2xl" *ngIf="!isLoading">
         <div>
-            <div class="flex justify-between border-b mt-4">
+            <div class="flex justify-between">
                 <div class="text-xl font-bold tracking-tight leading-6 truncate">Around This Time Last Year
                 </div>
                 <div>
@@ -236,7 +246,7 @@
                     There are currently no orders for your customers around this time last year.
                 </fuse-alert>
             </div>
-            <div class="overflow-x-auto mt-2" *ngIf="ordersThisYear.length">
+            <div class="overflow-x-auto mt-4" *ngIf="ordersThisYear.length">
                 <table datatable class="table table-striped">
                     <thead>
                         <tr>
@@ -316,7 +326,7 @@
     <!-- Keywords -->
     <div class="p-6 bg-card shadow rounded-2xl" *ngIf="!isLoading">
         <div>
-            <div class="flex justify-between border-b mt-4">
+            <div class="flex justify-between">
                 <div class="text-xl font-bold tracking-tight leading-6 truncate">Keyword Searches
                 </div>
                 <div>
@@ -328,9 +338,6 @@
                     </div>
                 </div>
             </div>
-            <div class="flex justify-between border-b mt-4">
-                <div class="text-xl font-bold tracking-tight leading-6 truncate ">Keyword Searches</div>
-            </div>
             <div class="mt-2" *ngIf="!keywordsData.length">
                 <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
                     <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
@@ -338,7 +345,7 @@
                     There are currently no keywords for your customers around this time last year.
                 </fuse-alert>
             </div>
-            <div class="overflow-x-auto mt-2" *ngIf="keywordsData.length">
+            <div class="overflow-x-auto mt-4" *ngIf="keywordsData.length">
                 <table datatable class="table table-striped">
                     <thead>
                         <tr>
@@ -350,7 +357,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let item of ordersThisYear; trackBy: trackByCartId">
+                        <tr *ngFor="let item of keywordsData; trackBy: trackByCartId">
                             <td>{{item.storeCode}}</td>
                             <td>{{item.keyword}}</td>
                             <td>{{item.frequency}}</td>
@@ -367,7 +374,7 @@
     <!-- Post Actvivty -->
     <div class="p-6 bg-card shadow rounded-2xl" *ngIf="!isLoading">
         <div>
-            <div class="flex justify-between border-b mt-4">
+            <div class="flex justify-between">
                 <div class="text-xl font-bold tracking-tight leading-6 truncate">Post-Sale Activity (<a
                         href="https://admin.consolidus.com/ssadm/controller/view/system/images/keys-to-success.pdf"
                         target="_blank">The 5 Keys to a Successful Follow-Up Call</a>)
@@ -388,7 +395,7 @@
                     There are currently no keywords for your customers around this time last year.
                 </fuse-alert>
             </div>
-            <div class="overflow-x-auto mt-2" *ngIf="activityData.length">
+            <div class="overflow-x-auto mt-4" *ngIf="activityData.length">
                 <table datatable class="table table-striped">
                     <thead>
                         <tr>

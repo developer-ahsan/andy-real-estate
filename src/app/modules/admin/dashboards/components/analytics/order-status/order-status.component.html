@@ -32,7 +32,7 @@
     </div>
     <!-- Orders waiting for artwork -->
     <div *ngIf="!isApprovalLoader" class="p-6 bg-card shadow rounded-2xl">
-        <div class="flex justify-between border-b mt-4">
+        <div class="flex justify-between">
             <div class="text-xl font-bold tracking-tight leading-6 truncate">Orders waiting for artwork <span
                     class="badge badge-secondary ml-2" *ngIf="!isApprovalLoader">{{approvalOrders.length}}</span>
             </div>
@@ -45,7 +45,7 @@
                 </div>
             </div>
         </div>
-        <div class="mt-2">
+        <div class="mt-4">
             <div class="mt-2" *ngIf="approvalOrders.length == 0">
                 <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
                     <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
@@ -152,7 +152,7 @@
     </div>
     <!-- Orders waiting for payment -->
     <div *ngIf="!isApprovalLoader" class="p-6 bg-card shadow rounded-2xl">
-        <div class="flex justify-between border-b mt-4">
+        <div class="flex justify-between">
             <div class="text-xl font-bold tracking-tight leading-6 truncate">Orders waiting for payment <span
                     class="badge badge-secondary ml-2">{{awaitingOrders.length}}</span>
             </div>
@@ -172,7 +172,7 @@
                 There are currently no keywords for your customers around this time last year.
             </fuse-alert>
         </div>
-        <div class="overflow-x-auto mt-2" *ngIf="awaitingOrders.length">
+        <div class="overflow-x-auto mt-4" *ngIf="awaitingOrders.length">
             <table datatable class="table table-striped">
                 <thead>
                     <tr>
@@ -209,20 +209,34 @@
                         'background-color-ffcaca': item.inHandsDate != 'N/A',
                         'background-color-feee84': item.blnReorder
                       }">
-                        <td>{{item.storeCode}} {{item.inHandsDate}}</td>
-                        <td>{{item.orderID}}</td>
+                        <td>
+                            <a target="_blank" class="text-blue-700 cursor-pointer"
+                                [routerLink]="['/apps/stores',item.storeID]">{{item.storeCode}}</a>
+                        </td>
+                        <td>
+                            <a target="_blank" class="text-blue-700 cursor-pointer"
+                                [routerLink]="['/apps/orders',item.orderID]">{{item.orderID}}</a>
+                        </td>
                         <td>
                             <ng-container *ngIf="item.orderDate != 'N/A'; else na">
-                                {{ item.orderDate | date: 'MM/dd/yyyy' }}
+                                <a target="_blank" class="text-blue-700 cursor-pointer"
+                                    [routerLink]="['/apps/orders',item.orderID]">{{ item.orderDate | date:
+                                    'MM/dd/yyyy' }}</a>
                             </ng-container>
                             <ng-template #na>---</ng-template>
                         </td>
-                        <td>{{item.total | currency}}</td>
+                        <td>
+                            <a target="_blank" class="text-blue-700 cursor-pointer"
+                                [routerLink]="['/apps/orders',item.orderID]">{{item.total | currency}}</a>
+                        </td>
                         <td>{{item.days}}</td>
                         <td>
-                            {{item.firstName + ' ' + item.lastName}}
-                            <span *ngIf="item.locationName != 'N/A'"> - {{item.locationName}}</span>
-                            <span *ngIf="item.companyName != 'N/A'"> - {{item.companyName}}</span>
+                            <a target="_blank" class="text-blue-700 cursor-pointer"
+                                [routerLink]="['/apps/customers',item.storeUserID]">
+                                {{item.firstName + ' ' + item.lastName}}
+                                <span *ngIf="item.locationName != 'N/A'"> - {{item.locationName}}</span>
+                                <span *ngIf="item.companyName != 'N/A'"> - {{item.companyName}}</span>
+                            </a>
                         </td>
                         <td>
                             <span class="{{item.status?.statusColor}}">{{item.status?.statusValue}}</span>
@@ -237,7 +251,7 @@
                         </td>
                         <td>
                             <div class="flex space-x-1 align-items-center">
-                                <mat-button-toggle>
+                                <mat-button-toggle (click)="openOrderComments(item)">
                                     <mat-icon svgIcon="mat_outline:comment" matTooltip="Order Comments"></mat-icon>
                                 </mat-button-toggle>
 
@@ -254,7 +268,7 @@
     </div>
     <!-- All orders still processing (one year) -->
     <div *ngIf="!isApprovalLoader" class="p-6 bg-card shadow rounded-2xl">
-        <div class="flex justify-between border-b mt-4">
+        <div class="flex justify-between">
             <div class="text-xl font-bold tracking-tight leading-6 truncate">All orders still processing (one
                 year)<span class="badge badge-secondary ml-2">{{processingOrders.length}}</span>
             </div>
@@ -274,7 +288,7 @@
                 There are currently no keywords for your customers around this time last year.
             </fuse-alert>
         </div>
-        <div class="overflow-x-auto mt-2" *ngIf="processingOrders.length">
+        <div class="overflow-x-auto mt-4" *ngIf="processingOrders.length">
             <table class="table table-striped" datatable>
                 <thead>
                     <tr>
@@ -297,25 +311,41 @@
                         'background-color-ffcaca': item.inHandsDate != 'N/A',
                         'background-color-feee84': item.blnReorder
                       }">
-                        <td>{{item.storeCode}}</td>
-                        <td>{{item.orderID}}</td>
+                        <td>
+                            <a target="_blank" class="text-blue-700 cursor-pointer"
+                                [routerLink]="['/apps/stores',item.storeID]">{{item.storeCode}}</a>
+                        </td>
+                        <td>
+                            <a target="_blank" class="text-blue-700 cursor-pointer"
+                                [routerLink]="['/apps/orders',item.orderID]">{{item.orderID}}</a>
+                        </td>
                         <td>
                             <ng-container *ngIf="item.orderDate != 'N/A'; else na">
-                                {{ item.orderDate | date: 'MM/dd/yyyy' }}
+                                <a target="_blank" class="text-blue-700 cursor-pointer"
+                                    [routerLink]="['/apps/orders',item.orderID]">{{ item.orderDate | date:
+                                    'MM/dd/yyyy' }}</a>
                             </ng-container>
                             <ng-template #na>---</ng-template>
                         </td>
                         <td>
                             <ng-container *ngIf="item.inHandsDate != 'N/A'; else na">
-                                {{ item.inHandsDate | date: 'MM/dd/yyyy' }}
+                                <a target="_blank" class="text-blue-700 cursor-pointer"
+                                    [routerLink]="['/apps/orders',item.orderID]">{{ item.inHandsDate | date:
+                                    'MM/dd/yyyy' }}</a>
                             </ng-container>
                             <ng-template #na>---</ng-template>
                         </td>
-                        <td>{{item.total | currency}}</td>
                         <td>
-                            {{item.firstName + ' ' + item.lastName}}
-                            <span *ngIf="item.locationName != 'N/A'"> - {{item.locationName}}</span>
-                            <span *ngIf="item.companyName != 'N/A'"> - {{item.companyName}}</span>
+                            <a target="_blank" class="text-blue-700 cursor-pointer"
+                                [routerLink]="['/apps/orders',item.orderID]">{{item.total | currency}}</a>
+                        </td>
+                        <td>
+                            <a target="_blank" class="text-blue-700 cursor-pointer"
+                                [routerLink]="['/apps/customers',item.storeUserID]">
+                                {{item.firstName + ' ' + item.lastName}}
+                                <span *ngIf="item.locationName != 'N/A'"> - {{item.locationName}}</span>
+                                <span *ngIf="item.companyName != 'N/A'"> - {{item.companyName}}</span>
+                            </a>
                         </td>
                         <td>
                             <mat-icon *ngIf="item.paymentDate !== 'N/A'" svgIcon="mat_outline:check"
@@ -331,7 +361,7 @@
                         </td>
                         <td>
                             <div class="flex space-x-1 align-items-center">
-                                <mat-button-toggle>
+                                <mat-button-toggle (click)="openOrderComments(item)">
                                     <mat-icon svgIcon="mat_outline:comment" matTooltip="Order Comments"></mat-icon>
                                 </mat-button-toggle>
 

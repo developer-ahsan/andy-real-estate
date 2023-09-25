@@ -295,12 +295,21 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   backToList() {
     this.router.navigateByUrl('ordermanage/dashboard');
   }
+  weekendsDatesFilter = (d: Date): boolean => {
+    if (d) {
+      const day = d.getDay();
+      return day !== 0 && day !== 6;
+    } else {
+      return true;
+    }
+    /* Prevent Saturday and Sunday for select. */
+  }
   updateInhandsDate() {
     if (this.orderData.inHandsDate) {
       this.isHandsDateLoader = true;
       let date = null;
       if (this.orderData.inHandsDate) {
-        date = moment(this.orderData.inHandsDate).format('L');
+        date = moment(this.orderData.inHandsDate).utc().subtract(5, 'hours').format('L');
       }
       let payload: UpdateInHandsDate = {
         inHandsDate: String(date),

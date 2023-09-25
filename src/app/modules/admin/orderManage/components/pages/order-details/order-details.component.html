@@ -72,7 +72,8 @@
                         </div>
                         <mat-form-field class="w-full">
                             <mat-label>Add or Update In-Hands Date</mat-label>
-                            <input matInput [matDatepicker]="picker" readonly [(ngModel)]="orderData.inHandsDate">
+                            <input matInput [matDatepicker]="picker" readonly
+                                [matDatepickerFilter]="weekendsDatesFilter" [(ngModel)]="orderData.inHandsDate">
                             <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                             <mat-datepicker #picker></mat-datepicker>
                         </mat-form-field>
