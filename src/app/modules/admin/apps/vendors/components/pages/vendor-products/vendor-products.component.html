@@ -72,7 +72,10 @@
                         PID
                     </th>
                     <td mat-cell *matCellDef="let element" class="text-sm">
-                        {{element.pk_productID}}
+                        <a class="text-blue-700 cursor-pointer" target="_blank"
+                            [routerLink]="['/apps/ecommerce/inventory',element.pk_productID]">
+                            {{element.pk_productID}}
+                        </a>
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="number">
@@ -80,7 +83,10 @@
                         Number
                     </th>
                     <td mat-cell *matCellDef="let element" class="text-sm w-15 min-w-15">
-                        {{element.productNumber || not_available}}
+                        <a class="text-blue-700 cursor-pointer" target="_blank"
+                            [routerLink]="['/apps/ecommerce/inventory',element.pk_productID]">
+                            {{element.productNumber || not_available}}
+                        </a>
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="name">
@@ -88,7 +94,10 @@
                         Name
                     </th>
                     <td mat-cell *matCellDef="let element" class="text-sm">
-                        <p [innerHTML]="element.productName"></p>
+                        <a class="text-blue-700 cursor-pointer" target="_blank"
+                            [routerLink]="['/apps/ecommerce/inventory',element.pk_productID]">
+                            <p [innerHTML]="element.productName"></p>
+                        </a>
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="active">
@@ -126,8 +135,7 @@
                 </ng-container>
                 <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-                    class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
-                    (click)="goToProductPage(row)">
+                    class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
                 </tr>
             </table>
             <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"

@@ -197,7 +197,7 @@
                 </mat-radio-button>
                 <mat-form-field class="example-chip-list w-full" appearance="fill">
                   <mat-label>Emails Recipients(Comma-separated)</mat-label>
-                  <mat-chip-list class="pt-1 max-h-40 overflow-y-auto overflow-x-hidden mi-h-20" #chipList1>
+                  <mat-chip-list class="pt-1 max-h-40 overflow-y-auto overflow-x-hidden min-h-12" #chipList1>
                     <mat-chip [removable]="true" [selectable]="true" *ngFor="let email of emailsData"
                       (removed)="remove(email)">
                       {{email}}

@@ -4,15 +4,54 @@
     width: 100%;
     height: 100%;
 }
+
 ::ng-deep {
     .mat-expansion-panel-body {
         background: #f8f9fa !important;
     }
-    .mat-expansion-indicator, .mat-expansion-indicator:after {
+
+    .mat-expansion-indicator,
+    .mat-expansion-indicator:after {
         border-color: rgb(121, 118, 118) !important;
-      }
-      .ngx-pagination .current {
+    }
+
+    .ngx-pagination .current {
         background: #2c3344 !important;
         border-radius: 15px !important;
+    }
+}
+
+.loaderss {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: inline-block;
+    border-top: 4px solid #FFF;
+    border-right: 4px solid transparent;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+.loaderss::after {
+    content: '';
+    box-sizing: border-box;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border-left: 4px solid #FF3D00;
+    border-bottom: 4px solid transparent;
+    animation: rotation 0.5s linear infinite reverse;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
     }
 }
