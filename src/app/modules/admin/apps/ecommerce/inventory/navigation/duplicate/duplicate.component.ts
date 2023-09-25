@@ -67,8 +67,8 @@ export class DuplicateComponent implements OnInit, OnDestroy {
 
     const payload = {
       product_id: pk_productID,
-      product_number: formValues.number,
-      product_name: formValues.name,
+      product_number: formValues.number.replace(/'/g, "''"),
+      product_name: formValues.name.replace(/'/g, "''"),
       duplicate_product: true,
     };
     this.duplicateLoader = true;

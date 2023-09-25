@@ -141,7 +141,7 @@
                 </div>
             </div>
             <!-- Your Performance -->
-            <div class="flex flex-col flex-auto mt-8 bg-card shadow rounded-2xl overflow-hidden">
+            <div class="flex flex-col flex-auto mt-8 bg-card shadow-lg rounded-2xl overflow-hidden">
                 <div class="flex items-start justify-between m-6 mb-0">
                     <div class="text-lg font-medium tracking-tight leading-6 truncate">Your Performance</div>
                     <div class="ml-2">
@@ -218,11 +218,12 @@
                             <div class="text-lg font-medium tracking-tight leading-6 truncate border-b">Year To Date
                                 Sales,
                                 By Store ($0.00)
-                                <div class="loaderss"></div>
                             </div>
                             <div class="text-center mt-2"
                                 *ngIf="yourPerformanceData.allStoresGraphLoader || isPortfolioLoader || isPerformanceLoader">
+                                <!-- <img src="assets/loader2.gif" class="w-40" /> -->
                                 <img src="assets/loader2.gif" class="w-40" />
+
                             </div>
                             <div id="myChart"
                                 *ngIf="!yourPerformanceData.allStoresGraphLoader && !isPortfolioLoader && !isPerformanceLoader">
@@ -250,7 +251,9 @@
                                             currency}})</span></div>
                                     <div class="text-center mt-2"
                                         *ngIf="yourPerformanceData.q1Loader || isPortfolioLoader || isPerformanceLoader">
-                                        <img src="assets/loader2.gif" class="w-20" />
+                                        <img src="assets/loader2.gif" class="w-40" />
+
+
                                     </div>
                                     <div id="myChart"
                                         *ngIf="!yourPerformanceData.q1Loader && !isPortfolioLoader && !isPerformanceLoader">
@@ -274,7 +277,9 @@
                                     <div class="text-lg font-medium tracking-tight leading-6 truncate border-b">Q2</div>
                                     <div class="text-center mt-2"
                                         *ngIf="yourPerformanceData.q2Loader || isPortfolioLoader || isPerformanceLoader">
-                                        <img src="assets/loader2.gif" class="w-20" />
+                                        <img src="assets/loader2.gif" class="w-40" />
+
+
                                     </div>
                                     <div id="myChart"
                                         *ngIf="!yourPerformanceData.q2Loader && !isPortfolioLoader && !isPerformanceLoader">
@@ -298,7 +303,9 @@
                                     <div class="text-lg font-medium tracking-tight leading-6 truncate border-b">Q3</div>
                                     <div class="text-center mt-2"
                                         *ngIf="yourPerformanceData.q3Loader || isPortfolioLoader || isPerformanceLoader">
-                                        <img src="assets/loader2.gif" class="w-20" />
+                                        <img src="assets/loader2.gif" class="w-40" />
+
+
                                     </div>
                                     <div id="myChart"
                                         *ngIf="!yourPerformanceData.q3Loader && !isPortfolioLoader && !isPerformanceLoader">
@@ -322,7 +329,9 @@
                                     <div class="text-lg font-medium tracking-tight leading-6 truncate border-b">Q4</div>
                                     <div class="text-center mt-2"
                                         *ngIf="yourPerformanceData.q4Loader || isPortfolioLoader || isPerformanceLoader">
-                                        <img src="assets/loader2.gif" class="w-20" />
+                                        <img src="assets/loader2.gif" class="w-40" />
+
+
                                     </div>
                                     <div id="myChart"
                                         *ngIf="!yourPerformanceData.q4Loader && !isPortfolioLoader && !isPerformanceLoader">
@@ -370,7 +379,7 @@
             </div>
 
             <!-- Portfolio Performance -->
-            <div class="flex flex-col flex-auto mt-8 p-6 bg-card shadow rounded-2xl overflow-hidden w-full">
+            <div class="flex flex-col flex-auto mt-8 p-6 bg-card shadow-lg rounded-2xl overflow-hidden w-full">
                 <div *ngIf="isPortfolioLoader">
                     <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
                         'background-color': '#dedede'
@@ -517,7 +526,7 @@
                 </div>
             </div>
             <!-- Program Performance -->
-            <div class="flex flex-col flex-auto mt-8 p-6 bg-card shadow rounded-2xl overflow-hidden w-full">
+            <div class="flex flex-col flex-auto mt-8 p-6 bg-card shadow-lg rounded-2xl overflow-hidden w-full">
                 <div *ngIf="isPerformanceLoader">
                     <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
                         'background-color': '#dedede'

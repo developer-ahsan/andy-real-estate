@@ -1,5 +1,5 @@
 <div class="w-full">
-    <ngx-skeleton-loader count="15" appearance="line" animation="pulse" *ngIf="isLoading">
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
     </ngx-skeleton-loader>
 
     <div class="row" *ngIf="!isLoading">
@@ -56,9 +56,12 @@
                                                 <span *ngIf="item.trackingNumber">{{item.trackingNumber}}</span>
                                             </td>
                                             <td valign="top">
-                                                <span
-                                                    (click)="downloadPDF(orderDetail.pk_orderID,item.fileID,item.fileDate)"
+                                                <span *ngIf="!item.pdfLoader"
+                                                    (click)="downloadPDF(orderDetail.pk_orderID,item.fileID,item.fileDate,item)"
                                                     class="cursor-pointer">PDF</span>
+                                                <mat-progress-spinner *ngIf="item.pdfLoader" [diameter]="24"
+                                                    [mode]="'indeterminate'">
+                                                </mat-progress-spinner>
                                                 <!-- <a
                                                     href="https://admin.consolidus.com/ssadm/controller/view/system/tempDocs/purchaseOrder-{{orderDetail.pk_orderID}}-{{item.fileID}}_{{item.fileDate}}.pdf"
                                                     target="_blank">PDF</a> -->

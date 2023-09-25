@@ -171,22 +171,40 @@ export class SentOrdersPurchasesComponent implements OnInit {
   viewPurchaseOrder(): void {
     this.isView = !this.isView;
   }
-  downloadPDF(orderID, fileID, date) {
+  downloadPDF(orderID, fileID, date, item) {
+    item.pdfLoader = true;
     let payload = {
-      url: `https://assets.consolidus.com/globalAssets/Orders/purchaseOrders/${orderID}/${fileID}.html`,
-      date: date,
-      htmlToPDF: true
+      htmlLink: `https://assets.consolidus.com/globalAssets/Orders/purchaseOrders/${orderID}/${fileID}.html`,
+      // date: date,
+      generate_HTMLToPDF: true
     }
     this._orderService.orderPostCalls(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe((res: any) => {
-      const blob = new Blob([res], { type: 'application/pdf' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = date + '.pdf';
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
+      this.convertBase64ToPdf(res["data"].base64Pdf, date, item);
+    }, err => {
+      item.pdfLoader = false;
+      this._changeDetectorRef.markForCheck();
     });
+  }
+  convertBase64ToPdf(base64Data: string, filename: string, item) {
+    const byteCharacters = atob(base64Data);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: 'application/pdf' });
+
+    // Create a download link and trigger the download
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    document.body.appendChild(a);
+    a.style.display = 'none';
+    a.href = url;
+    a.download = filename;
+    item.pdfLoader = false;
+    a.click();
+    window.URL.revokeObjectURL(url);
+    this._changeDetectorRef.markForCheck();
   }
 }
 
