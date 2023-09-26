@@ -9,6 +9,7 @@ import { StoreProductService } from '../../store.service';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { AddRapidBuildStoreProduct } from '../../store.types';
 import { HttpClient } from '@angular/common/http';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-store-images',
@@ -76,7 +77,7 @@ export class StoreImagesComponent implements OnInit, OnDestroy {
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _storeService: StoreProductService,
-    private _formBuilder: FormBuilder,
+    private _commonService: DashboardsService,
     private _snackBar: MatSnackBar,
     private http: HttpClient
   ) { }
@@ -289,33 +290,35 @@ export class StoreImagesComponent implements OnInit, OnDestroy {
   }
   removeOtherImages() {
     this.isRemoveImageModal = false;
-    const paths: string[] = [`/Products/Images/${this.selectedProduct.pk_storeProductID}.jpg`, `/Products/HiRes/${this.selectedProduct.pk_storeProductID}.jpg`, `/Products/Thumbnails/${this.selectedProduct.pk_storeProductID}.jpg`];
+    const paths: string[] = [`/globalAssets/Products/Images/${this.selectedProduct.pk_storeProductID}.jpg`, `/globalAssets/Products/HiRes/${this.selectedProduct.pk_storeProductID}.jpg`, `/globalAssets/Products/Thumbnails/${this.selectedProduct.pk_storeProductID}.jpg`];
     this.removeImageLoader = true;
+    let payload = {
+      files: paths,
+      delete_multiple_files: true
+    }
+    this._commonService.removeMediaFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.hiresImgUrl = `https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg?${Math.random()}`;
+      this.mainImgUrl = `https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg?${Math.random()}`;
+      this.thumbImgUrl = `https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg?${Math.random()}`;
+      this._storeService.snackBar('Image Removed Successfully');
+      this.hires = false;
+      this.main = false;
+      this.thumb = false;
+      this.removeImageLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
     const uploadObservables: Observable<any>[] = paths.map(path => {
       return this.removeMainImage(path);
-    });
-    forkJoin(uploadObservables).subscribe(
-      () => {
-        this.hiresImgUrl = `https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg?${Math.random()}`;
-        this.mainImgUrl = `https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg?${Math.random()}`;
-        this.thumbImgUrl = `https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg?${Math.random()}`;
-        this._storeService.snackBar('Image Removed Successfully');
-        this.hires = false;
-        this.main = false;
-        this.thumb = false;
-        this.removeImageLoader = false;
-        this._changeDetectorRef.markForCheck();
-      },
-      (error) => {
-        this.removeImageLoader = false;
-        this._changeDetectorRef.markForCheck();
-      }
+    }, (error) => {
+      this.removeImageLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }
     );
   }
   removeMainImage(path) {
     let payload = {
-      image_path: path,
-      delete_image: true
+      files: path,
+      delete_files: true
     }
     return this._storeService.removeMedia(payload);
   }
@@ -324,11 +327,11 @@ export class StoreImagesComponent implements OnInit, OnDestroy {
 
     if (type == 'blank') {
       this.blankLoader = true;
-      path = `/globalAssets/Products/BlankImages/${this.selectedProduct.pk_storeProductID}.jpg`
+      path = [`/globalAssets/Products/BlankImages/${this.selectedProduct.pk_storeProductID}.jpg`]
     }
     let payload = {
-      image_path: path,
-      delete_image: true
+      files: path,
+      delete_multiple_files: true
     }
     this._storeService.removeMedia(payload)
       .subscribe((response) => {

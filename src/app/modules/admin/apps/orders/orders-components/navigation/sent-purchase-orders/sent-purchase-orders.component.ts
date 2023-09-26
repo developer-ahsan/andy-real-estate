@@ -103,8 +103,11 @@ export class SentOrdersPurchasesComponent implements OnInit {
     this._changeDetectorRef.markForCheck();
     this._smartartService.getFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(files => {
       this.poFiles = files["data"];
-      this.getPurchaseOrders();
-
+      if (this.poFiles.length) {
+        this.getPurchaseOrders();
+      } else {
+        this.isLoading = false;
+      }
       this._changeDetectorRef.markForCheck();
     }, err => {
       this._changeDetectorRef.markForCheck();

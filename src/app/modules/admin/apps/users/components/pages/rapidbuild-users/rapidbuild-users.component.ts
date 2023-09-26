@@ -180,7 +180,9 @@ export class RapidBuildUsersComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
       }, 200);
     }
-
+    this.ngRangeEnd = null;
+    this.ngRangeStart = null;
+    this._changeDetectorRef.markForCheck();
   }
 
 
@@ -322,11 +324,19 @@ export class RapidBuildUsersComponent implements OnInit, OnDestroy {
         this.paginator.pageIndex = 0;
       }
     }
+    let start_date = '';
+    let end_date = '';
+    if (this.ngRangeStart) {
+      start_date = moment(this.ngRangeStart).format('MM/DD/yyyy');
+    }
+    if (this.ngRangeEnd) {
+      end_date = moment(this.ngRangeEnd).format('MM/DD/yyyy');
+    }
     let params = {
       rapidbuild_history: true,
       storeProductID: this.ngSPID,
-      startDate: moment(this.ngRangeStart).format('MM/DD/yyyy'),
-      endDate: moment(this.ngRangeEnd).format('MM/DD/yyyy'),
+      startDate: start_date,
+      endDate: end_date,
       type: this.ngType,
       page: page,
       user_id: this.updateUserData.pk_userID,

@@ -188,7 +188,9 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       this.imprintInformation = res["imprintInformation"];
       if (res["purchaseOrders"].length > 0) {
         this.orderDataPO = res["purchaseOrders"][0];
-        const { shippingCarrierName, shippingServiceName, shippingCustomerAccountNumber, blnSupplier, blnDecorator } = this.orderDataPO;
+        const { shippingCarrierName, shippingServiceName, shippingCustomerAccountNumber, blnSupplier, blnDecorator, POinHandsDate } = this.orderDataPO;
+        const date = POinHandsDate.replace("{", '').replace('}', '').replace('ts ', '').replace(`'`, '').replace(`'`, '');
+        this.orderDataPO.POinHandsDate = new Date(date);
         if (shippingCustomerAccountNumber) {
           this.orderDataPO.shippingComment = `${shippingCarrierName}/${shippingServiceName}/ACCT## ${shippingCustomerAccountNumber}`;
         }
@@ -305,11 +307,11 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     /* Prevent Saturday and Sunday for select. */
   }
   updateInhandsDate() {
-    if (this.orderData.inHandsDate) {
+    if (this.orderDataPO.POinHandsDate) {
       this.isHandsDateLoader = true;
       let date = null;
-      if (this.orderData.inHandsDate) {
-        date = moment(this.orderData.inHandsDate).utc().subtract(5, 'hours').format('L');
+      if (this.orderDataPO.POinHandsDate) {
+        date = moment(this.orderDataPO.POinHandsDate).format('L');
       }
       let payload: UpdateInHandsDate = {
         inHandsDate: String(date),

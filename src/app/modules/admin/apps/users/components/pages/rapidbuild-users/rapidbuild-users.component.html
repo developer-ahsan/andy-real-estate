@@ -284,8 +284,8 @@
                         <mat-form-field class="w-full">
                             <mat-label>Select Range</mat-label>
                             <mat-date-range-input [rangePicker]="picker1" (click)="picker1.open()" [max]="maxDate">
-                                <input matStartDate placeholder="Start date" readonly [(ngModel)]="ngRangeStart">
-                                <input matEndDate placeholder="End date" readonly [(ngModel)]="ngRangeEnd">
+                                <input matStartDate placeholder="Start date" [(ngModel)]="ngRangeStart">
+                                <input matEndDate placeholder="End date" [(ngModel)]="ngRangeEnd">
                             </mat-date-range-input>
                             <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
                             <mat-date-range-picker #picker1></mat-date-range-picker>
@@ -316,7 +316,7 @@
                     </div>
                 </div>
                 <div *ngIf="customersDataSource.length > 0 && !customerLoader;else other_content" class="w-full">
-                    <div class="w-full text-red-500">{{totalCustomers}} total history entries, {{distinctProducts}}
+                    <div class="w-full text-red-500 px-5">{{totalCustomers}} total history entries, {{distinctProducts}}
                         distinct products</div>
                     <table mat-table [dataSource]="customersDataSource" class="w-full border-t">
                         <ng-container matColumnDef="id">

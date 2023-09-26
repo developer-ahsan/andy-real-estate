@@ -177,4 +177,10 @@ export class DashboardsService {
         }
         return result;
     }
+
+    // Remove Files Globally
+    removeMediaFiles(payload) {
+        return this._httpClient.put(
+            environment.products, payload);
+    };
 }

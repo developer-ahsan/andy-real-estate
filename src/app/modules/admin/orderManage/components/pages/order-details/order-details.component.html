@@ -59,8 +59,8 @@
                         Rush
                     </h2>
                     <div class="space-y-2">
-                        <div *ngIf="orderData.inHandsDate" class="text-xl font-bold text-orange-600">
-                            {{orderData.inHandsDate |
+                        <div *ngIf="orderDataPO.POinHandsDate" class="text-xl font-bold text-orange-600">
+                            {{orderDataPO.POinHandsDate |
                             date: 'MM/dd/YYYY'}}</div>
                         <div class="font-bold">
                             <span><b>Rush Flexibility:</b> <span *ngIf="!orderData.blnRushFlexibility"
@@ -73,7 +73,7 @@
                         <mat-form-field class="w-full">
                             <mat-label>Add or Update In-Hands Date</mat-label>
                             <input matInput [matDatepicker]="picker" readonly
-                                [matDatepickerFilter]="weekendsDatesFilter" [(ngModel)]="orderData.inHandsDate">
+                                [matDatepickerFilter]="weekendsDatesFilter" [(ngModel)]="orderDataPO.POinHandsDate">
                             <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                             <mat-datepicker #picker></mat-datepicker>
                         </mat-form-field>

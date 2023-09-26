@@ -11,8 +11,14 @@
                         <div class="text-2xl font-bold ">
                             Sent Purchase Orders
                         </div>
-                        <div class="mt-5">
-                            <div class="text-center mt-5 font-bold" *ngIf="purchases.length == 0">No data found</div>
+                        <div class="text-center mt-5 font-bold alert alert-warning" *ngIf="poFiles.length == 0">No
+                            purchase orders have been sent for this order.
+                        </div>
+
+                        <div class="mt-5" *ngIf="poFiles.length > 0">
+                            <div class="text-center mt-5 font-bold alert alert-warning" *ngIf="purchases.length == 0">No
+                                purchase orders have been sent for this order.
+                            </div>
                             <table *ngIf="purchases.length > 0"
                                 class="table table-condensed table-striped table-hover padding-1x wide no-bottom-margin">
                                 <thead>

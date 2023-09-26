@@ -26,6 +26,7 @@ import { LogoBankNotesUpdate } from "./presentation.types";
 import { DeleteImage, RemoveStoreLogoBank, addStoreLogoBank, updateLogoBankOrder, updateStoreLogoBank, uploadImage } from "../../stores.types";
 import * as imageConversion from 'image-conversion';
 import html2canvas from 'html2canvas';
+import { DashboardsService } from "app/modules/admin/dashboards/dashboard.service";
 
 @Component({
   selector: "app-presentation",
@@ -38,6 +39,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   @ViewChild('fileInput') fileInput: ElementRef;
+  @ViewChild('favICOImage') favICOImage: ElementRef;
   @ViewChild('fileInputLogo') fileInputLogo: ElementRef;
   @ViewChild('svgElement') svgElement: ElementRef;
 
@@ -193,6 +195,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
   isUpdateLogoDisplayLoader: boolean = false;
   constructor(
     private _storeManagerService: FileManagerService,
+    private _commonService: DashboardsService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _matDialog: MatDialog,
     private _snackBar: MatSnackBar,
@@ -1177,6 +1180,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
             duration: 3500
           });
           this.favimageValue = null;
+          this.favICOImage.nativeElement.value = '';
           this._changeDetectorRef.markForCheck();
           return;
         };
@@ -1211,6 +1215,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
         this.favImage = `https://assets.consolidus.com/globalAssets/Stores/Favicon/${this.selectedStore.pk_storeID}.ico`;
         this.favImageCheck = true;
         this.favimageValue = null;
+        this.favICOImage.nativeElement.value = '';
         // Mark for check
         this.favUploadLoader = false;
         this._changeDetectorRef.markForCheck();
@@ -1220,13 +1225,31 @@ export class PresentationComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
       })
   }
+  removeMediaFavICOImage() {
+    this.favUploadLoader = true;
+    let payload = {
+      files: [`/globalAssets/Stores/Favicon/${this.selectedStore.pk_storeID}.ico`],
+      delete_multiple_files: true
+    }
+    this._commonService.removeMediaFiles(payload).pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((response) => {
+        this._storeManagerService.snackBar('Image Removed Successfully');
+        this.favImageCheck = false;
+        this.favImage = null;
+        this.favUploadLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.favUploadLoader = false;
+        this._changeDetectorRef.markForCheck();
+      })
+  }
   removeImage() {
-    let payload: DeleteImage = {
-      image_path: `/globalAssets/Stores/orderOptionsHeaders/${this.selectedStore.pk_storeID}.jpg`,
-      delete_image: true
+    let payload = {
+      files: [`/globalAssets/Stores/orderOptionsHeaders/${this.selectedStore.pk_storeID}.jpg`],
+      delete_multiple_files: true
     }
     this.orderOptions.delLoader = true;
-    this._storeManagerService.removeMedia(payload)
+    this._commonService.removeMediaFiles(payload).pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response) => {
         this._storeManagerService.snackBar('Image Removed Successfully');
         this.orderOptions.check = false;
