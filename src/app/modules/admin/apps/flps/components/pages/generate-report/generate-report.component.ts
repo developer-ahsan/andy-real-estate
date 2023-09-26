@@ -403,8 +403,6 @@ export class GenerateReportComponent implements OnInit {
             userTotalCommission: this.storeTotals.orderCommission * this.storeTotals.EST_Profit, // totalCommission * Profit
             update_flps_report: true
         }
-        console.log(payload);
-        return;
         this._flpsService.UpdateFlpsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
             if (res["success"]) {
                 this._flpsService.snackBar(res["message"]);
