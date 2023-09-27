@@ -1839,38 +1839,38 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 });
                 return;
             };
-            let params = {
-                product_number: this.productNumberText,
-                check: true,
-                supplier_id: this.supplierId
-            }
-            this.checkProductExistOrNotLoader = true;
-            this._inventoryService.getProductsData(params)
-                .pipe(takeUntil(this._unsubscribeAll))
-                .subscribe((response: any) => {
-                    const isDataExist = response["data_exists"];
-                    this.checkProductExistOrNotLoader = false;
-                    if (isDataExist) {
-                        this._snackBar.open(`This product already exists under ${response["data"][0].companyName}`, '', {
-                            horizontalPosition: 'center',
-                            verticalPosition: 'bottom',
-                            duration: 3500
-                        });
-                        return;
-                        // Mark for check
-                    } else {
-                        stepper.next();
-                    }
-                    this._changeDetectorRef.markForCheck();
-                }, err => {
-                    this._snackBar.open("Something went wrong", '', {
-                        horizontalPosition: 'center',
-                        verticalPosition: 'bottom',
-                        duration: 3500
-                    });
-                    this.checkProductExistOrNotLoader = false;
-                    this._changeDetectorRef.markForCheck();
-                });
+            // let params = {
+            //     product_number: this.productNumberText,
+            //     check: true,
+            //     supplier_id: this.supplierId
+            // }
+            // this.checkProductExistOrNotLoader = true;
+            // this._inventoryService.getProductsData(params)
+            //     .pipe(takeUntil(this._unsubscribeAll))
+            //     .subscribe((response: any) => {
+            //         const isDataExist = response["data_exists"];
+            //         this.checkProductExistOrNotLoader = false;
+            //         if (isDataExist) {
+            //             this._snackBar.open(`This product already exists under ${response["data"][0].companyName}`, '', {
+            //                 horizontalPosition: 'center',
+            //                 verticalPosition: 'bottom',
+            //                 duration: 3500
+            //             });
+            //             return;
+            //             // Mark for check
+            //         } else {
+            //             stepper.next();
+            //         }
+            //         this._changeDetectorRef.markForCheck();
+            //     }, err => {
+            //         this._snackBar.open("Something went wrong", '', {
+            //             horizontalPosition: 'center',
+            //             verticalPosition: 'bottom',
+            //             duration: 3500
+            //         });
+            //         this.checkProductExistOrNotLoader = false;
+            //         this._changeDetectorRef.markForCheck();
+            //     });
         };
 
         if (selectedIndex === 1) {
@@ -1905,11 +1905,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 this.reviewForm.controls['brandName'].disable();
             };
         };
-
         // Net Cost screen
-
-
-
         if (selectedIndex === 6) {
             // const setupRunForm = this.runSetup.getRawValue();
             // const { run, setup } = setupRunForm;
@@ -2017,9 +2013,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             //     this.imprintPayload = payload;
             // };
         };
-        if (selectedIndex != 0) {
-            stepper.next();
-        }
+        // if (selectedIndex != 0) {
+        stepper.next();
+        // }
     };
 
     selectionChange(event) {
@@ -3222,7 +3218,12 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         if (!this.productId) {
             this.createProductDetailLoader = true;
             this._changeDetectorRef.markForCheck();
-            this._inventoryService.checkIfProductExist(productNumber, productName, this.supplierId)
+            let params = {
+                product_number: productNumber,
+                check: true,
+                supplier_id: this.supplierId
+            }
+            this._inventoryService.getProductsData(params)
                 .pipe(takeUntil(this._unsubscribeAll))
                 .subscribe((response: any) => {
                     const isDataExist = response["data_exists"];
