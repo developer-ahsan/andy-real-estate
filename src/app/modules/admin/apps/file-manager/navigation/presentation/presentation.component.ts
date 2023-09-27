@@ -220,7 +220,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
       });
   }
   initialize() {
-    this.favImage = `https://assets.consolidus.com/globalAssets/Stores/Favicon/${this.selectedStore.pk_storeID}.ico`;
+    this.favImage = `https://assets.consolidus.com/globalAssets/Stores/Favicon/${this.selectedStore.pk_storeID}.ico?${Math.random()}`;
     this.initSiteColorForm();
     this.initSpecialOfferForm();
     this.initNewsFeedForm();
