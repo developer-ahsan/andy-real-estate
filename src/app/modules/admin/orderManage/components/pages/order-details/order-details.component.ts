@@ -189,8 +189,10 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       if (res["purchaseOrders"].length > 0) {
         this.orderDataPO = res["purchaseOrders"][0];
         const { shippingCarrierName, shippingServiceName, shippingCustomerAccountNumber, blnSupplier, blnDecorator, POinHandsDate } = this.orderDataPO;
-        const date = POinHandsDate.replace("{", '').replace('}', '').replace('ts ', '').replace(`'`, '').replace(`'`, '');
-        this.orderDataPO.POinHandsDate = new Date(date);
+        if (this.orderDataPO.POinHandsDate) {
+          const date = POinHandsDate?.replace("{", '')?.replace('}', '')?.replace('ts ', '')?.replace(`'`, '')?.replace(`'`, '');
+          this.orderDataPO.POinHandsDate = new Date(date);
+        }
         if (shippingCustomerAccountNumber) {
           this.orderDataPO.shippingComment = `${shippingCarrierName}/${shippingServiceName}/ACCT## ${shippingCustomerAccountNumber}`;
         }
