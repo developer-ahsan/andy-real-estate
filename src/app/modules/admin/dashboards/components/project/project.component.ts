@@ -300,12 +300,14 @@ export class ProjectComponent implements OnInit, OnDestroy {
             this.allEmployees.push({ email: '', name: 'Select Program Manager' });
             let employees = res["data"][0].flpsUsers.split(',');
             employees.forEach(element => {
-                const [id, username, name] = element.split(':');
-                this.allEmployees.push({ id, username, name, email: 'ronny.vorthong@consolidus.com' });
+                const [id, username, name, a, b, c, email] = element.split(':');
+                console.log(email)
+                this.allEmployees.push({ id, username, name, email });
             });
         });
     }
     onSelected(ev) {
+        console.log(ev)
         this.selectedEmployee = ev.value;
         if (this.selectedEmployee != '') {
             this.isPortfolioLoader = true;

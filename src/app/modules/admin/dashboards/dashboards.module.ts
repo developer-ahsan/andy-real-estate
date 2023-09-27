@@ -30,10 +30,12 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { DataTablesModule } from "angular-datatables";
+import { DashboardHomeComponent } from './components/home/home-dashboard.component';
 
 @NgModule({
     declarations: [
         DashboardDetailsComponent,
+        DashboardHomeComponent,
         DashboardOverviewComponent,
         AnalyticsComponent,
         ProjectComponent,

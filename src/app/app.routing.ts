@@ -2,7 +2,7 @@ import { Route } from '@angular/router';
 import { AuthGuard } from 'app/core/auth/guards/auth.guard';
 import { NoAuthGuard } from 'app/core/auth/guards/noAuth.guard';
 import { LayoutComponent } from 'app/layout/layout.component';
-import { InitialDataResolver, StoresResolver, SuppliersResolver } from 'app/app.resolvers';
+import { InitialDataResolver, StoresResolver, SuppliersResolver, UserRoleResolver } from 'app/app.resolvers';
 import { StatesResolver } from './modules/admin/apps/vendors/components/vendors.resolvers';
 
 // @formatter:off
@@ -73,7 +73,8 @@ export const appRoutes: Route[] = [
         resolve: {
             initialData: InitialDataResolver,
             suppliers: SuppliersResolver,
-            stores: StoresResolver
+            stores: StoresResolver,
+            roles: UserRoleResolver,
         },
         children: [
             { path: 'dashboards', loadChildren: () => import('app/modules/admin/dashboards/dashboards.module').then(m => m.DashboardsModule) },

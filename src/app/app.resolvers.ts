@@ -6,6 +6,7 @@ import { map } from 'rxjs/operators';
 import { InitialData } from 'app/app.types';
 import { environment } from 'environments/environment';
 import { DashboardsService } from './modules/admin/dashboards/dashboard.service';
+import { AuthService } from './core/auth/auth.service';
 
 @Injectable({
     providedIn: 'root'
@@ -118,3 +119,35 @@ export class SuppliersResolver implements Resolve<any>
         }
     }
 }
+
+// Get User Roles
+@Injectable({
+    providedIn: 'root'
+})
+export class UserRoleResolver implements Resolve<any>
+{
+    /**
+     * Constructor
+     */
+    constructor(
+        private _dashboardService: DashboardsService,
+        private _authService: AuthService,
+    ) {
+    }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Public methods
+    // -----------------------------------------------------------------------------------------------------
+
+    /**
+     * Resolver
+     *
+     * @param route
+     * @param state
+     */
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any> {
+        let user = this._authService.parseJwt(this._authService.accessToken);
+        return this._dashboardService.getUserRole(user.email);
+    }
+}
+

@@ -15,6 +15,7 @@ export class DashboardsService {
     private _ytdData: BehaviorSubject<any> = new BehaviorSubject(null);
     public _allStores: BehaviorSubject<any> = new BehaviorSubject(null);
     public _allSuppliers: BehaviorSubject<any> = new BehaviorSubject(null);
+    public _userRole: BehaviorSubject<any> = new BehaviorSubject(null);
 
     /**
      * Constructor
@@ -46,6 +47,9 @@ export class DashboardsService {
     }
     get suppliersData$(): Observable<any> {
         return this._allSuppliers.asObservable();
+    }
+    get userRole$(): Observable<any> {
+        return this._userRole.asObservable();
     }
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
@@ -177,7 +181,20 @@ export class DashboardsService {
         }
         return result;
     }
-
+    // GEt User Role
+    getUserRole(email): Observable<any> {
+        let params = {
+            user_data: true,
+            email: email
+        }
+        return this._httpClient.get(environment.dashboard, { params: params }).pipe(
+            retry(3),
+            tap((response: any) => {
+                localStorage.setItem('roleID', response["data"][0].roleID);
+                this._userRole.next(response);
+            })
+        );
+    }
     // Remove Files Globally
     removeMediaFiles(payload) {
         return this._httpClient.put(

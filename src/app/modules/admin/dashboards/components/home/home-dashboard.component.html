@@ -1,0 +1,37 @@
+<div class="p-6 w-full" *ngIf="userData">
+    <div class="row">
+        <div class="col-12">
+            <div class="bg-card rounded-2xl p-5 my-3 flex justify-between w-full align-items-center"
+                style="background-color: #0f172a !important">
+                <div>
+                    <h1 id="message-heading" class="text-base font-semibold leading-6 text-gray-300">
+                        {{userData.firstName +
+                        ' '+
+                        userData.lastName}}
+                    </h1>
+                    <p class="mt-1 truncate text-sm text-gray-400">{{userData.roleName}}</p>
+                </div>
+                <div class="cursor-pointer">
+                    <mat-icon svgIcon="logout" class="text-white-900" matTooltip="Sign out"
+                        (click)="signOut()"></mat-icon>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-2" *ngFor="let card of cardsArray" [routerLink]="card.link">
+            <div class="text-gray-400 flex flex-col w-full h-40 m-2 p-4 shadow-lg rounded-2xl cursor-pointer bg-card text-center align-items-center"
+                style="background-color: #0f172a !important; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                <mat-icon class="mat-icon notranslate icon-size-16 text-hint opacity-50 mat-icon-no-color "
+                    [svgIcon]="card.icon"></mat-icon>
+                <div class="text-lg">
+                    {{ card.title }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>

@@ -15,27 +15,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 icon: 'heroicons_outline:chart-pie',
                 type: 'collapsable',
                 children: [
-                    {
-                        id: 'apps.reports.store-sales',
-                        title: 'Employee Dashboard',
-                        type: 'basic',
-                        icon: 'mat_outline:analytics',
-                        link: '/dashboards/analytics',
-                    },
-                    {
-                        id: 'apps.reports.store-sales',
-                        title: 'Manager Dashboard', //Company Overview
-                        type: 'basic',
-                        icon: 'heroicons_outline:view-boards',
-                        link: '/dashboards/overview',
-                    },
-                    {
-                        id: 'apps.reports.store-sales',
-                        title: 'Employee Reports',
-                        type: 'basic',
-                        icon: 'heroicons_outline:document-report',
-                        link: '/dashboards/reports',
-                    }
+
                 ]
             },
             {

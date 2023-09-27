@@ -8,6 +8,7 @@ import { InitialData } from 'app/app.types';
 import { UserService } from 'app/core/user/user.service';
 import { User } from 'app/core/user/user.model';
 import { AuthService } from 'app/core/auth/auth.service';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
     selector: 'classy-layout',
@@ -30,7 +31,8 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy {
         private _fuseNavigationService: FuseNavigationService,
         private _userService: UserService,
         private _changeDetectorRef: ChangeDetectorRef,
-        private _authService: AuthService
+        private _authService: AuthService,
+        private _dashboardService: DashboardsService
     ) {
     }
 
@@ -55,18 +57,10 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         // Get login user details
         this.user = this._authService.parseJwt(this._authService.accessToken);
-        // this._userService.user$
-        //     .pipe(takeUntil(this._unsubscribeAll))
-        //     .subscribe((user: User) => {
-        //         this.user = user;
 
-        //         // Mark for check
-        //         this._changeDetectorRef.markForCheck();
-        //     });
-
-        // Subscribe to the resolved route mock-api
         this._activatedRoute.data.subscribe((data: Data) => {
             this.data = data.initialData;
+            this.getUserRole();
         });
 
         // Subscribe to media changes
@@ -78,7 +72,70 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy {
                 this.isScreenSmall = !matchingAliases.includes('md');
             });
     }
-
+    getUserRole() {
+        this._dashboardService.userRole$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+            let role = res["data"][0].roleID;
+            if (role == 0) {
+                this.data.navigation.default[0].children[0].children.push(
+                    {
+                        id: 'apps.reports.store-sales',
+                        title: 'Employee Dashboard',
+                        type: 'basic',
+                        icon: 'mat_outline:analytics',
+                        link: '/dashboards/analytics',
+                    },
+                    {
+                        id: 'apps.reports.store-sales',
+                        title: 'Manager Dashboard', //Company Overview
+                        type: 'basic',
+                        icon: 'heroicons_outline:view-boards',
+                        link: '/dashboards/overview',
+                    },
+                    {
+                        id: 'apps.reports.store-sales',
+                        title: 'Employee Reports',
+                        type: 'basic',
+                        icon: 'heroicons_outline:document-report',
+                        link: '/dashboards/reports',
+                    },
+                    {
+                        id: 'apps.reports.store-sales',
+                        title: 'Home Dashboard',
+                        type: 'basic',
+                        icon: 'mat_outline:home',
+                        link: '/dashboards/home',
+                    },
+                )
+            } else if (role == 3) {
+                this.data.navigation.default[0].children[0].children.push(
+                    {
+                        id: 'apps.reports.store-sales',
+                        title: 'Employee Dashboard',
+                        type: 'basic',
+                        icon: 'mat_outline:analytics',
+                        link: '/dashboards/analytics',
+                    },
+                    {
+                        id: 'apps.reports.store-sales',
+                        title: 'Home Dashboard',
+                        type: 'basic',
+                        icon: 'mat_outline:home',
+                        link: '/dashboards/home',
+                    },
+                )
+            } else {
+                this.data.navigation.default[0].children[0].children.push(
+                    {
+                        id: 'apps.reports.store-sales',
+                        title: 'Home Dashboard',
+                        type: 'basic',
+                        icon: 'mat_outline:home',
+                        link: '/dashboards/home',
+                    },
+                )
+            }
+        });
+    }
     /**
      * On destroy
      */
