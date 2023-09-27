@@ -37,13 +37,20 @@
                                 currency}}
                             </div>
                             <div class="flex lg:flex-col lg:ml-3">
-                                <mat-icon class="icon-size-5 text-green-500" *ngIf="ytDDataMain.ytdPercent > 0"
-                                    [svgIcon]="'heroicons_solid:trending-up'"></mat-icon>
-                                <mat-icon class="icon-size-5 text-red-500" *ngIf="ytDDataMain.ytdPercent < 0"
-                                    [svgIcon]="'heroicons_solid:trending-down'"></mat-icon>
-                                <div
-                                    class="flex items-center ml-1 lg:ml-0 lg:mt-0.5 text-md leading-none whitespace-nowrap text-secondary">
-                                    <span class="font-medium text-green-500">{{ytDDataMain.ytdPercent}}%</span>
+                                <div *ngIf="ytDDataMain.ytdPercent != 0">
+                                    <div class="flex align-items-center" *ngIf="!ytDDataMain.ytdPercentBln">
+                                        <mat-icon class="icon-size-5 text-red-500"
+                                            [svgIcon]="'heroicons_solid:trending-down'"></mat-icon>
+                                        <span class="text-red-500">{{ytDDataMain.ytdPercent}}%</span>
+                                    </div>
+                                    <div class="flex align-items-center" *ngIf="ytDDataMain.ytdPercentBln">
+                                        <mat-icon class="icon-size-5 text-green-500"
+                                            [svgIcon]="'heroicons_solid:trending-up'"></mat-icon>
+                                        <span class="text-green-500">{{ytDDataMain.ytdPercent}}%</span>
+                                    </div>
+                                </div>
+                                <div class="flex" *ngIf="ytDDataMain.ytdPercent == 0">
+                                    <span>{{ytDDataMain.ytdPercent}}%</span>
                                 </div>
                             </div>
                         </div>
@@ -74,13 +81,20 @@
                                 currency}}
                             </div>
                             <div class="flex lg:flex-col lg:ml-3">
-                                <mat-icon class="icon-size-5 text-green-500" *ngIf="ytDDataMain.mtdPercent > 0"
-                                    [svgIcon]="'heroicons_solid:trending-up'"></mat-icon>
-                                <mat-icon class="icon-size-5 text-red-500" *ngIf="ytDDataMain.mtdPercent < 0"
-                                    [svgIcon]="'heroicons_solid:trending-down'"></mat-icon>
-                                <div
-                                    class="flex items-center ml-1 lg:ml-0 lg:mt-0.5 text-md leading-none whitespace-nowrap text-secondary">
-                                    <span class="font-medium text-green-500">{{ytDDataMain.mtdPercent}}%</span>
+                                <div *ngIf="ytDDataMain.mtdPercent != 0">
+                                    <div class="flex align-items-center" *ngIf="!ytDDataMain.mtdPercentBln">
+                                        <mat-icon class="icon-size-5 text-red-500"
+                                            [svgIcon]="'heroicons_solid:trending-down'"></mat-icon>
+                                        <span class="text-red-500">{{ytDDataMain.mtdPercent}}%</span>
+                                    </div>
+                                    <div class="flex align-items-center" *ngIf="ytDDataMain.mtdPercentBln">
+                                        <mat-icon class="icon-size-5 text-green-500"
+                                            [svgIcon]="'heroicons_solid:trending-up'"></mat-icon>
+                                        <span class="text-green-500">{{ytDDataMain.mtdPercent}}%</span>
+                                    </div>
+                                </div>
+                                <div class="flex" *ngIf="ytDDataMain.mtdPercent == 0">
+                                    <span>{{ytDDataMain.mtdPercent}}%</span>
                                 </div>
                             </div>
                         </div>
@@ -107,13 +121,20 @@
                                 currency}}
                             </div>
                             <div class="flex lg:flex-col lg:ml-3">
-                                <mat-icon class="icon-size-5 text-green-500" *ngIf="ytDDataMain.wtdPercent > 0"
-                                    [svgIcon]="'heroicons_solid:trending-up'"></mat-icon>
-                                <mat-icon class="icon-size-5 text-red-500" *ngIf="ytDDataMain.wtdPercent < 0"
-                                    [svgIcon]="'heroicons_solid:trending-down'"></mat-icon>
-                                <div
-                                    class="flex items-center ml-1 lg:ml-0 lg:mt-0.5 text-md leading-none whitespace-nowrap text-secondary">
-                                    <span class="font-medium text-green-500">{{ytDDataMain.wtdPercent}}%</span>
+                                <div *ngIf="ytDDataMain.wtdPercent != 0">
+                                    <div class="flex align-items-center" *ngIf="!ytDDataMain.wtdPercentBln">
+                                        <mat-icon class="icon-size-5 text-red-500"
+                                            [svgIcon]="'heroicons_solid:trending-down'"></mat-icon>
+                                        <span class="text-red-500">{{ytDDataMain.wtdPercent}}%</span>
+                                    </div>
+                                    <div class="flex align-items-center" *ngIf="ytDDataMain.wtdPercentBln">
+                                        <mat-icon class="icon-size-5 text-green-500"
+                                            [svgIcon]="'heroicons_solid:trending-up'"></mat-icon>
+                                        <span class="text-green-500">{{ytDDataMain.wtdPercent}}%</span>
+                                    </div>
+                                </div>
+                                <div class="flex" *ngIf="ytDDataMain.wtdPercent == 0">
+                                    <span>{{ytDDataMain.wtdPercent}}%</span>
                                 </div>
                             </div>
                         </div>

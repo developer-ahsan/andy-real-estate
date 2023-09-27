@@ -431,19 +431,43 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
         this.mainScreen = screen;
     }
     getYTDData() {
-        this._analyticsService.ytdData$.pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-            this._changeDetectorRef.markForCheck();
-        })).subscribe(res => {
-            this.ytDDataMain = res["data"][0];
-            let ytdPercent = Math.round(((this.ytDDataMain.YTD - this.ytDDataMain.LAST_YTD) / this.ytDDataMain.LAST_YTD) * 100);
-            let mtdPercent = Math.round(((this.ytDDataMain.MTD - this.ytDDataMain.LAST_MTD) / this.ytDDataMain.LAST_MTD) * 100);
-            let wtdPercent = Math.round(((this.ytDDataMain.WTD - this.ytDDataMain.LAST_WTD) / this.ytDDataMain.LAST_WTD) * 100);
-            this.ytDDataMain.ytdPercent = ytdPercent;
-            this.ytDDataMain.mtdPercent = mtdPercent;
-            this.ytDDataMain.wtdPercent = wtdPercent;
-        }, err => {
+        this._analyticsService.ytdData$
+            .pipe(
+                takeUntil(this._unsubscribeAll),
+                finalize(() => {
+                    this._changeDetectorRef.markForCheck();
+                })
+            )
+            .subscribe((res) => {
+                this.ytDDataMain = res["data"][0];
+                this.calculatePercentage("YTD", "LAST_YTD", "ytdPercent", "ytdPercentBln");
+                this.calculatePercentage("MTD", "LAST_MTD", "mtdPercent", "mtdPercentBln");
+                this.calculatePercentage("WTD", "LAST_WTD", "wtdPercent", "wtdPercentBln");
+                console.log(this.ytDDataMain);
+            },
+                (err) => {
+                    // Handle errors if needed
+                });
+    }
+    calculatePercentage(currentKey, lastKey, percentKey, percentBlnKey) {
+        const current = this.ytDDataMain[currentKey];
+        const last = this.ytDDataMain[lastKey];
 
-        });
+        let percentBln = false;
+        let percent = 0;
+
+        if (current > last) {
+            percentBln = true;
+            const diff = current - last;
+            percent = last === 0 ? 100 : Math.round((diff / last) * 100);
+        } else if (current < last) {
+            percentBln = false;
+            const diff = last - current;
+            percent = current === 0 ? 100 : Math.round((diff / last) * 100);
+        }
+
+        this.ytDDataMain[percentKey] = percent;
+        this.ytDDataMain[percentBlnKey] = percentBln;
     }
     getPortfolioData() {
         this.yourPerformanceData.allStoresGraphLoader = true;

@@ -374,7 +374,7 @@
               </button>
             </div>
             <div class="col-md-4" *ngIf="favImageCheck">
-              <button class="min-w-40" mat-stroked-button [matTooltip]="'Update'" (click)="removeMediaFavICOImage()"
+              <button class="min-w-40" mat-stroked-button [matTooltip]="'Remove'" (click)="removeMediaFavICOImage()"
                 [disabled]="favUploadLoader">
                 <mat-progress-spinner *ngIf="favUploadLoader" [diameter]="24" [mode]="'indeterminate'">
                 </mat-progress-spinner>

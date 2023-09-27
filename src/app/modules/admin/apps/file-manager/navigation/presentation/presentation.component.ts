@@ -1216,6 +1216,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
         this.favImageCheck = true;
         this.favimageValue = null;
         this.favICOImage.nativeElement.value = '';
+        this._storeManagerService.snackBar('Favicon added successfully.');
         // Mark for check
         this.favUploadLoader = false;
         this._changeDetectorRef.markForCheck();
