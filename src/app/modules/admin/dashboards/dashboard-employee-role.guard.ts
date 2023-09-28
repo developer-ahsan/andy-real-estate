@@ -25,8 +25,11 @@ export class EmployeeRoleGuard implements CanActivate {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
     let role = Number(localStorage.getItem('roleID'));
+    let blnManager = localStorage.getItem('blnManager');
     // Get the expected role from the route data
-    if (role == 0 || role == 3) {
+    if (blnManager == 'true') {
+      return true;
+    } else if (role == 3) {
       return true;
     } else {
       // Redirect to a forbidden page or handle access denied as needed

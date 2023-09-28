@@ -13,29 +13,29 @@ export const dashboardRoutes: Route[] = [
         path: '',
         component: DashboardDetailsComponent,
         resolve: {
-            YTDDataResolver
+            ytdData: YTDDataResolver
         },
         children: [
             {
                 path: '',
-                redirectTo: 'analytics',
+                redirectTo: 'employee',
                 pathMatch: 'full'
             },
             {
-                path: 'analytics',
+                path: 'employee',
                 component: AnalyticsComponent,
-                canActivate: [EmployeeRoleGuard],
                 resolve: {
                     suplier: AnalyticsResolver,
                     data: ProjectResolver
-                }
+                },
+                canActivate: [EmployeeRoleGuard],
             },
             {
                 path: 'home',
                 component: DashboardHomeComponent
             },
             {
-                path: 'overview',
+                path: 'manager',
                 canActivate: [RoleGuard],
                 component: DashboardOverviewComponent,
                 resolve: {

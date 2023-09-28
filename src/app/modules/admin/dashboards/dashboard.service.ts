@@ -122,6 +122,7 @@ export class DashboardsService {
             get_stores: true
         }
         return this._httpClient.get(environment.dashboard, { params: params }).pipe(
+            retry(3),
             tap((response: any) => {
                 sessionStorage.setItem('storesdata', JSON.stringify(response));
                 this._allStores.next(response);
@@ -134,6 +135,7 @@ export class DashboardsService {
             get_suppliers: true
         }
         return this._httpClient.get(environment.dashboard, { params: params }).pipe(
+            retry(3),
             tap((response: any) => {
                 sessionStorage.setItem('suppliersdata', JSON.stringify(response));
                 this._allSuppliers.next(response);
@@ -191,6 +193,7 @@ export class DashboardsService {
             retry(3),
             tap((response: any) => {
                 localStorage.setItem('roleID', response["data"][0].roleID);
+                localStorage.setItem('blnManager', response["data"][0].blnManager);
                 this._userRole.next(response);
             })
         );

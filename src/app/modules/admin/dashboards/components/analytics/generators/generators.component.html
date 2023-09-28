@@ -179,19 +179,30 @@
                         <tr *ngFor="let item of sampleStatus; trackBy: trackByCartId" [ngClass]="{
                         'background-color-e0f0d5': item?.priority > 0
                       }">
-                            <td>{{item.storeCode}}</td>
+                            <td>
+                                <a target="_blank" class="text-blue-700 cursor-pointer"
+                                    [routerLink]="['/apps/stores',item.storeID]">{{item.storeCode}}</a>
+                            </td>
                             <td>{{item.cost | currency}}</td>
-                            <td>{{item.orderID}}</td>
+                            <td>
+                                <a target="_blank" class="text-blue-700 cursor-pointer"
+                                    [routerLink]="['/apps/orders',item.orderID]">{{item.orderID}}</a>
+                            </td>
                             <td>
                                 <ng-container *ngIf="item.orderDate != 'N/A'; else na">
-                                    {{ item.orderDate | date: 'MM/dd/yyyy' }}
+                                    <a target="_blank" class="text-blue-700 cursor-pointer"
+                                        [routerLink]="['/apps/orders',item.orderID]">{{ item.orderDate | date:
+                                        'MM/dd/yyyy' }}</a>
                                 </ng-container>
                                 <ng-template #na>---</ng-template>
                             </td>
                             <td>
-                                {{item.firstName + ' ' + item.lastName}}
-                                <span *ngIf="item.locationName != 'N/A'"> - {{item.locationName}}</span>
-                                <span *ngIf="item.companyName != 'N/A'"> - {{item.companyName}}</span>
+                                <a target="_blank" class="text-blue-700 cursor-pointer"
+                                    [routerLink]="['/apps/customers',item.storeUserID]">
+                                    {{item.firstName + ' ' + item.lastName}}
+                                    <span *ngIf="item.locationName != 'N/A'"> - {{item.locationName}}</span>
+                                    <span *ngIf="item.companyName != 'N/A'"> - {{item.companyName}}</span>
+                                </a>
                             </td>
                             <td>
                                 {{item.days}}
@@ -281,10 +292,26 @@
                         'background-color-ffcaca': item.inHandsDate != 'N/A',
                         'background-color-feee84': item.blnReorder
                       }">
-                            <td>{{item.storeCode}}</td>
-                            <td>{{item.pk_orderID}}</td>
-                            <td>{{item.total | currency}}</td>
-                            <td>{{item.orderDate | date: 'MM/dd/yyyy'}}</td>
+                            <td>
+                                <a target="_blank" class="text-blue-700 cursor-pointer"
+                                    [routerLink]="['/apps/stores',item.storeID]">{{item.storeCode}}</a>
+                            </td>
+                            <td>
+                                <a target="_blank" class="text-blue-700 cursor-pointer"
+                                    [routerLink]="['/apps/orders',item.pk_orderID]">{{item.pk_orderID}}</a>
+                            </td>
+                            <td>
+                                <a target="_blank" class="text-blue-700 cursor-pointer"
+                                    [routerLink]="['/apps/orders',item.pk_orderID]">{{item.total | currency}}</a>
+                            </td>
+                            <td>
+                                <ng-container *ngIf="item.orderDate != 'N/A'; else na">
+                                    <a target="_blank" class="text-blue-700 cursor-pointer"
+                                        [routerLink]="['/apps/orders',item.orderID]">{{ item.orderDate | date:
+                                        'MM/dd/yyyy' }}</a>
+                                </ng-container>
+                                <ng-template #na>---</ng-template>
+                            </td>
                             <td>
                                 {{item.firstName + ' ' + item.lastName}}
                                 <span *ngIf="item.locationName"> - {{item.locationName}}</span>
@@ -359,7 +386,10 @@
                     <tbody>
                         <tr *ngFor="let item of keywordsData; trackBy: trackByCartId">
                             <td>{{item.storeCode}}</td>
-                            <td>{{item.keyword}}</td>
+                            <td>
+                                <a target="_blank" class="text-blue-700 cursor-pointer"
+                                    href="{{item.protocol + item.storeName + '/search?keywords=' + item.keyword}}">{{item.keyword}}</a>
+                            </td>
                             <td>{{item.frequency}}</td>
                             <td>{{item.result}}</td>
                             <td>
@@ -431,12 +461,21 @@
                         'background-color-ffcaca': item.inHandsDate != 'N/A',
                         'background-color-feee84': item.blnReorder
                       }">
-                            <td>{{item.storeCode}}</td>
-                            <td>{{item.pk_orderID}}</td>
                             <td>
-                                {{item.firstName + ' ' + item.lastName}}
-                                <span *ngIf="item.locationName"> - {{item.locationName}}</span>
-                                <span *ngIf="item.companyName"> - {{item.companyName}}</span>
+                                <a target="_blank" class="text-blue-700 cursor-pointer"
+                                    [routerLink]="['/apps/stores',item.storeID]">{{item.storeCode}}</a>
+                            </td>
+                            <td>
+                                <a target="_blank" class="text-blue-700 cursor-pointer"
+                                    [routerLink]="['/apps/orders',item.pk_orderID]">{{item.pk_orderID}}</a>
+                            </td>
+                            <td>
+                                <a target="_blank" class="text-blue-700 cursor-pointer"
+                                    [routerLink]="['/apps/customers',item.storeUserID]">
+                                    {{item.firstName + ' ' + item.lastName}}
+                                    <span *ngIf="item.locationName != 'N/A'"> - {{item.locationName}}</span>
+                                    <span *ngIf="item.companyName != 'N/A'"> - {{item.companyName}}</span>
+                                </a>
                             </td>
                             <td>{{item.dayPhone}}</td>
                             <td>{{item.orderDate | date: 'MM/dd/yyyy'}}</td>

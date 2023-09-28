@@ -6,8 +6,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseAlertType } from '@fuse/components/alert';
 import { AuthService } from 'app/core/auth/auth.service';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
+import { Subject, of } from 'rxjs';
+import { catchError, takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'auth-sign-in',
@@ -32,6 +33,7 @@ export class AuthSignInComponent implements OnInit {
     constructor(
         private _activatedRoute: ActivatedRoute,
         private _authService: AuthService,
+        private _dashboardService: DashboardsService,
         private _formBuilder: FormBuilder,
         private _router: Router,
         private _httpClient: HttpClient,
@@ -68,6 +70,7 @@ export class AuthSignInComponent implements OnInit {
      * Sign in
      */
     signIn(): void {
+        localStorage.clear();
         // Return if the form is invalid
         if (this.signInForm.invalid) {
             return;
@@ -95,7 +98,6 @@ export class AuthSignInComponent implements OnInit {
                 this._authService.SignInUsingEmailPassword(email, password)
                     .then(() => {
                         const { loginMessageNumber } = this._authService;
-
                         switch (loginMessageNumber) {
                             case 0: {
                                 // Set the redirect url.
@@ -103,9 +105,33 @@ export class AuthSignInComponent implements OnInit {
                                 // to the correct page after a successful sign in. This way, that url can be set via
                                 // routing file and we don't have to touch here.
                                 const redirectURL = this._activatedRoute.snapshot.queryParamMap.get('redirectURL') || '/signed-in-redirect';
+                                this._dashboardService.getUserRole(email)
+                                    .pipe(
+                                        takeUntil(this._unsubscribeAll),
+                                        catchError(error => {
+                                            // Handle observable error here if needed
+                                            return of(null); // Return a fallback value or rethrow if necessary
+                                        })
+                                    )
+                                    .subscribe(res => {
+                                        if (redirectURL == '/signed-in-redirect') {
+                                            if (res) {
+                                                const user = res["data"][0];
+                                                let targetURL = '/dashboards/home';
 
-                                // Navigate to the redirect url
-                                this._router.navigateByUrl(redirectURL);
+                                                if (user.blnManager) {
+                                                    targetURL = '/dashboards/manager';
+                                                } else if (user.roleID == 3) {
+                                                    targetURL = '/dashboards/employee';
+                                                }
+
+                                                this._router.navigateByUrl(targetURL);
+                                            }
+                                        } else {
+                                            this._router.navigateByUrl(redirectURL);
+                                        }
+                                    });
+
                                 break;
                             }
                             case 1: {

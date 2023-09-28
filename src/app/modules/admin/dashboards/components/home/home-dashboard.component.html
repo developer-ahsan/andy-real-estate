@@ -9,7 +9,9 @@
                         ' '+
                         userData.lastName}}
                     </h1>
-                    <p class="mt-1 truncate text-sm text-gray-400">{{userData.roleName}}</p>
+                    <p class="mt-1 truncate text-sm text-gray-400" *ngIf="userData.blnManager">Manager</p>
+                    <p class="mt-1 truncate text-sm text-gray-400" *ngIf="!userData.blnManager">{{userData.roleName}}
+                    </p>
                 </div>
                 <div class="cursor-pointer">
                     <mat-icon svgIcon="logout" class="text-white-900" matTooltip="Sign out"
