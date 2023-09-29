@@ -39,9 +39,9 @@ export const dashboardRoutes: Route[] = [
                 canActivate: [RoleGuard],
                 component: DashboardOverviewComponent,
                 resolve: {
-                    suplier: AnalyticsResolver,
-                    data: ProjectResolver,
-                    portfolio: PortfolioPerformanceResolver
+                    // suplier: AnalyticsResolver,
+                    // data: ProjectResolver,
+                    // portfolio: PortfolioPerformanceResolver
                 }
             },
             {

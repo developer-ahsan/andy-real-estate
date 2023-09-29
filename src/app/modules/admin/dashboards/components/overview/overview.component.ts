@@ -17,21 +17,9 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
 
 
     private _unsubscribeAll: Subject<any> = new Subject<any>();
-
-
-    // Table
-
-    page = 1;
     programPerformanceData = [];
-    programPerformanceColumns: string[] = ['store', 'sales', 'py', 'percent', 'difference', 'n_sales', 'pyns', 'avg', 'margin'];
-    totalPerformanceRecords = 0;
-    pagePerformance = 1;
-
     // Employee Performance
     employeePerformanceData = [];
-    employeePerformanceColumns: string[] = ['name', 't_sales', 'n_sales', 'a_sales', 'scr', 'action'];
-    totalEmployees = 0;
-    employeePage = 1;
     employeeListLoader: boolean = false;
 
     employeeStoresData: any;
@@ -39,9 +27,10 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
     expandedElement: any
     ytDDataMain: any;
 
-    sortOrder: string = 'ASC'
-    sortBy: string = 'monthlyEarnings';
     isPerformanceLoader: boolean = false;
+
+    totalProgramPerformanceData: any;
+    employeeName: string = '';
     /**
      * Constructor
      */
@@ -64,7 +53,7 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
         this.employeeListLoader = true;
         this.isPerformanceLoader = true;
         this.getAllPortfolioPerformance();
-        this.getEmployeePerformance(1);
+        this.getEmployeePerformance();
     }
     getYTDData() {
         this._analyticsService.ytdData$
@@ -79,7 +68,6 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
                 this.calculatePercentage("YTD", "LAST_YTD", "ytdPercent", "ytdPercentBln");
                 this.calculatePercentage("MTD", "LAST_MTD", "mtdPercent", "mtdPercentBln");
                 this.calculatePercentage("WTD", "LAST_WTD", "wtdPercent", "wtdPercentBln");
-                console.log(this.ytDDataMain);
             },
                 (err) => {
                     // Handle errors if needed
@@ -105,15 +93,12 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
         this.ytDDataMain[percentKey] = percent;
         this.ytDDataMain[percentBlnKey] = percentBln;
     }
-    getEmployeePerformance(page) {
+    getEmployeePerformance() {
         let params = {
-            employee_performance_list: true,
-            size: 20,
-            page: page
+            employee_performance_list: true
         }
         this._analyticsService.getDashboardData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
             this.employeePerformanceData = res["data"];
-            this.totalEmployees = res["totalRecords"];
             this.employeePerformanceData.forEach(element => {
                 element.avg = Number(element.TOTAL_SALES / element.NS);
                 element.scr = 0
@@ -125,238 +110,130 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
             this._changeDetectorRef.markForCheck();
         });
     }
-    getNextEmployeeData(event) {
-        const { previousPageIndex, pageIndex } = event;
-        if (pageIndex > previousPageIndex) {
-            this.employeePage++;
-        } else {
-            this.employeePage--;
-        };
-        this.getEmployeePerformance(this.employeePage);
-    };
-    dummyData() {
-        this.employeePerformanceData = [
-            {
-                name: 'Lindsey Myers',
-                t_sales: 1095109.82,
-                n_sales: 712,
-                a_sales: 1538.08,
-                scr: '0/62 (0%)'
-            },
-            {
-                name: 'Rhianne Smith',
-                t_sales: 446674.29,
-                n_sales: 306,
-                a_sales: 1459.72,
-                scr: '7/21 (33.33%)'
-            },
-            {
-                name: 'Matt Heldman',
-                t_sales: 349269.93,
-                n_sales: 180,
-                a_sales: 1940.39,
-                scr: '0/67 (0%)'
-            },
-            {
-                name: 'Abena Oworae',
-                t_sales: 223924.69,
-                n_sales: 208,
-                a_sales: 1076.56,
-                scr: '3/13 (23.08%)'
-            },
-            {
-                name: 'Andy Halm',
-                t_sales: 199767.43,
-                n_sales: 107,
-                a_sales: 1866.99,
-                scr: '0/13 (0%)'
-            },
-            {
-                name: 'Ronny Vorthong',
-                t_sales: 182892.60,
-                n_sales: 137,
-                a_sales: 1334.98,
-                scr: '1/13 ( 7.69%)'
-            }
-        ]
-    }
     getAllPortfolioPerformance() {
-        this._analyticsService.portfolioData$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-            this.programPerformanceData = res["data"];
-            this.totalPerformanceRecords = res["totalRecords"];
-            this.programPerformanceData.forEach(element => {
-                if (element.previousYearSales == 0) {
-                    element.percent = 0
-                } else {
-                    element.percent = Math.round(Number(100 - (element.monthlyEarnings / element.previousYearSales) * 100));
-                }
-                if (element.percent == 0) {
-                    element.percent = 0;
-                    element.color = 'gray';
-                }
-                if (element.percent < 0) {
-                    element.percent = element.percent * -1;
-                    element.color = 'green';
-                } else if (element.percent > 0) {
-                    element.color = 'red'
-                } else {
-                    element.color = 'gray';
-                }
-                element.difference = Number(element.monthlyEarnings - element.previousYearSales);
-                if (!element.difference) {
-                    element.difference = 0;
-                }
-                if (element.difference < 0) {
-                    element.difference = Math.abs(element.difference);
-                }
-                element.avg = Number(element.monthlyEarnings / element.NS);
-                if (!element.avg) {
-                    element.avg = 0;
-                }
-                element.margin = Number(((element.price - element.cost) / element.price) * 100);
-                if (!element.margin) {
-                    element.margin = 0;
-                }
-            });
-            this.isPerformanceLoader = false;
-            this._changeDetectorRef.markForCheck();
-        }, err => {
-            this.isPerformanceLoader = false;
-            this._changeDetectorRef.markForCheck();
-        });
-    }
-    getNextPortfolioData(event) {
-        const { previousPageIndex, pageIndex } = event;
-        if (pageIndex > previousPageIndex) {
-            this.pagePerformance++;
-        } else {
-            this.pagePerformance--;
-        };
-        this.getPortfolioData(this.pagePerformance);
-    };
-    sortData(ev) {
-        this.isPerformanceLoader = true;
-        this._changeDetectorRef.markForCheck();
-        if (ev.active == 'sales') {
-            this.sortBy = 'monthlyEarnings';
-            if (ev.direction == '') {
-                this.sortOrder = 'ASC';
-            } else {
-                this.sortOrder = ev.direction;
-            }
+        this.totalProgramPerformanceData = {
+            SALES: 0,
+            PY: 0,
+            percent: 0,
+            DIFF: 0,
+            N_DIFF: 0,
+            NS: 0,
+            PYNS: 0,
+            AVG: 0,
+            MARGIN: 0,
+            COST: 0,
+            PRICE: 0,
+            TAX: 0,
+            blnPercent: false
         }
-        this.getPortfolioData(1);
-    }
-    getPortfolioData(page) {
         let params = {
-            performance_report: true,
-            sort_order: this.sortOrder,
-            sort_by: this.sortBy,
-            size: 20,
-            page: page
+            performance_report: true
         }
-        this._analyticsService.getDashboardData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+        this._analyticsService.getDashboardData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+            this.isPerformanceLoader = false;
+            this._changeDetectorRef.markForCheck();
+        })).subscribe(res => {
             this.programPerformanceData = res["data"];
-            this.totalPerformanceRecords = res["totalRecords"];
             this.programPerformanceData.forEach(element => {
-                if (element.previousYearSales == 0) {
-                    element.percent = 0
+                if (element.SALES > element.PY) {
+                    element.blnPercent = true;
+                    const diff = element.SALES - element.PY;
+                    if (element.PY == 0) {
+                        element.percent = 100;
+                    } else {
+                        element.percent = Math.round((diff / element.PY) * 100);
+                    }
+                } else if (element.SALES < element.PY) {
+                    element.blnPercent = false;
+                    const diff = element.PY - element.SALES;
+                    if (element.SALES == 0) {
+                        element.percent = 100;
+                    } else {
+                        element.percent = Math.round((diff / element.PY) * 100);
+                    }
                 } else {
-                    element.percent = Math.round(Number(100 - (element.monthlyEarnings / element.previousYearSales) * 100));
-                }
-                if (!element.percent) {
                     element.percent = 0;
-                    element.color = 'gray';
                 }
-                if (element.percent < 0) {
-                    element.percent = element.percent * -1;
-                    element.color = 'green';
-                } else if (element.percent > 0) {
-                    element.color = 'red'
-                } else {
-                    element.color = 'gray';
-                }
-                element.difference = Number(element.monthlyEarnings - element.previousYearSales);
-                if (!element.difference) {
-                    element.difference = 0;
-                }
-                if (element.difference < 0) {
-                    element.difference = Math.abs(element.difference);
-                }
-                element.avg = Number(element.monthlyEarnings / element.NS);
-                if (!element.avg) {
-                    element.avg = 0;
-                }
-                element.margin = Number(((element.price - element.cost) / element.price) * 100);
-                if (!element.margin) {
-                    element.margin = 0;
-                }
+                this.totalProgramPerformanceData.SALES = element.Grand_Sales;
+                this.totalProgramPerformanceData.PY = element.Grand_LastYearSales;
+                this.totalProgramPerformanceData.NS += element.NS;
+                this.totalProgramPerformanceData.PYNS += element.PYNS;
+                this.totalProgramPerformanceData.COST += element.cost;
+                this.totalProgramPerformanceData.PRICE += element.price;
             });
-            this.isPerformanceLoader = false;
-            this._changeDetectorRef.markForCheck();
+            if (this.totalProgramPerformanceData.SALES > this.totalProgramPerformanceData.PY) {
+                this.totalProgramPerformanceData.blnPercent = true;
+                const diff = this.totalProgramPerformanceData.SALES - this.totalProgramPerformanceData.PY;
+                if (this.totalProgramPerformanceData.PY == 0) {
+                    this.totalProgramPerformanceData.PERCENT = 100;
+                } else {
+                    this.totalProgramPerformanceData.PERCENT = Math.round((diff / this.totalProgramPerformanceData.PY) * 100);
+                }
+            } else if (this.totalProgramPerformanceData.SALES < this.totalProgramPerformanceData.PY) {
+                this.totalProgramPerformanceData.blnPercent = false;
+                const diff = this.totalProgramPerformanceData.PY - this.totalProgramPerformanceData.SALES;
+                if (this.totalProgramPerformanceData.SALES == 0) {
+                    this.totalProgramPerformanceData.PERCENT = 100;
+                } else {
+                    this.totalProgramPerformanceData.PERCENT = Math.round((diff / this.totalProgramPerformanceData.PY) * 100);
+                }
+            } else {
+                this.totalProgramPerformanceData.PERCENT = 0;
+            }
+            this.totalProgramPerformanceData.N_DIFF = Math.abs((this.totalProgramPerformanceData?.PYNS - this.totalProgramPerformanceData?.NS));
+            this.totalProgramPerformanceData.AVG = this.totalProgramPerformanceData.SALES / this.totalProgramPerformanceData.NS;
+            this.totalProgramPerformanceData.MARGIN = Math.ceil(((this.totalProgramPerformanceData.PRICE - this.totalProgramPerformanceData.COST) / this.totalProgramPerformanceData.PRICE) * 10000) / 100;
+            this.totalProgramPerformanceData.DIFF = this.totalProgramPerformanceData.SALES - this.totalProgramPerformanceData.PY;
         }, err => {
-            this.isPerformanceLoader = false;
-            this._changeDetectorRef.markForCheck();
         });
     }
     openedAccordion(item) {
         this.employeeStoresData = item;
+        if (this.employeeName == item.EMPLOYEE) {
+            this.employeeName = '';
+        } else {
+            this.employeeName = item.EMPLOYEE;
+        }
         if (!item.storesData) {
             item.storeLoader = true;
             this._changeDetectorRef.markForCheck();
-            this.getEmployeeStoresData(1);
+            this.getEmployeeStoresData();
         } else {
             item.storeLoader = false;
             this._changeDetectorRef.markForCheck();
         }
     }
-    getEmployeeStoresData(page) {
+    getEmployeeStoresData() {
         let params = {
-            stores_per_employee: true,
-            size: 20,
-            page: page,
+            company_overview_employee_performance_store: true,
             user_id: this.employeeStoresData.pk_userID
         }
         this._analyticsService.getDashboardData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
             this.employeeStoresData.storeLoader = false;
             this._changeDetectorRef.markForCheck();
         })).subscribe(res => {
-            this.employeeStoresData.storesData = res["data"];
-            this.employeeStoresData.totalRecords = res["totalRecords"];
-            this.employeeStoresData.storesData.forEach(element => {
-                if (element.previousYearSales == 0) {
-                    element.percent = 0
+            res["data"].forEach(store => {
+                if (store.SALES > store.PY) {
+                    store.blnPercent = true;
+                    const diff = store.SALES - store.PY;
+                    if (store.PY == 0) {
+                        store.percent = 100;
+                    } else {
+                        store.percent = Math.round((diff / store.PY) * 100);
+                    }
+                } else if (store.SALES < store.PY) {
+                    store.blnPercent = false;
+                    const diff = store.PY - store.SALES;
+                    if (store.SALES == 0) {
+                        store.percent = 100;
+                    } else {
+                        store.percent = Math.round((diff / store.PY) * 100);
+                    }
                 } else {
-                    element.percent = Math.round(Number(100 - (element.monthlyEarnings / element.previousYearSales) * 100));
-                }
-                if (!element.percent) {
-                    element.percent = 0;
-                    element.color = 'gray';
-                }
-                if (element.percent < 0) {
-                    element.percent = element.percent * -1;
-                    element.color = 'green';
-                } else if (element.percent > 0) {
-                    element.color = 'red'
-                } else {
-                    element.color = 'gray';
-                }
-                element.difference = Number(element.monthlyEarnings - element.previousYearSales);
-                if (!element.difference) {
-                    element.difference = 0;
-                }
-                if (element.difference < 0) {
-                    element.difference = Math.abs(element.difference);
-                }
-                element.avg = Number(element.monthlyEarnings / element.NS);
-                if (!element.avg) {
-                    element.avg = 0;
-                }
-                element.margin = Number(((element.price - element.cost) / element.price) * 100);
-                if (!element.margin) {
-                    element.margin = 0;
+                    store.percent = 0;
                 }
             });
+            this.employeeStoresData.storesData = res["data"];
         }, err => {
         });
     }
