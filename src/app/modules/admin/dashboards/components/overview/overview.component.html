@@ -175,7 +175,10 @@
                                     <td colspan="2">{{employee.TOTAL_SALES | currency}}</td>
                                     <td colspan="2">{{employee.NUM_SALES}}</td>
                                     <td colspan="2">{{employee.AVG | currency}}</td>
-                                    <td>0</td>
+                                    <td>{{employee.qryConverted}}/{{employee.qryQuarterSamples}}
+                                        ({{((employee.qryConverted/employee.qryQuarterSamples)* 100) | number:
+                                        '1.2-2'}}%)
+                                    </td>
                                     <td>
                                         <button class="min-w-10 min-h-7 h-7 px-2 leading-6" mat-stroked-button
                                             (click)="openedAccordion(employee)">

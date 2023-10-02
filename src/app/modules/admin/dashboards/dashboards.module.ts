@@ -31,6 +31,8 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { DataTablesModule } from "angular-datatables";
 import { DashboardHomeComponent } from './components/home/home-dashboard.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @NgModule({
     declarations: [
@@ -66,6 +68,8 @@ import { DashboardHomeComponent } from './components/home/home-dashboard.compone
         NgxSkeletonLoaderModule,
         MatAutocompleteModule,
         MatCheckboxModule,
+        MatDatepickerModule,
+        MatNativeDateModule,
         DataTablesModule
     ],
     entryComponents: [],

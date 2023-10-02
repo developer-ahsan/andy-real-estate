@@ -142,12 +142,16 @@ export class DashboardsService {
             })
         );
     }
-    // Common get call
     // Common get Calls
     getDashboardData(params): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.dashboard, {
             params: params
         }).pipe(retry(3));
+    };
+    // Common Update Call
+    updateDashboardData(payload) {
+        return this._httpClient.put(
+            environment.dashboard, payload);
     };
     getStatusValue(statusValues: any) {
         let statusColor = '';

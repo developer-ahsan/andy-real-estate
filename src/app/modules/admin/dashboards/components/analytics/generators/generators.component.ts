@@ -59,11 +59,15 @@ export class GeneratorsComponent implements OnInit {
         phone, companyName, locationName, storeCode, storeName,
         followUp, priority
       ] = quote.split('::');
+      let priorityChecked = false;
+      if (Number(priority) > 0) {
+        priorityChecked = true;
+      }
       return {
         cartID: Number(cartID), cartDate, blnReorder: Number(blnReorder),
         inHandsDate, storeCode, storeName, storeUserID: Number(storeUserID),
         storeID: Number(storeID), firstName, lastName, locationName, companyName,
-        followUp, price: Number(price), tax: Number(tax), phone, priority
+        followUp, price: Number(price), tax: Number(tax), phone, priority, priorityChecked
       };
     });
   }
@@ -78,11 +82,15 @@ export class GeneratorsComponent implements OnInit {
         storeID, storeUserID, blnSampleConverted, sampleComment,
         days, priority
       ] = sample.split('::');
+      let priorityChecked = false;
+      if (Number(priority) > 0) {
+        priorityChecked = true;
+      }
       return {
         orderID: Number(orderID), orderDate, storeCode, storeName,
         storeUserID: Number(storeUserID), storeID: Number(storeID),
         firstName, lastName, locationName, companyName, blnSampleConverted,
-        cost: Number(cost), days, priority, sampleComment
+        cost: Number(cost), days, priority, sampleComment, priorityChecked
       };
     });
   }
@@ -94,6 +102,29 @@ export class GeneratorsComponent implements OnInit {
       const [storeCode, storeName, protocol, keyword, frequency, result, days] = sample.split('::');
       return { storeCode, storeName, protocol, keyword, frequency, result, days };
     });
+  }
+  // Update Priority
+  updatePriority(quote, type) {
+    const { orderID, priorityChecked } = quote;
+    let payload: any;
+    // if (priorityChecked) {
+    //   payload = {
+    //     cartID: number;
+
+    // dashboardType: string;
+
+    // add_quote_mark_priority: boolean;
+    //   }
+    // } else {
+    //   payload = {
+    //     cartID: number;
+
+    // dashboardType: string;
+
+    // delete_quote_mark_priority: boolean;
+    //   }
+    // }
+    this._dashboardService.updateDashboardData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => { });
   }
   trackByCartId(index: number, item: any): any {
     return index;

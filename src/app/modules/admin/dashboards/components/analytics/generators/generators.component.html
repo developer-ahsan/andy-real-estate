@@ -116,7 +116,8 @@
                                 <div *ngIf="item.followUp == 'N/A'">---</div>
                             </td>
                             <td>
-                                <mat-checkbox matTooltip="Mark Priority"></mat-checkbox>
+                                <mat-checkbox matTooltip="Mark Priority" [(ngModel)]="item.priorityChecked"
+                                    (change)="updatePriority(item,'blnQuotes')"></mat-checkbox>
                             </td>
                             <td>
                                 <div class="flex space-x-1 align-items-center">
@@ -208,7 +209,8 @@
                                 {{item.days}}
                             </td>
                             <td>
-                                <mat-checkbox matTooltip="Mark Priority"></mat-checkbox>
+                                <mat-checkbox matTooltip="Mark Priority" [(ngModel)]="item.priorityChecked"
+                                    (change)="updatePriority(item,'blnSample')"></mat-checkbox>
                             </td>
                             <td>
                                 <div class="flex space-x-1 align-items-center">
@@ -330,7 +332,8 @@
                                 <div *ngIf="!item.dashboardReorderLastTouch">---</div>
                             </td>
                             <td>
-                                <mat-checkbox matTooltip="Mark Priority"></mat-checkbox>
+                                <mat-checkbox matTooltip="Mark Priority" [(ngModel)]="item.priorityChecked"
+                                    (change)="updatePriority(item,'blnCustomerLastYear')"></mat-checkbox>
                             </td>
                             <td>
                                 <div class="flex space-x-1 align-items-center">
@@ -487,7 +490,8 @@
                                 <div *ngIf="!item.dashboardFollowUpLastTouch">---</div>
                             </td>
                             <td>
-                                <mat-checkbox matTooltip="Mark Priority"></mat-checkbox>
+                                <mat-checkbox matTooltip="Mark Priority" [(ngModel)]="item.priorityChecked"
+                                    (change)="updatePriority(item,'blnFollowUp')"></mat-checkbox>
                             </td>
                             <td>
                                 <div class="flex space-x-1 align-items-center">

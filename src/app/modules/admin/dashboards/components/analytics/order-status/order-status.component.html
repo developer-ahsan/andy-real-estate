@@ -124,7 +124,8 @@
                                 <div *ngIf="item.artworkNotification == 'N/A'">---</div>
                             </td>
                             <td>
-                                <mat-checkbox matTooltip="Mark Priority"></mat-checkbox>
+                                <mat-checkbox matTooltip="Mark Priority" [(ngModel)]="item.priorityChecked"
+                                    (change)="updatePriority(item,'blnArtworkNotifications')"></mat-checkbox>
                             </td>
                             <td>
                                 <div class="flex space-x-1 align-items-center">
@@ -137,7 +138,7 @@
                                             matTooltip="Send Email to the customer"></mat-icon>
                                     </mat-button-toggle>
 
-                                    <mat-button-toggle>
+                                    <mat-button-toggle (click)="openRescheduleModal(item)">
                                         <mat-icon svgIcon="mat_outline:calendar_today"
                                             matTooltip="Reschedule"></mat-icon>
                                     </mat-button-toggle>
@@ -247,7 +248,8 @@
                             <div *ngIf="item.paymentNotification == 'N/A'">---</div>
                         </td>
                         <td>
-                            <mat-checkbox matTooltip="Mark Priority"></mat-checkbox>
+                            <mat-checkbox matTooltip="Mark Priority" [(ngModel)]="item.priorityChecked"
+                                (change)="updatePriority(item,'blnPayment')"></mat-checkbox>
                         </td>
                         <td>
                             <div class="flex space-x-1 align-items-center">
@@ -357,7 +359,8 @@
                             <span class="{{item.status?.statusColor}}">{{item.status?.statusValue}}</span>
                         </td>
                         <td>
-                            <mat-checkbox matTooltip="Mark Priority"></mat-checkbox>
+                            <mat-checkbox matTooltip="Mark Priority" [(ngModel)]="item.priorityChecked"
+                                (change)="updatePriority(item,'blnHouse')"></mat-checkbox>
                         </td>
                         <td>
                             <div class="flex space-x-1 align-items-center">
@@ -373,6 +376,34 @@
                     </tr>
                 </tbody>
             </table>
+        </div>
+    </div>
+</div>
+<!-- Reschedule Modal -->
+<div #rescheduleModal class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog"
+    aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Reschedule</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <label>Choose a date</label>
+                <input type="date" class="form-control w-full">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="mr-2" mat-button mat-stroked-button data-dismiss="modal">Close</button>
+                <button type="button" class="min-w-30" mat-button mat-stroked-button
+                    [disabled]="rescheduleModalContent?.commentLoader">
+                    <span *ngIf="!rescheduleModalContent?.commentLoader">Add Comment</span>
+                    <mat-progress-spinner *ngIf="rescheduleModalContent?.commentLoader" [diameter]="24"
+                        [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                </button>
+            </div>
         </div>
     </div>
 </div>

@@ -443,7 +443,6 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
                 this.calculatePercentage("YTD", "LAST_YTD", "ytdPercent", "ytdPercentBln");
                 this.calculatePercentage("MTD", "LAST_MTD", "mtdPercent", "mtdPercentBln");
                 this.calculatePercentage("WTD", "LAST_WTD", "wtdPercent", "wtdPercentBln");
-                console.log(this.ytDDataMain);
             },
                 (err) => {
                     // Handle errors if needed
@@ -691,7 +690,6 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
                     });
                 });
             });
-            console.log(this.yourPerformanceData);
             this.programPerformanceData = stores;
             this._changeDetectorRef.markForCheck();
         })
