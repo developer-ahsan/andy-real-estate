@@ -28,7 +28,7 @@ export const dashboardRoutes: Route[] = [
                     suplier: AnalyticsResolver,
                     data: ProjectResolver
                 },
-                canActivate: [EmployeeRoleGuard],
+                // canActivate: [EmployeeRoleGuard],
             },
             {
                 path: 'home',
@@ -36,7 +36,7 @@ export const dashboardRoutes: Route[] = [
             },
             {
                 path: 'manager',
-                canActivate: [RoleGuard],
+                // canActivate: [RoleGuard],
                 component: DashboardOverviewComponent,
                 resolve: {
                     // suplier: AnalyticsResolver,
@@ -46,7 +46,7 @@ export const dashboardRoutes: Route[] = [
             },
             {
                 path: 'reports',
-                canActivate: [RoleGuard],
+                // canActivate: [RoleGuard],
                 component: ProjectComponent,
                 // canActivate: [RoleGuard],
                 resolve: {

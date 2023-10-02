@@ -1830,7 +1830,6 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     goForward(stepper: MatStepper) {
         const { selectedIndex } = stepper;
         if (selectedIndex === 0) {
-            console.log(selectedIndex);
             if (!this.selectedItems) {
                 this._snackBar.open("Please select a supplier", '', {
                     horizontalPosition: 'center',
