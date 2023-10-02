@@ -154,6 +154,10 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
                 } else {
                     element.percent = 0;
                 }
+
+                // Add a property 'sortKey' based on whether blnPercent is true or false
+                element.sortKey = element.blnPercent ? element.percent : -element.percent;
+
                 this.totalProgramPerformanceData.SALES = element.Grand_Sales;
                 this.totalProgramPerformanceData.PY = element.Grand_LastYearSales;
                 this.totalProgramPerformanceData.NS += element.NS;
@@ -161,6 +165,15 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
                 this.totalProgramPerformanceData.COST += element.cost;
                 this.totalProgramPerformanceData.PRICE += element.price;
             });
+
+            // Now, sort the array based on the 'sortKey'
+            this.programPerformanceData.sort((a, b) => a.sortKey - b.sortKey);
+
+            // Optional: Remove the 'sortKey' property if you don't need it in the final result
+            this.programPerformanceData.forEach(element => {
+                delete element.sortKey;
+            });
+
             if (this.totalProgramPerformanceData.SALES > this.totalProgramPerformanceData.PY) {
                 this.totalProgramPerformanceData.blnPercent = true;
                 const diff = this.totalProgramPerformanceData.SALES - this.totalProgramPerformanceData.PY;
