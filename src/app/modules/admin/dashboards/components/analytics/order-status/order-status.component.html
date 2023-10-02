@@ -50,7 +50,7 @@
                 <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
                     <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
                     </mat-icon>
-                    There are currently no keywords for your customers around this time last year.
+                    There are currently no orders for your customers around this time last year.
                 </fuse-alert>
             </div>
             <div class="overflow-x-auto" *ngIf="approvalOrders.length">
@@ -166,11 +166,11 @@
                 </div>
             </div>
         </div>
-        <div class="mt-2" *ngIf="awaitingOrders.length">
+        <div class="mt-2" *ngIf="awaitingOrders.length == 0">
             <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
                 <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
                 </mat-icon>
-                There are currently no keywords for your customers around this time last year.
+                There are currently no orders for your customers around this time last year.
             </fuse-alert>
         </div>
         <div class="overflow-x-auto mt-4" *ngIf="awaitingOrders.length">
@@ -287,7 +287,7 @@
             <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
                 <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
                 </mat-icon>
-                There are currently no keywords for your customers around this time last year.
+                There are currently no orders for your customers around this time last year.
             </fuse-alert>
         </div>
         <div class="overflow-x-auto mt-4" *ngIf="processingOrders.length">
@@ -390,16 +390,15 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" *ngIf="rescheduleModalContent">
                 <label>Choose a date</label>
-                <input type="date" class="form-control w-full">
+                <input type="date" [(ngModel)]="rescheduleModalContent.date" class="form-control w-full">
             </div>
             <div class="modal-footer">
-                <button type="button" class="mr-2" mat-button mat-stroked-button data-dismiss="modal">Close</button>
                 <button type="button" class="min-w-30" mat-button mat-stroked-button
-                    [disabled]="rescheduleModalContent?.commentLoader">
-                    <span *ngIf="!rescheduleModalContent?.commentLoader">Add Comment</span>
-                    <mat-progress-spinner *ngIf="rescheduleModalContent?.commentLoader" [diameter]="24"
+                    [disabled]="rescheduleModalContent?.rescheduleLoader" (click)="updateReschedule()">
+                    <span *ngIf="!rescheduleModalContent?.rescheduleLoader">Update Reschedule</span>
+                    <mat-progress-spinner *ngIf="rescheduleModalContent?.rescheduleLoader" [diameter]="24"
                         [mode]="'indeterminate'">
                     </mat-progress-spinner>
                 </button>

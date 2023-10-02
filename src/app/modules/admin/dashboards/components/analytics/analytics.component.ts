@@ -531,6 +531,11 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
                 this.totalStoreSummary.COST += element.cost;
                 this.totalStoreSummary.PRICE += element.price;
                 this.totalStoreSummary.TAX += element.tax;
+                if (element.DIFF > 0) {
+                    this.totalStoreSummary.DIFF += element.DIFF;
+                } else {
+                    this.totalStoreSummary.DIFF = this.totalStoreSummary.DIFF + (element.DIFF * -1);
+                }
             });
             if (this.totalStoreSummary.SALES > this.totalStoreSummary.PY) {
                 this.totalStoreSummary.blnPercent = true;
@@ -554,7 +559,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
             this.totalStoreSummary.N_DIFF = Math.abs((this.totalStoreSummary?.PYNS - this.totalStoreSummary?.NS));
             this.totalStoreSummary.AVG = this.totalStoreSummary.SALES / this.totalStoreSummary.NS;
             this.totalStoreSummary.MARGIN = Math.ceil(((this.totalStoreSummary.PRICE - this.totalStoreSummary.COST) / this.totalStoreSummary.PRICE) * 10000) / 100;
-            this.totalStoreSummary.DIFF = this.totalStoreSummary.SALES - this.totalStoreSummary.PY;
+            // this.totalStoreSummary.DIFF = this.totalStoreSummary.SALES - this.totalStoreSummary.PY;
             this.yourPerformanceData.allStoresGraphLoader = false;
             this._changeDetectorRef.markForCheck();
         }, err => {

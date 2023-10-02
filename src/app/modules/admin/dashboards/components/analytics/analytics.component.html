@@ -488,11 +488,13 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <span *ngIf="item?.DIFF >= 0" class="text-green-500">
+                                        <!-- class="text-green-500" -->
+                                        <span *ngIf="item?.DIFF >= 0">
                                             {{item?.DIFF | currency}}
                                         </span>
-                                        <span *ngIf="item?.DIFF < 0" class="text-red-500">
-                                            ({{(item?.DIFF * - 1) | currency}})
+                                        <!-- class="text-red-500" -->
+                                        <span *ngIf="item?.DIFF < 0">
+                                            {{(item?.DIFF * - 1) | currency}}
                                         </span>
                                     </td>
                                     <td>{{item.NS}}</td>
@@ -524,12 +526,13 @@
                                         </div>
                                     </th>
                                     <th>
-                                        <span *ngIf="totalStoreSummary?.DIFF >= 0" class="text-green-500">
+                                        <span>{{totalStoreSummary?.DIFF | currency}}</span>
+                                        <!-- <span *ngIf="totalStoreSummary?.DIFF >= 0" class="text-green-500">
                                             {{totalStoreSummary?.DIFF | currency}}
                                         </span>
                                         <span *ngIf="totalStoreSummary?.DIFF < 0" class="text-red-500">
                                             ({{(totalStoreSummary?.DIFF * - 1) | currency}})
-                                        </span>
+                                        </span> -->
                                     </th>
                                     <th>{{totalStoreSummary?.NS}}</th>
                                     <th>{{totalStoreSummary?.PYNS}}</th>

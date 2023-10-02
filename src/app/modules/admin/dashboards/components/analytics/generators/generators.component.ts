@@ -41,7 +41,21 @@ export class GeneratorsComponent implements OnInit {
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       this.ordersThisYear = res["data"][2];
+      this.ordersThisYear.forEach(element => {
+        if (element.customerLastYearPriority > 0) {
+          element.priorityChecked = true;
+        } else {
+          element.priorityChecked = false;
+        }
+      });
       this.activityData = res["data"][4];
+      this.activityData.forEach(element => {
+        if (element.followUpPriority > 0) {
+          element.priorityChecked = true;
+        } else {
+          element.priorityChecked = false;
+        }
+      });
       this.processQuotes(res);
       this.processSampleOrders(res);
       this.processKeywords(res);
@@ -104,27 +118,103 @@ export class GeneratorsComponent implements OnInit {
     });
   }
   // Update Priority
-  updatePriority(quote, type) {
-    const { orderID, priorityChecked } = quote;
+  updateQuotePriority(quote, type) {
+    const { cartID, priorityChecked } = quote;
     let payload: any;
-    // if (priorityChecked) {
-    //   payload = {
-    //     cartID: number;
-
-    // dashboardType: string;
-
-    // add_quote_mark_priority: boolean;
-    //   }
-    // } else {
-    //   payload = {
-    //     cartID: number;
-
-    // dashboardType: string;
-
-    // delete_quote_mark_priority: boolean;
-    //   }
-    // }
+    if (priorityChecked) {
+      payload = {
+        cartID: cartID,
+        dashboardType: type,
+        add_quote_mark_priority: true
+      }
+    } else {
+      payload = {
+        cartID: cartID,
+        dashboardType: type,
+        delete_quote_mark_priority: true
+      }
+    }
     this._dashboardService.updateDashboardData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => { });
+  }
+  updatePriority(order, type) {
+    const { orderID, priorityChecked } = order;
+    let payload: any;
+    if (priorityChecked) {
+      payload = {
+        orderID: orderID,
+        dashboardType: type,
+        add_mark_priority: true
+      }
+    } else {
+      payload = {
+        orderID: orderID,
+        dashboardType: type,
+        delete_mark_priority: true
+      }
+    }
+    this._dashboardService.updateDashboardData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => { });
+  }
+  // Remove Quotes
+  removeQuotes(quote) {
+    const { cartID } = quote;
+    let payload = {
+      cartID: cartID,
+      remove_quote: true,
+    }
+    quote.delLoader = true;
+    this._dashboardService.updateDashboardData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      quote.delLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      if (res["message"]) {
+        this._dashboardService.snackBar(res["message"]);
+        this.pendingQuotes = this.pendingQuotes.filter(item => item.cartID != cartID);
+      }
+    });
+  }
+  // Remove Orders
+  removeOrders(order, type) {
+    const { orderID, storeUserID } = order;
+    let payload = {
+      orderID: orderID,
+      pk_userID: storeUserID,
+      dashboardType: type,
+      remove_dashboard_order: true
+    }
+    order.delLoader = true;
+    this._dashboardService.updateDashboardData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      order.delLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      if (res["message"]) {
+        this._dashboardService.snackBar(res["message"]);
+        if (type == 'blnSample') {
+          this.sampleStatus = this.sampleStatus.filter(item => item.orderID != orderID);
+        } else if (type == 'blnCustomerLastYear') {
+          this.ordersThisYear = this.ordersThisYear.filter(item => item.orderID != orderID);
+        } else if (type == 'blnFollowUp') {
+          this.activityData = this.activityData.filter(item => item.orderID != orderID);
+        }
+      }
+    });
+  }
+  // Mark Sample Order
+  markOrderAsSample(order) {
+    const { orderID } = order;
+    let payload = {
+      orderID: orderID,
+      blnOrdered: 1,
+      mark_sample_order: true
+    }
+    order.sampleLoader = true;
+    this._dashboardService.updateDashboardData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      order.sampleLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      if (res["message"]) {
+        this._dashboardService.snackBar(res["message"]);
+      }
+    });
   }
   trackByCartId(index: number, item: any): any {
     return index;

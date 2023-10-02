@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { retry, tap } from 'rxjs/operators';
 import { environment } from 'environments/environment';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
     providedIn: 'root'
@@ -20,9 +21,18 @@ export class DashboardsService {
     /**
      * Constructor
      */
-    constructor(private _httpClient: HttpClient) {
+    constructor(private _httpClient: HttpClient,
+        private _snackBar: MatSnackBar,
+    ) {
     }
-
+    // Snack Bar
+    snackBar(msg) {
+        this._snackBar.open(msg, '', {
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+            duration: 3500
+        });
+    }
     // -----------------------------------------------------------------------------------------------------
     // @ Accessors
     // -----------------------------------------------------------------------------------------------------

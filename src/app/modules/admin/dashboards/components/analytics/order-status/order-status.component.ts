@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } fr
 import { DashboardsService } from '../../../dashboard.service';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { Subject, pipe } from 'rxjs';
+import moment from 'moment';
 declare var $: any;
 @Component({
   selector: 'app-order-status-report',
@@ -100,11 +101,36 @@ export class OrderStatusComponent implements OnInit {
     const url = `/apps/orders/${item.storeUserID}/comments`;
     window.open(url, '_blank');
   }
+  // Reschedule
   openRescheduleModal(data) {
     console.log(data)
     this.rescheduleModalContent = data;
+    this.rescheduleModalContent.date = null;
     $(this.rescheduleModal.nativeElement).modal('show');
   }
+  updateReschedule() {
+    const { date, orderID } = this.rescheduleModalContent;
+    if (!date) {
+      this._dashboardService.snackBar('Date is required');
+      return;
+    }
+    this.rescheduleModalContent.rescheduleLoader = true;
+    let payload = {
+      orderID: orderID,
+      theDate: moment(date).format('mm/DD/yyyy'),
+      reschedule_artwork: true
+    }
+    this._dashboardService.updateDashboardData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.rescheduleModalContent.rescheduleLoader = true;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      if (res["message"]) {
+        this._dashboardService.snackBar(res["message"]);
+      }
+      $(this.rescheduleModal.nativeElement).modal('hide');
+    });
+  }
+  // Update Priority
   updatePriority(order, type) {
     const { orderID, priorityChecked } = order;
     let payload: any;

@@ -117,7 +117,7 @@
                             </td>
                             <td>
                                 <mat-checkbox matTooltip="Mark Priority" [(ngModel)]="item.priorityChecked"
-                                    (change)="updatePriority(item,'blnQuotes')"></mat-checkbox>
+                                    (change)="updateQuotePriority(item,'blnQuotes')"></mat-checkbox>
                             </td>
                             <td>
                                 <div class="flex space-x-1 align-items-center">
@@ -129,7 +129,11 @@
                                             matTooltip="Send an email to customer"></mat-icon>
                                     </mat-button-toggle>
                                     <mat-button-toggle>
-                                        <mat-icon svgIcon="mat_outline:delete" matTooltip="Remove"></mat-icon>
+                                        <mat-progress-spinner *ngIf="item?.delLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                        <mat-icon *ngIf="!item?.delLoader" svgIcon="mat_outline:delete"
+                                            matTooltip="Remove" (click)="removeQuotes(item)"></mat-icon>
                                     </mat-button-toggle>
 
                                 </div>
@@ -223,11 +227,19 @@
                                             matTooltip="Send an email to customer"></mat-icon>
                                     </mat-button-toggle>
                                     <mat-button-toggle>
-                                        <mat-icon svgIcon="mat_outline:check"
-                                            matTooltip="Mark this sample order as converted"></mat-icon>
+                                        <mat-progress-spinner *ngIf="item?.sampleLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                        <mat-icon *ngIf="!item?.sampleLoader" svgIcon="mat_outline:check"
+                                            matTooltip="Mark this sample order as converted"
+                                            (click)="markOrderAsSample(item)"></mat-icon>
                                     </mat-button-toggle>
                                     <mat-button-toggle>
-                                        <mat-icon svgIcon="mat_outline:delete" matTooltip="Remove"></mat-icon>
+                                        <mat-progress-spinner *ngIf="item?.delLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                        <mat-icon *ngIf="!item?.delLoader" svgIcon="mat_outline:delete"
+                                            matTooltip="Remove" (click)="removeOrders(item,'blnSample')"></mat-icon>
                                     </mat-button-toggle>
                                 </div>
                             </td>
@@ -290,7 +302,7 @@
                     </thead>
                     <tbody>
                         <tr *ngFor="let item of ordersThisYear; trackBy: trackByCartId" [ngClass]="{
-                        'background-color-e0f0d5': item?.priority > 0,
+                        'background-color-e0f0d5': item?.customerLastYearPriority > 0,
                         'background-color-ffcaca': item.inHandsDate != 'N/A',
                         'background-color-feee84': item.blnReorder
                       }">
@@ -342,7 +354,12 @@
                                             matTooltip="Send an email to customer"></mat-icon>
                                     </mat-button-toggle>
                                     <mat-button-toggle>
-                                        <mat-icon svgIcon="mat_outline:delete" matTooltip="Remove"></mat-icon>
+                                        <mat-progress-spinner *ngIf="item?.delLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                        <mat-icon *ngIf="!item?.delLoader" svgIcon="mat_outline:delete"
+                                            matTooltip="Remove"
+                                            (click)="removeOrders(item,'blnCustomerLastYear')"></mat-icon>
                                     </mat-button-toggle>
 
                                 </div>
@@ -460,7 +477,7 @@
                     </thead>
                     <tbody>
                         <tr *ngFor="let item of activityData; trackBy: trackByCartId" [ngClass]="{
-                        'background-color-e0f0d5': item?.priority > 0,
+                        'background-color-e0f0d5': item?.followUpPriority > 0,
                         'background-color-ffcaca': item.inHandsDate != 'N/A',
                         'background-color-feee84': item.blnReorder
                       }">
@@ -508,7 +525,11 @@
                                             matTooltip="Send an email to customer"></mat-icon>
                                     </mat-button-toggle>
                                     <mat-button-toggle>
-                                        <mat-icon svgIcon="mat_outline:delete" matTooltip="Remove"></mat-icon>
+                                        <mat-progress-spinner *ngIf="item?.delLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                        <mat-icon *ngIf="!item?.delLoader" svgIcon="mat_outline:delete"
+                                            matTooltip="Remove" (click)="removeOrders(item,'blnFollowUp')"></mat-icon>
                                     </mat-button-toggle>
 
                                 </div>
