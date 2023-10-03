@@ -95,12 +95,13 @@
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Last Updated</b>
-                            <p class="float-right text-sm" *ngIf="selectedProduct.lastUpdatedDate">
-                                {{(selectedProduct.lastUpdatedDate | date: 'MM/dd/yyyy')}} <span
+                            <p class="float-right text-sm" *ngIf="selectedProduct.lastUpdatedDateOnly">
+                                {{(selectedProduct.lastUpdatedDateOnly | date: 'MM/dd/yyyy')}} <span
                                     *ngIf="selectedProduct.lastUpdatedBy"> by {{selectedProduct.lastUpdatedBy ||
                                     not_available}}</span>
                             </p>
-                            <p *ngIf="!selectedProduct.lastUpdatedDate" class="float-right text-sm">{{not_available}}
+                            <p *ngIf="!selectedProduct.lastUpdatedDateOnly" class="float-right text-sm">
+                                {{not_available}}
                             </p>
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
