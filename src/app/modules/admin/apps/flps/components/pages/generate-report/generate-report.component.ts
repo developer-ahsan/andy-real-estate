@@ -169,7 +169,7 @@ export class GenerateReportComponent implements OnInit {
                 let employee = employees.split(',');
                 employee.forEach(emp => {
                     let colonEmp = emp.split(':');
-                    this.employeeAdmins.push({ pk_userID: Number(colonEmp[0]), fullName: colonEmp[2], email: colonEmp[5] });
+                    this.employeeAdmins.push({ pk_userID: Number(colonEmp[0]), fullName: colonEmp[2], email: colonEmp[6] });
                 });
             }
             this.selectedEmployee = this.employeeAdmins[0];
