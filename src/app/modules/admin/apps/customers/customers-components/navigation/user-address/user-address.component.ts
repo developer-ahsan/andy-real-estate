@@ -16,10 +16,10 @@ export class UserAddressComponent implements OnInit {
   addressCount: number = 0;
   breakpoint: number;
 
+  page = 1;
   constructor(
     private _customerService: CustomersService,
     private _changeDetectorRef: ChangeDetectorRef,
-
   ) { }
 
   ngOnInit(): void {
@@ -29,22 +29,33 @@ export class UserAddressComponent implements OnInit {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response) => {
         this.selectedCustomer = response;
-        let params = {
-          address: true,
-          user_id: this.selectedCustomer.pk_userID
-        }
-        this._customerService.GetApiData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-          this.isLoading = false;
-          this._changeDetectorRef.markForCheck();
-        })).subscribe(addresses => {
-          this.customerAddresses = addresses["data"];
-          this.addressCount = this.customerAddresses.length
-        })
+        this.getUserAddresses(1);
       });
     this.breakpoint = (window.innerWidth <= 620) ? 1 : 2;
-
   }
-
+  getUserAddresses(page) {
+    let params = {
+      page: page,
+      address: true,
+      user_id: this.selectedCustomer.pk_userID
+    }
+    this._customerService.GetApiData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(addresses => {
+      this.customerAddresses = addresses["data"];
+      this.addressCount = addresses["totalRecords"];
+    })
+  }
+  getNextData(event) {
+    const { previousPageIndex, pageIndex } = event;
+    if (pageIndex > previousPageIndex) {
+      this.page++;
+    } else {
+      this.page--;
+    };
+    this.getUserAddresses(this.page);
+  };
   ngOnDestroy(): void {
     this._unsubscribeAll.next();
     this._unsubscribeAll.complete();

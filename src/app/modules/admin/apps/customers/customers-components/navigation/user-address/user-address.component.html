@@ -4,49 +4,51 @@
 </div>
 <div class="row w-full" *ngIf="!isLoading">
     <div class="col-12 my-2 w-full">
-        <fuse-card class="rounded-2xl bg-light flex flex-col lg:flex-row w-full">
+        <fuse-card class="rounded-2xl flex flex-col lg:flex-row w-full">
             <div class="p-6 sm:p-8 lg:p-10 w-full">
                 <div class="text-3xl font-bold">
-                    {{selectedTab}}
+                    User Addresses
                 </div>
 
                 <!-- User Info -->
                 <div class="gap-y-4 mt-6">
                     <div class="row" *ngIf="addressCount > 0; else noAddresses">
-                        <div class="col-lg-4 col-md-6 col-12" *ngFor="let address of customerAddresses; index as i">
-                            <!-- Card #38 -->
-                            <fuse-card class="flex flex-col bg-card w-full p-8 filter-info rounded-2xl shadow-lg">
-                                <div class="text-2xl font-semibold leading-tight">Address</div>
-                                <div class="mt-4">
-                                    {{address.address1}}
-                                </div>
-                                <hr class="w-full border-t my-6">
-                                <div class="flex flex-col">
-                                    <div class="flex items-center">
-                                        <mat-icon class="icon-size-5 mr-3"
-                                            [svgIcon]="'heroicons_solid:location-marker'">
-                                        </mat-icon>
-                                        <span class="leading-none">{{address.fullAddress}}</span>
-                                    </div>
-                                    <div class="flex items-center mt-4">
-                                        <mat-icon class="icon-size-5 mr-3" [svgIcon]="'heroicons_solid:phone'">
-                                        </mat-icon>
-                                        <span class="leading-none">{{address.phone}}</span>
-                                    </div>
-                                </div>
-                                <div class="mt-5 w-full text-center bg-primary">
-                                    <div class="py-3 text-white text-capitalize">
-                                        {{address.addressType}}
-                                    </div>
-                                </div>
-                            </fuse-card>
+                        <table class="table table-striped border-t-0">
+                            <thead>
+                                <tr>
+                                    <th>City</th>
+                                    <th>Country</th>
+                                    <th>State</th>
+                                    <th>Address</th>
+                                    <th>Zip Code</th>
+                                    <th>Type</th>
+                                    <!-- <th>Action</th> -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let address of customerAddresses; index as i">
+                                    <td>{{address.city || '---'}}</td>
+                                    <td>{{address.country || '---'}}</td>
+                                    <td>{{address.state || '---'}}</td>
+                                    <td>{{address.address1 || '---'}}</td>
+                                    <td>{{address.zipCode || '---'}}</td>
+                                    <td class="text-capitalize">{{address.addressType || '---'}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="w-full" *ngIf="addressCount > customerAddresses.length">
+                            <mat-paginator #paginator
+                                class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                                [length]="addressCount" [pageIndex]="0" [pageSize]="20" (page)="getNextData($event)"
+                                [hidePageSize]="true">
+                            </mat-paginator>
                         </div>
                     </div>
 
                     <ng-template #noAddresses>
                         <div class="p-8 sm:p-16 border-t text-2xl font-semibold not-found-color">
                             <img src="assets/gifs/not-found.gif" class="rounded-circle" style="width: 250px;">
-                            No addressess found!
+                            No addresses found!
                         </div>
                     </ng-template>
                 </div>
