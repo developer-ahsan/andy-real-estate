@@ -472,7 +472,7 @@ export interface UpdateStoreOrder {
 };
 
 export interface SentPurchaseOrders {
-    purchase_orders_ids: purchaseOrders[];
+    order_id: number;
     sent_purchase_orders: boolean;
 };
 interface purchaseOrders {

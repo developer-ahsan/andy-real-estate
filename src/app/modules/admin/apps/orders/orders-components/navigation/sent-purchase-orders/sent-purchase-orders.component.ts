@@ -47,22 +47,11 @@ export class SentOrdersPurchasesComponent implements OnInit {
 
     this.isLoading = true;
     this.getOrderDetail();
-    this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      let value = [];
-      this.orderProducts = res["data"];
-      res["data"].forEach((element, index) => {
-        value.push(element.pk_orderLineID);
-        if (index == res["data"].length - 1) {
-          // this.getPurchaseOrders(value);
-        }
-      });
-    });
-
   }
   getOrderDetail() {
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.orderDetail = res["data"][0];
-      this.getOrderFiles();
+      this.getPurchaseOrders();
       this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         this.orderProducts = res["data"];
       });
@@ -72,22 +61,15 @@ export class SentOrdersPurchasesComponent implements OnInit {
     })
   }
   getPurchaseOrders() {
-    let value = [];
-    this.poFiles.forEach(element => {
-      value.push({
-        dateLastModified: element.DATELASTMODIFIED,
-        purchase_order_id: element.ID
-      });
-    });
-
     let params: SentPurchaseOrders = {
       sent_purchase_orders: true,
-      purchase_orders_ids: value
+      order_id: this.orderDetail.pk_orderID
     }
-    this._orderService.orderPostCalls(params)
+    this._orderService.getOrderCommonCall(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((purchases) => {
         this.purchases = purchases["data"];
+        console.log(this.purchases)
         this.isLoading = false;
         this._changeDetectorRef.markForCheck();
       }, err => {

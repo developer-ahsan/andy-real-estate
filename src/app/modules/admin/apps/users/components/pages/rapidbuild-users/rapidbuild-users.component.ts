@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
@@ -6,6 +6,7 @@ import { finalize, takeUntil } from 'rxjs/operators';
 import { UsersService } from '../../users.service';
 import { applyBlanketCustomerPercentage, newFLPSUser, newRapidbuildUser, removeFLPSUser, RemoveRapidUser, updateFLPSUser, updateRapidbuildUser, updateRapidBuildUserStores } from '../../users.types';
 import moment from 'moment';
+declare var $: any;
 @Component({
   selector: 'app-rapidbuild-users',
   templateUrl: './rapidbuild-users.component.html',
@@ -14,6 +15,8 @@ import moment from 'moment';
 export class RapidBuildUsersComponent implements OnInit, OnDestroy {
   @ViewChild('paginator') paginator: MatPaginator;
   @Input() isLoading: boolean;
+  @ViewChild('removeUsers') removeUsers: ElementRef;
+
   // @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -64,6 +67,7 @@ export class RapidBuildUsersComponent implements OnInit, OnDestroy {
   ngType = 'ALL';
   ngSPID = '';
 
+  tempRemoveData: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _UsersService: UsersService
@@ -245,22 +249,27 @@ export class RapidBuildUsersComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
-  deleteUser(item) {
-    item.delLoader = true;
+  openRemoveModal(item) {
+    this.tempRemoveData = item;
+    $(this.removeUsers.nativeElement).modal('show');
+  }
+  deleteUser() {
+    this.tempRemoveData.delLoader = true;
     this._changeDetectorRef.markForCheck();
     let payload: RemoveRapidUser = {
-      user_id: item.pk_userID,
+      user_id: this.tempRemoveData.pk_userID,
       remove_rapidbuild_user: true
     }
     this._UsersService.UpdateAdminsData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-      item.delLoader = false
+      this.tempRemoveData.delLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
-      this.dataSource = this.dataSource.filter(elem => elem.pk_userID != item.pk_userID);
+      this.dataSource = this.dataSource.filter(elem => elem.pk_userID != this.tempRemoveData.pk_userID);
       this.totalUsers--;
-      this.tempDataSource = this.tempDataSource.filter(elem => elem.pk_userID != item.pk_userID);
+      this.tempDataSource = this.tempDataSource.filter(elem => elem.pk_userID != this.tempRemoveData.pk_userID);
       this.tempRecords--;
       this._UsersService.snackBar('User Deleted Successfully');
+      $(this.removeUsers.nativeElement).modal('hide');
       this._changeDetectorRef.markForCheck();
     }, err => {
       this._UsersService.snackBar('Something went wrong');

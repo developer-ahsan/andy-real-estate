@@ -30,7 +30,8 @@
                         <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30">
                             First Name
                         </th>
-                        <td mat-cell *matCellDef="let element" class="text-sm">
+                        <td mat-cell *matCellDef="let element" class="text-sm"
+                            (click)="toggleUpdateUserData(element, true)">
                             {{element.firstName}}
                         </td>
                     </ng-container>
@@ -38,7 +39,8 @@
                         <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30 ">
                             Last Name
                         </th>
-                        <td mat-cell *matCellDef="let element" class="text-sm">
+                        <td mat-cell *matCellDef="let element" class="text-sm"
+                            (click)="toggleUpdateUserData(element, true)">
                             {{element.lastName}}
                         </td>
                     </ng-container>
@@ -71,8 +73,8 @@
                             <div class="flex justify-center">
                                 <mat-icon (click)="toggleUpdateUserData(element, true)"
                                     svgIcon="heroicons_outline:pencil-alt"></mat-icon>
-                                <mat-icon (click)="deleteUser(element)" svgIcon="heroicons_outline:trash"
-                                    *ngIf="!element.delLoader"></mat-icon>
+                                <mat-icon (click)="openRemoveModal(element)" matTooltip="Remove User"
+                                    svgIcon="heroicons_outline:trash" *ngIf="!element.delLoader"></mat-icon>
                                 <mat-progress-spinner *ngIf="element.delLoader" [diameter]="24"
                                     [mode]="'indeterminate'">
                                 </mat-progress-spinner>
@@ -376,6 +378,27 @@
                         There are no user history.
                     </div>
                 </ng-template>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Remove Rapid Build User -->
+<div class="modal" tabindex="-1" role="dialog" #removeUsers>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Remove Users</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to remove this rapidbuild user? This cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="deleteUser()">Yes</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
             </div>
         </div>
     </div>
