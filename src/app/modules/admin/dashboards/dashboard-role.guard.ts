@@ -24,7 +24,7 @@ export class RoleGuard implements CanActivate {
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-    const userDetails = JSON.parse(sessionStorage.getItem('userDetails'));
+    const userDetails = JSON.parse(localStorage.getItem('userDetails'));
     if (userDetails.blnManager) {
       return true;
     } else {

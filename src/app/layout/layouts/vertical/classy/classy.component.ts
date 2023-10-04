@@ -73,7 +73,7 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy {
             });
     }
     getUserRole() {
-        const user = JSON.parse(sessionStorage.getItem('userDetails'));
+        const user = JSON.parse(localStorage.getItem('userDetails'));
         if (user.blnManager) {
             this.data.navigation.default[0].children[0].children.push(
                 {
@@ -133,6 +133,7 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy {
             //     },
             // )
         }
+
     }
     /**
      * On destroy

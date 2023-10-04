@@ -209,6 +209,7 @@ export class AuthService {
         // Remove the access token from the local storage
         localStorage.removeItem('accessToken');
         sessionStorage.clear();
+        localStorage.clear();
 
         // Set the authenticated flag to false
         this._authenticated = false;

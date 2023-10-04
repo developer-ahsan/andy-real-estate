@@ -107,7 +107,7 @@ export class AuthSignInComponent implements OnInit {
         }
         this._authService.siginPostApiCall(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
             if (res["success"]) {
-                sessionStorage.setItem('userDetails', JSON.stringify(res["userDetails"]));
+                localStorage.setItem('userDetails', JSON.stringify(res["userDetails"]));
                 this._authService.SignInUsingEmailPassword(email, password)
                     .then(() => {
                         const { loginMessageNumber } = this._authService;
@@ -118,7 +118,7 @@ export class AuthSignInComponent implements OnInit {
                                 // to the correct page after a successful sign in. This way, that url can be set via
                                 // routing file and we don't have to touch here.
                                 const redirectURL = this._activatedRoute.snapshot.queryParamMap.get('redirectURL') || '/signed-in-redirect';
-                                const userDetails = JSON.parse(sessionStorage.getItem('userDetails'));
+                                const userDetails = JSON.parse(localStorage.getItem('userDetails'));
                                 if (redirectURL == '/signed-in-redirect') {
                                     let targetURL = '/dashboards/home';
                                     if (userDetails.blnManager) {
