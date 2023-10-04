@@ -250,11 +250,12 @@ export class ProjectComponent implements OnInit, OnDestroy {
                 }
             },
             dataLabels: {
-                enabled: false
+                enabled: false,
+                formatter: function (val) {
+                    return '$' + `${val.toLocaleString()}`;
+                },
             },
-            stroke: {
-                curve: "straight"
-            },
+
             colors: [],
             title: {
                 text: "Annual Total Sales",
@@ -307,7 +308,6 @@ export class ProjectComponent implements OnInit, OnDestroy {
         });
     }
     onSelected(ev) {
-        console.log(ev)
         this.selectedEmployee = ev.value;
         if (this.selectedEmployee != '') {
             this.isPortfolioLoader = true;
