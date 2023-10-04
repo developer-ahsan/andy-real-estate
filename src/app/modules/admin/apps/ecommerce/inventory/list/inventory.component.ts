@@ -3097,13 +3097,40 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             return;
         };
         if (!miniDescription) {
-            this._snackBar.open("Meta description is required", '', {
+            this._snackBar.open("Mini description is required", '', {
                 horizontalPosition: 'center',
                 verticalPosition: 'bottom',
                 duration: 3500
             });
             return;
         };
+        if (radio.name != 'Apparel Item') {
+            if (!weight || !unitsInWeight) {
+                this._snackBar.open('Weight and units per weight are required for normal branded material.', '', {
+                    horizontalPosition: 'center',
+                    verticalPosition: 'bottom',
+                    duration: 3500
+                })
+                return;
+            }
+            if ((weight / unitsInWeight * unitsInShippingPackage > 150)) {
+                this._snackBar.open("Package shipping weight too large to be send with UPS.", '', {
+                    horizontalPosition: 'center',
+                    verticalPosition: 'bottom',
+                    duration: 3500
+                });
+                return;
+            }
+        }
+
+        if (unitsInShippingPackage <= 0) {
+            this._snackBar.open("Units per shipping package appears incorrect", '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3500
+            });
+            return;
+        }
 
         if (!this.fruits.length) {
             this._snackBar.open("Please add keywords", '', {

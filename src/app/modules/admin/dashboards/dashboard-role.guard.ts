@@ -24,10 +24,8 @@ export class RoleGuard implements CanActivate {
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-    let role = Number(localStorage.getItem('roleID'));
-    let blnManager = localStorage.getItem('blnManager');
-    // Check if the user has the expected role
-    if (blnManager == 'true') {
+    const userDetails = JSON.parse(sessionStorage.getItem('userDetails'));
+    if (userDetails.blnManager) {
       return true;
     } else {
       // Redirect to a forbidden page or handle access denied as needed

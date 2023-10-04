@@ -9,6 +9,7 @@ import { AuthService } from 'app/core/auth/auth.service';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 import { Subject, of } from 'rxjs';
 import { catchError, takeUntil } from 'rxjs/operators';
+import * as CryptoJS from 'crypto-js';
 
 @Component({
     selector: 'auth-sign-in',
@@ -71,6 +72,7 @@ export class AuthSignInComponent implements OnInit {
      */
     signIn(): void {
         localStorage.clear();
+        sessionStorage.clear();
         // Return if the form is invalid
         if (this.signInForm.invalid) {
             return;
@@ -87,14 +89,25 @@ export class AuthSignInComponent implements OnInit {
             localStorage.setItem('userEmail', email);
             localStorage.setItem('userPassword', password);
         }
-        let payload = {
+        // let payload = {
+        //     email: email,
+        //     password: password,
+        //     login: true
+        // }
+        let obj = {
             email: email,
             password: password,
-            login: true
         }
-
+        const secretKey = 'admin_login';
+        const objectString = JSON.stringify(obj);
+        const encryptedObject = CryptoJS.AES.encrypt(objectString, secretKey).toString();
+        let payload = {
+            payload: encryptedObject,
+            admin_login: true
+        }
         this._authService.siginPostApiCall(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
             if (res["success"]) {
+                sessionStorage.setItem('userDetails', JSON.stringify(res["userDetails"]));
                 this._authService.SignInUsingEmailPassword(email, password)
                     .then(() => {
                         const { loginMessageNumber } = this._authService;
@@ -105,33 +118,19 @@ export class AuthSignInComponent implements OnInit {
                                 // to the correct page after a successful sign in. This way, that url can be set via
                                 // routing file and we don't have to touch here.
                                 const redirectURL = this._activatedRoute.snapshot.queryParamMap.get('redirectURL') || '/signed-in-redirect';
-                                this._dashboardService.getUserRole(email)
-                                    .pipe(
-                                        takeUntil(this._unsubscribeAll),
-                                        catchError(error => {
-                                            // Handle observable error here if needed
-                                            return of(null); // Return a fallback value or rethrow if necessary
-                                        })
-                                    )
-                                    .subscribe(res => {
-                                        if (redirectURL == '/signed-in-redirect') {
-                                            if (res) {
-                                                const user = res["data"][0];
-                                                let targetURL = '/dashboards/home';
+                                const userDetails = JSON.parse(sessionStorage.getItem('userDetails'));
+                                if (redirectURL == '/signed-in-redirect') {
+                                    let targetURL = '/dashboards/home';
+                                    if (userDetails.blnManager) {
+                                        targetURL = '/dashboards/manager';
+                                    } else if (userDetails.roleID == 3) {
+                                        targetURL = '/dashboards/employee';
+                                    }
 
-                                                if (user.blnManager) {
-                                                    targetURL = '/dashboards/manager';
-                                                } else if (user.roleID == 3) {
-                                                    targetURL = '/dashboards/employee';
-                                                }
-
-                                                this._router.navigateByUrl(targetURL);
-                                            }
-                                        } else {
-                                            this._router.navigateByUrl(redirectURL);
-                                        }
-                                    });
-
+                                    this._router.navigateByUrl(targetURL);
+                                } else {
+                                    this._router.navigateByUrl(redirectURL);
+                                }
                                 break;
                             }
                             case 1: {

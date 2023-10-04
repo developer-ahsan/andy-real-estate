@@ -73,81 +73,66 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy {
             });
     }
     getUserRole() {
-        this._dashboardService.userRole$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-            // const redirectURL = this._activatedRoute.snapshot.queryParamMap.get('redirectURL') || '/signed-in-redirect';
-            // if (redirectURL == '/signed-in-redirect') {
-            //     if (res) {
-            //         const user = res["data"][0];
-            //         if (user.blnManager) {
-            //             this._router.navigateByUrl('/dashboards/manager');
-            //         } else if (user.roleID == 3) {
-            //             this._router.navigateByUrl('/dashboards/employee');
-            //         } else {
-            //             this._router.navigateByUrl('/dashboards/home');
-            //         }
-            //     }
-            // }
-            let user = res["data"][0];
-            if (user.blnManager) {
-                this.data.navigation.default[0].children[0].children.push(
-                    {
-                        id: 'apps.reports.store-sales',
-                        title: 'Employee Dashboard',
-                        type: 'basic',
-                        icon: 'mat_outline:analytics',
-                        link: '/dashboards/employee',
-                    },
-                    {
-                        id: 'apps.reports.store-sales',
-                        title: 'Manager Dashboard', //Company Overview
-                        type: 'basic',
-                        icon: 'heroicons_outline:view-boards',
-                        link: '/dashboards/manager',
-                    },
-                    {
-                        id: 'apps.reports.store-sales',
-                        title: 'Employee Reports',
-                        type: 'basic',
-                        icon: 'heroicons_outline:document-report',
-                        link: '/dashboards/reports',
-                    },
-                    // {
-                    //     id: 'apps.reports.store-sales',
-                    //     title: 'Home Dashboard',
-                    //     type: 'basic',
-                    //     icon: 'mat_outline:home',
-                    //     link: '/dashboards/home',
-                    // },
-                )
-            } else if (user.roleID == 3) {
-                this.data.navigation.default[0].children[0].children.push(
-                    {
-                        id: 'apps.reports.store-sales',
-                        title: 'Employee Dashboard',
-                        type: 'basic',
-                        icon: 'mat_outline:analytics',
-                        link: '/dashboards/employee',
-                    },
-                    // {
-                    //     id: 'apps.reports.store-sales',
-                    //     title: 'Home Dashboard',
-                    //     type: 'basic',
-                    //     icon: 'mat_outline:home',
-                    //     link: '/dashboards/home',
-                    // },
-                )
-            } else {
-                // this.data.navigation.default[0].children[0].children.push(
-                //     {
-                //         id: 'apps.reports.store-sales',
-                //         title: 'Home Dashboard',
-                //         type: 'basic',
-                //         icon: 'mat_outline:home',
-                //         link: '/dashboards/home',
-                //     },
-                // )
-            }
-        });
+        const user = JSON.parse(sessionStorage.getItem('userDetails'));
+        if (user.blnManager) {
+            this.data.navigation.default[0].children[0].children.push(
+                {
+                    id: 'apps.reports.store-sales',
+                    title: 'Employee Dashboard',
+                    type: 'basic',
+                    icon: 'mat_outline:analytics',
+                    link: '/dashboards/employee',
+                },
+                {
+                    id: 'apps.reports.store-sales',
+                    title: 'Manager Dashboard', //Company Overview
+                    type: 'basic',
+                    icon: 'heroicons_outline:view-boards',
+                    link: '/dashboards/manager',
+                },
+                {
+                    id: 'apps.reports.store-sales',
+                    title: 'Employee Reports',
+                    type: 'basic',
+                    icon: 'heroicons_outline:document-report',
+                    link: '/dashboards/reports',
+                },
+                // {
+                //     id: 'apps.reports.store-sales',
+                //     title: 'Home Dashboard',
+                //     type: 'basic',
+                //     icon: 'mat_outline:home',
+                //     link: '/dashboards/home',
+                // },
+            )
+        } else if (user.roleID == 3) {
+            this.data.navigation.default[0].children[0].children.push(
+                {
+                    id: 'apps.reports.store-sales',
+                    title: 'Employee Dashboard',
+                    type: 'basic',
+                    icon: 'mat_outline:analytics',
+                    link: '/dashboards/employee',
+                },
+                // {
+                //     id: 'apps.reports.store-sales',
+                //     title: 'Home Dashboard',
+                //     type: 'basic',
+                //     icon: 'mat_outline:home',
+                //     link: '/dashboards/home',
+                // },
+            )
+        } else {
+            // this.data.navigation.default[0].children[0].children.push(
+            //     {
+            //         id: 'apps.reports.store-sales',
+            //         title: 'Home Dashboard',
+            //         type: 'basic',
+            //         icon: 'mat_outline:home',
+            //         link: '/dashboards/home',
+            //     },
+            // )
+        }
     }
     /**
      * On destroy

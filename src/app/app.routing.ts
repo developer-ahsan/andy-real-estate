@@ -72,7 +72,6 @@ export const appRoutes: Route[] = [
         component: LayoutComponent,
         resolve: {
             initialData: InitialDataResolver,
-            roles: UserRoleResolver,
             suppliers: SuppliersResolver,
             stores: StoresResolver,
         },

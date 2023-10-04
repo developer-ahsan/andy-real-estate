@@ -75,11 +75,6 @@ export class AuthService {
     }
 
     SignInUsingEmailPassword(email: string, password: string) {
-        sessionStorage.clear();
-        sessionStorage.removeItem('flpsAccessToken');
-        sessionStorage.removeItem('smartArt');
-        sessionStorage.removeItem('orderManage');
-        sessionStorage.removeItem('rapidBuild');
         // Throw error, if the user is already logged in
         if (this._authenticated) {
             this._userLoginMessage = 1;
