@@ -135,9 +135,7 @@ export class DashboardHomeComponent implements OnInit, OnDestroy {
         this.getUserRole();
     }
     getUserRole() {
-        this._dashboardService.userRole$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-            this.userData = res["data"][0];
-        });
+        this.userData = JSON.stringify(sessionStorage.getItem('userDetails'));
     }
     signOut() {
         this._router.navigate(['/sign-out']);
