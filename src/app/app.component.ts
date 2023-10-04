@@ -14,10 +14,10 @@ export class AppComponent implements OnInit {
     private router: Router
   ) { }
   ngOnInit(): void {
-    const userDetails = JSON.parse(sessionStorage.getItem('userDetails'));
-    if (!userDetails) {
-      localStorage.clear();
-      this.router.navigateByUrl('/sign-in');
-    }
+    // const userDetails = JSON.parse(sessionStorage.getItem('userDetails'));
+    // if (!userDetails) {
+    //   localStorage.clear();
+    //   this.router.navigateByUrl('/sign-in');
+    // }
   }
 }

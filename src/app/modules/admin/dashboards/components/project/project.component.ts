@@ -250,12 +250,14 @@ export class ProjectComponent implements OnInit, OnDestroy {
                 }
             },
             dataLabels: {
-                enabled: false,
+                enabled: true,
                 formatter: function (val) {
                     return '$' + `${val.toLocaleString()}`;
                 },
             },
-
+            stroke: {
+                curve: "straight",
+            },
             colors: [],
             title: {
                 text: "Annual Total Sales",
