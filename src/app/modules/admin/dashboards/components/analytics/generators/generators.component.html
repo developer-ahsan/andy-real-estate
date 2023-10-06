@@ -53,7 +53,18 @@
                 </fuse-alert>
             </div>
             <div class="overflow-x-auto mt-4" *ngIf="pendingQuotes.length">
-                <table datatable class="table table-striped">
+                <mat-form-field class="w-100">
+                    <mat-select matInput [(ngModel)]="ngPendingStore" (selectionChange)="changeStore('quotes',$event)">
+                        <mat-option [value]="'All'" selected>All Stores</mat-option>
+                        <mat-option *ngFor="let store of pendingStores"
+                            [value]="store.store">{{store.store}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <ngx-skeleton-loader *ngIf="pendingQuotesLoader" count="8" appearance="line" animation="pulse" [theme]="{ 
+                    'background-color': '#dedede'
+                  }">
+                </ngx-skeleton-loader>
+                <table datatable class="table table-striped" *ngIf="!pendingQuotesLoader">
                     <thead>
                         <tr>
                             <th>Store</th>
@@ -167,7 +178,18 @@
                 </fuse-alert>
             </div>
             <div class="overflow-x-auto mt-4" *ngIf="sampleStatus.length">
-                <table datatable class="table table-striped">
+                <mat-form-field class="w-100">
+                    <mat-select matInput [(ngModel)]="ngSampleStore" (selectionChange)="changeStore('samples',$event)">
+                        <mat-option [value]="'All'" selected>All Stores</mat-option>
+                        <mat-option *ngFor="let store of sampleStores"
+                            [value]="store.store">{{store.store}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <ngx-skeleton-loader *ngIf="sampleStatusLoader" count="8" appearance="line" animation="pulse" [theme]="{ 
+                    'background-color': '#dedede'
+                  }">
+                </ngx-skeleton-loader>
+                <table datatable class="table table-striped" *ngIf="!sampleStatusLoader">
                     <thead>
                         <tr>
                             <th>Store</th>
@@ -272,7 +294,17 @@
                 </fuse-alert>
             </div>
             <div class="overflow-x-auto mt-4" *ngIf="ordersThisYear.length">
-                <table datatable class="table table-striped">
+                <mat-form-field class="w-100">
+                    <mat-select matInput [(ngModel)]="ngOrderStore" (selectionChange)="changeStore('orders',$event)">
+                        <mat-option [value]="'All'" selected>All Stores</mat-option>
+                        <mat-option *ngFor="let store of orderStores" [value]="store.store">{{store.store}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <ngx-skeleton-loader *ngIf="ordersThisYearLoader" count="8" appearance="line" animation="pulse" [theme]="{ 
+                    'background-color': '#dedede'
+                  }">
+                </ngx-skeleton-loader>
+                <table datatable class="table table-striped" *ngIf="!ordersThisYearLoader">
                     <thead>
                         <tr>
                             <th>Store</th>
@@ -331,7 +363,9 @@
                                 <span *ngIf="item.locationName"> - {{item.locationName}}</span>
                                 <span *ngIf="item.companyName"> - {{item.companyName}}</span>
                             </td>
-                            <td>{{item.products}}</td>
+                            <td>
+                                <p *ngFor="let prod of item.products.split(',')">{{prod}}</p>
+                            </td>
                             <td>
                                 <ng-container *ngIf="item.inHandsDate != 'N/A'; else na">
                                     {{ item.inHandsDate | date: 'MM/dd/yyyy' }}
@@ -411,9 +445,9 @@
                                     href="{{item.protocol + item.storeName + '/search?keywords=' + item.keyword}}">{{item.keyword}}</a>
                             </td>
                             <td>{{item.frequency}}</td>
-                            <td>{{item.result}}</td>
+                            <td>{{item.results}}</td>
                             <td>
-                                {{item.days}}
+                                {{item.daysAgo}}
                             </td>
                         </tr>
                     </tbody>
@@ -442,11 +476,23 @@
                 <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
                     <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
                     </mat-icon>
-                    There are currently no keywords for your customers around this time last year.
+                    There are currently no orders for your customers around this time last year.
                 </fuse-alert>
             </div>
             <div class="overflow-x-auto mt-4" *ngIf="activityData.length">
-                <table datatable class="table table-striped">
+                <mat-form-field class="w-100">
+                    <mat-select matInput [(ngModel)]="ngActivityStore"
+                        (selectionChange)="changeStore('activity',$event)">
+                        <mat-option [value]="'All'" selected>All Stores</mat-option>
+                        <mat-option *ngFor="let store of activityStores"
+                            [value]="store.store">{{store.store}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <ngx-skeleton-loader *ngIf="activityDataLoader" count="8" appearance="line" animation="pulse" [theme]="{ 
+                    'background-color': '#dedede'
+                  }">
+                </ngx-skeleton-loader>
+                <table datatable class="table table-striped" *ngIf="!activityDataLoader">
                     <thead>
                         <tr>
                             <th>Store</th>

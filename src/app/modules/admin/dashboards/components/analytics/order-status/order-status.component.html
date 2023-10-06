@@ -54,7 +54,19 @@
                 </fuse-alert>
             </div>
             <div class="overflow-x-auto" *ngIf="approvalOrders.length">
-                <table datatable class="table table-striped">
+                <mat-form-field class="w-100">
+                    <mat-select matInput [(ngModel)]="ngAapprovalStores"
+                        (selectionChange)="changeStore('waiting',$event)">
+                        <mat-option [value]="'All'" selected>All Stores</mat-option>
+                        <mat-option *ngFor="let store of approvalOrdersStores"
+                            [value]="store.store">{{store.store}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <ngx-skeleton-loader *ngIf="approvalOrdersLoader" count="8" appearance="line" animation="pulse" [theme]="{ 
+                    'background-color': '#dedede'
+                  }">
+                </ngx-skeleton-loader>
+                <table datatable class="table table-striped" *ngIf="!approvalOrdersLoader">
                     <thead>
                         <tr>
                             <th>Store</th>
@@ -174,7 +186,18 @@
             </fuse-alert>
         </div>
         <div class="overflow-x-auto mt-4" *ngIf="awaitingOrders.length">
-            <table datatable class="table table-striped">
+            <mat-form-field class="w-100">
+                <mat-select matInput [(ngModel)]="ngAwaitingStores" (selectionChange)="changeStore('payment',$event)">
+                    <mat-option [value]="'All'" selected>All Stores</mat-option>
+                    <mat-option *ngFor="let store of awaitingOrdersStores"
+                        [value]="store.store">{{store.store}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <ngx-skeleton-loader *ngIf="awaitingOrdersLoader" count="8" appearance="line" animation="pulse" [theme]="{ 
+                'background-color': '#dedede'
+              }">
+            </ngx-skeleton-loader>
+            <table datatable class="table table-striped" *ngIf="!awaitingOrdersLoader">
                 <thead>
                     <tr>
                         <th>Store</th>
@@ -291,7 +314,19 @@
             </fuse-alert>
         </div>
         <div class="overflow-x-auto mt-4" *ngIf="processingOrders.length">
-            <table class="table table-striped" datatable>
+            <mat-form-field class="w-100">
+                <mat-select matInput [(ngModel)]="ngProcessingStores"
+                    (selectionChange)="changeStore('processing',$event)">
+                    <mat-option [value]="'All'" selected>All Stores</mat-option>
+                    <mat-option *ngFor="let store of processingOrdersStores"
+                        [value]="store.store">{{store.store}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <ngx-skeleton-loader *ngIf="processingOrdersLoader" count="8" appearance="line" animation="pulse" [theme]="{ 
+                'background-color': '#dedede'
+              }">
+            </ngx-skeleton-loader>
+            <table datatable class="table table-striped" *ngIf="!processingOrdersLoader">
                 <thead>
                     <tr>
                         <th>Store</th>

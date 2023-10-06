@@ -24,6 +24,22 @@ export class OrderStatusComponent implements OnInit {
   awaitingOrders: any;
   processingOrders: any;
 
+  tempApprovalOrders: any;
+  tempAwaitingOrders: any;
+  tempProcessingOrders: any;
+
+  approvalOrdersLoader: any;
+  awaitingOrdersLoader: any;
+  processingOrdersLoader: any;
+
+  approvalOrdersStores: any;
+  awaitingOrdersStores: any;
+  processingOrdersStores: any;
+
+  ngAapprovalStores: any = 'All';
+  ngAwaitingStores: any = 'All';
+  ngProcessingStores: any = 'All';
+
   rescheduleModalContent: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -39,6 +55,15 @@ export class OrderStatusComponent implements OnInit {
     this.approvalOrders = [];
     this.awaitingOrders = [];
     this.processingOrders = [];
+
+    this.tempApprovalOrders = [];
+    this.tempAwaitingOrders = [];
+    this.tempProcessingOrders = [];
+
+    this.approvalOrdersStores = [];
+    this.awaitingOrdersStores = [];
+    this.processingOrdersStores = [];
+
     let params = {
       order_status_reports: true,
       email: this.userData.email,
@@ -59,9 +84,15 @@ export class OrderStatusComponent implements OnInit {
           if (Number(priority) > 0) {
             priorityChecked = true;
           }
+          const existingStoreIndex = this.approvalOrdersStores.findIndex(store => store.store === storeName);
+          if (existingStoreIndex > -1) {
+            this.approvalOrdersStores[existingStoreIndex].data.push({ orderID: Number(orderID), orderDate, blnReorder: Number(blnReorder), inHandsDate, groupOrderID: groupOrderID, storeCode, storeName, storeUserID: Number(storeUserID), storeID: Number(storeID), statusDate, statusID: Number(statusID), reschedule, firstName, lastName, locationName, companyName, total: Number(total), artworkNotification, days, priority, priorityChecked });
+          } else {
+            this.approvalOrdersStores.push({ store: storeName, data: [{ orderID: Number(orderID), orderDate, blnReorder: Number(blnReorder), inHandsDate, groupOrderID: groupOrderID, storeCode, storeName, storeUserID: Number(storeUserID), storeID: Number(storeID), statusDate, statusID: Number(statusID), reschedule, firstName, lastName, locationName, companyName, total: Number(total), artworkNotification, days, priority, priorityChecked }] });
+          }
           this.approvalOrders.push({
             orderID: Number(orderID), orderDate, blnReorder: Number(blnReorder), inHandsDate, groupOrderID: groupOrderID, storeCode, storeName, storeUserID: Number(storeUserID), storeID: Number(storeID), statusDate, statusID: Number(statusID), reschedule, firstName, lastName, locationName, companyName, total: Number(total), artworkNotification, days, priority, priorityChecked
-          })
+          });
         });
       }
       // Awaiting Orders 
@@ -73,6 +104,12 @@ export class OrderStatusComponent implements OnInit {
           let priorityChecked = false;
           if (Number(priority) > 0) {
             priorityChecked = true;
+          }
+          const existingStoreIndex = this.awaitingOrdersStores.findIndex(store => store.store === storeName);
+          if (existingStoreIndex > -1) {
+            this.awaitingOrdersStores[existingStoreIndex].data.push({ orderID: Number(orderID), orderDate, inHandsDate, blnReorder: Number(blnReorder), groupOrderID: groupOrderID, storeCode, storeName, storeUserID: Number(storeUserID), storeID: Number(storeID), firstName, lastName, locationName, companyName, total: Number(total), paymentNotification, status: statusResult, days, priority, priorityChecked });
+          } else {
+            this.awaitingOrdersStores.push({ store: storeName, data: [{ orderID: Number(orderID), orderDate, inHandsDate, blnReorder: Number(blnReorder), groupOrderID: groupOrderID, storeCode, storeName, storeUserID: Number(storeUserID), storeID: Number(storeID), firstName, lastName, locationName, companyName, total: Number(total), paymentNotification, status: statusResult, days, priority, priorityChecked }] });
           }
           this.awaitingOrders.push({
             orderID: Number(orderID), orderDate, inHandsDate, blnReorder: Number(blnReorder), groupOrderID: groupOrderID, storeCode, storeName, storeUserID: Number(storeUserID), storeID: Number(storeID), firstName, lastName, locationName, companyName, total: Number(total), paymentNotification, status: statusResult, days, priority, priorityChecked
@@ -89,11 +126,21 @@ export class OrderStatusComponent implements OnInit {
           if (Number(priority) > 0) {
             priorityChecked = true;
           }
+          const existingStoreIndex = this.processingOrdersStores.findIndex(store => store.store === storeName);
+          if (existingStoreIndex > -1) {
+            this.processingOrdersStores[existingStoreIndex].data.push({ orderID: Number(orderID), orderDate, blnReorder: Number(blnReorder), inHandsDate, paymentDate, groupOrderID: groupOrderID, storeCode, storeName, storeUserID: Number(storeUserID), storeID: Number(storeID), firstName, lastName, locationName, companyName, total: Number(total), status: statusResult, priority, priorityChecked });
+          } else {
+            this.processingOrdersStores.push({ store: storeName, data: [{ orderID: Number(orderID), orderDate, blnReorder: Number(blnReorder), inHandsDate, paymentDate, groupOrderID: groupOrderID, storeCode, storeName, storeUserID: Number(storeUserID), storeID: Number(storeID), firstName, lastName, locationName, companyName, total: Number(total), status: statusResult, priority, priorityChecked }] });
+          }
           this.processingOrders.push({
             orderID: Number(orderID), orderDate, blnReorder: Number(blnReorder), inHandsDate, paymentDate, groupOrderID: groupOrderID, storeCode, storeName, storeUserID: Number(storeUserID), storeID: Number(storeID), firstName, lastName, locationName, companyName, total: Number(total), status: statusResult, priority, priorityChecked
           })
         });
       }
+      this.tempApprovalOrders = this.approvalOrders;
+      this.tempProcessingOrders = this.processingOrders;
+      this.tempAwaitingOrders = this.awaitingOrders;
+
       this._changeDetectorRef.markForCheck();
     })
   }
@@ -103,7 +150,6 @@ export class OrderStatusComponent implements OnInit {
   }
   // Reschedule
   openRescheduleModal(data) {
-    console.log(data)
     this.rescheduleModalContent = data;
     this.rescheduleModalContent.date = null;
     $(this.rescheduleModal.nativeElement).modal('show');
@@ -148,6 +194,48 @@ export class OrderStatusComponent implements OnInit {
       }
     }
     this._dashboardService.updateDashboardData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => { });
+  }
+  changeStore(type, event) {
+    if (type == 'waiting') {
+      this.approvalOrdersLoader = true;
+      this.approvalOrders = null;
+      if (event.value == 'All') {
+        this.approvalOrders = this.tempApprovalOrders;
+      } else {
+        const index = this.approvalOrdersStores.findIndex(store => store.store == event.value);
+        this.approvalOrders = this.approvalOrdersStores[index].data;
+      }
+      setTimeout(() => {
+        this.approvalOrdersLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }, 500);
+    } else if (type == 'payment') {
+      this.awaitingOrdersLoader = true;
+      this.awaitingOrders = null;
+      if (event.value == 'All') {
+        this.awaitingOrders = this.tempAwaitingOrders;
+      } else {
+        const index = this.awaitingOrdersStores.findIndex(store => store.store == event.value);
+        this.awaitingOrders = this.awaitingOrdersStores[index].data;
+      }
+      setTimeout(() => {
+        this.awaitingOrdersLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }, 500);
+    } else if (type == 'processing') {
+      this.processingOrdersLoader = true;
+      this.processingOrders = null;
+      if (event.value == 'All') {
+        this.processingOrders = this.tempProcessingOrders;
+      } else {
+        const index = this.processingOrdersStores.findIndex(store => store.store == event.value);
+        this.processingOrders = this.processingOrdersStores[index].data;
+      }
+      setTimeout(() => {
+        this.processingOrdersLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }, 500);
+    }
   }
   trackByOrderId(index: number, item: any): string {
     return item.orderID;

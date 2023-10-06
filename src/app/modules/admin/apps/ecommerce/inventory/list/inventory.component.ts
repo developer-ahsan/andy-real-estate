@@ -3140,6 +3140,20 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             });
             return;
         };
+
+        const userDetails = JSON.parse(localStorage.getItem('userDetails'));
+        if (radio.name != 'Apparel Item') {
+            if (userDetails.supplier) {
+                if (!productDimensions) {
+                    this._snackBar.open("Product dimensions are required.", '', {
+                        horizontalPosition: 'center',
+                        verticalPosition: 'bottom',
+                        duration: 3500
+                    });
+                    return;
+                }
+            }
+        }
         this.createProductDetailLoader = true;
         let quantityList = [parseInt(firstQuantity) || null, parseInt(secondQuantity) || null, parseInt(thirdQuantity) || null, parseInt(fourthQuantity) || null, parseInt(fifthQuantity) || null, parseInt(sixthQuantity) || null];
         quantityList = this.removeNull(quantityList);

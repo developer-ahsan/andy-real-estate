@@ -16,6 +16,8 @@ import moment from 'moment';
 export class ReportsService {
     public startDate: any;
     public endDate: any;
+    public lastStartDate: any;
+    public lastEndDate: any;
     public reportType: any;
     public WeekDate = new Date();
     public monthlyMonth = 1;
@@ -78,11 +80,16 @@ export class ReportsService {
         if (this.ngPlan == 'weekly') {
             this.startDate = moment(this.WeekDate).startOf('isoWeek').format('yyyy-MM-DD');
             this.endDate = moment(this.WeekDate).endOf('isoWeek').format('yyyy-MM-DD');
+            this.lastStartDate = moment(this.WeekDate).startOf('isoWeek').subtract(1, 'year').format('yyyy-MM-DD');
+            this.lastEndDate = moment(this.WeekDate).endOf('isoWeek').subtract(1, 'year').format('yyyy-MM-DD');
             this.reportType = 'Weekly Sales';
         } else if (this.ngPlan == 'monthly') {
+            var currentDate = moment();
             let d = new Date(this.monthlyYear, this.monthlyMonth - 1, 1);
             this.startDate = moment(d).startOf('month').format('yyyy-MM-DD');
             this.endDate = moment(d).endOf('month').format('yyyy-MM-DD');
+            this.lastStartDate = moment(d).startOf('month').subtract(1, 'year').format('yyyy-MM-DD');
+            this.lastEndDate = moment(d).endOf('month').subtract(1, 'year').format('yyyy-MM-DD');
             this.reportType = 'Monthly Sales';
         } else if (this.ngPlan == 'quarterly') {
             let s;
@@ -103,19 +110,27 @@ export class ReportsService {
             this.startDate = moment(s).startOf('month').format('yyyy-MM-DD');
             this.endDate = moment(e).endOf('month').format('yyyy-MM-DD');
             this.reportType = 'Quarterly Sales';
+            this.lastStartDate = moment(s).startOf('month').subtract(1, 'year').format('yyyy-MM-DD');
+            this.lastEndDate = moment(e).endOf('month').subtract(1, 'year').format('yyyy-MM-DD');
         } else if (this.ngPlan == 'yearly') {
+            var currentDate = moment();
             const currentYear = moment().year();
             let d = new Date(this.yearlyYear, 0, 1);
             this.startDate = moment(d).startOf('year').format('yyyy-MM-DD');
             this.endDate = moment(d).endOf('year').format('yyyy-MM-DD');
             if (this.yearlyYear < currentYear) {
-                this.endDate = moment(d).endOf('year').format('YYYY-MM-DD');
+                this.endDate = moment(currentDate).endOf('year').format('YYYY-MM-DD');
             } else {
                 this.endDate = moment().format('YYYY-MM-DD');
             }
+            this.lastStartDate = moment(d).startOf('year').subtract(1, 'year').format('yyyy-MM-DD');
+            this.lastEndDate = moment(currentDate).subtract(1, 'year').format('yyyy-MM-DD');
+
         } else if (this.ngPlan == 'range') {
             this.startDate = moment(this.ngRangeStart).format('yyyy-MM-DD');
             this.endDate = moment(this.ngRangeEnd).format('yyyy-MM-DD');
+            this.lastStartDate = moment(this.ngRangeStart).subtract(1, 'year').format('yyyy-MM-DD');
+            this.lastEndDate = moment(this.ngRangeEnd).subtract(1, 'year').format('yyyy-MM-DD');
             this.reportType = 'Range Sales';
         }
     }

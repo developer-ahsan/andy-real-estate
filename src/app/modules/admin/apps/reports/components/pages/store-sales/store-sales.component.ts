@@ -61,7 +61,7 @@ export class ReportsStoreSalesComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = ['store', 'sales', 'py', 'percent', 'difference', 'n_sales', 'pyns', 'avg', 'margin'];
 
   currentYear = moment().format('yyyy');
-  currentDate = moment().subtract(1, 'years').format('mm/DD/yyyy');
+  currentDate = moment().subtract(1, 'year').format('MM/DD/YYYY');
   currentYearCheck = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -238,6 +238,8 @@ export class ReportsStoreSalesComponent implements OnInit, OnDestroy {
       is_individual: this.blnIndividualOrders,
       is_ytd: this.blnYTD,
       state: state,
+      last_year_start_date: this._reportService.lastStartDate,
+      last_year_end_date: this._reportService.lastEndDate,
       promo_code: promo
     }
     this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {

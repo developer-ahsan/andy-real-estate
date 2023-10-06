@@ -13,10 +13,26 @@ export class GeneratorsComponent implements OnInit {
 
   isLoading: boolean = false;
   pendingQuotes: any = [];
+  pendingQuotesLoader: boolean = false;
+  tempPendingQuotes: any = [];
+  pendingStores: any = [];
+  ngPendingStore = 'All';
   sampleStatus: any = [];
+  sampleStatusLoader: boolean = false;
+  ngSampleStore = 'All';
+  tempSampleStatus: any = [];
+  sampleStores: any = [];
   ordersThisYear: any = [];
+  ordersThisYearLoader: boolean = false;
+  ngOrderStore = 'All';
+  tempOrdersThisYear: any = [];
+  orderStores: any = [];
   keywordsData: any = [];
   activityData: any = [];
+  activityDataLoader: boolean = false;
+  ngActivityStore = 'All';
+  tempActivityData: any = [];
+  activityStores: any = [];
   @Input() userData: any;
   constructor(private _changeDetectorRef: ChangeDetectorRef,
     private _dashboardService: DashboardsService,
@@ -28,10 +44,18 @@ export class GeneratorsComponent implements OnInit {
   }
   getOrdersStatus() {
     this.pendingQuotes = [];
+    this.tempPendingQuotes = [];
+    this.pendingStores = [];
     this.sampleStatus = [];
+    this.tempSampleStatus = [];
+    this.sampleStores = [];
     this.ordersThisYear = [];
+    this.tempOrdersThisYear = [];
+    this.orderStores = [];
     this.keywordsData = [];
     this.activityData = [];
+    this.tempActivityData = [];
+    this.activityStores = [];
     let params = {
       generator_reports: true,
       email: this.userData.email,
@@ -47,7 +71,20 @@ export class GeneratorsComponent implements OnInit {
         } else {
           element.priorityChecked = false;
         }
+        const existingStoreIndex = this.orderStores.findIndex(store => store.store === element.storeName);
+
+        if (existingStoreIndex > -1) {
+          // Store already exists, add data to existing store
+          this.orderStores[existingStoreIndex].data.push(element);
+        } else {
+          // Store does not exist, add a new store
+          this.orderStores.push({
+            store: element.storeName,
+            data: [element]
+          });
+        }
       });
+      this.tempOrdersThisYear = this.ordersThisYear;
       this.activityData = res["data"][4];
       this.activityData.forEach(element => {
         if (element.followUpPriority > 0) {
@@ -55,7 +92,20 @@ export class GeneratorsComponent implements OnInit {
         } else {
           element.priorityChecked = false;
         }
+        const existingStoreIndex = this.activityStores.findIndex(store => store.store === element.storeName);
+
+        if (existingStoreIndex > -1) {
+          // Store already exists, add data to existing store
+          this.activityStores[existingStoreIndex].data.push(element);
+        } else {
+          // Store does not exist, add a new store
+          this.activityStores.push({
+            store: element.storeName,
+            data: [element]
+          });
+        }
       });
+      this.tempActivityData = this.activityData;
       this.processQuotes(res);
       this.processSampleOrders(res);
       this.processKeywords(res);
@@ -73,17 +123,85 @@ export class GeneratorsComponent implements OnInit {
         phone, companyName, locationName, storeCode, storeName,
         followUp, priority
       ] = quote.split('::');
+
       let priorityChecked = false;
       if (Number(priority) > 0) {
         priorityChecked = true;
       }
+
+      const existingStoreIndex = this.pendingStores.findIndex(store => store.store === storeName);
+
+      if (existingStoreIndex > -1) {
+        // Store already exists, add data to existing store
+        this.pendingStores[existingStoreIndex].data.push({
+          cartID: Number(cartID),
+          cartDate,
+          blnReorder: Number(blnReorder),
+          inHandsDate,
+          storeCode,
+          storeName,
+          storeUserID: Number(storeUserID),
+          storeID: Number(storeID),
+          firstName,
+          lastName,
+          locationName,
+          companyName,
+          followUp,
+          price: Number(price),
+          tax: Number(tax),
+          phone,
+          priority,
+          priorityChecked
+        });
+      } else {
+        // Store does not exist, add a new store
+        this.pendingStores.push({
+          store: storeName,
+          data: [{
+            cartID: Number(cartID),
+            cartDate,
+            blnReorder: Number(blnReorder),
+            inHandsDate,
+            storeCode,
+            storeName,
+            storeUserID: Number(storeUserID),
+            storeID: Number(storeID),
+            firstName,
+            lastName,
+            locationName,
+            companyName,
+            followUp,
+            price: Number(price),
+            tax: Number(tax),
+            phone,
+            priority,
+            priorityChecked
+          }]
+        });
+      }
+
       return {
-        cartID: Number(cartID), cartDate, blnReorder: Number(blnReorder),
-        inHandsDate, storeCode, storeName, storeUserID: Number(storeUserID),
-        storeID: Number(storeID), firstName, lastName, locationName, companyName,
-        followUp, price: Number(price), tax: Number(tax), phone, priority, priorityChecked
+        cartID: Number(cartID),
+        cartDate,
+        blnReorder: Number(blnReorder),
+        inHandsDate,
+        storeCode,
+        storeName,
+        storeUserID: Number(storeUserID),
+        storeID: Number(storeID),
+        firstName,
+        lastName,
+        locationName,
+        companyName,
+        followUp,
+        price: Number(price),
+        tax: Number(tax),
+        phone,
+        priority,
+        priorityChecked
       };
     });
+    this.tempPendingQuotes = this.pendingQuotes;
   }
 
   private processSampleOrders(res: any): void {
@@ -100,6 +218,28 @@ export class GeneratorsComponent implements OnInit {
       if (Number(priority) > 0) {
         priorityChecked = true;
       }
+      const existingStoreIndex = this.sampleStores.findIndex(store => store.store === storeName);
+
+      if (existingStoreIndex > -1) {
+        // Store already exists, add data to existing store
+        this.sampleStores[existingStoreIndex].data.push({
+          orderID: Number(orderID), orderDate, storeCode, storeName,
+          storeUserID: Number(storeUserID), storeID: Number(storeID),
+          firstName, lastName, locationName, companyName, blnSampleConverted,
+          cost: Number(cost), days, priority, sampleComment, priorityChecked
+        });
+      } else {
+        // Store does not exist, add a new store
+        this.sampleStores.push({
+          store: storeName,
+          data: [{
+            orderID: Number(orderID), orderDate, storeCode, storeName,
+            storeUserID: Number(storeUserID), storeID: Number(storeID),
+            firstName, lastName, locationName, companyName, blnSampleConverted,
+            cost: Number(cost), days, priority, sampleComment, priorityChecked
+          }]
+        });
+      }
       return {
         orderID: Number(orderID), orderDate, storeCode, storeName,
         storeUserID: Number(storeUserID), storeID: Number(storeID),
@@ -107,15 +247,17 @@ export class GeneratorsComponent implements OnInit {
         cost: Number(cost), days, priority, sampleComment, priorityChecked
       };
     });
+    this.tempSampleStatus = this.sampleStatus;
   }
 
   private processKeywords(res: any): void {
-    const getKeywords = res?.data?.[3]?.[0]?.keywords || '';
-    const samples = getKeywords.split(',,');
-    this.keywordsData = samples.map(sample => {
-      const [storeCode, storeName, protocol, keyword, frequency, result, days] = sample.split('::');
-      return { storeCode, storeName, protocol, keyword, frequency, result, days };
-    });
+    this.keywordsData = res?.data?.[3];
+    // const getKeywords = res?.data?.[3]?.[0]?.keywords || '';
+    // const samples = getKeywords.split(',,');
+    // this.keywordsData = samples.map(sample => {
+    //   const [storeCode, storeName, protocol, keyword, frequency, result, days] = sample.split('::');
+    //   return { storeCode, storeName, protocol, keyword, frequency, result, days };
+    // });
   }
   // Update Priority
   updateQuotePriority(quote, type) {
@@ -216,6 +358,62 @@ export class GeneratorsComponent implements OnInit {
       }
     });
   }
+  changeStore(type, event) {
+    if (type == 'quotes') {
+      this.pendingQuotesLoader = true;
+      this.pendingQuotes = null;
+      if (event.value == 'All') {
+        this.pendingQuotes = this.tempPendingQuotes;
+      } else {
+        const index = this.pendingStores.findIndex(store => store.store == event.value);
+        this.pendingQuotes = this.pendingStores[index].data;
+      }
+      setTimeout(() => {
+        this.pendingQuotesLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }, 500);
+    } else if (type == 'samples') {
+      this.sampleStatusLoader = true;
+      this.sampleStatus = null;
+      if (event.value == 'All') {
+        this.sampleStatus = this.tempSampleStatus;
+      } else {
+        const index = this.sampleStores.findIndex(store => store.store == event.value);
+        this.sampleStatus = this.sampleStores[index].data;
+      }
+      setTimeout(() => {
+        this.sampleStatusLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }, 500);
+    } else if (type == 'orders') {
+      this.ordersThisYearLoader = true;
+      this.ordersThisYear = null;
+      if (event.value == 'All') {
+        this.ordersThisYear = this.tempOrdersThisYear;
+      } else {
+        const index = this.orderStores.findIndex(store => store.store == event.value);
+        this.ordersThisYear = this.orderStores[index].data;
+      }
+      setTimeout(() => {
+        this.ordersThisYearLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }, 500);
+    } else if (type == 'activity') {
+      this.activityDataLoader = true;
+      this.activityData = null;
+      if (event.value == 'All') {
+        this.activityData = this.tempActivityData;
+      } else {
+        const index = this.activityStores.findIndex(store => store.store == event.value);
+        this.activityData = this.activityStores[index].data;
+      }
+      setTimeout(() => {
+        this.activityDataLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }, 500);
+    }
+  }
+
   trackByCartId(index: number, item: any): any {
     return index;
   }
