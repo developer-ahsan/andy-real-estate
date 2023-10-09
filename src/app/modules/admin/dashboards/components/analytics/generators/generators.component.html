@@ -132,7 +132,7 @@
                             </td>
                             <td>
                                 <div class="flex space-x-1 align-items-center">
-                                    <mat-button-toggle>
+                                    <mat-button-toggle (click)="openOrderDetailsModal(item)">
                                         <mat-icon svgIcon="mat_outline:brush" matTooltip="Artwork Details"></mat-icon>
                                     </mat-button-toggle>
                                     <mat-button-toggle>
@@ -583,6 +583,78 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quote Details -->
+<div #quoteDetailsModal class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog"
+    aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">ARTWORK DETAILS FOR QUOTE
+                    {{orderDetailsModalContent?.cartID}}
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" *ngIf="orderDetailsModalContent">
+                <div class="my-5" *ngIf="orderDetailsModalContent.loader">
+                    <ngx-skeleton-loader count="5" appearance="line" animation="pulse" [theme]="{ 
+                    'background-color': '#dedede'
+                  }">
+                    </ngx-skeleton-loader>
+                </div>
+                <div *ngIf="!orderDetailsModalContent.loader">
+                    <div *ngIf="orderDetailsModalContent.artworkData.length == 0">
+                        <div class="alert alert-danger">No data found</div>
+                    </div>
+                    <table *ngIf="orderDetailsModalContent.artworkData.length > 0"
+                        class="table table-striped border-t-0">
+                        <thead>
+                            <tr>
+                                <th>Items</th>
+                                <th>Status</th>
+                                <th>Approver</th>
+                                <th>Proof</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <ng-container *ngFor="let item of orderDetailsModalContent.artworkData">
+                                <tr>
+                                    <td class="font-bold">{{item.productName}}</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <ng-container *ngFor="let imprint of item.imprints">
+                                    <tr>
+                                        <td>
+                                            <span class="pl-2">{{imprint.location}}/{{imprint.method}}</span>
+                                        </td>
+                                        <td>{{imprint.status}}</td>
+                                        <td>
+                                            <span *ngIf="imprint.approver">{{imprint.approver}}</span>
+                                            <span *ngIf="!imprint.approver">---</span>
+                                        </td>
+                                        <td>
+                                            <span>---</span>
+                                            <!-- <a target="_blank"
+                                                href="{{mediaURL}}artwork/Proof/{{item.fk_storeUserID}}/{{item.orderID}}/{{item.orderLineID}}/{{imprint.id}}.jpg"
+                                                target="_blank">VIEW</a> -->
+                                        </td>
+                                    </tr>
+                                </ng-container>
+                            </ng-container>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="mr-2" mat-button mat-stroked-button data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>

@@ -61,6 +61,7 @@ export class FLPSService {
                     sessionStorage.setItem('FullName', response["data"][0].firstName + ' ' + response["data"][0].lastName);
                     sessionStorage.setItem('flpsLoginAdmin', response["data"][0].blnAdmin);
                     sessionStorage.setItem('flpsUserID', response["data"][0].pk_userID);
+                    sessionStorage.setItem('flpsUserEmail', response["data"][0].email);
                 }
             })
         );

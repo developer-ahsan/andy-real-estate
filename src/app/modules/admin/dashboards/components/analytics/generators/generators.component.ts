@@ -1,7 +1,8 @@
-import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { DashboardsService } from '../../../dashboard.service';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+declare var $: any;
 
 @Component({
   selector: 'app-order-generators',
@@ -10,6 +11,7 @@ import { Subject } from 'rxjs';
 })
 export class GeneratorsComponent implements OnInit {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
+  @ViewChild('quoteDetailsModal') quoteDetailsModal: ElementRef;
 
   isLoading: boolean = false;
   pendingQuotes: any = [];
@@ -34,6 +36,8 @@ export class GeneratorsComponent implements OnInit {
   tempActivityData: any = [];
   activityStores: any = [];
   @Input() userData: any;
+  orderDetailsModalContent: any;
+
   constructor(private _changeDetectorRef: ChangeDetectorRef,
     private _dashboardService: DashboardsService,
   ) { }
@@ -413,7 +417,34 @@ export class GeneratorsComponent implements OnInit {
       }, 500);
     }
   }
-
+  openOrderDetailsModal(data) {
+    this.orderDetailsModalContent = data;
+    this.orderDetailsModalContent.loader = true;
+    this.getOrderArtworkDetails();
+    $(this.quoteDetailsModal.nativeElement).modal('show');
+  }
+  getOrderArtworkDetails() {
+    let params = {
+      quote_artwork_details: true,
+      cart_id: this.orderDetailsModalContent.cartID
+    }
+    this._dashboardService.getDashboardData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.orderDetailsModalContent.loader = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      res["data"].forEach(element => {
+        element.imprints = []
+        if (element.imprintDetails) {
+          let imprints = element.imprintDetails.split('#_');
+          imprints.forEach(imprint => {
+            const [location, method, id, status, approver] = imprint.split('||');
+            element.imprints.push({ location, method, status, id, approver })
+          });
+        }
+      });
+      this.orderDetailsModalContent.artworkData = res["data"];
+    });
+  }
   trackByCartId(index: number, item: any): any {
     return index;
   }

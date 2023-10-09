@@ -3,6 +3,7 @@ import { DashboardsService } from '../../../dashboard.service';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { Subject, pipe } from 'rxjs';
 import moment from 'moment';
+import { environment } from 'environments/environment';
 declare var $: any;
 @Component({
   selector: 'app-order-status-report',
@@ -11,6 +12,7 @@ declare var $: any;
 })
 export class OrderStatusComponent implements OnInit {
   @ViewChild('rescheduleModal') rescheduleModal: ElementRef;
+  @ViewChild('orderDetailsModal') orderDetailsModal: ElementRef;
 
   @Input() userData: any;
   @Input() storesData: any;
@@ -41,6 +43,8 @@ export class OrderStatusComponent implements OnInit {
   ngProcessingStores: any = 'All';
 
   rescheduleModalContent: any;
+  orderDetailsModalContent: any;
+  mediaURL = environment.assetsURL;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _dashboardService: DashboardsService,
@@ -77,7 +81,7 @@ export class OrderStatusComponent implements OnInit {
       let awaitingOrderss = res["data"][1][0].awaitingPayment;
       // Approval Orders
       if (awaitingOrders) {
-        const artworks = awaitingOrders.split(',,');
+        const artworks = awaitingOrders.split('#_');
         artworks.forEach(artwork => {
           const [orderID, orderDate, blnReorder, inHandsDate, groupOrderID, storeCode, storeName, storeUserID, storeID, statusDate, statusID, reschedule, firstName, lastName, locationName, companyName, total, artworkNotification, days, priority] = artwork.split('::');
           let priorityChecked = false;
@@ -240,4 +244,48 @@ export class OrderStatusComponent implements OnInit {
   trackByOrderId(index: number, item: any): string {
     return item.orderID;
   }
+  openOrderDetailsModal(data) {
+    this.orderDetailsModalContent = data;
+    this.orderDetailsModalContent.loader = true;
+    this.getOrderArtworkDetails();
+    $(this.orderDetailsModal.nativeElement).modal('show');
+  }
+  getOrderArtworkDetails() {
+    let params = {
+      order_artwork_details: true,
+      order_id: this.orderDetailsModalContent.orderID
+    }
+    this._dashboardService.getDashboardData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.orderDetailsModalContent.loader = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      res["data"].forEach(element => {
+        element.imprints = []
+        if (element.imprintDetails) {
+          let imprints = element.imprintDetails.split(',,');
+          imprints.forEach(imprint => {
+            const [location, method, id, status] = imprint.split('||');
+            element.imprints.push({ location, method, id, status })
+          });
+        }
+      });
+      this.orderDetailsModalContent.artworkData = res["data"];
+    });
+  }
+  checkIfImageExists(url) {
+    const img = new Image();
+    img.src = url;
+
+    if (img.complete) {
+
+    } else {
+      img.onload = () => {
+        return true;
+      };
+
+      img.onerror = () => {
+        return false;
+      };
+    }
+  };
 }

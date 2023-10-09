@@ -83,6 +83,7 @@ export class GenerateReportComponent implements OnInit {
     flpsLoginAdmin = sessionStorage.getItem('flpsLoginAdmin');
     flpsLoginName = sessionStorage.getItem('FullName');
     flpsLoginID = sessionStorage.getItem('flpsUserID');
+    flpsLoginEmail = sessionStorage.getItem('flpsUserEmail');
     /**
      * Constructor
      */
@@ -107,7 +108,7 @@ export class GenerateReportComponent implements OnInit {
         if (this.flpsLoginAdmin == 'true') {
             this.getEmployees();
         } else {
-            this.selectedEmployee = { pk_userID: Number(this.flpsLoginID), fullName: this.flpsLoginName };
+            this.selectedEmployee = { pk_userID: Number(this.flpsLoginID), fullName: this.flpsLoginName, email: this.flpsLoginEmail };
         }
         // Create the form
         this.planBillingForm = this._formBuilder.group({
