@@ -2,6 +2,7 @@ import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDe
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { OrdersService } from '../../orders.service';
+import { FLPSService } from 'app/modules/admin/apps/flps/components/flps.service';
 
 @Component({
   selector: 'app-flps-users',
@@ -18,14 +19,18 @@ export class FlpsComponent implements OnInit, OnDestroy {
   totalUsers = 0;
   page = 0;
   orderDetail: any;
+  flpsUsers: any = [];
+  selectedEmployee = 0;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _orderService: OrdersService
+    private _orderService: OrdersService,
+    private _flpsService: FLPSService
   ) { }
 
   ngOnInit(): void {
     this.isLoading = true;
     this.getOrderDetail();
+    this.getFlpsUsers();
   };
   getOrderDetail() {
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -36,6 +41,25 @@ export class FlpsComponent implements OnInit, OnDestroy {
         }
       }
     })
+  }
+  getFlpsUsers() {
+    this._flpsService.getAllReportUsers().pipe(takeUntil(this._unsubscribeAll)).subscribe((res: any) => {
+      if (res && res["data"] && res["data"][0] && res["data"][0].flpsUsers) {
+        let employees = res?.data[0]?.flpsUsers || [];
+        if (employees) {
+          let employee = employees.split(',');
+          employee.forEach(emp => {
+            let colonEmp = emp.split(':');
+            this.flpsUsers.push({ pk_userID: Number(colonEmp[0]), fullName: colonEmp[2], email: colonEmp[6] });
+          });
+        }
+      }
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    });
   }
   getFLPS(page) {
     let params = {

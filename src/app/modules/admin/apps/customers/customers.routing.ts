@@ -20,6 +20,7 @@ import { UserLocationsComponent } from './customers-components/navigation/user-l
 import { UserMetricsComponent } from './customers-components/navigation/user-metrics/user-metrics.component';
 import { CustomerDetailsComponent } from './customers-components/details/details.customers.component';
 import { GetCustomer, GetCustomersList } from './customers-components/customers.resolvers';
+import { CustomerFlpsUsersComponent } from './customers-components/navigation/flps-users/flps-users.component';
 
 export const customersRoutes: Route[] = [
     {
@@ -135,6 +136,14 @@ export const customersRoutes: Route[] = [
                 data: {
                     title: 'Quotes',
                     url: 'quotes'
+                }
+            },
+            {
+                path: 'flps-users',
+                component: CustomerFlpsUsersComponent,
+                data: {
+                    title: 'FLPS Users',
+                    url: 'flps-users'
                 }
             },
             {

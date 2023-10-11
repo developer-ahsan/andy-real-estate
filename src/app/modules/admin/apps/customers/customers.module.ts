@@ -56,6 +56,7 @@ import { CustomersListComponent } from './customers-components/customers.compone
 import { customersRoutes } from './customers.routing';
 import { CustomerDetailsComponent } from './customers-components/details/details.customers.component';
 import { CKEditorModule } from 'ckeditor4-angular';
+import { CustomerFlpsUsersComponent } from './customers-components/navigation/flps-users/flps-users.component';
 
 @NgModule({
     declarations: [
@@ -78,7 +79,8 @@ import { CKEditorModule } from 'ckeditor4-angular';
         UserCommentsComponent,
         UserInfoComponent,
         UserLocationsComponent,
-        UserMetricsComponent
+        UserMetricsComponent,
+        CustomerFlpsUsersComponent
     ],
     imports: [
         RouterModule.forChild(customersRoutes),

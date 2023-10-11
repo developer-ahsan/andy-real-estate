@@ -13,7 +13,8 @@ import { CustomersProduct } from '../customers.types';
     templateUrl: './details.customers.component.html',
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
-    animations: fuseAnimations
+    animations: fuseAnimations,
+    styles: [`.mat-expansion-panel-body {padding:0px !important}`]
 })
 export class CustomerDetailsComponent implements OnInit, OnDestroy {
     @ViewChild('topScrollAnchor') topScroll: ElementRef;

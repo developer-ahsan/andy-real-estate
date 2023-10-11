@@ -1,0 +1,38 @@
+<div class="inset-0 min-w-50 overflow-hidden mt-5 bg-card dark:bg-transparent w-full p-5">
+  <div class="flex-auto">
+    <b class="text-2xl">FPLS Users For {{selectedCustomer?.firstName + ' ' + selectedCustomer?.lastName}}</b>
+  </div>
+  <div *ngIf="isLoading" class="my-5">
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+    </ngx-skeleton-loader>
+  </div>
+  <div *ngIf="!isLoading" class="space-y-3 mt-10">
+    <p>Assigning an FLPS user to this customer will ensure that any orders placed by this customer will be associated
+      with this FLPS user. THIS SETTING OVERRIDES STORE LEVEL FLPS SETTINGS.</p>
+    <p>Current FLPS User</p>
+    <div class="row">
+      <div class="col-12 col-md-6">
+        <mat-form-field class="w-full">
+          <mat-label>FLPS User</mat-label>
+          <mat-select matInput [(ngModel)]="selectedEmployee">
+            <mat-option [value]="0">NONE</mat-option>
+            <mat-option *ngFor="let user of flpsUsers" [value]="user.pk_userID">{{user.fullName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-12 col-md-6">
+        <mat-form-field class="w-full">
+          <mat-label>Commission</mat-label>
+          <span matSuffix>% &nbsp;</span>
+          <input type="number" matInput [(ngModel)]="ngCommission">
+          <mat-hint class="mb-2 text-red-600">NOT required if selection above is "NONE"</mat-hint>
+        </mat-form-field>
+      </div>
+      <div class="col-12 text-right">
+        <button mat-button mat-flat-button color="primary" class="min-w-30">
+          <span>Update</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

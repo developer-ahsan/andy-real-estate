@@ -40,6 +40,13 @@ export const navigations = [
         children: []
     },
     {
+        id: 6,
+        title: 'FLPS Users',
+        icon: 'mat_outline:people',
+        route: 'flps-users',
+        children: []
+    },
+    {
         id: 7,
         title: 'Locations',
         icon: 'mat_outline:location_on',
