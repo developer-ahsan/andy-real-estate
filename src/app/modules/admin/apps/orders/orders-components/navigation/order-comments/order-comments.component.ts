@@ -156,12 +156,14 @@ export class OrderCommentsComponent implements OnInit, OnDestroy {
   // Get Commentators
   getCommentators() {
     let params = {
-      get_commentators_emails: true,
-      page: this.commentatorPage
+      get_commentators_emails: true
     }
     this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.commentators = this.commentators.concat(res["data"]);
-      this.totalCommentator = res["totalRecords"];
+      let commentators = res["data"][0].commentorsEmail.split(',,');
+      commentators.forEach(commentator => {
+        const [id, email] = commentator.split('::');
+        this.commentators.push({ id, email });
+      });
       this.isCommentatorLoader = false;
       this.isLoadMore = false;
       this._changeDetectorRef.markForCheck();

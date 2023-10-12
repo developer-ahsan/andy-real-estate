@@ -126,7 +126,6 @@ export class AuthSignInComponent implements OnInit {
                                     } else if (userDetails.roleID == 3) {
                                         targetURL = '/dashboards/employee';
                                     }
-
                                     this._router.navigateByUrl(targetURL);
                                 } else {
                                     this._router.navigateByUrl(redirectURL);

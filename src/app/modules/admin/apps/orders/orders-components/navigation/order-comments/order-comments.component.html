@@ -70,14 +70,6 @@
                                         <div class="col-12" *ngFor="let item of commentators">
                                             <mat-checkbox [(ngModel)]="item.checked">{{item.email}}</mat-checkbox>
                                         </div>
-                                        <div class="col-12 flex justify-end mr-2"
-                                            *ngIf="totalCommentator > commentators.length">
-                                            <span *ngIf="!isLoadMore" (click)="getNexCommentator()"
-                                                class="cursor-pointer text-gray-600 hover:text-gray-900">Load
-                                                More</span>
-                                            <mat-progress-spinner *ngIf="isLoadMore" [diameter]="24"
-                                                [mode]="'indeterminate'"></mat-progress-spinner>
-                                        </div>
                                     </div>
                                 </div>
                                 <div class="w-full alert alert-warning  mt-2 border rounded-lg p-2 pt-3">

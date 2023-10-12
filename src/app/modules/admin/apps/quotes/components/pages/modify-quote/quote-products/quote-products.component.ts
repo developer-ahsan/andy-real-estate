@@ -37,6 +37,7 @@ export class QuoteProductsComponent implements OnInit {
         this.selectedQuoteDetail = quote["data"][0];
         this.getProductsCtrl();
         this.getAllProducts();
+        // this.getSelectedProducts();
         this._changeDetectorRef.markForCheck();
       });
   }
@@ -51,7 +52,6 @@ export class QuoteProductsComponent implements OnInit {
       this.searchProductCtrl.setValue(this.selectedProduct)
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
-      console.log(res);
     }, err => {
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
