@@ -37,12 +37,31 @@ export class GeneratorsComponent implements OnInit {
   activityStores: any = [];
   @Input() userData: any;
   orderDetailsModalContent: any;
-
+  pendingQuotesDtOption: any;
+  sampleDtOption: any;
+  aroundDtOption: any;
+  keywordDtOption: any;
+  postDtOption: any;
   constructor(private _changeDetectorRef: ChangeDetectorRef,
     private _dashboardService: DashboardsService,
   ) { }
 
   ngOnInit(): void {
+    this.pendingQuotesDtOption = {
+      order: [[2, 'desc']],
+    }
+    this.sampleDtOption = {
+      order: [[3, 'desc']],
+    }
+    this.aroundDtOption = {
+      order: [[1, 'desc']],
+    }
+    this.keywordDtOption = {
+      order: [[0, 'asc']],
+    }
+    this.postDtOption = {
+      order: [[3, 'desc']],
+    }
     this.isLoading = true;
     this.getOrdersStatus();
   }

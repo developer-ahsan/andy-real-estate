@@ -64,7 +64,8 @@
                     'background-color': '#dedede'
                   }">
                 </ngx-skeleton-loader>
-                <table datatable class="table table-striped" *ngIf="!pendingQuotesLoader">
+                <table datatable [dtOptions]="pendingQuotesDtOption" class="table table-striped"
+                    *ngIf="!pendingQuotesLoader">
                     <thead>
                         <tr>
                             <th>Store</th>
@@ -189,7 +190,7 @@
                     'background-color': '#dedede'
                   }">
                 </ngx-skeleton-loader>
-                <table datatable class="table table-striped" *ngIf="!sampleStatusLoader">
+                <table datatable [dtOptions]="sampleDtOption" class="table table-striped" *ngIf="!sampleStatusLoader">
                     <thead>
                         <tr>
                             <th>Store</th>
@@ -304,7 +305,7 @@
                     'background-color': '#dedede'
                   }">
                 </ngx-skeleton-loader>
-                <table datatable class="table table-striped" *ngIf="!ordersThisYearLoader">
+                <table datatable [dtOptions]="aroundDtOption" class="table table-striped" *ngIf="!ordersThisYearLoader">
                     <thead>
                         <tr>
                             <th>Store</th>
@@ -427,7 +428,7 @@
                 </fuse-alert>
             </div>
             <div class="overflow-x-auto mt-4" *ngIf="keywordsData.length">
-                <table datatable class="table table-striped">
+                <table datatable [dtOptions]="keywordDtOption" class="table table-striped">
                     <thead>
                         <tr>
                             <th>Store</th>
@@ -492,7 +493,7 @@
                     'background-color': '#dedede'
                   }">
                 </ngx-skeleton-loader>
-                <table datatable class="table table-striped" *ngIf="!activityDataLoader">
+                <table datatable [dtOptions]="postDtOption" class="table table-striped" *ngIf="!activityDataLoader">
                     <thead>
                         <tr>
                             <th>Store</th>
