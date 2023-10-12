@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { Router } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 
 @Component({
   selector: "app-root",
@@ -11,13 +11,17 @@ export class AppComponent implements OnInit {
    * Constructor
    */
   constructor(
-    private router: Router
+    private router: Router,
+    private _activatedRoute: ActivatedRoute,
   ) { }
   ngOnInit(): void {
-    const userDetails = JSON.parse(localStorage.getItem('userDetails'));
-    if (!userDetails) {
-      localStorage.clear();
-      this.router.navigateByUrl('/sign-in');
-    }
+    // console.log(this._activatedRoute.snapshot.queryParamMap.get('redirectURL'))
+    // const redirectURL = this._activatedRoute.snapshot.queryParamMap.get('redirectURL') || '/signed-in-redirect';
+    // console.log(redirectURL);
+    // const userDetails = JSON.parse(localStorage.getItem('userDetails'));
+    // if (!userDetails) {
+    //   localStorage.clear();
+    //   this.router.navigateByUrl(redirectURL);
+    // }
   }
 }
