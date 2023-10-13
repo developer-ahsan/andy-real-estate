@@ -74,6 +74,13 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy {
     }
     getUserRole() {
         const user = JSON.parse(localStorage.getItem('userDetails'));
+        const roles = user.roles.split(',,');
+        let roleIDs: any = [];
+        roles.forEach(role => {
+            const [id, name] = role.split('::');
+            roleIDs.push(id);
+        });
+        const checkID = roleIDs.find(id => id == 3);
         if (user.blnManager) {
             this.data.navigation.default[0].children[0].children.push(
                 {
@@ -105,7 +112,7 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy {
                 //     link: '/dashboards/home',
                 // },
             )
-        } else if (user.roleID == 3) {
+        } else if (checkID == 3) {
             this.data.navigation.default[0].children[0].children.push(
                 {
                     id: 'apps.reports.store-sales',

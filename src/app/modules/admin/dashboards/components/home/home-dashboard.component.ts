@@ -136,6 +136,18 @@ export class DashboardHomeComponent implements OnInit, OnDestroy {
     }
     getUserRole() {
         this.userData = JSON.parse(localStorage.getItem('userDetails'));
+        const roles = this.userData.roles.split(',,');
+        let roleIDs: any = [];
+        roles.forEach(role => {
+            const [id, roleName] = role.split('::');
+            roleIDs.push({ id, roleName });
+        });
+        const index = roleIDs.findIndex(role => role.id == 3);
+        if (index > -1) {
+            this.userData.roleName = roleIDs[index].roleName;
+        } else {
+            this.userData.roleName = roleIDs[0].roleName;
+        }
     }
     signOut() {
         this._router.navigate(['/sign-out']);
