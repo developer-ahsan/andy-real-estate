@@ -622,14 +622,20 @@
                 <mat-form-field class="w-full">
                     <input matInput placeholder="Search product" matTooltip="Search product" [matAutocomplete]="auto"
                         [formControl]="searchCatProdCtrl">
+
                     <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelected($event)"
                         [displayWith]="displayWith">
-                        <mat-option *ngIf="isSearchingCatProd" class="is-loading">Loading...</mat-option>
-                        <ng-container *ngIf="!isSearchingCatProd">
-                            <mat-option *ngFor="let item of allCatProds" [value]="item">
-                                <span>{{item.product}}</span>
+                        <div *ngIf="!isSearchingCatProd">
+                            <mat-option [value]="noProduct">
+                                <span>No Product</span>
                             </mat-option>
-                        </ng-container>
+                            <ng-container *ngFor="let item of filteredProducts">
+                                <p class="font-bold p-3">{{item.companyName}}</p>
+                                <mat-option *ngFor="let prod of item.data" [value]="prod">
+                                    <span>{{ prod.pk_productID }} - {{ prod.number }}: {{ prod.product }} </span>
+                                </mat-option>
+                            </ng-container>
+                        </div>
                     </mat-autocomplete>
                 </mat-form-field>
                 <br>
@@ -648,7 +654,8 @@
                     There is no store product selected for this category.
                 </fuse-alert>
                 <div *ngIf="selectedCatProd.pk_productID">
-                    <img src="https://assets.consolidus.com/globalAssets/Products/HiRes/{{selectedCatProd.pk_storeProductID}}.jpg"
+                    <img class="w-60"
+                        src="https://assets.consolidus.com/globalAssets/Products/HiRes/{{selectedCatProd.pk_storeProductID}}.jpg"
                         alt="">
                 </div>
             </div>

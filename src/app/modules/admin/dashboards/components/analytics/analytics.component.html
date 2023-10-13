@@ -397,7 +397,171 @@
             </div>
 
             <!-- Portfolio Performance -->
-            <div class="flex flex-col flex-auto mt-8 p-6 bg-card shadow-lg rounded-2xl overflow-hidden w-full">
+            <div class="mt-8">
+                <mat-accordion class="example-headers-align shadow-lg rounded-2xl">
+                    <mat-expansion-panel [expanded]="true">
+                        <mat-expansion-panel-header class="p-6">
+                            <mat-panel-title class="text-lg font-medium tracking-tight leading-6 truncate">
+                                Portfolio Performance
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+
+                        <div *ngIf="isPortfolioLoader">
+                            <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
+                                'background-color': '#dedede'
+                              }">
+                            </ngx-skeleton-loader>
+                        </div>
+                        <div *ngIf="!isPortfolioLoader">
+                            <fuse-alert *ngIf="!programPortfolioData.length" class="my-2" [appearance]="'soft'"
+                                [type]="'warning'">
+                                <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
+                                </mat-icon>
+                                There is no performance data to show.
+                            </fuse-alert>
+                            <div class="flex flex-col flex-auto mt-2 overflow-x-auto"
+                                *ngIf="programPortfolioData.length">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Store</th>
+                                            <th>Sales</th>
+                                            <th>
+                                                <div class="flex">
+                                                    <span>PY</span>
+                                                    <mat-icon class="icon-size-4 ml-1" matTooltip="Previous year sales"
+                                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                                </div>
+                                            </th>
+                                            <th>%</th>
+                                            <th>
+                                                <div class="flex">
+                                                    <span>Diff</span>
+                                                    <mat-icon class="icon-size-4 ml-1" matTooltip="Sales the difference"
+                                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                                </div>
+                                            </th>
+                                            <th>
+                                                <div class="flex">
+                                                    <span>NS</span>
+                                                    <mat-icon class="icon-size-4 ml-1" matTooltip="Number of sales"
+                                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                                </div>
+                                            </th>
+                                            <th>
+                                                <div class="flex">
+                                                    <span>PYNS</span>
+                                                    <mat-icon class="icon-size-4 ml-1"
+                                                        matTooltip="Previous year number of sales"
+                                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                                </div>
+                                            </th>
+                                            <th>
+                                                <div class="flex">
+                                                    <span>Diff</span>
+                                                    <mat-icon class="icon-size-4 ml-1"
+                                                        matTooltip="Number. Sales the difference"
+                                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                                </div>
+                                            </th>
+                                            <th>
+                                                <div class="flex">
+                                                    <span>AVG</span>
+                                                    <mat-icon class="icon-size-4 ml-1" matTooltip="Average Sale"
+                                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                                </div>
+                                            </th>
+                                            <th>Margin</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let item of programPortfolioData;trackBy: trackByIndex">
+                                            <td>{{item.storeName}}</td>
+                                            <td>{{item.SALES | currency}}</td>
+                                            <td>{{item.PY | currency}}</td>
+                                            <td>
+                                                <div *ngIf="item.percent != 0">
+                                                    <div class="flex align-items-center" *ngIf="!item.blnPercent">
+                                                        <mat-icon class="icon-size-5 text-red-500"
+                                                            [svgIcon]="'heroicons_solid:trending-down'"></mat-icon>
+                                                        <span class="text-red-500">{{item.percent}}%</span>
+                                                    </div>
+                                                    <div class="flex align-items-center" *ngIf="item.blnPercent">
+                                                        <mat-icon class="icon-size-5 text-green-500"
+                                                            [svgIcon]="'heroicons_solid:trending-up'"></mat-icon>
+                                                        <span class="text-green-500">{{item.percent}}%</span>
+                                                    </div>
+                                                </div>
+                                                <div class="flex" *ngIf="item.percent == 0">
+                                                    <span>{{item.percent}}%</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <!-- class="text-green-500" -->
+                                                <span *ngIf="item?.DIFF >= 0">
+                                                    {{item?.DIFF | currency}}
+                                                </span>
+                                                <!-- class="text-red-500" -->
+                                                <span *ngIf="item?.DIFF < 0">
+                                                    {{(item?.DIFF * - 1) | currency}}
+                                                </span>
+                                            </td>
+                                            <td>{{item.NS}}</td>
+                                            <td>{{item.PYNS}}</td>
+                                            <td>{{item.NS_DIFF}}</td>
+                                            <td>{{item.AVG | currency}}</td>
+                                            <td>{{item.MARGIN}} %</td>
+                                        </tr>
+                                        <tr class="columnHeader2" class="font-bold">
+                                            <th>Grand Total</th>
+                                            <th>{{totalStoreSummary?.SALES | currency}}</th>
+                                            <th *ngIf="blnCost">{{totalStoreSummary?.COST | currency}}</th>
+                                            <th>{{totalStoreSummary?.PY | currency}}</th>
+                                            <th>
+                                                <div *ngIf="totalStoreSummary.PERCENT != 0">
+                                                    <div class="flex align-items-center"
+                                                        *ngIf="!totalStoreSummary.blnPercent">
+                                                        <mat-icon class="icon-size-5 text-red-500"
+                                                            [svgIcon]="'heroicons_solid:trending-down'"></mat-icon>
+                                                        <span class="text-red-500">{{totalStoreSummary.PERCENT}}%</span>
+                                                    </div>
+                                                    <div class="flex align-items-center"
+                                                        *ngIf="totalStoreSummary.blnPercent">
+                                                        <mat-icon class="icon-size-5 text-green-500"
+                                                            [svgIcon]="'heroicons_solid:trending-up'"></mat-icon>
+                                                        <span
+                                                            class="text-green-500">{{totalStoreSummary.PERCENT}}%</span>
+                                                    </div>
+                                                </div>
+                                                <div class="flex" *ngIf="totalStoreSummary.PERCENT == 0">
+                                                    <span>{{totalStoreSummary.PERCENT}}%</span>
+                                                </div>
+                                            </th>
+                                            <th>
+                                                <span>{{totalStoreSummary?.DIFF | currency}}</span>
+                                                <!-- <span *ngIf="totalStoreSummary?.DIFF >= 0" class="text-green-500">
+                                                    {{totalStoreSummary?.DIFF | currency}}
+                                                </span>
+                                                <span *ngIf="totalStoreSummary?.DIFF < 0" class="text-red-500">
+                                                    ({{(totalStoreSummary?.DIFF * - 1) | currency}})
+                                                </span> -->
+                                            </th>
+                                            <th>{{totalStoreSummary?.NS}}</th>
+                                            <th>{{totalStoreSummary?.PYNS}}</th>
+                                            <th>{{totalStoreSummary?.N_DIFF}}</th>
+                                            <th>{{(totalStoreSummary?.AVG) | currency}} (AVG)</th>
+                                            <th>{{totalStoreSummary?.MARGIN}}%</th>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+                    </mat-expansion-panel>
+                </mat-accordion>
+            </div>
+
+            <!-- <div class="flex flex-col flex-auto mt-8 p-6 bg-card shadow-lg rounded-2xl overflow-hidden w-full">
                 <div *ngIf="isPortfolioLoader">
                     <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
                         'background-color': '#dedede'
@@ -488,11 +652,9 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <!-- class="text-green-500" -->
                                         <span *ngIf="item?.DIFF >= 0">
                                             {{item?.DIFF | currency}}
                                         </span>
-                                        <!-- class="text-red-500" -->
                                         <span *ngIf="item?.DIFF < 0">
                                             {{(item?.DIFF * - 1) | currency}}
                                         </span>
@@ -527,12 +689,6 @@
                                     </th>
                                     <th>
                                         <span>{{totalStoreSummary?.DIFF | currency}}</span>
-                                        <!-- <span *ngIf="totalStoreSummary?.DIFF >= 0" class="text-green-500">
-                                            {{totalStoreSummary?.DIFF | currency}}
-                                        </span>
-                                        <span *ngIf="totalStoreSummary?.DIFF < 0" class="text-red-500">
-                                            ({{(totalStoreSummary?.DIFF * - 1) | currency}})
-                                        </span> -->
                                     </th>
                                     <th>{{totalStoreSummary?.NS}}</th>
                                     <th>{{totalStoreSummary?.PYNS}}</th>
@@ -545,70 +701,73 @@
 
                     </div>
                 </div>
-            </div>
+            </div> -->
             <!-- Program Performance -->
-            <div class="flex flex-col flex-auto mt-8 p-6 bg-card shadow-lg rounded-2xl overflow-hidden w-full">
-                <div *ngIf="isPerformanceLoader">
-                    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
-                        'background-color': '#dedede'
-                      }">
-                    </ngx-skeleton-loader>
-                </div>
-                <div *ngIf="!isPerformanceLoader">
-                    <div class="text-lg font-medium tracking-tight leading-6 truncate">Program Performance</div>
-                    <fuse-alert *ngIf="!programPerformanceData.length" class="my-2" [appearance]="'soft'"
-                        [type]="'warning'">
-                        <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
-                        </mat-icon>
-                        There is no program performance data to show.
-                    </fuse-alert>
-                    <div class="my-2" *ngFor="let item of programPerformanceData; let last=last;trackBy: trackByItemId"
-                        [ngClass]="{'border-b': !last}">
-                        <img class="w-50 my-2"
-                            src="https://assets.consolidus.com/globalAssets/Stores/mastheads/{{item.pk_storeID}}.gif">
-                        <div class="row">
-                            <div class="col-md-4 col-12">
-                                <!-- <div class="font-medium text-secondary">YTD</div> -->
-                                <div id="chart1">
-                                    <apx-chart [series]="item.ytdSeries" [chart]="ytdChart.chart"
-                                        [dataLabels]="ytdChart.dataLabels" [colors]="item.colors"
-                                        [plotOptions]="ytdChart.plotOptions" [yaxis]="ytdChart.yaxis"
-                                        [legend]="ytdChart.legend" [fill]="ytdChart.fill" [stroke]="ytdChart.stroke"
-                                        [tooltip]="ytdChart.tooltip" [xaxis]="item.xaxis"
-                                        [title]="ytdChart.title"></apx-chart>
+            <div class="mt-8">
+                <mat-accordion class="example-headers-align shadow-lg rounded-2xl">
+                    <mat-expansion-panel [expanded]="true">
+                        <mat-expansion-panel-header class="p-6">
+                            <mat-panel-title class="text-lg font-medium tracking-tight leading-6 truncate">
+                                Program Performance
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <div *ngIf="isPerformanceLoader">
+                            <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
+                                'background-color': '#dedede'
+                              }">
+                            </ngx-skeleton-loader>
+                        </div>
+                        <div class="my-2"
+                            *ngFor="let item of programPerformanceData; let last=last;trackBy: trackByItemId"
+                            [ngClass]="{'border-b': !last}">
+                            <img class="w-50 my-2"
+                                src="https://assets.consolidus.com/globalAssets/Stores/mastheads/{{item.pk_storeID}}.gif">
+                            <div class="row">
+                                <div class="col-md-4 col-12">
+                                    <!-- <div class="font-medium text-secondary">YTD</div> -->
+                                    <div id="chart1">
+                                        <apx-chart [series]="item.ytdSeries" [chart]="ytdChart.chart"
+                                            [dataLabels]="ytdChart.dataLabels" [colors]="item.colors"
+                                            [plotOptions]="ytdChart.plotOptions" [yaxis]="ytdChart.yaxis"
+                                            [legend]="ytdChart.legend" [fill]="ytdChart.fill" [stroke]="ytdChart.stroke"
+                                            [tooltip]="ytdChart.tooltip" [xaxis]="item.xaxis"
+                                            [title]="ytdChart.title"></apx-chart>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-4 col-12 ">
-                                <div class="flex flex-col flex-auto">
-                                    <!-- <div class="font-medium text-secondary">YTD By Quarter</div> -->
+                                <div class="col-md-4 col-12 ">
                                     <div class="flex flex-col flex-auto">
-                                        <div id="chart2">
-                                            <apx-chart [series]="item.quarterSeries" [chart]="quarterChart.chart"
-                                                [dataLabels]="quarterChart.dataLabels" [colors]="item.quarterColors"
-                                                [plotOptions]="quarterChart.plotOptions" [yaxis]="quarterChart.yaxis"
-                                                [legend]="quarterChart.legend" [fill]="quarterChart.fill"
-                                                [stroke]="quarterChart.stroke" [tooltip]="quarterChart.tooltip"
-                                                [xaxis]="quarterChart.xaxis" [title]="quarterChart.title"></apx-chart>
+                                        <!-- <div class="font-medium text-secondary">YTD By Quarter</div> -->
+                                        <div class="flex flex-col flex-auto">
+                                            <div id="chart2">
+                                                <apx-chart [series]="item.quarterSeries" [chart]="quarterChart.chart"
+                                                    [dataLabels]="quarterChart.dataLabels" [colors]="item.quarterColors"
+                                                    [plotOptions]="quarterChart.plotOptions"
+                                                    [yaxis]="quarterChart.yaxis" [legend]="quarterChart.legend"
+                                                    [fill]="quarterChart.fill" [stroke]="quarterChart.stroke"
+                                                    [tooltip]="quarterChart.tooltip" [xaxis]="quarterChart.xaxis"
+                                                    [title]="quarterChart.title"></apx-chart>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-12 ">
+                                    <div class="flex flex-col flex-auto">
+                                        <!-- <div class="font-medium text-secondary">Annual Total Sales</div> -->
+                                        <div class="flex flex-col flex-auto">
+                                            <apx-chart [series]="item.annualSeries" [chart]="annualChartOptions.chart"
+                                                [colors]="item.annualColors" [xaxis]="item.anuualxaxis"
+                                                [dataLabels]="annualChartOptions.dataLabels"
+                                                [grid]="annualChartOptions.grid" [stroke]="annualChartOptions.stroke"
+                                                [title]="annualChartOptions.title"
+                                                [tooltip]="annualChartOptions.tooltip"
+                                                [yaxis]="annualChartOptions.yaxis"></apx-chart>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4 col-12 ">
-                                <div class="flex flex-col flex-auto">
-                                    <!-- <div class="font-medium text-secondary">Annual Total Sales</div> -->
-                                    <div class="flex flex-col flex-auto">
-                                        <apx-chart [series]="item.annualSeries" [chart]="annualChartOptions.chart"
-                                            [colors]="item.annualColors" [xaxis]="item.anuualxaxis"
-                                            [dataLabels]="annualChartOptions.dataLabels"
-                                            [grid]="annualChartOptions.grid" [stroke]="annualChartOptions.stroke"
-                                            [title]="annualChartOptions.title" [tooltip]="annualChartOptions.tooltip"
-                                            [yaxis]="annualChartOptions.yaxis"></apx-chart>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
-                    </div>
-                </div>
+                    </mat-expansion-panel>
+                </mat-accordion>
             </div>
         </div>
         <!-- Order Status Report -->

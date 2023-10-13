@@ -1,7 +1,7 @@
 import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, ViewEncapsulation, ChangeDetectionStrategy, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
-import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, finalize, map, startWith, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -96,6 +96,8 @@ export class ProductMainCategoriesComponent implements OnInit, OnDestroy {
   isAddRecommendeProdsLoader: boolean = false;
   isUpdateRecommendeProdsLoader: boolean = false;
   catID: any;
+  noProduct: any;
+  filteredProducts: any;
   constructor(
     private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -173,39 +175,9 @@ export class ProductMainCategoriesComponent implements OnInit, OnDestroy {
       buttonColor: new FormControl(),
       arrowColor: new FormControl()
     });
-    let params;
-    this.searchCatProdCtrl.valueChanges.pipe(
-      filter((res: any) => {
-        params = {
-          category_image_current_products: true,
-          store_id: this.selectedStore.pk_storeID,
-          category_id: this.catID,
-          keyword: res
-        }
-        return res !== null && res.length >= 3
-      }),
-      distinctUntilChanged(),
-      debounceTime(300),
-      tap(() => {
-        this.allCatProds = [];
-        this.isSearchingCatProd = true;
-        this._changeDetectorRef.markForCheck();
-      }),
-      switchMap(value => this._storeManagerService.getStoresData(params)
-        .pipe(
-          finalize(() => {
-            this.isSearchingCatProd = false
-            this._changeDetectorRef.markForCheck();
-          }),
-        )
-      )
-    ).subscribe((data: any) => {
-      let product = [{
-        pk_productID: null, product: 'No Product', pk_storeProductID: null
-      }]
-      this.allCatProds = product.concat(data['data']);
-    });
+    this.setupSearch();
   }
+
   calledScreen(screenName): void {
     this.mainScreen = screenName;
     if (screenName == 'Feature Images') {
@@ -499,11 +471,26 @@ export class ProductMainCategoriesComponent implements OnInit, OnDestroy {
       category_id: this.catID
     }
     this._storeManagerService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      let product = [{
+      this.noProduct = {
         pk_productID: null, product: 'No Product', pk_storeProductID: null
-      }]
-      this.selectedCatProd = product[0];
-      this.allCatProds = product.concat(res['data']);
+      }; 50
+      if (res["data"][0].products) {
+        let vendorProds: any = [];
+        let products = res["data"][0].products.split(',,');
+        products.forEach(product => {
+          const [name, number, spid, pid, relation, vendor] = product.split('::');
+          let index = vendorProds.findIndex(item => item.companyName == vendor);
+          if (index < 0) {
+            vendorProds.push({ companyName: vendor, relation, data: [{ product: name, number, pk_storeProductID: Number(spid), pk_productID: Number(pid) }] });
+          } else {
+            vendorProds[index].data.push({ product: name, number, pk_storeProductID: Number(spid), pk_productID: Number(pid) });
+          }
+        });
+        this.allCatProds = vendorProds;
+        this.filteredProducts = vendorProds;
+      }
+      this.selectedCatProd = this.noProduct;
+      // this.allCatProds = product.concat(res['data']);
       this.isCategoryImageLoader = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
@@ -511,6 +498,36 @@ export class ProductMainCategoriesComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
+  setupSearch() {
+    this.searchCatProdCtrl.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300)
+    ).subscribe(value => {
+      this.filteredProducts = this.filterProducts(value);
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  filterProducts(value: string): any[] {
+    const filterValue = (typeof value === 'string' ? value : '').toLowerCase(); // Ensure value is a string
+    const result = this.allCatProds.reduce((filteredCategories, category) => {
+      const filteredData = category.data.filter(product =>
+        (typeof product.product === 'string' ? product.product : '').toLowerCase().includes(filterValue) ||
+        (typeof product.number === 'string' ? product.number : '').toLowerCase().includes(filterValue) ||
+        product.pk_productID.toString().includes(filterValue) ||
+        product.pk_storeProductID.toString().includes(filterValue)
+      );
+
+      if (filteredData.length > 0) {
+        filteredCategories.push({ ...category, data: filteredData });
+      }
+
+      return filteredCategories;
+    }, []);
+
+    return result;
+  }
+
+
   updateCategoryImage() {
     let storePID;
     if (!this.selectedStore.pk_storeProductID) {
@@ -673,3 +690,4 @@ export class ProductMainCategoriesComponent implements OnInit, OnDestroy {
     this._unsubscribeAll.complete();
   };
 }
+
