@@ -25,12 +25,15 @@ export class EmployeeRoleGuard implements CanActivate {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
     const userDetails = JSON.parse(localStorage.getItem('userDetails'));
-    const roles = userDetails.roles.split(',,');
+    let roles: any;
     let roleIDs: any = [];
-    roles.forEach(role => {
-      const [id, name] = role.split('::');
-      roleIDs.push(id);
-    });
+    if (userDetails.roles) {
+      roles = userDetails.roles.split(',,');
+      roles.forEach(role => {
+        const [id, name] = role.split('::');
+        roleIDs.push(id);
+      });
+    }
     const checkID = roleIDs.find(id => id == 3);
     if (userDetails.blnManager) {
       return true;

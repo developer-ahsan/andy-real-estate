@@ -74,12 +74,15 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy {
     }
     getUserRole() {
         const user = JSON.parse(localStorage.getItem('userDetails'));
-        const roles = user.roles.split(',,');
+        let roles: any;
         let roleIDs: any = [];
-        roles.forEach(role => {
-            const [id, name] = role.split('::');
-            roleIDs.push(id);
-        });
+        if (user.roles) {
+            roles = user.roles.split(',,');
+            roles.forEach(role => {
+                const [id, name] = role.split('::');
+                roleIDs.push(id);
+            });
+        }
         const checkID = roleIDs.find(id => id == 3);
         if (user.blnManager) {
             this.data.navigation.default[0].children[0].children.push(

@@ -119,12 +119,15 @@ export class AuthSignInComponent implements OnInit {
                                 // routing file and we don't have to touch here.
                                 const redirectURL = this._activatedRoute.snapshot.queryParamMap.get('redirectURL') || '/signed-in-redirect';
                                 const userDetails = JSON.parse(localStorage.getItem('userDetails'));
-                                const roles = userDetails.roles.split(',,');
+                                let roles: any;
                                 let roleIDs: any = [];
-                                roles.forEach(role => {
-                                    const [id, name] = role.split('::');
-                                    roleIDs.push(id);
-                                });
+                                if (userDetails.roles) {
+                                    roles = userDetails.roles.split(',,');
+                                    roles.forEach(role => {
+                                        const [id, name] = role.split('::');
+                                        roleIDs.push(id);
+                                    });
+                                }
                                 const checkID = roleIDs.find(id => id == 3);
                                 if (redirectURL == '/signed-in-redirect') {
                                     let targetURL = '/dashboards/home';
