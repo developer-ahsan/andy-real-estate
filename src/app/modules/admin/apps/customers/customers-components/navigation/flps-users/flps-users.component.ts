@@ -44,12 +44,8 @@ export class CustomerFlpsUsersComponent implements OnInit, OnDestroy {
     }
     this._customerService.GetApiData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.selectedFLPSUser = res["data"][0];
-      if (this.selectedFLPSUser.fk_FLPSUserID) {
-        this.selectedEmployee = this.selectedFLPSUser.fk_FLPSUserID;
-        this.ngCommission = this.selectedFLPSUser.commission * 100;
-      } else {
-        this.selectedEmployee = 0;
-      }
+      this.getFlpsUsers();
+      this._changeDetectorRef.markForCheck();
     });
   }
   getSelectedCustomer() {
@@ -58,7 +54,6 @@ export class CustomerFlpsUsersComponent implements OnInit, OnDestroy {
       .subscribe((response) => {
         this.selectedCustomer = response;
         this.getFLPSData();
-        this.getFlpsUsers();
       });
   }
   getFlpsUsers() {
@@ -71,6 +66,12 @@ export class CustomerFlpsUsersComponent implements OnInit, OnDestroy {
             let colonEmp = emp.split(':');
             this.flpsUsers.push({ pk_userID: Number(colonEmp[0]), fullName: colonEmp[2], email: colonEmp[6] });
           });
+        }
+        if (this.selectedFLPSUser.fk_FLPSUserID) {
+          this.selectedEmployee = this.selectedFLPSUser.fk_FLPSUserID;
+          this.ngCommission = this.selectedFLPSUser.commission * 100;
+        } else {
+          this.selectedEmployee = 0;
         }
       }
       this.isLoading = false;
