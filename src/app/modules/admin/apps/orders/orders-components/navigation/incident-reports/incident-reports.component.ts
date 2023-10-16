@@ -156,6 +156,14 @@ export class IncidentReportsComponent implements OnInit {
       order_id: this.orderDetail.pk_orderID
     }
     this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      res["data"].forEach(element => {
+        element.sources = [];
+        let sources = element.incidentReportSources.split(',,');
+        sources.forEach(source => {
+          const [id, name] = source.split('::');
+          element.sources.push({ id, name })
+        });
+      });
       this.dataSource = res["data"];
       if (type == 'add') {
         this.isIncidentLoader = false;
