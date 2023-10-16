@@ -92,6 +92,9 @@ export class IncidentReportsComponent implements OnInit {
 
   updateIncidentObj: any;
   isUpdateLoader: boolean = false;
+
+  userIDs = [866, 2844, 6268, 6268, 11204];
+  userData: any;
   constructor(
     private _orderService: OrdersService,
     private _changeDetectorRef: ChangeDetectorRef
@@ -121,6 +124,7 @@ export class IncidentReportsComponent implements OnInit {
       });
   }
   ngOnInit(): void {
+    this.userData = JSON.parse(localStorage.getItem('userDetails'));
     this.getUsers();
     this.getOrderDetail();
     this._orderService.orderLineProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {

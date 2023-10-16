@@ -161,6 +161,13 @@
                             <th>Product</th>
                             <th>Last Ordered</th>
                             <th>Last Updated</th>
+                            <th>
+                                <div class="flex ">
+                                    <span>RB</span>
+                                    <mat-icon class="icon-size-4 ml-1" matTooltip="Add To RapidBuild"
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
                             <th>Image</th>
                         </tr>
                     </thead>
@@ -179,11 +186,23 @@
                                 <span class="text-green-500" *ngIf="item.blnStoreActive">Online</span>
                                 <span class="text-red-500" *ngIf="!item.blnStoreActive">Offline</span>
                             </td>
-                            <td>{{item.productName}}</td>
+                            <td>
+                                <span [innerHTML]="item.productName"></span>
+                            </td>
                             <td>{{item.lastOrderedDate | date: 'MM/dd/YYYY'}}</td>
                             <td>{{item.lastUpdatedDate | date: 'MM/dd/YYYY'}} by {{item.lastUpdatedBy}}</td>
                             <td>
+                                <button type="button" (click)="addRapidBuild(item)"
+                                    class="inline-flex items-center gap-x-1.5 rounded-md bg-blue-400 px-2.5 py-1 text-sm font-semibold text-white shadow-sm hover:bg-blue-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400">
+                                    <span *ngIf="!item.updateRapidLoader">Add to rapidBuild</span>
+                                    <mat-progress-spinner *ngIf="item.updateRapidLoader" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
+                                </button>
+                            </td>
+                            <td>
                                 <img src="https://assets.consolidus.com/globalAssets/Products/HiRes/{{item.pk_storeProductID}}.jpg"
+                                    onError="this.src='https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'"
                                     style="width:30px; height:30px;">
                             </td>
                         </tr>

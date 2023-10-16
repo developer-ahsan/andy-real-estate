@@ -325,3 +325,10 @@ export interface sendRegistrationEmails {
     user_email: string[];
     send_registration_email: boolean;
 };
+
+export interface UpdateCustomerFLPSUser {
+    storeUserID: number;
+    commission: number;
+    flpsUserID: number;
+    update_customer_flps_user: boolean;
+};

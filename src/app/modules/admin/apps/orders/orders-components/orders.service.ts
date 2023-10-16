@@ -331,7 +331,7 @@ export class OrdersService {
     getOrderCommonCall(params) {
         return this._httpClient.get(environment.orders, {
             params: params
-        })
+        }).pipe(retry(3));
     }
     // Get Order Commentator Emails
     getCommentatorEmails(value) {

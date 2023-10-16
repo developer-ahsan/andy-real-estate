@@ -665,3 +665,8 @@ interface LogoBank {
     logo_bank_id: number;
     displayOrder: number;
 };
+
+export interface AddSubCategoriesRapidBuildStoreProduct {
+    storeProductID: number;
+    add_subcategory_rapidBuild_storeProduct: boolean;
+};

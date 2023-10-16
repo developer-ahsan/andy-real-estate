@@ -3,7 +3,8 @@
     </ngx-skeleton-loader>
     <div class="row my-3" *ngIf="!isLoading">
         <div class="col-12">
-            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full mb-5">
+            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full mb-5"
+                *ngIf="flpsUser.blnAdmin">
                 <div class="w-full ">
                     <div class="p-6 sm:p-8 lg:p-10">
                         <div class="text-2xl font-bold">
@@ -18,8 +19,12 @@
                             </mat-select>
                         </mat-form-field>
                         <div class="text-right">
-                            <button mat-button mat-flat-button color="primary">
-                                <span>Add User</span>
+                            <button class="min-w-30" mat-button mat-flat-button color="primary" (click)="addFLPSUser()"
+                                [disabled]="orderDetail.addFLPSUserLoader">
+                                <span *ngIf="!orderDetail.addFLPSUserLoader">Add User</span>
+                                <mat-progress-spinner *ngIf="orderDetail.addFLPSUserLoader" [diameter]="24"
+                                    [mode]="'indeterminate'">
+                                </mat-progress-spinner>
                             </button>
                         </div>
                     </div>
@@ -33,30 +38,13 @@
                         </div>
                     </div>
                     <div *ngIf="dataSource.length > 0;else other_content" class="px-5">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>User Name</th>
-                                    <th>Paid</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr *ngFor="let item of dataSource">
-                                    <td>{{item.fk_FLPSUserID}}</td>
-                                    <td>{{item.firstName + ' ' + item.lastName}}</td>
-                                    <td></td>
-                                    <!-- <td>{{element.commissionPaidDate ? element.commissionPaidDate : 'Not Paid'}}</td> -->
-                                </tr>
-                            </tbody>
-                        </table>
-                        <table class="table table-striped">
+                        <table class="table table-striped" *ngIf="flpsUser && flpsUser.blnAdmin; else not_admin_table">
                             <thead>
                                 <tr>
                                     <th>ID</th>
                                     <th>User Name</th>
                                     <th>Primary</th>
-                                    <th>Commission</th>
+                                    <th>Commission (%)</th>
                                     <th>Paid</th>
                                     <th>Action</th>
                                 </tr>
@@ -66,29 +54,87 @@
                                     <td>{{item.fk_FLPSUserID}}</td>
                                     <td>{{item.firstName + ' ' + item.lastName}}</td>
                                     <td>
-                                        <select class="form-control">
-                                            <option class="form-control">Yes</option>
-                                            <option class="form-control">No</option>
+                                        <select class="form-control" [(ngModel)]="item.blnPrimary"
+                                            [ngClass]="{'text-green-500': item.blnPrimary,'text-red-500': !item.blnPrimary}">
+                                            <option class="form-control text-green-500" [value]="true">Yes</option>
+                                            <option class="form-control text-red-500" [value]="false">No</option>
                                         </select>
                                     </td>
                                     <td>
-                                        <input class="form-control">
+                                        <div class="flex space-x-2">
+                                            <input class="form-control max-w-50" type="number"
+                                                [(ngModel)]="item.commissionValue">
+                                            <button type="button" (click)="updateFLPSData('commission',item)"
+                                                class="inline-flex items-center gap-x-1.5 rounded-md bg-blue-400 px-2.5 py-1 text-sm font-semibold text-white shadow-sm hover:bg-blue-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400">
+                                                <span *ngIf="!item.isCommissionLoader">Update</span>
+                                                <mat-progress-spinner *ngIf="item.isCommissionLoader" [diameter]="24"
+                                                    [mode]="'indeterminate'">
+                                                </mat-progress-spinner>
+                                            </button>
+                                        </div>
                                     </td>
-                                    <td>Not Paid</td>
                                     <td>
-                                        <button>
-                                            <span>Mark Paid</span>
-                                        </button>
-                                        <button>Remove</button>
+                                        {{item.commissionPaidDate ? 'Paid on ' + item.formattedCommissionPaidDate : 'Not
+                                        Paid'}}
                                     </td>
-                                    <!-- <td>{{element.commissionPaidDate ? element.commissionPaidDate : 'Not Paid'}}</td> -->
+                                    <td>
+                                        <button type="button" *ngIf="item.commissionPaidDate"
+                                            (click)="updateFLPSData('unmark',item)"
+                                            class="mr-2 inline-flex items-center gap-x-1.5 rounded-md bg-green-400 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-green-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-400">
+                                            <span *ngIf="!item.isMarkLoader">Unmark Paid</span>
+                                            <mat-progress-spinner *ngIf="item.isMarkLoader" [diameter]="24"
+                                                [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                        <button type="button" *ngIf="!item.commissionPaidDate"
+                                            (click)="updateFLPSData('mark',item)"
+                                            class="mr-2 inline-flex items-center gap-x-1.5 rounded-md bg-green-400 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-green-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-400">
+                                            <span *ngIf="!item.isMarkLoader">Mark Paid</span>
+                                            <mat-progress-spinner *ngIf="item.isMarkLoader" [diameter]="24"
+                                                [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                        <button type="button" (click)="updateFLPSData('remove',item)"
+                                            *ngIf="userIDs.includes(userData.pk_userID)"
+                                            class="inline-flex items-center gap-x-1.5 rounded-md bg-orange-400 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400">
+                                            <span *ngIf="!item.isRemoveLoader">Remove</span>
+                                            <mat-progress-spinner *ngIf="item.isRemoveLoader" [diameter]="24"
+                                                [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
+                        <ng-template #not_admin_table>
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>User Name</th>
+                                        <th>Paid</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let item of dataSource">
+                                        <ng-container *ngIf="item.blnPrimary">
+                                            <td>{{item.fk_FLPSUserID}}</td>
+                                            <td>{{item.firstName + ' ' + item.lastName}}</td>
+                                            <td>
+                                                {{item.commissionPaidDate ? 'Paid on ' +
+                                                item.formattedCommissionPaidDate :
+                                                'Not Paid'}}
+                                            </td>
+                                        </ng-container>
+                                        <!-- <td>{{element.commissionPaidDate ? element.commissionPaidDate : 'Not Paid'}}</td> -->
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </ng-template>
                     </div>
                     <ng-template #other_content>
                         <div class="alert alert-warning p-5">
-                            No FLPS Users found.
+                            There are no FLPS user assigned to this order
                         </div>
                     </ng-template>
                 </div>

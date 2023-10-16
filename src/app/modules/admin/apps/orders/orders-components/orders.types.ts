@@ -479,3 +479,30 @@ interface purchaseOrders {
     dateLastModified: string;
     purchase_order_id: string;
 };
+
+export interface UpdateOrderFLPSUser {
+    orderID: number;
+    flpsUserID: number;
+    orderCommission: number;
+    blnPrimary: boolean;
+    update_order_flps_user: boolean;
+};
+// UPDATE PAID STATUS
+export interface updateMarkCommissionStatus {
+    orderID: Number;
+    flpsUserID: number;
+    isPaid: boolean;
+    update_mark_commission_status: boolean;
+};
+export interface addFLPSOrderUser {
+    orderID: Number;
+    storeID: number;
+    flpsUserID: number;
+    add_flps_order_user: boolean;
+};
+
+export interface removeFLPSOrderUser {
+    orderID: Number;
+    flpsUserID: number;
+    remove_flps_order_user: boolean;
+};

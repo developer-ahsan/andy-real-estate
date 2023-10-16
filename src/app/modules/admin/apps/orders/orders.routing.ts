@@ -14,7 +14,6 @@ import { TimelineComponent } from './orders-components/navigation/timeline/timel
 import { IncidentReportsComponent } from './orders-components/navigation/incident-reports/incident-reports.component';
 import { OrderSurveyComponent } from './orders-components/navigation/order-survey/order-survey.component';
 import { OrderArtWorkComponent } from './orders-components/navigation/order-artwork/order-artwork.component';
-import { FlpsComponent } from './orders-components/navigation/flps/flps.component';
 import { OrderReorderEmailComponent } from './orders-components/navigation/order-reorder-emails/order-reorder-email.component';
 import { OrderReviewEmailComponent } from './orders-components/navigation/order-review-email/order-review-email.component';
 import { OrderPaymentEmailComponent } from './orders-components/navigation/order-payment-email/order-payment-email.component';
@@ -30,6 +29,7 @@ import { GroupOrdersDetailsComponent } from './orders-components/navigation/grou
 import { GroupOrdersShippingComponent } from './orders-components/navigation/group-order-shipping/group-order-shipping.component';
 import { OrderPaymentBillComponent } from './orders-components/navigation/order-payments-bill/order-payments-billcomponent';
 import { SentOrdersPurchasesComponent } from './orders-components/navigation/sent-purchase-orders/sent-purchase-orders.component';
+import { FlpsComponent } from './orders-components/navigation/flps/flps.component';
 
 export const ordersRoutes: Route[] = [
     {

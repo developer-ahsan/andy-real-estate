@@ -4,6 +4,7 @@ import { finalize, takeUntil } from 'rxjs/operators';
 import { CustomersService } from '../../orders.service';
 import { SmartArtService } from 'app/modules/admin/smartart/components/smartart.service';
 import { FLPSService } from 'app/modules/admin/apps/flps/components/flps.service';
+import { UpdateCustomerFLPSUser } from '../../orders.types';
 
 @Component({
   selector: 'app-flps-users',
@@ -18,7 +19,9 @@ export class CustomerFlpsUsersComponent implements OnInit, OnDestroy {
   selectedEmployee: any = 0;
   ngCommission: any;
   flpsUsers: any = [];
-
+  flpsLoggedInUser: any;
+  isUpdateLoader: boolean = false;
+  selectedFLPSUser: any;
   constructor(
     private _customerService: CustomersService,
     private _flpsService: FLPSService,
@@ -27,14 +30,34 @@ export class CustomerFlpsUsersComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.isLoading = true;
-    this.getSelectedCustomer();
+    const user = localStorage.getItem('flpsData');
+    if (user) {
+      this.flpsLoggedInUser = JSON.parse(user);
+      this.isLoading = true;
+      this.getSelectedCustomer();
+    }
+  }
+  getFLPSData() {
+    let params = {
+      flps_users_customers: true,
+      user_id: this.selectedCustomer.pk_userID
+    }
+    this._customerService.GetApiData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.selectedFLPSUser = res["data"][0];
+      if (this.selectedFLPSUser.fk_FLPSUserID) {
+        this.selectedEmployee = this.selectedFLPSUser.fk_FLPSUserID;
+        this.ngCommission = this.selectedFLPSUser.commission * 100;
+      } else {
+        this.selectedEmployee = 0;
+      }
+    });
   }
   getSelectedCustomer() {
     this._customerService.customer$
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response) => {
         this.selectedCustomer = response;
+        this.getFLPSData();
         this.getFlpsUsers();
       });
   }
@@ -57,7 +80,32 @@ export class CustomerFlpsUsersComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
-
+  updateFLPSCommission() {
+    let flpsID = null;
+    let commission = 0;
+    if (this.selectedEmployee != 0) {
+      flpsID = this.selectedEmployee;
+      if (this.ngCommission == '' || this.ngCommission == null || this.ngCommission == undefined) {
+        this._customerService.snackBar('If you are assigning an FLPS user to this customer, please provide the required commission in decimal form.');
+        return;
+      } else {
+        commission = this.ngCommission;
+      }
+    }
+    let payload: UpdateCustomerFLPSUser = {
+      storeUserID: this.selectedCustomer.pk_userID,
+      commission: commission / 100,
+      flpsUserID: this.selectedEmployee,
+      update_customer_flps_user: true
+    }
+    this.isUpdateLoader = true;
+    this._customerService.PutApiData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.isUpdateLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      this._customerService.snackBar(res["message"]);
+    })
+  }
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions
     this._unsubscribeAll.next();

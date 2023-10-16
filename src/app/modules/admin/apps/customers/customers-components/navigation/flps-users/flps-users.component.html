@@ -1,12 +1,18 @@
 <div class="inset-0 min-w-50 overflow-hidden mt-5 bg-card dark:bg-transparent w-full p-5">
   <div class="flex-auto">
-    <b class="text-2xl">FPLS Users For {{selectedCustomer?.firstName + ' ' + selectedCustomer?.lastName}}</b>
+    <b class="text-2xl">FPLS Users For {{(selectedCustomer?.firstName || 'N/A') + ' ' + (selectedCustomer?.lastName ||
+      'N/A')}}</b>
   </div>
-  <div *ngIf="isLoading" class="my-5">
+  <div *ngIf="!flpsLoggedInUser">
+    <div class="px-5 alert alert-danger my-2">
+      You must be logged in to FLPS to access this area.
+    </div>
+  </div>
+  <div *ngIf="isLoading && flpsLoggedInUser" class="my-5">
     <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
     </ngx-skeleton-loader>
   </div>
-  <div *ngIf="!isLoading" class="space-y-3 mt-10">
+  <div *ngIf="!isLoading && flpsLoggedInUser" class="space-y-3 mt-10">
     <p>Assigning an FLPS user to this customer will ensure that any orders placed by this customer will be associated
       with this FLPS user. THIS SETTING OVERRIDES STORE LEVEL FLPS SETTINGS.</p>
     <p>Current FLPS User</p>
@@ -29,8 +35,11 @@
         </mat-form-field>
       </div>
       <div class="col-12 text-right">
-        <button mat-button mat-flat-button color="primary" class="min-w-30">
-          <span>Update</span>
+        <button mat-button mat-flat-button [disabled]="isUpdateLoader" (click)="updateFLPSCommission()" color="primary"
+          class="min-w-30">
+          <span *ngIf="!isUpdateLoader">Update</span>
+          <mat-progress-spinner *ngIf="isUpdateLoader" [diameter]="24" [mode]="'indeterminate'">
+          </mat-progress-spinner>
         </button>
       </div>
     </div>

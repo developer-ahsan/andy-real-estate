@@ -5,7 +5,7 @@ import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUn
 import { fuseAnimations } from '@fuse/animations';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { AddSubCategoryKeyword, DeleteSubCategory, RemoveSubCategoryFeatureImage, RemoveSubCategoryKeyword, UpdateSubCategory, addSubCategoryProducts, createSubCategoryFeatureImage, removeSubCategoryProducts, updateSubCatProductDisplayOrder, updateSubCategoriesDisplayOrder, updateSubCategoriesStatus, updateSubCategoryFeatureImage } from '../../../stores.types';
+import { AddSubCategoriesRapidBuildStoreProduct, AddSubCategoryKeyword, DeleteSubCategory, RemoveSubCategoryFeatureImage, RemoveSubCategoryKeyword, UpdateSubCategory, addSubCategoryProducts, createSubCategoryFeatureImage, removeSubCategoryProducts, updateSubCatProductDisplayOrder, updateSubCategoriesDisplayOrder, updateSubCategoriesStatus, updateSubCategoryFeatureImage } from '../../../stores.types';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
@@ -660,6 +660,20 @@ export class ProductSubCategoriesComponent implements OnInit, OnDestroy {
       this.isAddProductLoader = false;
       this._changeDetectorRef.markForCheck();
     });
+  }
+  addRapidBuild(item) {
+    let payload: AddSubCategoriesRapidBuildStoreProduct = {
+      storeProductID: item.pk_storeProductID,
+      add_subcategory_rapidBuild_storeProduct: true
+    }
+    item.updateRapidLoader = true;
+    this._storeManagerService.postStoresData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      item.updateRapidLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      this._storeManagerService.snackBar(res["message"]);
+    });
+
   }
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions

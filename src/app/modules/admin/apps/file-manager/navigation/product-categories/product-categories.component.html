@@ -39,10 +39,10 @@
                                         *matHeaderCellDef>
                                         CATEGORY
                                     </th>
-                                    <td mat-cell *matCellDef="let element">
+                                    <td mat-cell *matCellDef="let element;let i = dataIndex">
                                         <a
                                             [routerLink]="['/apps/stores/',selectedStore.pk_storeID,'product-categories','parent-categories',element.pk_categoryID]">{{
-                                            element.RowNumber }}. <span class="underline text-blue-500">{{
+                                            i +1 }}. <span class="underline text-blue-500">{{
                                                 element.categoryName }}</span></a>
                                     </td>
                                 </ng-container>

@@ -75,8 +75,23 @@
                             <ng-container matColumnDef="action">
                                 <th mat-header-cell *matHeaderCellDef class="min-w-15 w-15"> Action </th>
                                 <td mat-cell *matCellDef="let transaction">
-                                    <div class="flex">
-                                        <div>
+                                    <div class="flex space-x-1">
+                                        <button type="button" (click)="viewIncidentReport(transaction)"
+                                            class="mr-2 inline-flex items-center gap-x-1.5 rounded-md bg-green-400 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-green-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-400">
+                                            <span *ngIf="!transaction.isMarkLoader">Mark Paid</span>
+                                            <mat-progress-spinner *ngIf="transaction.isMarkLoader" [diameter]="24"
+                                                [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                        <button type="button" (click)="deleteIncidentReport(transaction)"
+                                            *ngIf="userIDs.includes(userData.pk_userID)"
+                                            class="inline-flex items-center gap-x-1.5 rounded-md bg-orange-400 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400">
+                                            <span *ngIf="!transaction.isRemoveLoader">Remove</span>
+                                            <mat-progress-spinner *ngIf="transaction.isRemoveLoader" [diameter]="24"
+                                                [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                        <!-- <div>
                                             <mat-icon class="cursor-pointer " style="width: 20px;min-width:20px"
                                                 [matTooltip]="'View'" svgIcon="mat_solid:remove_red_eye"
                                                 (click)="viewIncidentReport(transaction)"></mat-icon>
@@ -89,7 +104,7 @@
                                             <mat-progress-spinner class="text-lg" *ngIf="transaction?.deleteLoader"
                                                 [diameter]="24" [mode]="'indeterminate'">
                                             </mat-progress-spinner>
-                                        </div>
+                                        </div> -->
                                     </div>
                                 </td>
                             </ng-container>

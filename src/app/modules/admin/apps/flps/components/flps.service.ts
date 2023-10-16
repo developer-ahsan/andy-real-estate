@@ -58,6 +58,7 @@ export class FLPSService {
             tap((response: any) => {
                 if (response["success"]) {
                     sessionStorage.setItem('flpsAccessToken', 'userLoggedIn');
+                    localStorage.setItem('flpsData', JSON.stringify(response["data"][0]));
                     sessionStorage.setItem('FullName', response["data"][0].firstName + ' ' + response["data"][0].lastName);
                     sessionStorage.setItem('flpsLoginAdmin', response["data"][0].blnAdmin);
                     sessionStorage.setItem('flpsUserID', response["data"][0].pk_userID);

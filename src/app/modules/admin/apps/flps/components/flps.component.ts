@@ -120,6 +120,7 @@ export class FLPSComponent {
         }).then((result) => {
             if (result.isConfirmed) {
                 sessionStorage.removeItem('flpsAccessToken');
+                localStorage.removeItem('flpsData');
                 this.flpsToken = null;
                 this._changeDetectorRef.markForCheck();
             }
@@ -164,6 +165,7 @@ export class FLPSComponent {
             if (res["success"]) {
                 if (res["isLogin"]) {
                     this.flpsToken = 'userLoggedIn';
+                    localStorage.setItem('flpsData', JSON.stringify(res["data"][0]));
                     sessionStorage.setItem('flpsAccessToken', 'userLoggedIn');
                     sessionStorage.setItem('FullName', res["data"][0].firstName + ' ' + res["data"][0].lastName);
                     sessionStorage.setItem('flpsLoginAdmin', res["data"][0].blnAdmin);

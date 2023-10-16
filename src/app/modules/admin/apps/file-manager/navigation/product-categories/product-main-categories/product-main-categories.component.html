@@ -790,6 +790,10 @@
                     <tbody>
                         <tr *ngFor="let item of recommendedProducts">
                             <td>
+                                <a href="https://assets.consolidus.com/globalAssets/Products/HiRes/{{item.pk_storeProductID}}.jpg"
+                                    target="_blank"><img
+                                        src="https://assets.consolidus.com/globalAssets/Products/HiRes/{{item.pk_storeProductID}}.jpg"
+                                        style="width:40px; height:40px;"></a>
                                 <!-- <a href="https://assets.consolidus.com/globalAssets/Products/HiRes/62446.jpg"
                                     data-lightbox="62446">
                                     <img src="https://assets.consolidus.com/globalAssets/Products/Thumbnails/62446.jpg"
@@ -800,7 +804,7 @@
                                 <mat-checkbox [(ngModel)]="item.selected"></mat-checkbox>
                             </td>
                             <td>
-                                {{item.product}}
+                                <span [innerHTML]="item.product"></span>
                             </td>
                             <td class="no-wrap">
                                 {{item.companyName}}
