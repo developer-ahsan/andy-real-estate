@@ -95,6 +95,8 @@ export class IncidentReportsComponent implements OnInit {
 
   userIDs = [866, 2844, 6268, 6268, 11204];
   userData: any;
+  incidentReportPage = 1;
+  totalIncidentRecords = 0;
   constructor(
     private _orderService: OrdersService,
     private _changeDetectorRef: ChangeDetectorRef
@@ -153,7 +155,8 @@ export class IncidentReportsComponent implements OnInit {
   getReports(type) {
     let params = {
       incident_report: true,
-      order_id: this.orderDetail.pk_orderID
+      order_id: this.orderDetail.pk_orderID,
+      page: this.incidentReportPage
     }
     this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       res["data"].forEach(element => {
@@ -165,6 +168,7 @@ export class IncidentReportsComponent implements OnInit {
         });
       });
       this.dataSource = res["data"];
+      this.totalIncidentRecords = res["totalRecords"];
       if (type == 'add') {
         this.isIncidentLoader = false;
         this._orderService.snackBar('Incident Created Successfully');
@@ -182,6 +186,16 @@ export class IncidentReportsComponent implements OnInit {
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
     })
+  }
+  getNextIncidentReports(event) {
+    const { previousPageIndex, pageIndex } = event;
+
+    if (pageIndex > previousPageIndex) {
+      this.incidentReportPage++;
+    } else {
+      this.incidentReportPage--;
+    };
+    this.getReports('get');
   }
   getOrderDetail() {
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {

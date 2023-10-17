@@ -11,6 +11,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 @Component({
   selector: 'app-product-main-categories',
   templateUrl: './product-main-categories.component.html',
+  styles: ["img {max-width: auto}"],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: fuseAnimations

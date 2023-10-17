@@ -74,7 +74,11 @@
                     </div>
                 </ng-template>
             </div>
-            <div class="col-12 mt-2" *ngIf="isView">
+            <div class="p-5 bg-card shadow-lg rounded-2xl my-3" *ngIf="isView">
+                <div class="flex justify-between">
+                    <p class="my-2 font-bold text-lg">Incident Report</p>
+                    <p>Last modified on {{orderDetail.dateModified}}</p>
+                </div>
                 <!-- Header -->
                 <div
                     class="relative bg-light flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between md:px-8 border-b pb-2">
