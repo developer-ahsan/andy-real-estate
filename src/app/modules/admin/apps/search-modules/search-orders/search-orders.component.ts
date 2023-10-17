@@ -15,9 +15,6 @@ import { MatPaginator } from '@angular/material/paginator';
 export class SearchOrdersComponents implements OnInit, OnDestroy {
     @ViewChild('paginator') paginator: MatPaginator;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
-
-
-
     isOrderLoader: boolean = false;
     page = 1;
     ordersData = [];
@@ -48,8 +45,8 @@ export class SearchOrdersComponents implements OnInit, OnDestroy {
             this.ordersData = [];
             this.searchKeyword = params.value;
             this.isOrderLoader = true;
-            this._changeDetectorRef.markForCheck();
             this.getOrdersData(1);
+            this._changeDetectorRef.markForCheck();
         });
     }
 
