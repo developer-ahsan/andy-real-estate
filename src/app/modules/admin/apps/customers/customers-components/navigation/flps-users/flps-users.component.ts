@@ -31,10 +31,10 @@ export class CustomerFlpsUsersComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     const user = localStorage.getItem('flpsData');
+    this.getSelectedCustomer();
     if (user) {
       this.flpsLoggedInUser = JSON.parse(user);
       this.isLoading = true;
-      this.getSelectedCustomer();
     }
   }
   getFLPSData() {
