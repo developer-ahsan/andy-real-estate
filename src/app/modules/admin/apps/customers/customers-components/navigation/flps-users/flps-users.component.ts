@@ -67,7 +67,7 @@ export class CustomerFlpsUsersComponent implements OnInit, OnDestroy {
             this.flpsUsers.push({ pk_userID: Number(colonEmp[0]), fullName: colonEmp[2], email: colonEmp[6] });
           });
         }
-        if (this.selectedFLPSUser.fk_FLPSUserID) {
+        if (this.selectedFLPSUser?.fk_FLPSUserID) {
           this.selectedEmployee = this.selectedFLPSUser.fk_FLPSUserID;
           this.ngCommission = this.selectedFLPSUser.commission * 100;
         } else {
