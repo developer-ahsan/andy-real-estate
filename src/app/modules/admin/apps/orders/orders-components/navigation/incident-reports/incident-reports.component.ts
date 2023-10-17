@@ -9,6 +9,7 @@ import { FormControl } from '@angular/forms';
 import { environment } from 'environments/environment';
 import { I } from '@angular/cdk/keycodes';
 import { CreateIncidentReport, DeleteIncidentReport, UpdateIncidentReport } from '../../orders.types';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 interface IncidentReports {
   id: string;
   created: string;
@@ -23,6 +24,9 @@ interface IncidentReports {
   templateUrl: './incident-reports.component.html'
 })
 export class IncidentReportsComponent implements OnInit {
+  config = {
+    maxFiles: 5, // Set the maximum number of files
+  };
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   orderDetail: any;
@@ -30,7 +34,6 @@ export class IncidentReportsComponent implements OnInit {
   isLoading: boolean = false;
   selectedOrder: any;
 
-  displayedColumns: string[] = ['id', 'created', 'created_by', 'store', 'source_entities', 'action'];
   dataSource = [];
 
   isView: boolean = false;
@@ -49,6 +52,7 @@ export class IncidentReportsComponent implements OnInit {
 
   formModal = {
     reportsSources: [],
+    selectedEmployess: [],
     blnFianlized: false,
     priority1: 'TBD',
     priority3: 'TBD',
@@ -57,7 +61,7 @@ export class IncidentReportsComponent implements OnInit {
     explanation: "",
     how: "",
     recommend: '',
-    source_supplier: null,
+    source_supplier: 0,
     source_employee: null
   }
   updateFormModal = {
@@ -97,60 +101,41 @@ export class IncidentReportsComponent implements OnInit {
   userData: any;
   incidentReportPage = 1;
   totalIncidentRecords = 0;
+
+  files: any = [];
   constructor(
     private _orderService: OrdersService,
-    private _changeDetectorRef: ChangeDetectorRef
+    private _changeDetectorRef: ChangeDetectorRef,
+    private _commonService: DashboardsService
   ) { }
   calledScreen(value) {
     this.mainScreen = value;
   }
   getUsers() {
-    this.users.valueChanges.pipe(debounceTime(500), tap(() => {
-      //   this.errorMsg = "";
-      this.usersList = [];
-      this.isUserLoader = true;
+    this.isUserLoader = true;
+    let params = {
+      admin_users: true,
+      order_id: this.orderDetail.pk_orderID
+    }
+    this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.isUserLoader = false;
       this._changeDetectorRef.markForCheck();
-    }),
-      switchMap(value => this._orderService.getOrderCommonCall({ admin_users: true, keyword: value })
-        .pipe(
-          finalize(() => {
-            this.isUserLoader = false;
-            this._changeDetectorRef.markForCheck();
-          }),
-        )
-      )
-    )
-      .subscribe(data => {
-        this.usersList = data["data"] as any[];
-        this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      let users = res["data"][0].sourceOfIncidentEmployee.split(',,');
+      users.forEach(user => {
+        const [name, email, id, ID] = user.split('::');
+        this.usersList.push({ name, email, id, ID });
       });
+      let sources = res["sourceOfIncidentSuppliers"][0]["sourceOfIncidentSuppliers"].split(',,');
+      sources.forEach(element => {
+        const [id, name] = element.split('::');
+        this.supplierList.push({ id, name });
+      });
+    });
   }
   ngOnInit(): void {
     this.userData = JSON.parse(localStorage.getItem('userDetails'));
-    this.getUsers();
     this.getOrderDetail();
-    this._orderService.orderLineProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      if (!res) {
-        this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-          let value = [];
-          res["data"].forEach((element, index) => {
-            value.push(element.pk_orderLineID);
-            if (index == res["data"].length - 1) {
-              this.getLineProducts(value.toString());
-            }
-          });
-        })
-      } else {
-        res["data"].forEach(element => {
-          this.productsList.push({ name: element.productName, id: element.pk_productID });
-          const index = this.supplierList.findIndex(item => item.id == element.supplier_id);
-          if (index < 0) {
-            this.supplierList.push({ name: element.supplier_name, id: element.supplier_id, link: element.supplierLink });
-          }
-        });
-      }
-    });
-
   }
   getReports(type) {
     let params = {
@@ -202,8 +187,10 @@ export class IncidentReportsComponent implements OnInit {
       this.orderDetail = res["data"][0];
       this.isLoading = true;
       this.formModal.blnFianlized = this.orderDetail.blnFinalized;
+      this.getUsers();
       this.getIncidentReports();
       this.getReports('get');
+
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isLoading = false;
@@ -229,10 +216,10 @@ export class IncidentReportsComponent implements OnInit {
   }
 
   viewIncidentReport(item): void {
+    console.log(item);
     this.isView = !this.isView;
     if (this.isView) {
       this.updateIncidentObj = item;
-      this.isLoadingChange.emit(true);
       this.updateFormModal.blnFinalized = item.blnFinalized;
       this.updateFormModal.rerunCost = item.rerunCost;
       this.updateFormModal.recommend = item.recommend;
@@ -288,7 +275,6 @@ export class IncidentReportsComponent implements OnInit {
       this._changeDetectorRef.markForCheck();
 
     }
-
   }
 
   viewCreateIncidentReportForm(): void {
@@ -297,21 +283,6 @@ export class IncidentReportsComponent implements OnInit {
 
   createIncidentReport(): void {
     this.isButtonLoader = !this.isButtonLoader;
-  }
-  getLineProducts(value) {
-    let params = {
-      order_line_item: true,
-      order_line_id: value
-    }
-    this._orderService.getOrderLineProducts(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.isLoading = false;
-      this.isLoadingChange.emit(false);
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this.isLoading = false;
-      this.isLoadingChange.emit(false);
-      this._changeDetectorRef.markForCheck();
-    })
   }
   getIncidentReports() {
     let params = {
@@ -341,10 +312,10 @@ export class IncidentReportsComponent implements OnInit {
       priority3: this.formModal.priority3,
       priority4: 'TBD',
       rerunCost: this.formModal.rerunCost,
-      explanation: this.formModal.explanation.replace("'", "''"),
+      explanation: this.formModal.explanation.replace(/'/g, "''"),
       corrected: this.formModal.corrected,
-      how: this.formModal.how.replace("'", "''"),
-      recommend: this.formModal.recommend.replace("'", "''"),
+      how: this.formModal.how.replace(/'/g, "''"),
+      recommend: this.formModal.recommend.replace(/'/g, "''"),
       source_supplier: this.formModal.source_supplier,
       source_employee: this.formModal.source_employee,
       admin_user_id: this.orderDetail.fk_adminUserID,
@@ -354,7 +325,9 @@ export class IncidentReportsComponent implements OnInit {
     this.isIncidentLoader = true;
     this._orderService.CreateIncidentReport(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       // this.isIncidentLoader = false;
-      this.getReports('add');
+      // this.getReports('add');
+      console.log(res);
+      // this.uploadMultipleImages();
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isIncidentLoader = false;
@@ -377,7 +350,7 @@ export class IncidentReportsComponent implements OnInit {
       this.supplierSource = false;
     }
     this.employeeSource = this.formModal.reportsSources.some(elem => {
-      if (elem.sourceName == 'Program Manager/Service Rep' || elem.sourceName == 'Customer' || elem.sourceName == 'Support') {
+      if (elem.sourceName == 'Program Manager/Service Rep' || elem.sourceName == 'Support') {
         return true;
       } else {
         return false;
@@ -387,7 +360,7 @@ export class IncidentReportsComponent implements OnInit {
       if (elem.sourceName == 'Supplier') {
         return true;
       } else {
-        this.formModal.source_supplier = null;
+        this.formModal.source_supplier = 0;
         return false;
       }
     });
@@ -462,6 +435,10 @@ export class IncidentReportsComponent implements OnInit {
       }
     })
   }
+
+
+  // Update Incident Reports
+
   // Delete Incident Report
   deleteIncidentReport(item) {
     item.deleteLoader = true;
@@ -486,7 +463,7 @@ export class IncidentReportsComponent implements OnInit {
 
     let payload: UpdateIncidentReport = {
       store_user_id: fk_storeUserID, blnFinalized,
-      date: this.todayDate, priority1, priority2, priority3, priority4, rerunCost, explanation: explanation?.replace("'", "''"), corrected, how: how?.replace("'", "''"), recommend: recommend?.replace("'", "''"), source_supplier, admin_user_id: fk_adminUserID, source_employee, dateModified: this.todayDate, incident_sources: reportsSources, incident_report_id: pk_incidentReportID, update_incident_report: true
+      date: this.todayDate, priority1, priority2, priority3, priority4, rerunCost, explanation: explanation?.replace(/'/g, "''"), corrected, how: how?.replace(/'/g, "''"), recommend: recommend?.replace(/'/g, "''"), source_supplier, admin_user_id: fk_adminUserID, source_employee, dateModified: this.todayDate, incident_sources: reportsSources, incident_report_id: pk_incidentReportID, update_incident_report: true
     }
     this.isUpdateLoader = true;
     this._orderService.updateOrderCalls(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -495,6 +472,58 @@ export class IncidentReportsComponent implements OnInit {
       this.isUpdateLoader = false;
       this._changeDetectorRef.markForCheck();
     })
+  }
+
+  // Select & Upload Images
+  onSelectMain(event) {
+    if (event.addedFiles.length > 5) {
+      this._orderService.snackBar("Please select maximum 5 images.");
+      return;
+    }
+    if (this.files.length == 5) {
+      this._orderService.snackBar("Max limit reached for image upload.");
+      return;
+    } else {
+      event.addedFiles.forEach(element => {
+        this.files.push(element);
+      });
+    }
+    setTimeout(() => {
+      this._changeDetectorRef.markForCheck();
+    }, 200);
+  }
+  onRemoveMain(index) {
+    this.files.splice(index, 1);
+  }
+  uploadMultipleImages(incidentID) {
+    let images = [];
+    this.files.forEach((file, index) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        let image: any = new Image;
+        image.src = reader.result;
+        image.onload = () => {
+          images.push({
+            imageUpload: reader.result,
+            type: file["type"]
+          });
+          if (index == this.files.length) {
+            this.uploadImageToServer(images, incidentID)
+          }
+        }
+      }
+    });
+    console.log(images);
+  }
+  uploadImageToServer(images, incidentID) {
+    let files = [];
+    images.forEach(element => {
+      files.push({
+        image_file: element.imageUpload.split(",")[1],
+        image_path: `/globalAssets/Orders/incidentReportImages/${this.orderDetail.pk_orderID}/${incidentID}/${Math.random() * 99999}.jpg`
+      })
+    });
   }
 }
 

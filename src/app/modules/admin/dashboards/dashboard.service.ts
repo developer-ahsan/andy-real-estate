@@ -217,4 +217,17 @@ export class DashboardsService {
         return this._httpClient.put(
             environment.products, payload);
     };
+
+    // Upload Multiple Files
+    uploadMultipleMediaFiles(files) {
+        // files =>
+        // image_file: string;
+        // image_path: string;
+        let payload = {
+            files: files,
+            upload_multiple_files: true
+        }
+        return this._httpClient.post(
+            environment.products, payload);
+    };
 }

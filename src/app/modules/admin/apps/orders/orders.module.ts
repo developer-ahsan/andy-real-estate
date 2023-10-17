@@ -69,6 +69,7 @@ import { NgxStripeModule } from 'ngx-stripe';
 import { ProductsOrderModifyComponent } from './orders-components/navigation/order-modify/products-modify.component';
 import { QuillModule } from 'ngx-quill';
 import { SentOrdersPurchasesComponent } from './orders-components/navigation/sent-purchase-orders/sent-purchase-orders.component';
+import { NgxDropzoneModule } from 'ngx-dropzone';
 
 @NgModule({
     declarations: [
@@ -143,6 +144,7 @@ import { SentOrdersPurchasesComponent } from './orders-components/navigation/sen
         MatSnackBarModule,
         FuseCardModule,
         NgxStripeModule,
+        NgxDropzoneModule,
         QuillModule.forRoot()
     ],
 })

@@ -77,7 +77,7 @@
             <div class="p-5 bg-card shadow-lg rounded-2xl my-3" *ngIf="isView">
                 <div class="flex justify-between">
                     <p class="my-2 font-bold text-lg">Incident Report</p>
-                    <p>Last modified on {{orderDetail.dateModified}}</p>
+                    <p>Last modified on {{orderDetail.updateIncidentObj}}</p>
                 </div>
                 <!-- Header -->
                 <div
@@ -96,356 +96,357 @@
                     </div>
                 </div>
                 <div class="row w-full mt-5">
-                    <mat-card class="w-full px-5 py-5 h-auto overflow-auto">
-                        <mat-card-content>
-                            <div class="row border-b font-bold">
-                                <div class="col-6 text-left text-lg">
-                                    Update Incident Report
-                                </div>
-                                <div class="col-6 text-right text-secondary">
-                                    Order # {{orderDetail.pk_orderID}}
+                    <div class="p-5 bg-card shadow-lg rounded-2xl my-3">
+                        <div class="row font-bold">
+                            <div class="col-6 text-left text-lg">
+                                Update Incident Report
+                            </div>
+                            <div class="col-6 text-right text-secondary">
+                                Order # {{orderDetail.pk_orderID}}
+                            </div>
+                        </div>
+                        <div class="row py-2">
+                            <div class="col-lg-6 col-md-6 col-12">
+                                <span class="font-semibold">Date</span>
+                                <span class="float-right">{{todayDate}}</span>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-12">
+                                <span class="font-semibold">Customer</span>
+                                <span class="float-right">{{orderDetail.billingFirstName}}
+                                    {{orderDetail.billingLastName}} from
+                                    {{orderDetail?.billingCompanyName}}</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6 col-12">
+                                <span class="font-semibold">Program/Market</span>
+                                <span class="float-right">{{orderDetail.storeName}}</span>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-12">
+                                <span class="font-semibold">Supplier(s) On Order</span>
+                                <div class="float-right">
+                                    <p *ngFor="let item of supplierList">{{item?.name}}</p>
                                 </div>
                             </div>
-                            <div class="row py-2">
-                                <div class="col-lg-6 col-md-6 col-12">
-                                    <span class="font-semibold">Date</span>
-                                    <span class="float-right">{{todayDate}}</span>
-                                </div>
-                                <div class="col-lg-6 col-md-6 col-12">
-                                    <span class="font-semibold">Customer</span>
-                                    <span class="float-right">{{orderDetail.billingFirstName}}
-                                        {{orderDetail.billingLastName}} from
-                                        {{orderDetail?.billingCompanyName}}</span>
-                                </div>
+                        </div>
+                        <div class="row py-3 border-b"></div>
+                        <div class="row pt-2 font-semibold">
+                            <div class="col-12">
+                                <mat-checkbox [(ngModel)]="updateFormModal.blnFinalized">Finalized</mat-checkbox>
+                                <p class="text-green-500" *ngIf="updateFormModal.blnFinalized">(currently finalized)
+                                </p>
+                                <p class="text-red-500" *ngIf="!updateFormModal.blnFinalized">(not currently
+                                    finalized. Finalizing will send an email notification to orders@consolidus.com)
+                                </p>
                             </div>
-                            <div class="row">
-                                <div class="col-lg-6 col-md-6 col-12">
-                                    <span class="font-semibold">Program/Market</span>
-                                    <span class="float-right">{{orderDetail.storeName}}</span>
-                                </div>
-                                <div class="col-lg-6 col-md-6 col-12">
-                                    <span class="font-semibold">Supplier(s) On Order</span>
-                                    <div class="float-right">
-                                        <p *ngFor="let item of supplierList">{{item?.name}}</p>
-                                    </div>
-                                </div>
+                            <div class="col-12">
+                                Incident Priority:
                             </div>
-                            <div class="row py-3 border-b"></div>
-                            <div class="row pt-2 font-semibold">
-                                <div class="col-12">
-                                    <mat-checkbox [(ngModel)]="updateFormModal.blnFinalized">Finalized</mat-checkbox>
-                                    <p class="text-green-500" *ngIf="updateFormModal.blnFinalized">(currently finalized)
-                                    </p>
-                                    <p class="text-red-500" *ngIf="!updateFormModal.blnFinalized">(not currently
-                                        finalized. Finalizing will send an email notification to orders@consolidus.com)
-                                    </p>
-                                </div>
-                                <div class="col-12">
-                                    Incident Priority:
-                                </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6 col-12">
+                                <small class="text-secondary font-semibold">Was customer service
+                                    compromised/effected?</small>
+                                <mat-form-field class="w-full">
+                                    <mat-select [(ngModel)]="updateFormModal.priority1">
+                                        <mat-option value="Yes">Yes</mat-option>
+                                        <mat-option value="No">No</mat-option>
+                                        <mat-option value="TBD">TBD</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
                             </div>
-                            <div class="row">
-                                <div class="col-lg-6 col-md-6 col-12">
-                                    <small class="text-secondary font-semibold">Was customer service
-                                        compromised/effected?</small>
-                                    <mat-form-field class="w-full">
-                                        <mat-select [(ngModel)]="updateFormModal.priority1">
-                                            <mat-option value="Yes">Yes</mat-option>
-                                            <mat-option value="No">No</mat-option>
-                                            <mat-option value="TBD">TBD</mat-option>
-                                        </mat-select>
-                                    </mat-form-field>
-                                </div>
-                                <div class="col-lg-6 col-md-6 col-12">
-                                    <small class="text-secondary font-semibold">Did we lose money on this order
-                                        in order to correct it?</small>
-                                    <mat-form-field class="w-full h-12">
-                                        <mat-select [(ngModel)]="updateFormModal.priority3">
-                                            <mat-option value="Yes">Yes</mat-option>
-                                            <mat-option value="No">No</mat-option>
-                                            <mat-option value="TBD">TBD</mat-option>
-                                        </mat-select>
-                                    </mat-form-field>
-                                </div>
+                            <div class="col-lg-6 col-md-6 col-12">
+                                <small class="text-secondary font-semibold">Did we lose money on this order
+                                    in order to correct it?</small>
+                                <mat-form-field class="w-full h-12">
+                                    <mat-select [(ngModel)]="updateFormModal.priority3">
+                                        <mat-option value="Yes">Yes</mat-option>
+                                        <mat-option value="No">No</mat-option>
+                                        <mat-option value="TBD">TBD</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
                             </div>
-                            <div class="row pt-2 font-semibold">
-                                <div class="col-12">
-                                    Source of Incident:
-                                </div>
+                        </div>
+                        <div class="row pt-2 font-semibold">
+                            <div class="col-12">
+                                Source of Incident:
                             </div>
-                            <div class="row" *ngIf="reportSources">
-                                <div class="col-lg-4 col-md-6 col-6" *ngFor="let item of reportSources">
-                                    <mat-checkbox (change)="updateAndRemoveFromCheckBox($event, item)"
-                                        [(ngModel)]="item.checked">{{item.sourceName}}
-                                    </mat-checkbox>
-                                </div>
+                        </div>
+                        <div class="row" *ngIf="reportSources">
+                            <div class="col-lg-4 col-md-6 col-6" *ngFor="let item of reportSources">
+                                <mat-checkbox (change)="updateAndRemoveFromCheckBox($event, item)"
+                                    [(ngModel)]="item.checked">{{item.sourceName}}
+                                </mat-checkbox>
                             </div>
-                            <div class="row" *ngIf="employeeSource">
-                                <div class="col-12">
-                                    <small class="text-secondary font-semibold">Source of Incident Employee</small>
-                                    <mat-form-field class="w-full">
-                                        <input type="text" placeholder="Search User" matInput [formControl]="users"
-                                            [matAutocomplete]="auto">
-                                        <mat-autocomplete #auto="matAutocomplete">
-                                            <mat-option *ngIf="isUserLoader" class="is-loading">Loading...
+                        </div>
+                        <div class="row" *ngIf="employeeSource">
+                            <div class="col-12">
+                                <small class="text-secondary font-semibold">Source of Incident Employee</small>
+                                <mat-form-field class="w-full">
+                                    <input type="text" placeholder="Search User" matInput [formControl]="users"
+                                        [matAutocomplete]="auto">
+                                    <mat-autocomplete #auto="matAutocomplete">
+                                        <mat-option *ngIf="isUserLoader" class="is-loading">Loading...
+                                        </mat-option>
+                                        <ng-container *ngIf="!isUserLoader">
+                                            <mat-option *ngFor="let result of usersList"
+                                                (click)="updateuserSelected(result)"
+                                                [value]="result.firstName + ' ' + result.lastName">
+                                                {{result.firstName}} {{ result.lastName }}
                                             </mat-option>
-                                            <ng-container *ngIf="!isUserLoader">
-                                                <mat-option *ngFor="let result of usersList"
-                                                    (click)="updateuserSelected(result)"
-                                                    [value]="result.firstName + ' ' + result.lastName">
-                                                    {{result.firstName}} {{ result.lastName }}
-                                                </mat-option>
-                                            </ng-container>
-                                        </mat-autocomplete>
-                                    </mat-form-field>
-                                </div>
+                                        </ng-container>
+                                    </mat-autocomplete>
+                                </mat-form-field>
                             </div>
-                            <div class="row" *ngIf="supplierSource">
-                                <div class="col-12">
-                                    <small class="text-secondary font-semibold">Source of Incident Supplier</small>
-                                    <mat-form-field class="w-full">
-                                        <mat-select matInput [(ngModel)]="updateFormModal.source_supplier">
-                                            <mat-option *ngFor="let item of supplierList"
-                                                [value]="item.id">{{item.name}}
-                                            </mat-option>
-                                        </mat-select>
-                                    </mat-form-field>
-                                </div>
+                        </div>
+                        <div class="row" *ngIf="supplierSource">
+                            <div class="col-12">
+                                <small class="text-secondary font-semibold">Source of Incident Supplier</small>
+                                <mat-form-field class="w-full">
+                                    <mat-select matInput [(ngModel)]="updateFormModal.source_supplier">
+                                        <mat-option *ngFor="let item of supplierList" [value]="item.id">{{item.name}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
                             </div>
-                            <div class="row">
-                                <div class="col-12">
-                                    <span class="font-semibold">Money lost:</span>
-                                    <mat-form-field appearance="outline" class="w-full">
-                                        <input matInput type="number" [(ngModel)]="updateFormModal.rerunCost">
-                                        <mat-icon matSuffix svgIcon="heroicons_outline:currency-dollar"></mat-icon>
-                                    </mat-form-field>
-                                </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <span class="font-semibold">Money lost:</span>
+                                <mat-form-field appearance="outline" class="w-full">
+                                    <input matInput type="number" [(ngModel)]="updateFormModal.rerunCost">
+                                    <mat-icon matSuffix svgIcon="heroicons_outline:currency-dollar"></mat-icon>
+                                </mat-form-field>
                             </div>
-                            <div class="row">
-                                <div class="col-12">
-                                    <p class="font-semibold">Corrected to satisfaction of customer?</p>
-                                    <mat-form-field class="w-full h-12">
-                                        <mat-select [(ngModel)]="updateFormModal.corrected" name="order">
-                                            <mat-option value="Yes">Yes</mat-option>
-                                            <mat-option value="No">No</mat-option>
-                                            <mat-option value="TBD">TBD</mat-option>
-                                        </mat-select>
-                                    </mat-form-field>
-                                </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <p class="font-semibold">Corrected to satisfaction of customer?</p>
+                                <mat-form-field class="w-full h-12">
+                                    <mat-select [(ngModel)]="updateFormModal.corrected" name="order">
+                                        <mat-option value="Yes">Yes</mat-option>
+                                        <mat-option value="No">No</mat-option>
+                                        <mat-option value="TBD">TBD</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
                             </div>
-                            <div class="row pt-2">
-                                <div class="col-lg-6 col-md-6 col-12">
-                                    <p class="font-semibold"> Explanation </p>
-                                    <mat-form-field class="w-full">
-                                        <textarea [(ngModel)]="updateFormModal.explanation" matInput
-                                            rows="5"></textarea>
-                                    </mat-form-field>
-                                </div>
-                                <div class="col-lg-6 col-md-6 col-12">
-                                    <p class="font-semibold"> How? </p>
-                                    <mat-form-field class="w-full">
-                                        <textarea [(ngModel)]="updateFormModal.how" matInput rows="5"></textarea>
-                                    </mat-form-field>
-                                </div>
+                        </div>
+                        <div class="row pt-2">
+                            <div class="col-lg-6 col-md-6 col-12">
+                                <p class="font-semibold"> Explanation </p>
+                                <mat-form-field class="w-full">
+                                    <textarea [(ngModel)]="updateFormModal.explanation" matInput rows="5"></textarea>
+                                </mat-form-field>
                             </div>
-                            <div class="row pt-2">
-                                <div class="col-12">
-                                    <p class="font-semibold"> How do you recommend we prevent this from happening again
-                                        in
-                                        the
-                                        future? </p>
-                                    <mat-form-field class="w-full">
-                                        <textarea [(ngModel)]="updateFormModal.recommend" matInput rows="5"></textarea>
-                                    </mat-form-field>
-                                </div>
+                            <div class="col-lg-6 col-md-6 col-12">
+                                <p class="font-semibold"> How? </p>
+                                <mat-form-field class="w-full">
+                                    <textarea [(ngModel)]="updateFormModal.how" matInput rows="5"></textarea>
+                                </mat-form-field>
                             </div>
-                            <div class="row py-3 border-b"></div>
-                            <div class="row py-2 px-5 float-right">
+                        </div>
+                        <div class="row pt-2">
+                            <div class="col-12">
+                                <p class="font-semibold"> How do you recommend we prevent this from happening again
+                                    in
+                                    the
+                                    future? </p>
+                                <mat-form-field class="w-full">
+                                    <textarea [(ngModel)]="updateFormModal.recommend" matInput rows="5"></textarea>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="row py-3 border-b"></div>
+                        <div class="row py-2 px-5 float-right">
 
-                                <button [disabled]="isUpdateLoader" class="min-w-50" mat-stroked-button
-                                    [matTooltip]="'Update Incident Report'" (click)="updateIncident()">
-                                    <mat-progress-spinner *ngIf="isUpdateLoader" [diameter]="24"
-                                        [mode]="'indeterminate'" class="mr-2 mt-2"></mat-progress-spinner>
-                                    <mat-icon svgIcon="mat_outline:edit" *ngIf="!isUpdateLoader"></mat-icon>
-                                    <span class="ml-2" *ngIf="!isUpdateLoader"> Update Report </span>
-                                </button>
-                            </div>
-                        </mat-card-content>
-                    </mat-card>
+                            <button [disabled]="isUpdateLoader" class="min-w-50" mat-stroked-button
+                                [matTooltip]="'Update Incident Report'" (click)="updateIncident()">
+                                <mat-progress-spinner *ngIf="isUpdateLoader" [diameter]="24" [mode]="'indeterminate'"
+                                    class="mr-2 mt-2"></mat-progress-spinner>
+                                <mat-icon svgIcon="mat_outline:edit" *ngIf="!isUpdateLoader"></mat-icon>
+                                <span class="ml-2" *ngIf="!isUpdateLoader"> Update Report </span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+        <!-- Create Incident Report -->
         <div class="col-12 px-5 my-2" *ngIf="mainScreen == 'Create Incident Report'">
-            <mat-card class="w-full px-5 py-5 h-auto overflow-auto">
-                <mat-card-content>
-                    <div class="row border-b font-bold">
-                        <div class="col-6 text-left text-lg">
-                            Create Incident Report
-                        </div>
-                        <div class="col-6 text-right text-secondary">
-                            Order # {{orderDetail.pk_orderID}}
+            <div class="p-5 bg-card shadow-lg rounded-2xl my-3">
+                <div class="row font-bold mb-2">
+                    <div class="col-6 text-left text-lg">
+                        Create Incident Report
+                    </div>
+                    <div class="col-6 text-right text-secondary">
+                        Order # {{orderDetail.pk_orderID}}
+                    </div>
+                </div>
+                <div class="row py-2">
+                    <!-- <div class="col-12">
+                        <mat-checkbox [(ngModel)]="formModal.blnFianlized">Finalized</mat-checkbox>
+                        <p class="text-green-500" *ngIf="formModal.blnFianlized">(currently finalized)
+                        </p>
+                        <p class="text-red-500" *ngIf="!formModal.blnFianlized">(not currently
+                            finalized. Finalizing will send an email notification to orders@consolidus.com)
+                        </p>
+                    </div> -->
+                    <div class="col-lg-6 col-md-6 col-12">
+                        <span class="font-semibold">Date</span>
+                        <span class="float-right">{{todayDate}}</span>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-12">
+                        <span class="font-semibold">Customer</span>
+                        <span class="float-right">{{orderDetail.billingFirstName}} {{orderDetail.billingLastName}}
+                            from
+                            {{orderDetail?.billingCompanyName}}</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 col-md-6 col-12">
+                        <span class="font-semibold">Program/Market</span>
+                        <span class="float-right">{{orderDetail.storeName}}</span>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-12">
+                        <span class="font-semibold">Supplier(s) On Order</span>
+                        <div class="float-right">
+                            <p *ngFor="let item of supplierList">{{item?.name}}</p>
                         </div>
                     </div>
-                    <div class="row py-2">
-                        <div class="col-12">
-                            <mat-checkbox [(ngModel)]="formModal.blnFianlized">Finalized</mat-checkbox>
-                            <p class="text-green-500" *ngIf="formModal.blnFianlized">(currently finalized)
-                            </p>
-                            <p class="text-red-500" *ngIf="!formModal.blnFianlized">(not currently
-                                finalized. Finalizing will send an email notification to orders@consolidus.com)
-                            </p>
-                        </div>
-                        <div class="col-lg-6 col-md-6 col-12">
-                            <span class="font-semibold">Date</span>
-                            <span class="float-right">{{todayDate}}</span>
-                        </div>
-                        <div class="col-lg-6 col-md-6 col-12">
-                            <span class="font-semibold">Customer</span>
-                            <span class="float-right">{{orderDetail.billingFirstName}} {{orderDetail.billingLastName}}
-                                from
-                                {{orderDetail?.billingCompanyName}}</span>
-                        </div>
+                </div>
+                <div class="row py-3 border-b"></div>
+                <div class="row pt-2 font-semibold">
+                    <div class="col-12">
+                        Incident Priority:
                     </div>
-                    <div class="row">
-                        <div class="col-lg-6 col-md-6 col-12">
-                            <span class="font-semibold">Program/Market</span>
-                            <span class="float-right">{{orderDetail.storeName}}</span>
-                        </div>
-                        <div class="col-lg-6 col-md-6 col-12">
-                            <span class="font-semibold">Supplier(s) On Order</span>
-                            <div class="float-right">
-                                <p *ngFor="let item of supplierList">{{item?.name}}</p>
-                            </div>
-                        </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 col-md-6 col-12">
+                        <small class="text-secondary font-semibold">Was customer service
+                            compromised/effected?</small>
+                        <mat-form-field class="w-full">
+                            <mat-select [(ngModel)]="formModal.priority1">
+                                <mat-option value="Yes">Yes</mat-option>
+                                <mat-option value="No">No</mat-option>
+                                <mat-option value="TBD">TBD</mat-option>
+                            </mat-select>
+                        </mat-form-field>
                     </div>
-                    <div class="row py-3 border-b"></div>
-                    <div class="row pt-2 font-semibold">
-                        <div class="col-12">
-                            Incident Priority:
-                        </div>
+                    <div class="col-lg-6 col-md-6 col-12">
+                        <small class="text-secondary font-semibold">Did we lose money on this order
+                            in order to correct it?</small>
+                        <mat-form-field class="w-full h-12">
+                            <mat-select [(ngModel)]="formModal.priority3">
+                                <mat-option value="Yes">Yes</mat-option>
+                                <mat-option value="No">No</mat-option>
+                                <mat-option value="TBD">TBD</mat-option>
+                            </mat-select>
+                        </mat-form-field>
                     </div>
-                    <div class="row">
-                        <div class="col-lg-6 col-md-6 col-12">
-                            <small class="text-secondary font-semibold">Was customer service
-                                compromised/effected?</small>
-                            <mat-form-field class="w-full">
-                                <mat-select [(ngModel)]="formModal.priority1">
-                                    <mat-option value="Yes">Yes</mat-option>
-                                    <mat-option value="No">No</mat-option>
-                                    <mat-option value="TBD">TBD</mat-option>
-                                </mat-select>
-                            </mat-form-field>
-                        </div>
-                        <div class="col-lg-6 col-md-6 col-12">
-                            <small class="text-secondary font-semibold">Did we lose money on this order
-                                in order to correct it?</small>
-                            <mat-form-field class="w-full h-12">
-                                <mat-select [(ngModel)]="formModal.priority3">
-                                    <mat-option value="Yes">Yes</mat-option>
-                                    <mat-option value="No">No</mat-option>
-                                    <mat-option value="TBD">TBD</mat-option>
-                                </mat-select>
-                            </mat-form-field>
-                        </div>
+                </div>
+                <div class="row pt-2 font-semibold">
+                    <div class="col-12">
+                        Source of Incident:
                     </div>
-                    <div class="row pt-2 font-semibold">
-                        <div class="col-12">
-                            Source of Incident:
-                        </div>
+                </div>
+                <div class="row" *ngIf="reportSources">
+                    <div class="col-lg-4 col-md-6 col-6" *ngFor="let item of reportSources">
+                        <mat-checkbox (change)="addAndRemoveFromCheckBox($event, item)">{{item.sourceName}}
+                        </mat-checkbox>
                     </div>
-                    <div class="row" *ngIf="reportSources">
-                        <div class="col-lg-4 col-md-6 col-6" *ngFor="let item of reportSources">
-                            <mat-checkbox (change)="addAndRemoveFromCheckBox($event, item)">{{item.sourceName}}
-                            </mat-checkbox>
-                        </div>
+                </div>
+                <div class="row" *ngIf="employeeSource">
+                    <div class="col-12">
+                        <small class="text-secondary font-semibold">Source of Incident Employee</small>
+                        <mat-form-field class="w-full">
+                            <mat-select matInput multiple [(ngModel)]="formModal.source_employee">
+                                <mat-option *ngFor="let result of usersList" [value]="result.ID">
+                                    {{result.name}}
+                                </mat-option>
+                                <mat-option value="9999">Past Employee</mat-option>
+                            </mat-select>
+                        </mat-form-field>
                     </div>
-                    <div class="row" *ngIf="employeeSource">
-                        <div class="col-12">
-                            <small class="text-secondary font-semibold">Source of Incident Employee</small>
-                            <mat-form-field class="w-full">
-                                <input type="text" placeholder="Search User" matInput [formControl]="users"
-                                    [matAutocomplete]="auto">
-                                <mat-autocomplete #auto="matAutocomplete">
-                                    <mat-option *ngIf="isUserLoader" class="is-loading">Loading...
-                                    </mat-option>
-                                    <ng-container *ngIf="!isUserLoader">
-                                        <mat-option *ngFor="let result of usersList" (click)="userSelected(result)"
-                                            [value]="result.firstName + ' ' + result.lastName">
-                                            {{result.firstName}} {{ result.lastName }}
-                                        </mat-option>
-                                    </ng-container>
-                                </mat-autocomplete>
-                            </mat-form-field>
-                        </div>
+                </div>
+                <div class="row" *ngIf="supplierSource">
+                    <div class="col-12">
+                        <small class="text-secondary font-semibold">Source of Incident Supplier</small>
+                        <mat-form-field class="w-full">
+                            <mat-select matInput [(ngModel)]="formModal.source_supplier">
+                                <mat-option [value]="0">None/TBD</mat-option>
+                                <mat-option *ngFor="let item of supplierList" [value]="item.id">{{item.name}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
                     </div>
-                    <div class="row" *ngIf="supplierSource">
-                        <div class="col-12">
-                            <small class="text-secondary font-semibold">Source of Incident Supplier</small>
-                            <mat-form-field class="w-full">
-                                <mat-select matInput [(ngModel)]="formModal.source_supplier">
-                                    <mat-option *ngFor="let item of supplierList" [value]="item.id">{{item.name}}
-                                    </mat-option>
-                                </mat-select>
-                            </mat-form-field>
-                        </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <span class="font-semibold">Money lost:</span>
+                        <mat-form-field appearance="outline" class="w-full">
+                            <input matInput type="number" [(ngModel)]="formModal.rerunCost">
+                            <mat-icon matSuffix svgIcon="heroicons_outline:currency-dollar"></mat-icon>
+                        </mat-form-field>
                     </div>
-                    <div class="row">
-                        <div class="col-12">
-                            <span class="font-semibold">Money lost:</span>
-                            <mat-form-field appearance="outline" class="w-full">
-                                <input matInput type="number" [(ngModel)]="formModal.rerunCost">
-                                <mat-icon matSuffix svgIcon="heroicons_outline:currency-dollar"></mat-icon>
-                            </mat-form-field>
-                        </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <p class="font-semibold">Corrected to satisfaction of customer?</p>
+                        <mat-form-field class="w-full h-12">
+                            <mat-select [(ngModel)]="formModal.corrected" name="order">
+                                <mat-option value="Yes">Yes</mat-option>
+                                <mat-option value="No">No</mat-option>
+                                <mat-option value="TBD">TBD</mat-option>
+                            </mat-select>
+                        </mat-form-field>
                     </div>
-                    <div class="row">
-                        <div class="col-12">
-                            <p class="font-semibold">Corrected to satisfaction of customer?</p>
-                            <mat-form-field class="w-full h-12">
-                                <mat-select [(ngModel)]="formModal.corrected" name="order">
-                                    <mat-option value="Yes">Yes</mat-option>
-                                    <mat-option value="No">No</mat-option>
-                                    <mat-option value="TBD">TBD</mat-option>
-                                </mat-select>
-                            </mat-form-field>
-                        </div>
+                </div>
+                <div class="row pt-2">
+                    <div class="col-lg-6 col-md-6 col-12">
+                        <p class="font-semibold"> Explanation </p>
+                        <mat-form-field class="w-full">
+                            <textarea [(ngModel)]="formModal.explanation" matInput rows="5"></textarea>
+                        </mat-form-field>
                     </div>
-                    <div class="row pt-2">
-                        <div class="col-lg-6 col-md-6 col-12">
-                            <p class="font-semibold"> Explanation </p>
-                            <mat-form-field class="w-full">
-                                <textarea [(ngModel)]="formModal.explanation" matInput rows="5"></textarea>
-                            </mat-form-field>
-                        </div>
-                        <div class="col-lg-6 col-md-6 col-12">
-                            <p class="font-semibold"> How? </p>
-                            <mat-form-field class="w-full">
-                                <textarea [(ngModel)]="formModal.how" matInput rows="5"></textarea>
-                            </mat-form-field>
-                        </div>
+                    <div class="col-lg-6 col-md-6 col-12">
+                        <p class="font-semibold"> How? </p>
+                        <mat-form-field class="w-full">
+                            <textarea [(ngModel)]="formModal.how" matInput rows="5"></textarea>
+                        </mat-form-field>
                     </div>
-                    <div class="row pt-2">
-                        <div class="col-12">
-                            <p class="font-semibold"> How do you recommend we prevent this from happening again in the
-                                future? </p>
-                            <mat-form-field class="w-full">
-                                <textarea [(ngModel)]="formModal.recommend" matInput rows="5"></textarea>
-                            </mat-form-field>
-                        </div>
+                </div>
+                <div class="row pt-2">
+                    <div class="col-12">
+                        <p class="font-semibold"> How do you recommend we prevent this from happening again in the
+                            future? </p>
+                        <mat-form-field class="w-full">
+                            <textarea [(ngModel)]="formModal.recommend" matInput rows="5"></textarea>
+                        </mat-form-field>
                     </div>
-                    <div class="row py-3 border-b"></div>
-                    <div class="row py-2 px-5 float-right">
-
-                        <button [disabled]="isIncidentLoader" class="min-w-50" mat-stroked-button
-                            [matTooltip]="'Submit Incident Report'" (click)="CreateIncidentReport()">
-                            <mat-icon svgIcon="heroicons_solid:plus" *ngIf="!isIncidentLoader"></mat-icon>
-                            <span class="ml-2" *ngIf="!isIncidentLoader"> Submit Report </span>
-                            <mat-progress-spinner *ngIf="isIncidentLoader" [diameter]="24" [mode]="'indeterminate'"
-                                class="mr-2 mt-2"></mat-progress-spinner>
-                        </button>
-                    </div>
-                </mat-card-content>
-            </mat-card>
+                </div>
+                <div class="mb-2">
+                    <p class="font-semibold"> Upload images (JPG,GIF,PNG ONLY!) </p>
+                    <ngx-dropzone [config]="config" [multiple]="true" accept="image/jpeg,image/jpg,image/png"
+                        (change)="onSelectMain($event)">
+                        <ngx-dropzone-label>Choose Image</ngx-dropzone-label>
+                        <ngx-dropzone-image-preview *ngFor="let file of files;let i=index" [file]="file"
+                            [removable]="true" (removed)="onRemoveMain(i)">
+                            <img [src]="file?.preview" alt="Preview Image" class="preview-image">
+                        </ngx-dropzone-image-preview>
+                    </ngx-dropzone>
+                </div>
+                <button [disabled]="isIncidentLoader" class="min-w-50" mat-stroked-button
+                    [matTooltip]="'Submit Incident Report'" (click)="CreateIncidentReport()">
+                    <mat-icon svgIcon="heroicons_solid:plus" *ngIf="!isIncidentLoader"></mat-icon>
+                    <span class="ml-2" *ngIf="!isIncidentLoader"> Submit Report </span>
+                    <mat-progress-spinner *ngIf="isIncidentLoader" [diameter]="24" [mode]="'indeterminate'"
+                        class="mr-2 mt-2"></mat-progress-spinner>
+                </button>
+                <div class="alert alert-warning mt-2">
+                    (Note: creating an incident report will send an email alert to Jeff Jones, Denise Cline,
+                    orders@consolidus.com, billing@consolidus.com, artwork@consolidus.com, and service@ the store.)
+                </div>
+            </div>
         </div>
     </div>
 </div>

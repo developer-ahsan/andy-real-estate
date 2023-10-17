@@ -6,7 +6,8 @@
         <div class="col-12 space-y-3">
             <div class="row" *ngIf="assignedStores.length > 0">
                 <div class="col-md-3 col-6 mb-3" *ngFor="let item of assignedStores">
-                    <fuse-card class="rounded-2xl shadow bg-card flex flex-col max-w-80 w-full p-8 pb-4 filter-article">
+                    <fuse-card class="rounded-2xl shadow bg-card flex flex-col max-w-80 w-full p-8 pb-4 filter-article"
+                        style="text-align: -webkit-center;">
                         <a class="items-center cursor-pointer" style="text-align: -webkit-center;"
                             [routerLink]="['/apps/ecommerce/inventory/storeProduct',item.pk_storeProductID]"
                             target="_blank">
@@ -14,18 +15,39 @@
                                 src="{{imgUrl}}/HiRes/{{item.pk_storeProductID}}.jpg?{{tempDate}}"
                                 onError="this.src='https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'"
                                 alt="Store Product Image">
-                            <div class="flex flex-col ml-6">
-                                <div class="text-lg font-semibold leading-tight underline">
-                                    <p>{{item.storeName}}</p>
-                                </div>
-                                <div class="text-secondary font-medium text-md underline">{{item.pk_storeProductID}}
-                                </div>
-                                <div class="text-secondary text-red-500 font-medium text-md underline"
-                                    *ngIf="!item.blnStoreActive">Offline</div>
-                                <div class="text-secondary text-green-500 font-medium text-md underline"
-                                    *ngIf="item.blnStoreActive">Online</div>
-                            </div>
                         </a>
+                        <div class="flex flex-col ml-6">
+                            <div class="text-lg font-semibold leading-tight underline">
+                                <a class="items-center cursor-pointer" style="text-align: -webkit-center;"
+                                    [routerLink]="['/apps/ecommerce/inventory/storeProduct',item.pk_storeProductID]"
+                                    target="_blank">
+                                    <p>{{item.storeName}}</p>
+                                </a>
+                            </div>
+                            <div class="text-secondary font-medium text-md underline">
+                                <a class="items-center cursor-pointer" style="text-align: -webkit-center;"
+                                    [routerLink]="['/apps/ecommerce/inventory/storeProduct',item.pk_storeProductID]"
+                                    target="_blank">
+                                    {{item.pk_storeProductID}}
+                                </a>
+                            </div>
+                            <div class="text-secondary text-red-500 font-medium text-md underline"
+                                *ngIf="!item.blnStoreActive">
+                                <a class="items-center cursor-pointer" style="text-align: -webkit-center;"
+                                    [routerLink]="['/apps/ecommerce/inventory/storeProduct',item.pk_storeProductID]"
+                                    target="_blank">
+                                    Offline
+                                </a>
+                            </div>
+                            <div class="text-secondary text-green-500 font-medium text-md underline"
+                                *ngIf="item.blnStoreActive">
+                                <a class="items-center cursor-pointer" style="text-align: -webkit-center;"
+                                    [routerLink]="['/apps/ecommerce/inventory/storeProduct',item.pk_storeProductID]"
+                                    target="_blank">
+                                    Online
+                                </a>
+                            </div>
+                        </div>
                         <!-- <div class="mt-6">From rocky mountains to crystal clear lakes, these are the places you must see and
                             enjoy.
                         </div> -->
