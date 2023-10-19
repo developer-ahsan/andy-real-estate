@@ -267,7 +267,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         brandName: ['', Validators.required],
         overPackageCharge: [''],
         supplierLink: [''],
-        mainDescription: ['', Validators.required],
+        mainDescription: ['', [Validators.required]],
         miniDescription: ['', Validators.required],
         allowGroupRun: [true],
         keywords: [''],
@@ -322,7 +322,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         brandName: ['', Validators.required],
         overPackageCharge: [''],
         supplierLink: [''],
-        mainDescription: ['', Validators.required],
+        mainDescription: ['', [Validators.required]],
         miniDescription: ['', Validators.required],
         keywords: [''],
         quantityOne: [''],
@@ -351,7 +351,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         brandName: ['', Validators.required],
         overPackageCharge: [''],
         supplierLink: [''],
-        mainDescription: ['', Validators.required],
+        mainDescription: ['', [Validators.required]],
         miniDescription: ['', Validators.required],
         keywords: [''],
         quantityOne: [''],
@@ -526,6 +526,15 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     clickButton(): void {
         this.colorpicker.nativeElement.click()
+    }
+    maxLengthValidator(max: number) {
+        return (control) => {
+            const value = control.value;
+            if (value && value.length > max) {
+                return { maxLengthExceeded: true };
+            }
+            return null;
+        };
     }
 
     scrollStrategy: ScrollStrategy;
@@ -3090,6 +3099,14 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         };
         if (!mainDescription) {
             this._snackBar.open("Main description is required", '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3500
+            });
+            return;
+        };
+        if (mainDescription.length > 500) {
+            this._snackBar.open("Main description characters length should be less than 500", '', {
                 horizontalPosition: 'center',
                 verticalPosition: 'bottom',
                 duration: 3500

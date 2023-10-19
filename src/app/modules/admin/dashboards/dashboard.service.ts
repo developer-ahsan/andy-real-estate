@@ -217,7 +217,11 @@ export class DashboardsService {
         return this._httpClient.put(
             environment.products, payload);
     };
-
+    // Get Files
+    getFiles(payload) {
+        return this._httpClient.post(environment.products,
+            payload);
+    };
     // Upload Multiple Files
     uploadMultipleMediaFiles(files) {
         // files =>

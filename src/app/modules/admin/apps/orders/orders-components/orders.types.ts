@@ -125,34 +125,13 @@ export interface CreateIncidentReport {
     recommend: string;
     source_supplier: number;
     admin_user_id: number;
-    source_employee: number;
+    source_employee: string;
     incident_sources: number[];
     create_incident_report: boolean;
 };
 export interface DeleteIncidentReport {
     incident_report_id: number;
     remove_incident_report: boolean;
-};
-export interface UpdateIncidentReport {
-    store_user_id: number;
-    date: string;
-    priority1: string;
-    priority2: string;
-    priority3: string;
-    priority4: string;
-    blnFinalized: boolean;
-    rerunCost: string;
-    explanation: string;
-    corrected: string;
-    how: string;
-    recommend: string;
-    source_supplier: number;
-    admin_user_id: number;
-    source_employee: number;
-    dateModified: string;
-    incident_sources: number[];
-    incident_report_id: number;
-    update_incident_report: boolean;
 };
 // Order Adjustments
 export interface AddAdjustment {
@@ -505,4 +484,65 @@ export interface removeFLPSOrderUser {
     orderID: Number;
     flpsUserID: number;
     remove_flps_order_user: boolean;
+};
+
+export interface sendIncidentReportEmail {
+    incident_report_id: number;
+    type: "put" | "post" | "delete";
+    images: string[];
+    vendors: string[];
+    oldIncidentReport: OldIncidentReport;
+    incidentReportSources: string[]; // only names array
+    send_incident_report_email: boolean;
+};
+interface OldIncidentReport {
+    pk_incidentReportID: number;
+    fk_storeID: number;
+    fk_orderID: number;
+    date: string;
+    fk_storeUserID: number;
+    priority1: string;
+    priority2: string;
+    priority3: string;
+    priority4: string;
+    rerunCost: string;
+    explanation: string;
+    corrected: string;
+    how: string;
+    recommend: string;
+    fk_companyID: number;
+    sourceEntity: string;
+    fk_adminUserID: number;
+    fk_sourceAdminUserID: number;
+    sourceEmployeeName: string;
+    dateModified: string;
+    blnFinalized: boolean;
+    storeName: string;
+    storeCode: string;
+    storeUserFirstName: string;
+    storeUserLastName: string;
+    storeUserCompanyName: string;
+    createdBy: string;
+    incidentReportSources: string[]; // only names array
+};
+export interface UpdateIncidentReport {
+    store_user_id: number;
+    date: string;
+    priority1: string;
+    priority2: string;
+    priority3: string;
+    priority4: string;
+    blnFinalized: boolean;
+    rerunCost: string;
+    explanation: string;
+    corrected: string;
+    how: string;
+    recommend: string;
+    source_supplier: number;
+    admin_user_id: number;
+    source_employee: string;
+    incident_sources: number[];
+    incident_report_id: number;
+    order_id: number;
+    update_incident_report: boolean;
 };

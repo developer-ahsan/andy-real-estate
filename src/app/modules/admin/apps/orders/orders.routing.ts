@@ -135,7 +135,7 @@ export const ordersRoutes: Route[] = [
             },
             {
                 path: 'incident-reports',
-                component: IncidentReportsComponent,
+                loadChildren: () => import('app/modules/admin/apps/orders/orders-components/navigation/incident-reports/incident-reports.module').then(m => m.IncidentReportsModule),
                 data: {
                     title: 'Incident Reports',
                     url: 'incident-reports'

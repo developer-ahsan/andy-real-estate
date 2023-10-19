@@ -1,0 +1,261 @@
+<div class="w-full">
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+    </ngx-skeleton-loader>
+
+    <div class="row" *ngIf="!isLoading">
+        <div class="col-12" *ngIf="mainScreen == 'Current Incident Reports'">
+            <div *ngIf="dataSource.length == 0">
+                <div class="p-8 sm:p-16 text-2xl font-semibold not-found-color">
+                    There are currently no incident reports for this ID.
+                </div>
+            </div>
+            <!-- Update Report -->
+            <div class="px-5 w-full">
+                <div class="text-right">
+                    <a [matTooltip]="'Go to Incident reports list'" class="ml-4" mat-stroked-button [color]="'primary'"
+                        [routerLink]="['/apps/orders',orderDetail.pk_orderID,'incident-reports']">
+                        <span>Back to Incident Reports</span>
+                    </a>
+                </div>
+                <div class="w-full mt-5">
+                    <div class="p-5 bg-card shadow-lg rounded-2xl my-3 w-full">
+                        <div class="row font-bold">
+                            <div class="col-6 text-left text-lg">
+                                Update Incident Report
+                            </div>
+                            <div class="col-6 text-right text-secondary">
+                                Last modified on {{updateIncidentObj.dateModified || 'N/A'}}
+                            </div>
+                        </div>
+                        <div class="row py-2">
+                            <div class="col-lg-6 col-md-6 col-12">
+                                <span class="font-semibold">Date</span>
+                                <span class="float-right">{{updateIncidentObj.date}}</span>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-12">
+                                <span class="font-semibold">Customer</span>
+                                <span class="float-right">{{updateIncidentObj.storeUserFirstName}}
+                                    {{updateIncidentObj.storeUserLastName}} from
+                                    {{updateIncidentObj?.storeUserCompanyName}}</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6 col-12">
+                                <span class="font-semibold">Program/Market</span>
+                                <span class="float-right">{{updateIncidentObj.storeName}}</span>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-12">
+                                <span class="font-semibold">Supplier(s) On Order</span>
+                                <div class="float-right max-h-30 overflow-y-auto">
+                                    <p *ngFor="let item of supplierList" class="">
+                                        <span [innerHTML]="item?.name"></span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row py-3 border-b"></div>
+                        <div class="row pt-2 font-semibold">
+                            <div class="col-12" *ngIf="iDsForFinalized.includes(userData.pk_userID)">
+                                <mat-checkbox [(ngModel)]="updateFormModal.blnFinalized">Finalized</mat-checkbox>
+                                <p class="text-green-500" *ngIf="updateFormModal.blnFinalized">(currently finalized)
+                                </p>
+                                <p class="text-red-500" *ngIf="!updateFormModal.blnFinalized">(not currently
+                                    finalized. Finalizing will send an email notification to orders@consolidus.com)
+                                </p>
+                            </div>
+                            <div class="col-12">
+                                Incident Priority:
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6 col-12">
+                                <small class="text-secondary font-semibold">Was customer service
+                                    compromised/effected?</small>
+                                <mat-form-field class="w-full">
+                                    <mat-select [(ngModel)]="updateFormModal.priority1">
+                                        <mat-option value="Yes">Yes</mat-option>
+                                        <mat-option value="No">No</mat-option>
+                                        <mat-option value="TBD">TBD</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-12">
+                                <small class="text-secondary font-semibold">Did we lose money on this order
+                                    in order to correct it?</small>
+                                <mat-form-field class="w-full h-12">
+                                    <mat-select [(ngModel)]="updateFormModal.priority3">
+                                        <mat-option value="Yes">Yes</mat-option>
+                                        <mat-option value="No">No</mat-option>
+                                        <mat-option value="TBD">TBD</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="row pt-2 font-semibold">
+                            <div class="col-12">
+                                Source of Incident:
+                            </div>
+                        </div>
+                        <div class="row" *ngIf="reportSources">
+                            <div class="col-lg-4 col-md-6 col-6" *ngFor="let item of reportSources">
+                                <mat-checkbox (change)="updateAndRemoveFromCheckBox($event, item)"
+                                    [(ngModel)]="item.checked">{{item.sourceName}}
+                                </mat-checkbox>
+                            </div>
+                        </div>
+                        <div class="row" *ngIf="employeeSource">
+                            <div class="col-12">
+                                <small class="text-secondary font-semibold">Source of Incident Employee</small>
+                                <mat-form-field class="w-full">
+                                    <mat-select matInput multiple [(ngModel)]="updateFormModal.source_employee">
+                                        <mat-option *ngFor="let result of usersList" [value]="result.ID">
+                                            {{result.name}}
+                                        </mat-option>
+                                        <mat-option value="9999">Past Employee</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="row" *ngIf="supplierSource">
+                            <div class="col-12">
+                                <small class="text-secondary font-semibold">Source of Incident Supplier</small>
+                                <mat-form-field class="w-full">
+                                    <mat-select matInput [(ngModel)]="updateFormModal.source_supplier">
+                                        <mat-option [value]="0">None/TBD</mat-option>
+                                        <mat-option *ngFor="let item of supplierList" [value]="item.id">{{item.name}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <span class="font-semibold">Money lost:</span>
+                                <mat-form-field appearance="outline" class="w-full">
+                                    <input matInput type="number" [(ngModel)]="updateFormModal.rerunCost">
+                                    <mat-icon matSuffix svgIcon="heroicons_outline:currency-dollar"></mat-icon>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <p class="font-semibold">Corrected to satisfaction of customer?</p>
+                                <mat-form-field class="w-full h-12">
+                                    <mat-select [(ngModel)]="updateFormModal.corrected" name="order">
+                                        <mat-option value="Yes">Yes</mat-option>
+                                        <mat-option value="No">No</mat-option>
+                                        <mat-option value="TBD">TBD</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="row pt-2">
+                            <div class="col-lg-6 col-md-6 col-12">
+                                <p class="font-semibold"> Explanation </p>
+                                <mat-form-field class="w-full">
+                                    <textarea [(ngModel)]="updateFormModal.explanation" matInput rows="5"></textarea>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-12">
+                                <p class="font-semibold"> How? </p>
+                                <mat-form-field class="w-full">
+                                    <textarea [(ngModel)]="updateFormModal.how" matInput rows="5"></textarea>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="row pt-2">
+                            <div class="col-12">
+                                <p class="font-semibold"> How do you recommend we prevent this from happening again
+                                    in
+                                    the
+                                    future? </p>
+                                <mat-form-field class="w-full">
+                                    <textarea [(ngModel)]="updateFormModal.recommend" matInput rows="5"></textarea>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <button [disabled]="isUpdateLoader" class="min-w-50" mat-stroked-button
+                            [matTooltip]="'Update Incident Report'" (click)="updateIncident()">
+                            <mat-progress-spinner *ngIf="isUpdateLoader" [diameter]="24" [mode]="'indeterminate'"
+                                class="mr-2 mt-2"></mat-progress-spinner>
+                            <mat-icon svgIcon="mat_outline:edit" *ngIf="!isUpdateLoader"></mat-icon>
+                            <span class="ml-2" *ngIf="!isUpdateLoader"> Update Report </span>
+                        </button>
+                        <div class="alert alert-warning mt-2">
+                            (Note: updating an incident report will send an email notification to Jeff Jones, Denise
+                            Cline, orders@consolidus.com, artwork@consolidus.com, billing@consolidus.com, and service@
+                            the store.)
+                        </div>
+                    </div>
+                    <div class="p-5 bg-card shadow-lg rounded-2xl my-3 w-full">
+                        <div class="font-bold text-left text-lg">
+                            Images
+                        </div>
+                        <ngx-skeleton-loader *ngIf="updateIncidentObj.imgLoader" class="my-2" count="8"
+                            appearance="line" animation="pulse">
+                        </ngx-skeleton-loader>
+                        <div class="row" *ngIf="!updateIncidentObj.imgLoader">
+                            <div class="mb-2 col-12" *ngIf="updateIncidentObj.images.length < 5">
+                                <p class="font-semibold"> Upload images (JPG,GIF,PNG ONLY!) </p>
+                                <ngx-dropzone [config]="config" [multiple]="true"
+                                    accept="image/jpeg,image/jpg,image/png" (change)="onSelectMain($event)">
+                                    <ngx-dropzone-label>Choose Image</ngx-dropzone-label>
+                                    <ngx-dropzone-image-preview *ngFor="let file of files;let i=index" [file]="file"
+                                        [removable]="true" (removed)="onRemoveMain(i)">
+                                        <img [src]="file?.preview" alt="Preview Image" class="preview-image">
+                                    </ngx-dropzone-image-preview>
+                                </ngx-dropzone>
+                            </div>
+                            <div class="col-12 col-md-3 align-content-center-data"
+                                *ngFor="let image of updateIncidentObj.images">
+                                <img class="w-50" [src]="image.path" />
+                                <mat-checkbox [(ngModel)]="image.isRemove">Remove</mat-checkbox>
+                            </div>
+                            <div class="col-12 text-right">
+                                <button mat-flat-button class="min-w-30" [color]="'primary'" (click)="updateImages()">
+                                    <span *ngIf="!isImageUpdateLoader">Update Image</span>
+                                    <mat-progress-spinner *ngIf="isImageUpdateLoader" [diameter]="24"
+                                        [mode]="'indeterminate'"></mat-progress-spinner>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-5 bg-card shadow-lg rounded-2xl my-3 w-full">
+                        <div class="font-bold text-left text-lg">
+                            Update History
+                        </div>
+                        <div *ngIf="!updateIncidentObj.incidentReportHistory" class="alert alert-warning my-2">
+                            This incident report does not currently have any update history.
+                        </div>
+                        <div *ngIf="updateIncidentObj.incidentReportHistory">
+                            <table class="table table-striped my-2">
+                                <thead>
+                                    <tr>
+                                        <th width="10%">Date</th>
+                                        <th width="80%">User</th>
+                                        <th width="1%"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let item of updateIncidentObj.incidentReportshistory">
+                                        <td>{{item.date}}</td>
+                                        <td>{{item.name}}</td>
+                                        <td>
+                                            <a href="https://assets.consolidus.com/globalAssets/Orders/incidentReports/{{orderDetail.pk_orderID}}/{{updateIncidentObj.pk_incidentReportID}}/{{item.ID}}.html"
+                                                target="_blank">
+                                                <button type="button"
+                                                    class="mr-2 inline-flex items-center gap-x-1.5 rounded-md bg-blue-400 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400">
+                                                    <span>View</span>
+                                                </button>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

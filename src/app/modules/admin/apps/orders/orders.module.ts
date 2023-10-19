@@ -84,7 +84,6 @@ import { NgxDropzoneModule } from 'ngx-dropzone';
         InvoicesComponent,
         CostAnalysisComponent,
         TimelineComponent,
-        IncidentReportsComponent,
         FlpsComponent,
         OriginalOrderComponent,
         OrderFlagsComponent,
