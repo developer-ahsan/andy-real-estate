@@ -3130,7 +3130,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 })
                 return;
             }
-            if ((weight / unitsInWeight * unitsInShippingPackage > 150)) {
+            if ((weight / unitsInWeight * unitsInShippingPackage) > 150) {
                 this._snackBar.open("Package shipping weight too large to be send with UPS.", '', {
                     horizontalPosition: 'center',
                     verticalPosition: 'bottom',

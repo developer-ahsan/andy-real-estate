@@ -669,7 +669,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
                 let quarters = Object.keys(store.quarter);
                 quarters.forEach((quarter, index) => {
                     store.quarterSeries[index].name = quarter;
-                    store.quarterColors[index] = '#' + store.quarter[quarter][index].data.reportColor;
+                    store.quarterColors[index] = '#' + store.quarter[quarter][index]?.data.reportColor;
                     store.quarter[quarter].forEach(element => {
                         store.quarterSeries[index].data.push(element.data.earnings);
                         if (year == quarter) {
