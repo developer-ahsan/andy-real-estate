@@ -81,7 +81,7 @@ export class OrderStatusComponent implements OnInit {
       let awaitingOrderss = res["data"][1][0].awaitingPayment;
       // Approval Orders
       if (awaitingOrders) {
-        const artworks = awaitingOrders.split('#_');
+        const artworks = awaitingOrders.split(',,');
         artworks.forEach(artwork => {
           const [orderID, orderDate, blnReorder, inHandsDate, groupOrderID, storeCode, storeName, storeUserID, storeID, statusDate, statusID, reschedule, firstName, lastName, locationName, companyName, total, artworkNotification, days, priority] = artwork.split('::');
           let priorityChecked = false;
@@ -99,6 +99,7 @@ export class OrderStatusComponent implements OnInit {
           });
         });
       }
+      console.log(this.approvalOrders)
       // Awaiting Orders 
       if (awaitingOrderss) {
         const awaitOrders = awaitingOrderss.split(',,');

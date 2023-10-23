@@ -9,6 +9,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import moment from 'moment';
 import { AuthService } from 'app/core/auth/auth.service';
 import { commentObj } from '../../inventory.types';
+import { OrdersService } from 'app/modules/admin/apps/orders/orders-components/orders.service';
+import { ENTER, COMMA } from '@angular/cdk/keycodes';
+import { MatChipInputEvent } from '@angular/material/chips';
 
 @Component({
   selector: 'app-internal-notes',
@@ -20,6 +23,9 @@ export class InternalNotesComponent implements OnInit, OnDestroy {
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   flashMessage: 'success' | 'error' | null = null;
+
+  readonly separatorKeysCodes = [ENTER, COMMA] as const;
+
 
   isCommentNull = false;
   internalNote: FormGroup;
@@ -38,17 +44,25 @@ export class InternalNotesComponent implements OnInit, OnDestroy {
   totalCommentator = 0;
   commentatorPage = 1;
   isLoadMore: boolean = false;
+  userData: any;
+  ngComment: string = '';
+
+  emails = [];
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
     private _userService: UserService,
     private _formBuilder: FormBuilder,
     private _snackBar: MatSnackBar,
-    private _authService: AuthService
+    private _authService: AuthService,
+    private _orderService: OrdersService
   ) { }
 
   ngOnInit(): void {
+    const user = localStorage.getItem('userDetails');;
+    this.userData = JSON.parse(user);
     // Create the selected product form
+    this.ngComment = '';
     this.internalNote = this._formBuilder.group({
       comment: [''],
     });
@@ -100,30 +114,37 @@ export class InternalNotesComponent implements OnInit, OnDestroy {
       });
     this.isCommentatorLoader = true;
     this.getCommentators();
-    // this._inventoryService.getCommentators()
-    //   .subscribe((commentators) => {
-    //     this.commentators = commentators["data"];
-    //     this.commentatoLoader = false;
-    //     this._changeDetectorRef.markForCheck();
-    //   }, err => {
-    //     this._snackBar.open("Some error occured, Unable to fetch commentators", '', {
-    //       horizontalPosition: 'center',
-    //       verticalPosition: 'bottom',
-    //       duration: 3500
-    //     });
-    //     this.commentatoLoader = false;
-    //     this._changeDetectorRef.markForCheck();
-    //   });
   }
   selectOption(list) {
     this.commentator_emails = list.selectedOptions.selected.map(item => item.value)
   };
+  add(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+    if (value) {
+      this.emails.push(value);
+    }
+    event.chipInput!.clear();
+  }
 
+  remove(email): void {
+    const index = this.emails.indexOf(email);
+    if (index >= 0) {
+      this.emails.splice(index, 1);
+    }
+  }
 
   getCommentators() {
-    this._inventoryService.getCommentators(this.commentatorPage).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.commentators = this.commentators.concat(res["data"]);
-      this.totalCommentator = res["totalRecords"];
+    let params = {
+      get_commentators_emails: true
+    }
+    this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      let commentators = res["data"][0].commentorsEmail.split(',,');
+      commentators.forEach(commentator => {
+        const [id, email] = commentator.split('::');
+        this.commentators.push({ id, email });
+      });
+      // this.commentators = this.commentators.concat(res["data"]);
+      // this.totalCommentator = res["totalRecords"];
       this.isCommentatorLoader = false;
       this.isLoadMore = false;
       this._changeDetectorRef.markForCheck();
@@ -174,10 +195,10 @@ export class InternalNotesComponent implements OnInit, OnDestroy {
   }
 
   addComment(): void {
-    const { comment } = this.internalNote.getRawValue();
+    const comment = this.ngComment;
     const { pk_productID, fk_addedByAdminUserID, productNumber, productName } = this.selectedProduct;
+    let emailArr = this.emails;
 
-    let emailArr = [];
     if (!comment) {
       this._snackBar.open("Comment is required", '', {
         horizontalPosition: 'center',
@@ -197,7 +218,7 @@ export class InternalNotesComponent implements OnInit, OnDestroy {
       product_name: productName,
       product_number: productNumber,
       comment: comment,
-      admin_user_id: fk_addedByAdminUserID,
+      admin_user_id: this.userData.pk_userID,
       name: this.user?.name,
       emails: emailArr,
       call_type: "post",
@@ -215,7 +236,9 @@ export class InternalNotesComponent implements OnInit, OnDestroy {
                 'success' :
                 'error'
             );
-            this.internalNote.reset();
+            this.ngComment = '';
+            this.emails = [];
+            this.commentators.forEach(element => { element.checked = false });
             this.loader = false;
             this.comments = comment["data"];
           }, err => {
