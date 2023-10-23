@@ -10,56 +10,44 @@
                     </div>
                     <!-- Update history -->
                     <div class="gap-y-4">
-                        <div class="row" *ngIf="orderHistoryLength > 0;else other_content">
-                            <table mat-table [dataSource]="order_history" class="w-full mt-3">
-                                <!-- Item Column -->
-                                <ng-container matColumnDef="pk_orderID">
-                                    <th mat-header-cell *matHeaderCellDef> Order Id </th>
-                                    <td mat-cell *matCellDef="let transaction"> {{transaction.pk_orderID}} </td>
-                                    <td mat-footer-cell *matFooterCellDef> Total </td>
-                                </ng-container>
-
-                                <!-- Quantity Column -->
-                                <ng-container matColumnDef="quantity">
-                                    <th mat-header-cell *matHeaderCellDef> Quantity </th>
-                                    <td mat-cell *matCellDef="let transaction"> {{transaction.quantity}} </td>
-                                </ng-container>
-
-                                <!-- Quantity Column -->
-                                <ng-container matColumnDef="companyName">
-                                    <th mat-header-cell *matHeaderCellDef> Company </th>
-                                    <td mat-cell *matCellDef="let transaction"> {{transaction.companyName}} </td>
-                                </ng-container>
-
-                                <!-- Quantity Column -->
-                                <ng-container matColumnDef="orderDate">
-                                    <th mat-header-cell *matHeaderCellDef> Date </th>
-                                    <td mat-cell *matCellDef="let transaction"> {{transaction.orderDate}} </td>
-                                </ng-container>
-
-                                <!-- Quantity Column -->
-                                <ng-container matColumnDef="storeName">
-                                    <th mat-header-cell *matHeaderCellDef> Store </th>
-                                    <td mat-cell *matCellDef="let transaction"> {{transaction.storeName}} </td>
-                                </ng-container>
-
-                                <!-- Cost Column -->
-                                <ng-container matColumnDef="orderTotal">
-                                    <th mat-header-cell *matHeaderCellDef> Total </th>
-                                    <td mat-cell *matCellDef="let transaction"> {{transaction.orderTotal | currency}}
-                                    </td>
-                                    <td mat-footer-cell *matFooterCellDef> 123231 </td>
-                                </ng-container>
-
-                                <tr mat-header-row *matHeaderRowDef="displayedColumns" class="bg-light h-18"></tr>
-                                <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="h-12"></tr>
-                                <!-- <tr mat-footer-row *matFooterRowDef="displayedColumns" class="bg-light"></tr> -->
+                        <div class="row" *ngIf="order_history.length > 0;else other_content">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Order</th>
+                                        <th>QTY</th>
+                                        <th>Customer</th>
+                                        <th>Company</th>
+                                        <th>Date</th>
+                                        <th>Store</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let item of order_history">
+                                        <td>
+                                            <a target="_blank"
+                                                [routerLink]="['/apps/orders',item.pk_orderID]">{{item.pk_orderID}}</a>
+                                        </td>
+                                        <td>{{item.quantity}}</td>
+                                        <td>
+                                            <a target="_blank"
+                                                [routerLink]="['/apps/customers',item.pk_userID]">{{item.firstName + ' '
+                                                +
+                                                item.lastName}}</a>
+                                        </td>
+                                        <td>{{item.companyName}}</td>
+                                        <td>{{item.orderDate}}</td>
+                                        <td>{{item.storeName}}</td>
+                                        <td>{{item.orderTotal | currency}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Totals</th>
+                                        <th colspan="5">{{totalQTY}}</th>
+                                        <th>{{totalAmount | currency}}</th>
+                                    </tr>
+                                </tbody>
                             </table>
-                            <mat-paginator
-                                class="border-b w-full sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                                [length]="orderHistoryLength" [pageIndex]="0" [pageSize]="20"
-                                (page)="getNextData($event)" [hidePageSize]="true">
-                            </mat-paginator>
                         </div>
 
                         <ng-template #other_content>

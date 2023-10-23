@@ -32,7 +32,8 @@ export class OrderHistoryComponent implements OnInit, OnDestroy {
     { item: 'Swim suit', cost: 15 },
   ];
   page = 1;
-
+  totalQTY = 0;
+  totalAmount = 0;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
@@ -64,7 +65,10 @@ export class OrderHistoryComponent implements OnInit, OnDestroy {
       .subscribe((history) => {
 
         this.order_history = history["data"];
-        this.orderHistoryLength = history["totalRecords"];
+        this.order_history.forEach(element => {
+          this.totalQTY += element.quantity;
+          this.totalAmount += element.orderTotal;
+        });
         this.isLoading = false;
         // Mark for check
         this._changeDetectorRef.markForCheck();
