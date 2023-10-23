@@ -3,8 +3,9 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { environment } from 'environments/environment';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { FileManagerService } from '../../../store-manager.service';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 @Component({
   selector: 'app-brand-guide',
   templateUrl: './brand-guide.component.html',
@@ -21,20 +22,18 @@ export class PresentationBrandGuideComponent implements OnInit {
   file_path = '';
   checkPdfExist: boolean = false;
   pdfChecked: boolean = false;
+  removeLoader: boolean = false;
   constructor(
     private _storeManagerService: FileManagerService,
-    private _snackBar: MatSnackBar,
     private _changeDetectorRef: ChangeDetectorRef,
+    private _commonService: DashboardsService
   ) { }
 
 
   ngOnInit() {
+    this.pdfChecked = true;
     this.file_path = environment.storeMedia + '/brandGuide/' + this.selectedStore.pk_storeID + '.pdf?' + Math.random();
-    this.urlExists(this.file_path).then(result => {
-      this.pdfChecked = true;
-      this.checkPdfExist = result;
-      this._changeDetectorRef.markForCheck();
-    });
+    this.checkFileExist();
   }
   uploadFile(event): void {
     const file = event.target.files[0];
@@ -63,6 +62,7 @@ export class PresentationBrandGuideComponent implements OnInit {
       .subscribe((response) => {
         this.imageValue = null;
         this.updateLoader = false;
+        this.checkPdfExist = true;
         // Mark for check
         this._changeDetectorRef.markForCheck();
       }, err => {
@@ -71,10 +71,34 @@ export class PresentationBrandGuideComponent implements OnInit {
         this._changeDetectorRef.markForCheck();
       })
   }
-  urlExists(url) {
-    return fetch(url, { mode: "no-cors" })
-      .then(res => true)
-      .catch(err => false)
+  checkFileExist() {
+    let params = {
+      file_check: true,
+      url: this.file_path
+    }
+    this._commonService.getCallForFileCheckData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.pdfChecked = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      this.checkPdfExist = res["isFileExist"];
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  removeBrandGuide() {
+    const paths: string[] = [`/globalAssets/Stores/brandGuide/${this.selectedStore.pk_storeID}.pdf`];
+    this.removeLoader = true;
+    let payload = {
+      files: paths,
+      delete_multiple_files: true
+    }
+    this._commonService.removeMediaFiles(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.removeLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      this._storeManagerService.snackBar('Brand Guide Removed Successfully!');
+      this.checkPdfExist = false;
+      this._changeDetectorRef.markForCheck();
+    });
   }
   openPdf() {
     window.open(this.file_path, '_blank');

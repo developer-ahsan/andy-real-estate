@@ -1,41 +1,52 @@
-<div class="row">
-  <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
-    <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
-      Add Brand Guide
+<div *ngIf="!pdfChecked">
+  <div class="row" *ngIf="!checkPdfExist">
+    <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
+      <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+        Add Brand Guide
+      </div>
+      <p>
+        <strong> Brand Guide File: </strong>
+      </p>
+      <p style="color: red">PDF Only!</p>
+      <div class="row">
+        <input type="file" accept=".pdf" class="file-upload my-3 ml-3" (change)="uploadFile($event)" />
+      </div>
+      <div class="row mt-2">
+        <div class="col-md-4">
+          <button class="min-w-40" mat-stroked-button [matTooltip]="'Upload'" (click)="uploadMedia()"
+            [disabled]="updateLoader">
+            <mat-progress-spinner *ngIf="updateLoader" [diameter]="24" [mode]="'indeterminate'">
+            </mat-progress-spinner>
+            <mat-icon *ngIf="!updateLoader" svgIcon="heroicons_outline:pencil-alt"></mat-icon>
+            <span class="px-2">Upload</span>
+          </button>
+        </div>
+      </div>
+      <div class="alert alert-danger my-3">
+        There is currently no brand guide for this store.
+      </div>
     </div>
-    <p>
-      <strong> Brand Guide File: </strong>
-    </p>
-    <p style="color: red">PDF Only!</p>
-    <div class="row">
-      <input type="file" accept=".pdf" class="file-upload my-3 ml-3" (change)="uploadFile($event)" />
-    </div>
-    <div class="row mt-5">
-      <div class="col-md-4">
-        <button class="min-w-40" mat-stroked-button [matTooltip]="'Upload'" (click)="uploadMedia()"
-          [disabled]="updateLoader">
-          <mat-progress-spinner *ngIf="updateLoader" [diameter]="24" [mode]="'indeterminate'">
-          </mat-progress-spinner>
-          <mat-icon *ngIf="!updateLoader" svgIcon="heroicons_outline:pencil-alt"></mat-icon>
-          <span class="px-2">Upload</span>
-        </button>
+  </div>
+  <div class="row my-5" *ngIf="checkPdfExist">
+    <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
+      <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+        Current Brand Guide
+      </div>
+      <div>
+        <mat-icon (click)="openPdf()" class="cursor-pointer h-20 w-20" [svgIcon]="'heroicons_solid:document-text'">
+        </mat-icon>
+        <br>
+        <a href="{{file_path}}" target="_blank">Click here to open brand guide.</a>
+        <p *ngIf="!removeLoader" class="cursor-pointer text-red-700 hover:text-red-900" (click)="removeBrandGuide()">
+          Remove</p>
+        <mat-progress-spinner *ngIf="removeLoader" [diameter]="24" [mode]="'indeterminate'">
+        </mat-progress-spinner>
       </div>
     </div>
   </div>
 </div>
-<div class="row my-5">
-  <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
-    <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
-      Current Brand Guide
-    </div>
-    <p *ngIf="!checkPdfExist && pdfChecked">
-      There is currently no brand guide for this store.
-    </p>
-    <div *ngIf="checkPdfExist && pdfChecked">
-      <mat-icon (click)="openPdf()" class="cursor-pointer h-20 w-20" [svgIcon]="'heroicons_solid:document-text'">
-      </mat-icon>
-      <br>
-      <a href="{{file_path}}" target="_blank">Click here to open brand guide.</a>
-    </div>
-  </div>
+
+<div *ngIf="pdfChecked" class="p-5">
+  <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+  </ngx-skeleton-loader>
 </div>

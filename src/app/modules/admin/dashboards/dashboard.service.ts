@@ -234,4 +234,11 @@ export class DashboardsService {
         return this._httpClient.post(
             environment.products, payload);
     };
+
+    // Common File Check It exist or not
+    getCallForFileCheckData(params): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.smartart, {
+            params: params
+        }).pipe(retry(3));
+    };
 }

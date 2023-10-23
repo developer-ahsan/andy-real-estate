@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, HostBinding, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, EventEmitter, HostBinding, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild, ViewEncapsulation } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -6,6 +6,8 @@ import { fuseAnimations } from '@fuse/animations/public-api';
 import { Router } from '@angular/router';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 import { FuseNavigationService } from '@fuse/components/navigation';
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { ChangeDetectionStrategy } from '@angular/compiler/src/compiler_facade_interface';
 
 @Component({
     selector: 'search',
@@ -31,13 +33,17 @@ export class SearchComponent implements OnChanges, OnInit, OnDestroy {
     ngStore: any;
     ngVendor: any;
 
+
+    vendorSearchTerm: string = '';
+    filteredVendors: any;
     /**
      * Constructor
      */
     constructor(
         private _fuseNavigationService: FuseNavigationService,
         private router: Router,
-        private _commonService: DashboardsService
+        private _commonService: DashboardsService,
+        private _changeDetect: ChangeDetectorRef
     ) {
     }
 
@@ -110,6 +116,7 @@ export class SearchComponent implements OnChanges, OnInit, OnDestroy {
     getAllVendors() {
         this._commonService.suppliersData$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
             this.suppliers = res["data"];
+            this.filteredVendors = res["data"];
         })
     }
     searchProduct(event) {
@@ -147,6 +154,33 @@ export class SearchComponent implements OnChanges, OnInit, OnDestroy {
             this.router.navigateByUrl('/apps/search/orders/' + val);
         }
         event.target.value = '';
+    }
+    filterVendors() {
+        if (Object.prototype.toString.call(this.vendorSearchTerm) === '[object String]') {
+            this.filteredVendors = this.suppliers.filter(vendor =>
+                vendor.companyName && this.vendorSearchTerm &&
+                vendor.companyName.toLowerCase().includes(this.vendorSearchTerm.toString().toLowerCase())
+            );
+        }
+        if (this.vendorSearchTerm == '') {
+            this.filteredVendors = this.suppliers;
+        }
+        this._changeDetect.markForCheck();
+    }
+
+    // Implement a method to handle the selection of a vendor
+    selectVendor(event: MatAutocompleteSelectedEvent) {
+        const selectedVendorId = event.option.value.pk_companyID;
+        this.router.navigateByUrl('/apps/vendors/' + selectedVendorId);
+        setTimeout(() => {
+            this.vendorSearchTerm = null;
+            this._changeDetect.markForCheck();
+        }, 2000);
+        this._changeDetect.markForCheck();
+        // Handle the selected vendor as needed
+    }
+    displayFn(value: any): string {
+        return value?.companyName;
     }
     /**
      * On destroy
