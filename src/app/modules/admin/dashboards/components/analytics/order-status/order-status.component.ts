@@ -99,7 +99,6 @@ export class OrderStatusComponent implements OnInit {
           });
         });
       }
-      console.log(this.approvalOrders)
       // Awaiting Orders 
       if (awaitingOrderss) {
         const awaitOrders = awaitingOrderss.split(',,');

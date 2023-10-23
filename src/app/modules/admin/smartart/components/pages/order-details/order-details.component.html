@@ -154,7 +154,7 @@
                                 <div><b>Order Placed:</b> {{orderData.orderDate | date: 'MM/dd/yyyy'}}</div>
                                 <div><b>Store: </b> <a
                                         href="{{orderData?.protocol}}{{orderData?.storeURL}}/{{orderData?.categoryPermalink}}/{{orderData?.subCategoryPermalink}}/{{orderData?.productPermaLink}}"
-                                        target="_blank">{{orderData.storeName}}</a></div>
+                                        target="_blank"> {{orderData.storeName}}</a></div>
                                 <div><b>In-Hands:</b> {{orderData.inHandsDate | date: 'MM/dd/yyyy'}}</div>
                                 <div><b>Rush:</b> {{orderData.blnRushFlexibility? 'YES' : 'NO'}}</div>
                             </div>
@@ -167,12 +167,13 @@
                                 <div><b>Order Placed:</b> {{orderData.orderDate | date: 'MM/dd/yyyy'}}</div>
                                 <div><b>Store: </b> <a
                                         href="{{orderData?.protocol}}{{orderData?.storeURL}}/{{orderData?.categoryPermalink}}/{{orderData?.subCategoryPermalink}}/{{orderData?.productPermaLink}}"
-                                        target="_blank">{{orderData.storeName}}</a></div>
+                                        target="_blank"> {{orderData.storeName}}</a></div>
                                 <div><b>Brand Guide: </b>
                                     <a *ngIf="brandGuideExist" target="_blank"
-                                        href="https://assets.consolidus.com/globalAssets/Stores/BrandGuide/{{orderData.pk_storeID}}.pdf">Click
+                                        href="https://assets.consolidus.com/globalAssets/Stores/BrandGuide/{{orderData.pk_storeID}}.pdf">
+                                        Click
                                         here</a>
-                                    <span *ngIf="!brandGuideExist">None</span>
+                                    <span *ngIf="!brandGuideExist"> None</span>
                                 </div>
                                 <div><b>Rush:</b> {{orderData.blnRushFlexibility? 'YES' : 'NO'}}</div>
                                 <div>
@@ -568,7 +569,7 @@
                             (opened)="openExpansion(imprint,i)">
                             <mat-expansion-panel-header>
                                 <mat-panel-title>
-                                    Imprint {{i+1}} of {{imprintdata.length}} for <span
+                                    Imprint {{i+1}} of {{imprintdata.length}} for&nbsp;<span
                                         [innerHTML]="orderData.productName"></span> -
                                     ({{imprint.locationName}}/{{imprint.decorationName}})
                                 </mat-panel-title>
