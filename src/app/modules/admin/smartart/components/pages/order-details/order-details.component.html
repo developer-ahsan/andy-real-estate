@@ -156,7 +156,7 @@
                                         href="{{orderData?.protocol}}{{orderData?.storeURL}}/{{orderData?.categoryPermalink}}/{{orderData?.subCategoryPermalink}}/{{orderData?.productPermaLink}}"
                                         target="_blank"> {{orderData.storeName}}</a></div>
                                 <div><b>In-Hands:</b> {{orderData.inHandsDate | date: 'MM/dd/yyyy'}}</div>
-                                <div><b>Rush:</b> {{orderData.blnRushFlexibility? 'YES' : 'NO'}}</div>
+                                <div><b>Rush:</b> {{orderData.sessionArtworkBlnRushOrder? 'YES' : 'NO'}}</div>
                             </div>
                             <div *ngIf="smartArtUser.blnMaster">
                                 <div><b>Order:</b> <a [routerLink]="['/apps/orders',orderData.fk_orderID,'summary']"
@@ -175,7 +175,7 @@
                                         here</a>
                                     <span *ngIf="!brandGuideExist"> None</span>
                                 </div>
-                                <div><b>Rush:</b> {{orderData.blnRushFlexibility? 'YES' : 'NO'}}</div>
+                                <div><b>Rush:</b> {{orderData.sessionArtworkBlnRushOrder? 'YES' : 'NO'}}</div>
                                 <div>
                                     <b>In-Hands:</b> (mm/dd/yyyy)
                                     <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full min-w-50">
@@ -488,6 +488,7 @@
                                     </fuse-alert>
                                 </div>
                                 <mat-form-field class="w-full" *ngIf="allColors">
+                                    <mat-label>Or enter PMS colors:</mat-label>
                                     <input matInput [(ngModel)]="selectedImprintColor">
                                 </mat-form-field>
                                 <div>
