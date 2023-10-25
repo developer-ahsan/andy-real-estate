@@ -1,0 +1,241 @@
+<div class="row w-full" *ngIf="!isLoading">
+    <div class="col-12 col-md-4 space-y-3">
+        <!-- Attachments -->
+        <!-- <div class=" rounded-2xl shadow bg-card  w-full">
+            <div class="w-full">
+                <div class="px-4 sm:px-4 lg:px-8 py-4">
+                    <h2 class="text-xl md:text-xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                        Attachments
+                    </h2>
+                    <div class="space-y-2">
+                        <p class="text-secondary">These files will be included as attachments on the purchase order when
+                            it is sent.</p>
+                        <fuse-alert [appearance]="'soft'" [type]="'warning'" *ngIf="attachmentsList.length == 0">
+                            There are no attachments on this purchase order.
+                        </fuse-alert>
+                        <div *ngFor="let item of attachmentsList">
+                            <a href="https://assets.consolidus.com/globalAssets/Orders/PurchaseOrders/attachments/{{item.fk_orderLinePOID}}/{{item.pk_purchaseOrderAttachmentID}}.{{item.extension}}"
+                                target="_blank" rel="noopener noreferrer">{{item.name}}</a>
+                        </div>
+                        <mat-form-field class="w-full">
+                            <mat-label>Name</mat-label>
+                            <input matInput>
+                        </mat-form-field>
+                        <input type="file">
+                        <button class="min-w-40 btn buttonComment hover:bg-gray-200">Add Attachment</button>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+        <!-- Bill Pay -->
+        <div class=" rounded-2xl shadow bg-card  w-full">
+            <div class="w-full">
+                <div class="px-4 sm:px-4 lg:px-8 py-4">
+                    <h2 class="text-xl md:text-xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                        Bill Pay
+                    </h2>
+                    <div class="space-y-2">
+                        <mat-form-field class="w-full">
+                            <mat-label>Payment method:</mat-label>
+                            <mat-select mayInput [(ngModel)]="BillData.billPayPaymentMethod">
+                                <mat-option [value]="0">None</mat-option>
+                                <mat-option value="American Express">American Express</mat-option>
+                                <mat-option value="Capital One">Capital One</mat-option>
+                                <mat-option value="Chase Visa">Chase Visa</mat-option>
+                                <mat-option value="Vendor Website">Vendor Website</mat-option>
+                                <mat-option value="ACH">ACH</mat-option>
+                                <mat-option value="Check">Check</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-form-field class="w-full">
+                            <mat-label>Payment reference:</mat-label>
+                            <input matInput [(ngModel)]="BillData.billPayReference">
+                        </mat-form-field>
+                        <mat-form-field class="w-full">
+                            <mat-label>Payment date:</mat-label>
+                            <input matInput [matDatepicker]="Estpickers" readonly
+                                [(ngModel)]="BillData.billPayPaymentDate">
+                            <mat-datepicker-toggle matIconSuffix [for]="Estpickers"></mat-datepicker-toggle>
+                            <mat-datepicker #Estpickers></mat-datepicker>
+                        </mat-form-field>
+                        <mat-checkbox class="w-full" [(ngModel)]="BillData.blnPaid">Paid</mat-checkbox>
+                        <button class="min-w-40 btn buttonComment hover:bg-gray-200" (click)="updateBillPay()"
+                            [disabled]="isBillLoader">
+                            <span *ngIf="!isBillLoader">Save bill pay</span>
+                            <mat-progress-spinner *ngIf="isBillLoader" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Vendor bill information -->
+        <div class=" rounded-2xl shadow bg-card  w-full">
+            <div class="w-full">
+                <div class="px-4 sm:px-4 lg:px-8 py-4">
+                    <h2 class="text-xl md:text-xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                        Vendor bill information
+                    </h2>
+                    <div class="space-y-2">
+                        <mat-form-field class="w-full">
+                            <mat-label>Vendor invoice number:</mat-label>
+                            <input matInput [(ngModel)]="vendorBillData.vendorInvoiceNumber">
+                        </mat-form-field>
+                        <mat-form-field class="w-full">
+                            <mat-label>Vendor invoice date:</mat-label>
+                            <input [(ngModel)]="vendorBillData.vendorInvoiceDate" matInput [matDatepicker]="Estpickerss"
+                                readonly (click)="Estpickerss.open()">
+                            <mat-datepicker-toggle matIconSuffix [for]="Estpickerss"></mat-datepicker-toggle>
+                            <mat-datepicker #Estpickerss></mat-datepicker>
+                        </mat-form-field>
+                        <mat-form-field class="w-full">
+                            <mat-label>Payment terms:</mat-label>
+                            <mat-select mayInput [(ngModel)]="vendorBillData.vendorInvoiceNetTerms">
+                                <mat-option [value]="0">None</mat-option>
+                                <mat-option value="PrePaid">PrePaid</mat-option>
+                                <mat-option value="Due On Receipt">Due On Receipt</mat-option>
+                                <mat-option value="Net 10">Net 10</mat-option>
+                                <mat-option value="Net 15">Net 15</mat-option>
+                                <mat-option value="Net 30">Net 30</mat-option>
+                                <mat-option value="Net 45">Net 45</mat-option>
+                                <mat-option value="Net 60">Net 60</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-checkbox class="w-full" [(ngModel)]="vendorBillData.blnInvoiced">Invoiced</mat-checkbox>
+                        <button class="min-w-40 btn buttonComment hover:bg-gray-200" (click)="updateVendorBills()"
+                            [disabled]="isVendorBillLoader">
+                            <span *ngIf="!isVendorBillLoader">Save vendor bill</span>
+                            <mat-progress-spinner *ngIf="isVendorBillLoader" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Purchase Order -->
+    <div class="col-12 col-md-8">
+        <div class=" rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+            <div class="w-full">
+                <div class="px-4 sm:px-4 lg:px-8 py-4">
+                    <h2 class="text-xl md:text-xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                        Purchase order
+                    </h2>
+                    <div>
+                        <div class="flex justify-between border-b py-2">
+                            <div>
+                                <img src="https://assets.consolidus.com/globalAssets/consolidus_logo.png" class="w-40">
+                                <p class="text-secodary mb-2">
+                                    {{smartCentsData.storeName}} is a subsidiary of Consolidus, LLC.<br />Consolidus
+                                    LLC<br />526 S.Main St.<br />Suite 804<br />Akron,
+                                    OH
+                                    44311<br />P:
+                                    330-319-7203, F: 330-319-7213
+                                </p>
+                            </div>
+                            <div>
+                                <p class="text-secondary font-bold">Purchase Order</p>
+                                <p class="text-secondary">
+                                    {{smartCentsData.fk_orderID}}-{{smartCentsData.fk_orderLineID}}</p>
+                                <p class="text-secondary">Sent on {{smartCentsData.orderDate | date:
+                                    'MMMM d, y, h:mm:ss a'}}</p>
+                            </div>
+                        </div>
+                        <div class="row border-b py-2">
+                            <div class="col-4">
+                                <p><b>Purchase Order #:</b></p>
+                            </div>
+                            <div class="col-8 font-bold">{{smartCentsData.fk_orderID}}-{{smartCentsData.fk_orderLineID}}
+                            </div>
+                            <div class="col-4 font-bold">
+                                <p>CUSTOMER PURCHASE ORDER #:</p>
+                            </div>
+                            <div class="col-8 font-bold">{{smartCentsData.shipToPurchaseOrder}}</div>
+                            <div class="col-4 font-bold">
+                                <p>Vendor</p>
+                            </div>
+                            <div class="col-8 font-bold">{{smartCentsData.vendorShippingName}}</div>
+                            <div class="col-4 font-bold"></div>
+                            <div class="col-8 font-bold">{{smartCentsData.vendorShippingAddress1}}</div>
+                            <div class="col-4"></div>
+                            <div class="col-8 font-bold">{{smartCentsData.vendorShippingCity + ' ' +
+                                smartCentsData.vendorShippingState + ' ' + smartCentsData.vendorShippingZip}}</div>
+                            <div class="col-4"></div>
+                            <div class="col-8 font-bold">{{smartCentsData.vendorShippingEmail}}</div>
+                            <div class="col-4 font-bold">Shipping</div>
+                            <div class="col-8 font-bold">{{smartCentsData.shippingComment}}</div>
+                            <div class="col-4">
+                                <p>Ship To</p>
+                            </div>
+                            <div class="col-8">{{smartCentsData.shipToCompanyName}}</div>
+                            <div class="col-4"></div>
+                            <div class="col-8">{{smartCentsData.shipToCustomerName}}</div>
+                            <div class="col-4"></div>
+                            <div class="col-8">PO {{smartCentsData.shipToPurchaseOrder}}</div>
+                            <div class="col-4"></div>
+                            <div class="col-8">{{smartCentsData.shipToAddress}}</div>
+                            <div class="col-4"></div>
+                            <div class="col-8">{{smartCentsData.shipToDeliverTo}}</div>
+                            <div class="col-4"></div>
+                            <div class="col-8">{{smartCentsData.shipToCity + '' + smartCentsData.shipToCountry + '' +
+                                smartCentsData.shipToState}}</div>
+                            <div class="col-4"></div>
+                            <div class="col-8">Please reference
+                                <b>{{smartCentsData.fk_orderID}}-{{smartCentsData.fk_orderLineID}}</b> on shipping
+                                label.
+                            </div>
+                        </div>
+                        <div class="row py-2">
+                            <div class="col-12 mt-2">
+                                <p class="font-medium text-secondary py-1 border-b">COLOR/SIZE BREAKDOWN</p>
+                                <div class="mt-3 text-center" *ngIf="colorsData.length == 0">No Color/Size found</div>
+                                <div class="row mt-3" *ngIf="colorsData.length > 0">
+                                    <div class="col-6 font-bold">Color/size:</div>
+                                    <div class="col-2 font-bold">Quantity</div>
+                                    <div class="col-2 font-bold">Unit</div>
+                                    <div class="col-2 font-bold">Total</div>
+                                </div>
+                                <p class="text-secondary font-bold">{{smartCentsData.productName}}</p>
+                                <div class="mt-2 row" *ngFor="let item of colorsData">
+                                    <div class="col-6">{{item.colorName}} & {{item.sizeName}}</div>
+                                    <div class="col-2">{{item.quantity}}</div>
+                                    <div class="col-2">{{item?.unitCost | currency}}</div>
+                                    <div class="col-2">{{item?.total | currency}}</div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="row py-4">
+                                    <div class="col-6">
+                                        <p class="text-xl font-bold text-secondary">Total Pieces</p>
+                                    </div>
+                                    <div class="col-6 font-bold">
+                                        {{smartCentsData.quantity}}
+                                    </div>
+                                    <div class="col-2">
+                                        <p class="text-xl font-bold text-secondary">Total</p>
+                                    </div>
+                                    <div class="col-9 text-right font-bold">
+                                        <div class="flex align-items-center justify-content-end">
+                                            {{smartCentsData.POTotal | currency}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div *ngIf="isLoading" class=" rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+    <div class="w-full">
+        <div class="px-4 sm:px-4 lg:px-8 py-4">
+            <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
+                'background-color': '#dedede'
+              }">
+            </ngx-skeleton-loader>
+        </div>
+    </div>
+</div>

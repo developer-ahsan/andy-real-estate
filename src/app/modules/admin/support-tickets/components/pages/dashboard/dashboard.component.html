@@ -1,0 +1,692 @@
+<div class="w-full">
+    <div class="mb-2">
+        <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen"
+            (change)="calledScreen(group.value)">
+            <mat-button-toggle [value]="'Tickets'">
+                Current Tickets
+            </mat-button-toggle>
+            <mat-button-toggle [value]="'Create'">
+                Create Ticket
+            </mat-button-toggle>
+        </mat-button-toggle-group>
+    </div>
+    <div class="w-full rounded-2xl shadow bg-card mb-15" *ngIf="mainScreen == 'Tickets'">
+        <div class="px-4 sm:px-4 lg:px-8 pt-4 w-full">
+            <h2 class="text-xl sm:text-xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                Current Tickets
+            </h2>
+            <div *ngIf="isLoading" class="py-4 w-full">
+                <ngx-skeleton-loader count="8" appearance="line" animation="pulse"
+                    [theme]="{'background-color': '#dedede' }">
+                </ngx-skeleton-loader>
+            </div>
+        </div>
+        <div *ngIf="!isLoading">
+            <div class="px-4 pb-2" *ngIf="dashboardValues">
+                <div class="flex-auto grid grid-cols-4 gap-4 mt-3">
+                    <div
+                        class="col-span-2 sm:col-span-1 flex flex-col items-center justify-center py-8 px-1 rounded-2xl bg-gray-100 text-green-500 dark:bg-white dark:bg-opacity-5">
+                        <div class="text-5xl font-semibold leading-none tracking-tight"> {{dashboardValues.totalPrice |
+                            currency}} </div>
+                        <div class="mt-1 text-md font-medium text-center text-green-500">Amount</div>
+                    </div>
+                    <div *ngIf="orderType == 2 || orderType == 4 || orderType == 1"
+                        class="col-span-2 sm:col-span-1 flex flex-col items-center justify-center py-8 px-1 rounded-2xl bg-gray-100 text-secondary dark:bg-white dark:bg-opacity-5">
+                        <div class="text-5xl font-semibold leading-none tracking-tight">
+                            {{(dashboardValues.projectedMargin).toFixed(2)}}%</div>
+                        <div class="mt-1 text-md font-medium text-center">Projected margin</div>
+                    </div>
+                    <div *ngIf="orderType == 2 || orderType == 4 || orderType == 1"
+                        class="col-span-2 sm:col-span-1 flex flex-col items-center justify-center py-8 px-1 rounded-2xl bg-gray-100 text-secondary dark:bg-white dark:bg-opacity-5">
+                        <div class="text-5xl font-semibold leading-none tracking-tight">
+                            {{(dashboardValues.ActualMargin).toFixed(2)}}% </div>
+                        <div class="mt-1 text-md font-medium text-center">Actual margin</div>
+                    </div>
+                    <div *ngIf="orderType == 2 || orderType == 4 || orderType == 1"
+                        class="col-span-2 sm:col-span-1 flex flex-col items-center justify-center py-8 px-1 rounded-2xl bg-gray-100 text-secondary dark:bg-white dark:bg-opacity-5">
+                        <div class="text-5xl font-semibold leading-none tracking-tight">
+                            {{(dashboardValues.DifferenceMargin).toFixed(2)}}%
+                        </div>
+                        <div class="mt-1 text-md font-medium text-center">Difference</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Type 1 -->
+            <div *ngIf="orderType == 1">
+                <div class="px-4 pb-4" *ngIf="revenueData.length == 0">
+                    <fuse-alert [appearance]="'soft'" [dismissible]="false" [dismissed]="false" [name]="'alertBox3'"
+                        [type]="'warning'">
+                        There are no orders to show in this view or your search did not return any results.
+                    </fuse-alert>
+                </div>
+                <div *ngIf="revenueData.length > 0">
+                    <table mat-table [dataSource]="revenueData" class="w-full border-t">
+                        <ng-container matColumnDef="date">
+                            <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
+                                <div class="flex">
+                                    <span>Date</span>
+                                    <mat-icon class="icon-size-4 ml-1" matTooltip="The date this order was closed."
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
+                                {{element.orderDate | date: 'MM/dd/yyyy'}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="status">
+                            <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
+                                <div class="flex">
+                                    <span>Status</span>
+                                    <mat-icon class="icon-size-4 ml-1"
+                                        matTooltip="The status of the entire order (from pizza tracker)."
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
+                                {{element.currentStatusName}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="order">
+                            <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
+                                Order#
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
+                                {{element.pk_orderID}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="company">
+                            <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
+                                Company
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
+                                {{element.vendorShippingName}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="location">
+                            <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
+                                Location
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
+                                {{element.userLocationName}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="amount">
+                            <th mat-header-cell *matHeaderCellDef class="w-40 min-w-40 px-2">
+                                <div class="flex">
+                                    <span>Amount</span>
+                                    <mat-icon class="icon-size-4 ml-1"
+                                        matTooltip="The price of this order (no tax or royalties)."
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
+                                {{element.price | currency}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="pm">
+                            <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
+                                <div class="flex">
+                                    <span>PM</span>
+                                    <mat-icon class="icon-size-4 ml-1"
+                                        matTooltip="Projected Margin: the margin of the order."
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
+                                {{element.margin.toFixed(2)}}%
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="am">
+                            <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
+                                <div class="flex">
+                                    <span>AM</span>
+                                    <mat-icon class="icon-size-4 ml-1"
+                                        matTooltip="Actual Margin: the margin of the POs sent for this order."
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
+                                {{element.actualMargin.toFixed(2)}}%
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="d">
+                            <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
+                                <div class="flex">
+                                    <span>D</span>
+                                    <mat-icon class="icon-size-4 ml-1"
+                                        matTooltip="The difference between the projected margin and actual margin."
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
+                                {{element.difference.toFixed(2)}}%
+                            </td>
+                        </ng-container>
+                        <tr mat-header-row *matHeaderRowDef="revenueColumns;" class="h-18 bg-light"></tr>
+                        <tr mat-row *matRowDef="let row; columns: revenueColumns;"
+                            class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
+                        </tr>
+                    </table>
+                    <mat-paginator #paginator
+                        class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                        [length]="revenueTotalRecords" [pageIndex]="0" [pageSize]="20" (page)="getNextData($event)"
+                        [hidePageSize]="true">
+                    </mat-paginator>
+                </div>
+            </div>
+            <!-- Order Type 2 -->
+            <div *ngIf="orderType == 2">
+                <div class="px-4 pb-4" *ngIf="orderCloseData.length == 0">
+                    <fuse-alert [appearance]="'soft'" [dismissible]="false" [dismissed]="false" [name]="'alertBox3'"
+                        [type]="'warning'">
+                        There are no orders to show in this view or your search did not return any results.
+                    </fuse-alert>
+                </div>
+                <div *ngIf="orderCloseData.length > 0">
+                    <table mat-table [dataSource]="orderCloseData" class="w-full border-t">
+                        <ng-container matColumnDef="date">
+                            <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
+                                <div class="flex">
+                                    <span>Date</span>
+                                    <mat-icon class="icon-size-4 ml-1" matTooltip="Date order was placed"
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
+                                {{element.orderDate | date: 'MM/dd/yyyy'}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="status">
+                            <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
+                                <div class="flex">
+                                    <span>Status</span>
+                                    <mat-icon class="icon-size-4 ml-1"
+                                        matTooltip="The status of the entire order (from pizza tracker)."
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
+                                {{element.currentStatusName}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="order">
+                            <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
+                                Order
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
+                                {{element.pk_orderID}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="company">
+                            <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
+                                Company
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
+                                {{element.vendorShippingName}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="location">
+                            <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
+                                Location
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
+                                {{element.userLocationName}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="amount">
+                            <th mat-header-cell *matHeaderCellDef class="w-40 min-w-40 px-2">
+                                <div class="flex">
+                                    <span>Amount</span>
+                                    <mat-icon class="icon-size-4 ml-1"
+                                        matTooltip="The price of this order (no tax or royalties)."
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
+                                {{element.price | currency}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="pm">
+                            <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
+                                <div class="flex">
+                                    <span>PM</span>
+                                    <mat-icon class="icon-size-4 ml-1"
+                                        matTooltip="Projected Margin: the margin of the order."
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
+                                {{element.margin.toFixed(2)}}%
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="am">
+                            <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
+                                <div class="flex">
+                                    <span>AM</span>
+                                    <mat-icon class="icon-size-4 ml-1"
+                                        matTooltip="Actual Margin: the margin of the POs sent for this order."
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
+                                {{element.actualMargin.toFixed(2)}}%
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="d">
+                            <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
+                                <div class="flex">
+                                    <span>D</span>
+                                    <mat-icon class="icon-size-4 ml-1"
+                                        matTooltip="The difference between the projected margin and actual margin."
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
+                                {{element.difference.toFixed(2)}}%
+                            </td>
+                        </ng-container>
+                        <tr mat-header-row *matHeaderRowDef="orderCloseColumns;" class="h-18 bg-light"></tr>
+                        <tr mat-row *matRowDef="let row; columns: orderCloseColumns;"
+                            class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
+                        </tr>
+                    </table>
+                    <mat-paginator #paginator
+                        class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                        [length]="orderCloseTotalRecords" [pageIndex]="0" [pageSize]="20" (page)="getNextData($event)"
+                        [hidePageSize]="true">
+                    </mat-paginator>
+                </div>
+            </div>
+            <!-- Order Type 3 -->
+            <div *ngIf="orderType == 3">
+                <div class="px-4 pb-4" *ngIf="posBillData.length == 0">
+                    <fuse-alert [appearance]="'soft'" [dismissible]="false" [dismissed]="false" [name]="'alertBox3'"
+                        [type]="'warning'">
+                        There are no orders to show in this view or your search did not return any results.
+                    </fuse-alert>
+                </div>
+                <div *ngIf="posBillData.length > 0">
+                    <table mat-table [dataSource]="posBillData" class="w-full border-t">
+                        <ng-container matColumnDef="date">
+                            <th mat-header-cell *matHeaderCellDef>
+                                <div class="flex">
+                                    <span>Date</span>
+                                    <mat-icon class="icon-size-4 ml-1"
+                                        matTooltip="The date the purchase order was created"
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm">
+                                {{element.orderDate | date: 'MM/dd/yyyy'}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="status">
+                            <th mat-header-cell *matHeaderCellDef>
+                                <div class="flex">
+                                    <span>Status</span>
+                                    <mat-icon class="icon-size-4 ml-1"
+                                        matTooltip="Status of the purchase order from OrderManage."
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm">
+                                {{element.statusName}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="store">
+                            <th mat-header-cell *matHeaderCellDef>
+                                Store
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm">
+                                {{element.storeName}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="po">
+                            <th mat-header-cell *matHeaderCellDef>
+                                PO#
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm">
+                                {{element.purchaseOrderNumber}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="vendor">
+                            <th mat-header-cell *matHeaderCellDef>
+                                Vendor
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm ">
+                                {{element.vendorShippingName}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="esd">
+                            <th mat-header-cell *matHeaderCellDef>
+                                <div class="flex">
+                                    <span>ESD</span>
+                                    <mat-icon class="icon-size-4 ml-1"
+                                        matTooltip="Estimated shipping date on the purchase order."
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm ">
+                                {{(element.estimatedShippingDate | date: 'MM/dd/yyyy') || '---'}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="amount">
+                            <th mat-header-cell *matHeaderCellDef>
+                                <div class="flex">
+                                    <span>Amount</span>
+                                    <mat-icon class="icon-size-4 ml-1" matTooltip="Total cost of the purchase order."
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm ">
+                                {{element.POTotal | currency}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="action">
+                            <th mat-header-cell *matHeaderCellDef>
+                                Action
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm">
+                                <button class="min-w-30" mat-button mat-stroked-button
+                                    (click)="goToDetailPage(element)">Vendor Bill</button>
+                            </td>
+                        </ng-container>
+                        <tr mat-header-row *matHeaderRowDef="posBillColumns;" class="h-18 bg-light"></tr>
+                        <tr mat-row *matRowDef="let row; columns: posBillColumns;"
+                            class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
+                        </tr>
+                    </table>
+                    <mat-paginator #paginator
+                        class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                        [length]="posBillTotalRecords" [pageIndex]="0" [pageSize]="20" (page)="getNextData($event)"
+                        [hidePageSize]="true">
+                    </mat-paginator>
+                </div>
+            </div>
+            <!-- Order Type 4 -->
+            <div *ngIf="orderType == 4">
+                <div class="px-4 pb-4" *ngIf="receivePaymentData.length == 0">
+                    <fuse-alert [appearance]="'soft'" [dismissible]="false" [dismissed]="false" [name]="'alertBox3'"
+                        [type]="'warning'">
+                        There are no orders to show in this view or your search did not return any results.
+                    </fuse-alert>
+                </div>
+                <div *ngIf="receivePaymentData.length > 0">
+                    <table mat-table [dataSource]="receivePaymentData" class="w-full border-t">
+                        <ng-container matColumnDef="date">
+                            <th mat-header-cell *matHeaderCellDef>
+                                <div class="flex">
+                                    <span>Date</span>
+                                    <mat-icon class="icon-size-4 ml-1" matTooltip="The date the order was placed."
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
+                                {{element.orderDate | date: 'MM/dd/yyyy'}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="status">
+                            <th mat-header-cell *matHeaderCellDef>
+                                <div class="flex">
+                                    <span>Status</span>
+                                    <mat-icon class="icon-size-4 ml-1" matTooltip="Current status of the order."
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
+                                {{element.currentStatusName}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="order">
+                            <th mat-header-cell *matHeaderCellDef>
+                                Order#
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
+                                {{element.pk_orderID}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="company">
+                            <th mat-header-cell *matHeaderCellDef>
+                                Company
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
+                                {{element.vendorShippingName}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="location">
+                            <th mat-header-cell *matHeaderCellDef>
+                                Location
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
+                                {{element.userLocationName}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="amount">
+                            <th mat-header-cell *matHeaderCellDef>
+                                <div class="flex">
+                                    <span>Amount</span>
+                                    <mat-icon class="icon-size-4 ml-1"
+                                        matTooltip="The price of this order (no tax or royalties)."
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
+                                {{element.price | currency}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="bd">
+                            <th mat-header-cell *matHeaderCellDef>
+                                <div class="flex">
+                                    <span>BD</span>
+                                    <mat-icon class="icon-size-4 ml-1" matTooltip="Balance due"
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
+                                {{element.balanceDue | currency}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="po">
+                            <th mat-header-cell *matHeaderCellDef>
+                                <div class="flex">
+                                    <span>PO</span>
+                                    <mat-icon class="icon-size-4 ml-1" matTooltip="The customer purchase order number."
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
+                                {{element.purchaseOrderNum}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="acc">
+                            <th mat-header-cell *matHeaderCellDef>
+                                <div class="flex">
+                                    <span>ACC</span>
+                                    <mat-icon class="icon-size-4 ml-1" matTooltip="Customer account charge code."
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
+                                {{element.accountChargeCode}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="sabo">
+                            <th mat-header-cell *matHeaderCellDef>
+                                <div class="flex">
+                                    <span>SABO</span>
+                                    <mat-icon class="icon-size-4 ml-1" matTooltip="SABO code."
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
+                                {{element.billingStudentOrgCode}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="action">
+                            <th mat-header-cell *matHeaderCellDef>
+                                Action
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
+                            </td>
+                        </ng-container>
+                        <tr mat-header-row *matHeaderRowDef="receivePaymentColumns;" class="h-18 bg-light"></tr>
+                        <tr mat-row *matRowDef="let row; columns: receivePaymentColumns;"
+                            class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
+                        </tr>
+                    </table>
+                    <mat-paginator #paginator
+                        class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                        [length]="receivePaymentTotalRecords" [pageIndex]="0" [pageSize]="20"
+                        (page)="getNextData($event)" [hidePageSize]="true">
+                    </mat-paginator>
+                </div>
+            </div>
+            <!-- Order Type 5 -->
+            <div *ngIf="orderType == 5">
+                <div class="px-4 pb-4" *ngIf="vendorBillsData.length == 0">
+                    <fuse-alert [appearance]="'soft'" [dismissible]="false" [dismissed]="false" [name]="'alertBox3'"
+                        [type]="'warning'">
+                        There are no orders to show in this view or your search did not return any results.
+                    </fuse-alert>
+                </div>
+                <div *ngIf="vendorBillsData.length > 0">
+                    <table mat-table [dataSource]="vendorBillsData" class="w-full border-t">
+                        <ng-container matColumnDef="date">
+                            <th mat-header-cell *matHeaderCellDef>
+                                <div class="flex">
+                                    <span>Date</span>
+                                    <mat-icon class="icon-size-4 ml-1"
+                                        matTooltip="Invoice date, from vendor bill information."
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm">
+                                {{element.orderDate | date: 'MM/dd/yyyy'}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="status">
+                            <th mat-header-cell *matHeaderCellDef>
+                                <div class="flex">
+                                    <span>Status</span>
+                                    <mat-icon class="icon-size-4 ml-1"
+                                        matTooltip="The current status of this purchase order from OrderManage."
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm">
+                                {{element.statusName}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="po">
+                            <th mat-header-cell *matHeaderCellDef>
+                                PO#
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm">
+                                {{element.purchaseOrderNumber}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="vin">
+                            <th mat-header-cell *matHeaderCellDef>
+                                <div class="flex">
+                                    <span>VIN</span>
+                                    <mat-icon class="icon-size-4 ml-1" matTooltip="Vendor invoice number."
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm">
+                                {{element.vendorInvoiceNumber}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="vendor">
+                            <th mat-header-cell *matHeaderCellDef>
+                                Vendor
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm">
+                                {{element.vendorShippingName}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="esd">
+                            <th mat-header-cell *matHeaderCellDef>
+                                <div class="flex">
+                                    <span>ESD</span>
+                                    <mat-icon class="icon-size-4 ml-1" matTooltip="Estimated shipping date."
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm">
+                                {{(element.estimatedShippingDate | date: 'MM/dd/yyyy') || '---'}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="amount">
+                            <th mat-header-cell *matHeaderCellDef>
+                                <div class="flex">
+                                    <span>Amount</span>
+                                    <mat-icon class="icon-size-4 ml-1" matTooltip="The purchase order total cost."
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm">
+                                {{element.POTotal | currency}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="net">
+                            <th mat-header-cell *matHeaderCellDef>
+                                <div class="flex">
+                                    <span>Net Terms</span>
+                                    <mat-icon class="icon-size-4 ml-1" matTooltip="The net terms for this vendor."
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm">
+                                {{element.vendorInvoiceNetTerms }}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="payment">
+                            <th mat-header-cell *matHeaderCellDef>
+                                <div class="flex">
+                                    <span>Payment Method</span>
+                                    <mat-icon class="icon-size-4 ml-1" matTooltip="The payment method of this vendor."
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm">
+                                {{element.paymentMethod}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="action">
+                            <th mat-header-cell *matHeaderCellDef>
+                                Action
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="text-sm">
+                                <button class="min-w-30" mat-button mat-stroked-button
+                                    (click)="goToDetailPage(element)">Bill Pay</button>
+                            </td>
+                        </ng-container>
+                        <tr mat-header-row *matHeaderRowDef="vendorBillsColumns;" class="h-18 bg-light"></tr>
+                        <tr mat-row *matRowDef="let row; columns: vendorBillsColumns;"
+                            class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
+                        </tr>
+                    </table>
+                    <mat-paginator #paginator
+                        class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                        [length]="vendorBillsTotalRecords" [pageIndex]="0" [pageSize]="20" (page)="getNextData($event)"
+                        [hidePageSize]="true">
+                    </mat-paginator>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="w-full rounded-2xl shadow bg-card mb-15" *ngIf="mainScreen == 'Create'">
+        <div class="px-4 sm:px-4 lg:px-8 pt-4 w-full">
+            <h2 class="text-xl sm:text-xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                Create Ticket
+            </h2>
+            <div *ngIf="isLoading" class="py-4 w-full">
+                <ngx-skeleton-loader count="8" appearance="line" animation="pulse"
+                    [theme]="{'background-color': '#dedede' }">
+                </ngx-skeleton-loader>
+            </div>
+        </div>
+    </div>
+</div>
