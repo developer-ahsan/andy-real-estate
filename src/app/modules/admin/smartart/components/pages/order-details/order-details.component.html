@@ -330,17 +330,30 @@
                             </mat-expansion-panel-header>
                             <div>
                                 <mat-form-field class="w-full mt-2">
-                                    <mat-select [(ngModel)]="selectedImprint">
+                                    <mat-select [(ngModel)]="selectedImprint"
+                                        (selectionChange)="onChangePurchaseComments($event)">
                                         <mat-option *ngFor="let imprint of imprintdata"
                                             [value]="imprint.pk_imprintID">({{imprint.pk_imprintID}})
                                             {{imprint.locationName}}/{{imprint.decorationName}}</mat-option>
                                     </mat-select>
                                 </mat-form-field>
-                                <mat-form-field class="w-full">
-                                    <textarea matInput></textarea>
-                                </mat-form-field>
+                                <!-- <mat-form-field class="w-full"> -->
+                                <div class="mb-2">
+                                    <quill-editor [modules]="quillModules" [(ngModel)]="selectedPOComments">
+                                    </quill-editor>
+                                </div>
+                                <!-- <textarea matInput></textarea> -->
+                                <!-- </mat-form-field> -->
                                 <div>
-                                    <button class="min-w-40 btn buttonComment hover:bg-gray-200">Update Comment</button>
+                                    <button [disabled]="imprintPurchaseCommentLoader" (click)="updatePurchaseComments()"
+                                        class="min-w-40 btn buttonComment hover:bg-gray-200">
+                                        <span *ngIf="!imprintPurchaseCommentLoader">Update Comment
+                                            colors</span>
+                                        <mat-progress-spinner *ngIf="imprintPurchaseCommentLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                    </button>
+                                    <!-- <button class="min-w-40 btn buttonComment hover:bg-gray-200">Update Comment</button> -->
                                 </div>
                             </div>
                         </mat-expansion-panel>

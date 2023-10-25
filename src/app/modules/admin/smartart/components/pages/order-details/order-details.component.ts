@@ -9,7 +9,7 @@ import { Subject, forkJoin, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { SmartArtService } from '../../smartart.service';
 import { interval } from 'rxjs';
-import { AddOrderComment, UpdateOrderLineArtworkTags, UpdateArtworkTgas, UpdateOrderInformation, sendAutoRequest, updateOrderLineImprintColors, updateReorderNumberOrder, UpdateOrderLineClaim, updateOrderProofContact, SmartartImprintStatusUpdate, sendAutoRequestOrder, updateAttentionFlagOrder, sendOrderProofUpdate, UploadOrderArtProof, UploadOrderFinalArt } from '../../smartart.types';
+import { AddOrderComment, UpdateOrderLineArtworkTags, UpdateArtworkTgas, UpdateOrderInformation, sendAutoRequest, updateOrderLineImprintColors, updateReorderNumberOrder, UpdateOrderLineClaim, updateOrderProofContact, SmartartImprintStatusUpdate, sendAutoRequestOrder, updateAttentionFlagOrder, sendOrderProofUpdate, UploadOrderArtProof, UploadOrderFinalArt, updateOrderPurchaseOrderComment } from '../../smartart.types';
 
 @Component({
   selector: 'app-order-details',
@@ -95,6 +95,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   selectedProofImprint: any;
 
   imprintColorsLoader: boolean = false;
+  imprintPurchaseCommentLoader: boolean = false;
   isAddCommentLoader: boolean;
 
   smartArtUser: any;
@@ -109,6 +110,18 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
 
   imageArtworkValue: any;
   imageFinalArtworkValue: any;
+
+  quillModules: any = {
+    toolbar: [
+      ['bold', 'italic', 'underline', 'strike'],
+      ['blockquote', 'code-block'],
+      [{ 'color': [] }, { 'background': [] }],
+      [{ 'font': [] }],
+      [{ 'align': [] }],
+      ['clean']
+    ]
+  };
+  selectedPOComments: any = '';
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _authService: AuthService,
@@ -177,6 +190,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
             });
             this.allColors = finalColor;
             this.selectedImprintColor = imprint.imprintColors;
+            this.selectedPOComments = this.imprintdata[0].purchaseComment;
             if (this.imprintdata[0].colorNameList) {
               this.selectedMultipleColors = this.imprintdata[0].colorNameList.split(',');
             }
@@ -416,6 +430,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   }
   // Last Proof
   lastProof() {
+    console.log('here')
     let params = {
       art_proof: true,
       orderLine_id: this.paramData.pk_orderLineID,
@@ -477,8 +492,15 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       this.selectedImprintColor = imprint[0].imprintColors;
       if (imprint[0].colorNameList) {
         this.selectedMultipleColors = imprint[0].colorNameList.split(',');
+        this.selectedPOComments = this.imprintdata[0].purchaseComment;
       }
     }
+  }
+  onChangePurchaseComments(event) {
+    let imprint = this.imprintdata.filter(item => item.pk_imprintID == event.value);
+    this.selectedImprint = imprint[0].pk_imprintID;
+    this.selectedPOComments = imprint[0].purchaseComment;
+    this._changeDetectorRef.markForCheck();
   }
   // Timer
   startTimer() {
@@ -608,6 +630,29 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
+  // Updarte Purchase Comments
+  updatePurchaseComments() {
+    this.imprintPurchaseCommentLoader = true;
+    this._changeDetectorRef.markForCheck();
+    let payload: updateOrderPurchaseOrderComment = {
+      purchaseOrderComment: this.selectedPOComments,
+      orderLineID: Number(this.paramData.pk_orderLineID),
+      imprintID: this.selectedImprint,
+      update_order_purchase_comment: true
+    }
+    this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        const index = this.imprintdata.findIndex(item => item.pk_imprintID == this.selectedImprint);
+        this.imprintdata[index].purchaseComment = this.selectedPOComments;
+        this._smartartService.snackBar(res["message"]);
+      }
+      this.imprintPurchaseCommentLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.imprintPurchaseCommentLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
   // Imprint Colors
   updateOrderLineImprintColors() {
     this.imprintColorsLoader = true;
@@ -620,6 +665,9 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
     }
     this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
+        const index = this.imprintdata.findIndex(item => item.pk_imprintID == this.selectedImprint);
+        this.imprintdata[index].colorNameList = this.selectedMultipleColors.toString();
+        this.imprintdata[index].imprintColors = this.selectedMultipleColors.toString();
         this._smartartService.snackBar(res["message"]);
       }
       this.imprintColorsLoader = false;

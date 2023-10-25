@@ -351,3 +351,9 @@ export interface UploadOrderFinalArt {
     blnGroupRun: boolean;
     upload_order_final_art: boolean;
 };
+export interface updateOrderPurchaseOrderComment {
+    purchaseOrderComment: string;
+    orderLineID: number;
+    imprintID: number;
+    update_order_purchase_comment: boolean;
+};

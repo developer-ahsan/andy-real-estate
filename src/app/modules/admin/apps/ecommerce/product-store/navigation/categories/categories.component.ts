@@ -145,6 +145,10 @@ export class CategoriesComponent implements OnInit, OnDestroy {
       .replace(/ +/g, '-');
   }
   updateCategories() {
+    if (this.selectedCategories.length == 0) {
+      this._storeService.snackBar("Select at least one subcategory");
+      return;
+    }
     let payload: update_subcategories = {
       store_product_id: this.selectedProduct.pk_storeProductID,
       subcategories: this.selectedCategories,
