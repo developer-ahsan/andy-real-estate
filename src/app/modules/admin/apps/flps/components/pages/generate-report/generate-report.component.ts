@@ -387,6 +387,7 @@ export class GenerateReportComponent implements OnInit {
             });
         });
         let userCommission = (this.storeTotals.orderCommission * this.storeTotals.EST_Profit).toFixed(2);
+        let grandCommission = (this.storeTotals.orderCommission).toFixed(2);
         let payload: updateReport = {
             flps_userID: this.selectedEmployee.pk_userID,
             flpsName: this.selectedEmployee.fullName,
@@ -400,7 +401,7 @@ export class GenerateReportComponent implements OnInit {
             grandSalesTotal: this.storeTotals.Sales,
             grandNumSalesTotal: this.storeTotals.Num_Sales,
             grandEstimatedProfitTotal: this.storeTotals.EST_Profit,
-            grandCommissionTotal: this.storeTotals.orderCommission,
+            grandCommissionTotal: Number(grandCommission),
             userTotalCommission: Number(userCommission), // totalCommission * Profit
             update_flps_report: true
         }

@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatDrawer } from '@angular/material/sidenav';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
@@ -57,6 +57,13 @@ export class SmartCentsDashboardComponent implements OnInit, OnDestroy {
 
   mainScreen: string = 'Tickets';
   userData: any;
+
+  config = {
+    maxFiles: 5, // Set the maximum number of files
+  };
+  files = [];
+
+  ticketForm: FormGroup;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _supportService: SupportTicketService,
@@ -82,8 +89,33 @@ export class SmartCentsDashboardComponent implements OnInit, OnDestroy {
       this.getSupportTickets(1);
     });
   };
+  initForm() {
+    this.ticketForm = new FormGroup({
+
+    });
+  }
   calledScreen(screen) {
     this.mainScreen = screen;
+  }
+  onSelectMain(event) {
+    if (event.addedFiles.length > 5) {
+      this._supportService.snackBar("Please select maximum 5 images.");
+      return;
+    }
+    if (this.files.length == 5) {
+      this._supportService.snackBar("Max limit reached for image upload.");
+      return;
+    } else {
+      event.addedFiles.forEach(element => {
+        this.files.push(element);
+      });
+    }
+    setTimeout(() => {
+      this._changeDetectorRef.markForCheck();
+    }, 200);
+  }
+  onRemoveMain(index) {
+    this.files.splice(index, 1);
   }
   getSupportTickets(page) {
     let orderKeyword = '';

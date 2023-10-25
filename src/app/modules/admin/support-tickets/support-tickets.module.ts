@@ -93,6 +93,7 @@ import { supportRoutes } from './support-tickets.routing';
         MatDialogModule,
         MatDatepickerModule,
         MatNativeDateModule,
+        NgxDropzoneModule,
         MatTreeModule,
     ],
 })
