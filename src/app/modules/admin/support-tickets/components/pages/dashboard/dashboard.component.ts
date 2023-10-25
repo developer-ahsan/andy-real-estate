@@ -56,15 +56,17 @@ export class SmartCentsDashboardComponent implements OnInit, OnDestroy {
   orderType = 2;
 
   mainScreen: string = 'Tickets';
-
+  userData: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _smartCentService: SupportTicketService,
+    private _supportService: SupportTicketService,
     private router: Router,
     private _route: ActivatedRoute
 
   ) { }
   ngOnInit(): void {
+    let user = localStorage.getItem('userDetails');
+    this.userData = JSON.parse(user);
     this._route.queryParams.subscribe((res: any) => {
       if (this.revenueData.length > 0 || this.orderCloseData.length > 0 || this.posBillData.length > 0 || this.receivePaymentData.length > 0 || this.vendorBillsData.length > 0) {
         this.paginator.pageIndex = 0;
@@ -77,13 +79,13 @@ export class SmartCentsDashboardComponent implements OnInit, OnDestroy {
         this.parameters = res;
       }
       this.isLoading = true;
-      this.getSmartCentsData(1);
+      this.getSupportTickets(1);
     });
   };
   calledScreen(screen) {
     this.mainScreen = screen;
   }
-  getSmartCentsData(page) {
+  getSupportTickets(page) {
     let orderKeyword = '';
     if (this.parameters.keyword) {
       orderKeyword = this.parameters.keyword;
@@ -105,40 +107,18 @@ export class SmartCentsDashboardComponent implements OnInit, OnDestroy {
       status = this.parameters.status;
     }
     let params = {
-      order_type: this.orderType,
-      storeID: this.parameters.store_id,
-      orderKeyword: orderKeyword,
-      customer: customer,
-      rangeStart: start_date,
-      rangeEnd: end_date,
-      status: status,
-      size: 20,
-      page: page,
-      list: true
+      // order_type: this.orderType,
+      // storeID: this.parameters.store_id,
+      // orderKeyword: orderKeyword,
+      // customer: customer,
+      // rangeStart: start_date,
+      // rangeEnd: end_date,
+      // status: status,
+      admin_user_id: this.userData.pk_userID,
+      tickets_list: true
     }
-    this._smartCentService.getApiData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      if (this.orderType == 1) {
-        this.revenueData = res["data"];
-        this.revenueTotalRecords = res["totalRecords"];
-      } else if (this.orderType == 2) {
-        this.orderCloseData = res["data"];
-        this.orderCloseTotalRecords = res["totalRecords"];
-      } else if (this.orderType == 3) {
-        this.posBillData = res["data"];
-        this.posBillTotalRecords = res["totalRecords"];
-      } else if (this.orderType == 4) {
-        this.receivePaymentData = res["data"];
-        this.receivePaymentTotalRecords = res["totalRecords"];
-      } else if (this.orderType == 5) {
-        this.vendorBillsData = res["data"];
-        this.vendorBillsTotalRecords = res["totalRecords"];
-      }
-      this.dashboardValues = res["qrySums"][0];
-      if (this.orderType == 2 || this.orderType == 4 || this.orderType == 1) {
-        this.dashboardValues["projectedMargin"] = (Number(this.dashboardValues["totalPrice"] - this.dashboardValues["totalCost"]) / this.dashboardValues["totalPrice"]) * 100;
-        this.dashboardValues["ActualMargin"] = (Number(this.dashboardValues["totalPrice"] - this.dashboardValues["totalActualCost"]) / this.dashboardValues["totalPrice"]) * 100;
-        this.dashboardValues["DifferenceMargin"] = this.dashboardValues["ActualMargin"] - this.dashboardValues["projectedMargin"];
-      }
+    this._supportService.getApiData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      console.log(res);
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
@@ -153,7 +133,7 @@ export class SmartCentsDashboardComponent implements OnInit, OnDestroy {
     } else {
       this.page--;
     };
-    this.getSmartCentsData(this.page);
+    this.getSupportTickets(this.page);
   }
   goToDetailPage(item) {
     // const queryParams: NavigationExtras = {

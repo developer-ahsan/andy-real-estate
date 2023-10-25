@@ -23,9 +23,9 @@
         <mat-icon [svgIcon]="'heroicons_outline:user-circle'"></mat-icon>
         <span>Profile</span>
     </button> -->
-    <button mat-menu-item>
+    <button mat-menu-item (click)="goToUrl('/support-tickets')">
         <mat-icon [svgIcon]="'heroicons_outline:dots-circle-horizontal'"></mat-icon>
-        <span>Support Tickets</span>
+        <span routerLinkActive="router-link-active">Support Tickets</span>
     </button>
     <!-- <button mat-menu-item [matMenuTriggerFor]="userStatus">
         <mat-icon [svgIcon]="'heroicons_outline:dots-circle-horizontal'"></mat-icon>

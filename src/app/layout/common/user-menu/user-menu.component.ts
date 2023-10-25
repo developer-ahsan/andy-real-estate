@@ -83,6 +83,9 @@ export class UserMenuComponent implements OnInit, OnDestroy {
         }).subscribe();
     }
 
+    goToUrl(url) {
+        this._router.navigateByUrl(url);
+    }
     /**
      * Sign out
      */

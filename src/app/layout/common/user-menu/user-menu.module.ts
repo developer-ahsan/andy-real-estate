@@ -3,6 +3,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import { BrowserModule } from '@angular/platform-browser';
 import { UserMenuComponent } from 'app/layout/common/user-menu/user-menu.component';
 import { SharedModule } from 'app/shared/shared.module';
 
@@ -10,17 +11,16 @@ import { SharedModule } from 'app/shared/shared.module';
     declarations: [
         UserMenuComponent
     ],
-    imports     : [
+    imports: [
         MatButtonModule,
         MatDividerModule,
         MatIconModule,
         MatMenuModule,
         SharedModule
     ],
-    exports     : [
+    exports: [
         UserMenuComponent
     ]
 })
-export class UserMenuModule
-{
+export class UserMenuModule {
 }
