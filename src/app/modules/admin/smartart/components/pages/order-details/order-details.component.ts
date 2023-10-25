@@ -459,7 +459,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       add_order_comment: true
     }
     this._smartartService.AddSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      let comment = `<b><span class="fa fa-circle disabled"></span> ${this.userData.name}</b> said on ${moment().format('MMM DD YYYY')} | ${moment().format('h:mm:ss')}<br>${this.ngComment}<br><br>`;
+      let comment = res["comment"];
       this.orderData.internalComments = this.orderData.internalComments + comment;
       setTimeout(() => {
         const element = document.getElementById('scrollBottomComment');
