@@ -83,6 +83,7 @@ export class SmartartOrderEmailComponent implements OnInit, OnDestroy {
     }
     this._changeDetectorRef.markForCheck();
     let payload: sendOrderCustomerEmail = {
+      blnEProcurement: this.orderData[0].blnEProcurement,
       to_email: email,
       from: this.ngFrom,
       subject: this.ngSubject,

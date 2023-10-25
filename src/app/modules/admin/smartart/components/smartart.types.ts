@@ -39,6 +39,22 @@ export interface sendAutoRequest {
     auto_art_request: boolean;
 };
 export interface sendQuoteCustomerEmail {
+    // to_email: string[];
+    // from: string;
+    // subject: string;
+    // message: string;
+    // storeName: string;
+    // blnEProcurement: boolean;
+    // store_id: number;
+    // userID: number;
+    // storeURL: string;
+    // cartLineID: number;
+    // imprintNumList: number[];
+    // cartID: number;
+    // cartLineImprintID: number;
+    // productName: string;
+    // send_quote_customer_email: boolean;
+
     to_email: string;
     from: string;
     subject: string;
@@ -218,6 +234,7 @@ export interface sendOrderCustomerEmail {
     subject: string;
     message: string;
     storeName: string;
+    blnEProcurement: boolean;
     store_id: number;
     userID: number;
     storeURL: string;
