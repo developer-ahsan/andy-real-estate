@@ -182,8 +182,8 @@
                                         Customer
                                     </th>
                                     <td (click)="orderDetails(element)" mat-cell *matCellDef="let element"
-                                        class="text-xs pr-1">{{element.companyName +
-                                        '- ' + element.firstName + ' ' +element.lastName}}
+                                        class="text-xs pr-1">{{element.firstName + ' ' +element.lastName + ' - '
+                                        +element.companyName }}
                                     </td>
                                 </ng-container>
                                 <ng-container matColumnDef="product">

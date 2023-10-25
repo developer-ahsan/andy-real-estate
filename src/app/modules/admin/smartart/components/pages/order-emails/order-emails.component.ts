@@ -66,6 +66,10 @@ export class SmartartOrderEmailComponent implements OnInit, OnDestroy {
     });
   }
   sendEmailRequest() {
+    let imprintIDs = [];
+    this.orderData.forEach(element => {
+      imprintIDs.push(element.pk_imprintID);
+    });
     if (!this.selectedContact && this.ngTo == '') {
       this._smartartService.snackBar('Please choose any email');
       return;
@@ -89,6 +93,7 @@ export class SmartartOrderEmailComponent implements OnInit, OnDestroy {
       storeURL: this.orderData[0].storeURL,
       orderLineID: Number(this.paramData.pk_orderLineID),
       orderID: this.orderData[0].pk_orderID,
+      imprintNumList: imprintIDs,
       orderLineImprintID: this.orderData[0].pk_imprintID,
       productName: this.orderData[0].productName,
       send_order_customer_email: true

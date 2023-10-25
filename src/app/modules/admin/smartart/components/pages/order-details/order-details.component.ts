@@ -177,6 +177,9 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
             });
             this.allColors = finalColor;
             this.selectedImprintColor = imprint.imprintColors;
+            if (this.imprintdata[0].colorNameList) {
+              this.selectedMultipleColors = this.imprintdata[0].colorNameList.split(',');
+            }
           }
           imprint.poSent = null;
           if (res["poSent"]) {
@@ -265,7 +268,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
             // session.artwork.email
             if (this.orderData.sessionProofEmails.length > 0) {
               imprint.emailRecipients = this.orderData.sessionProofEmails.toString();
-            this._changeDetectorRef.markForCheck();
+              this._changeDetectorRef.markForCheck();
             } else {
               imprint.emailRecipients = this.orderData.sessionArtworkEmail;
             }
@@ -283,7 +286,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
             // session.artwork.email
             if (this.orderData.sessionProofEmails.length > 0) {
               imprint.emailRecipients = this.orderData.sessionProofEmails.toString();
-            this._changeDetectorRef.markForCheck();
+              this._changeDetectorRef.markForCheck();
             } else {
               imprint.emailRecipients = this.orderData.sessionArtworkEmail;
             }
@@ -472,6 +475,9 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       });
       this.allColors = finalColor;
       this.selectedImprintColor = imprint[0].imprintColors;
+      if (imprint[0].colorNameList) {
+        this.selectedMultipleColors = imprint[0].colorNameList.split(',');
+      }
     }
   }
   // Timer
@@ -608,7 +614,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
     this._changeDetectorRef.markForCheck();
     let payload: updateOrderLineImprintColors = {
       imprintColors: this.selectedMultipleColors.toString(),
-      orderline_id: this.paramData.pk_orderLineID,
+      orderline_id: Number(this.paramData.pk_orderLineID),
       imprint_id: this.selectedImprint,
       update_order_imprint_colors: true
     }

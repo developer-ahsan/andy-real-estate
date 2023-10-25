@@ -224,6 +224,7 @@ export interface sendOrderCustomerEmail {
     orderLineID: number;
     orderID: number;
     orderLineImprintID: number;
+    imprintNumList: number[];
     productName: string;
     send_order_customer_email: boolean;
 };

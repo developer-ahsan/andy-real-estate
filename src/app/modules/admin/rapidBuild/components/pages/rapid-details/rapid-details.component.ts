@@ -273,7 +273,7 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
       image.src = reader.result;
       image.onload = () => {
         if (image.width != 600 || image.height != 600) {
-          this._rapidService.snackBar("Dimensions allowed are 600px x 600px");
+          this._rapidService.snackBar("Please provide a valid 600 x 600 JPG image to upload for the proof.");
           this.fileInput.nativeElement.value = '';
           this.imageValue = null;
           this._changeDetectorRef.markForCheck();
@@ -292,11 +292,15 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
     }
   };
   updateProof() {
+    if (!this.imageValue) {
+      this._rapidService.snackBar('Please provide a valid 600 x 600 JPG image to upload for the proof.');
+      return;
+    }
     if (this.imageValue) {
       this.uploadMedia();
     }
     let comment = '';
-    if (!this.ngProofComment) {
+    if (this.ngProofComment) {
       comment = this.ngProofComment;
     }
     this.isUploadProofLoader = true;

@@ -476,7 +476,7 @@
                                 <mat-form-field appearance="fill" class="w-full" *ngIf="allColors">
                                     <mat-select [(ngModel)]="selectedMultipleColors" multiple>
                                         <mat-option *ngFor="let color of allColors"
-                                            [value]="color.id">{{color.name}}</mat-option>
+                                            [value]="color.name">{{color.name}}</mat-option>
                                     </mat-select>
                                 </mat-form-field>
                                 <div *ngIf="!allColors">
