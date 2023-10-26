@@ -177,6 +177,8 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       this.approvalHistoryData = res["approvalHistory"];
       this.imprintdata = res["data"];
       if (this.imprintdata.length > 0) {
+
+
         this.orderData.artworkEmail = this.imprintdata[0].artworkEmail;
         this.selectedImprint = this.imprintdata[0].pk_imprintID;
         this.selectedProofImprint = this.imprintdata[0].pk_imprintID;
@@ -185,6 +187,8 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
           this.selectedMultipleColors = this.imprintdata[0].colorNameList.split(',');
         }
         this.imprintdata.forEach(imprint => {
+          const url = `https://assets.consolidus.com/artwork/Proof/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${imprint.pk_imprintID}.jpg`
+          this.checkIfImageExists(url, imprint)
           imprint.artworkFiles = [];
           imprint.viewFinalArtworkCheck = null;
           if (imprint.allColors) {
@@ -211,16 +215,17 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
           }
         });
       }
+      console.log(this.imprintdata)
       const checkFileExistObservable = of(this.checkFileExist(`https://assets.consolidus.com/globalAssets/Stores/BrandGuide/${this.orderData.pk_storeID}.pdf`, 'brand', 0));
       const checkFinalArtworkObservable = of(this.checkFileExist(`https://assets.consolidus.com/artwork/finalArt/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.paramData.fk_imprintID}.eps`, 'finalArtwork', 0));
       const getArtworkOtherObservable = of(this.getArtworkOther());
-      const checkIfImageExistsObservable = of(this.checkIfImageExists(`https://assets.consolidus.com/artwork/Proof/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.paramData.fk_imprintID}.jpg`));
+      // const checkIfImageExistsObservable = of(this.checkIfImageExists(`https://assets.consolidus.com/artwork/Proof/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.paramData.fk_imprintID}.jpg`));
       const getArtworkFiles = of(this.getArtworkFiles());
       forkJoin([
         checkFileExistObservable,
         checkFinalArtworkObservable,
         getArtworkOtherObservable,
-        checkIfImageExistsObservable,
+        // checkIfImageExistsObservable,
         getArtworkFiles
       ])
       this._changeDetectorRef.markForCheck();
@@ -615,7 +620,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
     let base64;
     const { imageUpload } = this.imageValue;
     base64 = imageUpload.split(",")[1];
-    const img_path = `Proof/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.selectedProofImprint}.jpg`;
+    const img_path = `artwork/Proof/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.selectedProofImprint}.jpg`;
     const payload = {
       file_upload: true,
       image_file: base64,
@@ -623,10 +628,12 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
     };
     this._smartartService.AddSmartArtData(payload).subscribe(res => {
       this.imageValue = null;
+      let index = this.imprintdata.findIndex(item => item.pk_imprintID == this.selectedProofImprint);
+      this.imprintdata[index].viewProofCheck = true;
       if (res["success"]) {
-        this._smartartService.snackBar(res["message"]);
+        this._smartartService.snackBar('Artwork proof updated successfully');
       }
-      this.manualProofFileInput.nativeElement = '';
+      this.manualProofFileInput.nativeElement.value = '';
       this.isManualProofLoader = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
@@ -752,7 +759,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
     };
     this.router.navigate(['/smartart/order-emails'], queryParams);
   }
-  checkIfImageExists(url) {
+  checkIfImageExists(url, imprint) {
     const img = new Image();
     img.src = url;
 
@@ -760,10 +767,12 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
 
     } else {
       img.onload = () => {
+        imprint.viewProofCheck = true;
         this.viewProofCheck = true;
       };
 
       img.onerror = () => {
+        imprint.viewProofCheck = false;
         this.viewProofCheck = false;
         return;
       };

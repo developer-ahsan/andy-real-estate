@@ -15,6 +15,9 @@
             </div>
             <div class="row" *ngIf="!isLoading">
                 <div class="col-12 col-md-4 mt-3">
+                    <button class="min-w-40 mb-2 mr-2" mat-button mat-flat-button color="primary"
+                        (click)="backToListBySearch()" matTooltip="View all items on this order">View all items on this
+                        quote</button>
                     <mat-accordion multi>
                         <mat-expansion-panel (opened)="lastProof()">
                             <mat-expansion-panel-header>

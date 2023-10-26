@@ -714,13 +714,13 @@
                                                 item
                                                 is {{imprint.statusName}}.
                                             </fuse-alert>
-                                            <div *ngIf="viewProofCheck || imprint.viewFinalArtworkCheck">
+                                            <div *ngIf="imprint.viewProofCheck || imprint.viewFinalArtworkCheck">
                                                 <b>
                                                     <div class="flex space-x-1 text-lg">
                                                         <p>Upload Artwork Proof | </p>
                                                         <br>
                                                         <a target="_blank" class="underline" class="underline"
-                                                            *ngIf="viewProofCheck"
+                                                            *ngIf="imprint.viewProofCheck"
                                                             href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg">(Click
                                                             here to view proof)</a>
                                                         <a target="_blank" class="underline"
@@ -950,12 +950,13 @@
                                                 item is {{imprint.statusName}}.
                                             </fuse-alert>
 
-                                            <div *ngIf="viewProofCheck || imprint.viewFinalArtworkCheck">
+                                            <div *ngIf="imprint.viewProofCheck || imprint.viewFinalArtworkCheck">
                                                 <b>
                                                     <div class="flex space-x-1">
                                                         <p>Send Follow-Up | </p>
                                                         <br>
-                                                        <a target="_blank" class="underline" *ngIf="viewProofCheck"
+                                                        <a target="_blank" class="underline"
+                                                            *ngIf="imprint.viewProofCheck"
                                                             href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg">(Click
                                                             here to view proof)</a>
                                                     </div>
@@ -1154,12 +1155,13 @@
                                                 As of {{imprint.statusDate | date: 'MM/dd/yyyy'}} the status of this
                                                 item is {{imprint.statusName}}.
                                             </fuse-alert>
-                                            <div *ngIf="viewProofCheck || imprint.viewFinalArtworkCheck">
+                                            <div *ngIf="imprint.viewProofCheck || imprint.viewFinalArtworkCheck">
                                                 <b>
                                                     <div class="flex space-x-1">
                                                         <p>Acknowledge Changes</p>
                                                         <br>
-                                                        <a target="_blank" class="underline" *ngIf="viewProofCheck"
+                                                        <a target="_blank" class="underline"
+                                                            *ngIf="imprint.viewProofCheck"
                                                             href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg">(Click
                                                             here to view proof)</a>
                                                     </div>
@@ -1386,12 +1388,13 @@
                                                 As of {{imprint.statusDate | date: 'MM/dd/yyyy'}} the status of this
                                                 item is {{imprint.statusName}}.
                                             </fuse-alert>
-                                            <div *ngIf="viewProofCheck || imprint.viewFinalArtworkCheck">
+                                            <div *ngIf="imprint.viewProofCheck || imprint.viewFinalArtworkCheck">
                                                 <b>
                                                     <div class="flex space-x-1">
                                                         <p>Send Art To Decorator</p>
                                                         <br>
-                                                        <a target="_blank" class="underline" *ngIf="viewProofCheck"
+                                                        <a target="_blank" class="underline"
+                                                            *ngIf="imprint.viewProofCheck"
                                                             href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg">(Click
                                                             here to view proof)</a>
                                                         <a target="_blank" class="underline"
@@ -1625,12 +1628,13 @@
                                                     *ngIf="imprint.approvalName">{{imprint.approvalName}} </span> <span
                                                     *ngIf="imprint.approvalEmail">({{imprint.approvalEmail}})</span>.
                                             </fuse-alert>
-                                            <div *ngIf="viewProofCheck || imprint.viewFinalArtworkCheck">
+                                            <div *ngIf="imprint.viewProofCheck || imprint.viewFinalArtworkCheck">
                                                 <b>
                                                     <div class="flex space-x-1">
                                                         <p>Send Art To Decorator</p>
                                                         <br>
-                                                        <a target="_blank" class="underline" *ngIf="viewProofCheck"
+                                                        <a target="_blank" class="underline"
+                                                            *ngIf="imprint.viewProofCheck"
                                                             href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg">(Click
                                                             here to view proof)</a>
                                                     </div>
@@ -1746,12 +1750,13 @@
                                                 As of {{imprint.statusDate | date: 'MM/dd/yyyy'}} the status of this
                                                 item is {{imprint.statusName}}.
                                             </fuse-alert>
-                                            <div *ngIf="viewProofCheck || imprint.viewFinalArtworkCheck">
+                                            <div *ngIf="imprint.viewProofCheck || imprint.viewFinalArtworkCheck">
                                                 <b>
                                                     <div class="flex space-x-1">
                                                         <p>Re-Send Art To Decorator | </p>
                                                         <br>
-                                                        <a target="_blank" class="underline" *ngIf="viewProofCheck"
+                                                        <a target="_blank" class="underline"
+                                                            *ngIf="imprint.viewProofCheck"
                                                             href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg">(Click
                                                             here to view proof)</a>
                                                         <a target="_blank" class="underline"
@@ -1908,12 +1913,13 @@
                                                 As of {{imprint.statusDate | date: 'MM/dd/yyyy'}} the status of this
                                                 item is {{imprint.statusName}}.
                                             </fuse-alert>
-                                            <div *ngIf="viewProofCheck || imprint.viewFinalArtworkCheck">
+                                            <div *ngIf="imprint.viewProofCheck || imprint.viewFinalArtworkCheck">
                                                 <b>
                                                     <div class="flex space-x-1">
                                                         <p>Send Follow-Up | </p>
                                                         <br>
-                                                        <a target="_blank" class="underline" *ngIf="viewProofCheck"
+                                                        <a target="_blank" class="underline"
+                                                            *ngIf="imprint.viewProofCheck"
                                                             href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg">(Click
                                                             here to view proof)</a>
                                                     </div>
@@ -2119,10 +2125,11 @@
                                                 As of {{imprint.statusDate | date: 'MM/dd/yyyy'}} the status of this
                                                 item is {{imprint.statusName}}.
                                             </fuse-alert>
-                                            <div *ngIf="viewProofCheck || imprint.viewFinalArtworkCheck">
+                                            <div *ngIf="imprint.viewProofCheck || imprint.viewFinalArtworkCheck">
                                                 <b>
                                                     <div class="flex space-x-1">
-                                                        <a target="_blank" class="underline" *ngIf="viewProofCheck"
+                                                        <a target="_blank" class="underline"
+                                                            *ngIf="imprint.viewProofCheck"
                                                             href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg">(Click
                                                             here to view proof)</a>
                                                     </div>
@@ -2283,11 +2290,12 @@
                                                 As of {{imprint.statusDate | date: 'MM/dd/yyyy'}} the status of this
                                                 item is {{imprint.statusName}}.
                                             </fuse-alert>
-                                            <div *ngIf="viewProofCheck || imprint.viewFinalArtworkCheck">
+                                            <div *ngIf="imprint.viewProofCheck || imprint.viewFinalArtworkCheck">
                                                 <b>
                                                     <div class="flex space-x-1">
                                                         <p>Send Art To Decorator | </p>
-                                                        <a target="_blank" class="underline" *ngIf="viewProofCheck"
+                                                        <a target="_blank" class="underline"
+                                                            *ngIf="imprint.viewProofCheck"
                                                             href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg">(Click
                                                             here to view proof)</a>
                                                     </div>

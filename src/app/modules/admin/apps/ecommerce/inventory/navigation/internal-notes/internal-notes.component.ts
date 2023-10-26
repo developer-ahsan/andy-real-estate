@@ -96,11 +96,6 @@ export class InternalNotesComponent implements OnInit, OnDestroy {
       .subscribe((comment) => {
         this.comments = comment["data"];
         this.commentsCount = comment["totalRecords"];
-
-        for (const comment of this.comments) {
-          const { theTimestamp } = comment;
-          comment["dateFormatted"] = moment.utc(theTimestamp).format("lll");
-        }
         this.isLoading = false;
         this._changeDetectorRef.markForCheck();
       }, err => {
@@ -198,7 +193,6 @@ export class InternalNotesComponent implements OnInit, OnDestroy {
     const comment = this.ngComment;
     const { pk_productID, fk_addedByAdminUserID, productNumber, productName } = this.selectedProduct;
     let emailArr = this.emails;
-
     if (!comment) {
       this._snackBar.open("Comment is required", '', {
         horizontalPosition: 'center',
@@ -231,11 +225,11 @@ export class InternalNotesComponent implements OnInit, OnDestroy {
         this._inventoryService.getCommentByProductId(pk_productID)
           .pipe(takeUntil(this._unsubscribeAll))
           .subscribe((comment) => {
-            this.showFlashMessage(
-              response["success"] === true ?
-                'success' :
-                'error'
-            );
+            this._snackBar.open(comment["message"], '', {
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+              duration: 3500
+            });
             this.ngComment = '';
             this.emails = [];
             this.commentators.forEach(element => { element.checked = false });

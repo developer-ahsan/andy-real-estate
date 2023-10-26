@@ -595,6 +595,9 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
     //   this._changeDetectorRef.markForCheck();
     // });
   }
+  backToListBySearch() {
+    this.router.navigateByUrl(`/smartart/quotes-dashboard?search=${this.paramData.fk_cartID}&customer=`);
+  }
   /**
      * On destroy
      */
