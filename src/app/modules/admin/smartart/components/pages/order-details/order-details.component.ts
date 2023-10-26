@@ -21,6 +21,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   @ViewChild('paginator') paginator: MatPaginator;
   @ViewChild('drawer', { static: true }) drawer: MatDrawer;
   @ViewChild('artworkFileInput') artworkFileInput: ElementRef;
+  @ViewChild('manualProofFileInput') manualProofFileInput: ElementRef;
   @ViewChild('finalArtworkFileInput') finalArtworkFileInput: ElementRef;
   @Input() isLoading: boolean;
   private _unsubscribeAll: Subject<any> = new Subject<any>();
@@ -122,6 +123,8 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
     ]
   };
   selectedPOComments: any = '';
+
+  imprintPMSColors = '';
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _authService: AuthService,
@@ -176,7 +179,11 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       if (this.imprintdata.length > 0) {
         this.orderData.artworkEmail = this.imprintdata[0].artworkEmail;
         this.selectedImprint = this.imprintdata[0].pk_imprintID;
-        this.selectedProofImprint = this.imprintdata[0].imprintID;
+        this.selectedProofImprint = this.imprintdata[0].pk_imprintID;
+        this.selectedPOComments = this.imprintdata[0].purchaseComment;
+        if (this.imprintdata[0].colorNameList) {
+          this.selectedMultipleColors = this.imprintdata[0].colorNameList.split(',');
+        }
         this.imprintdata.forEach(imprint => {
           imprint.artworkFiles = [];
           imprint.viewFinalArtworkCheck = null;
@@ -190,10 +197,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
             });
             this.allColors = finalColor;
             this.selectedImprintColor = imprint.imprintColors;
-            this.selectedPOComments = this.imprintdata[0].purchaseComment;
-            if (this.imprintdata[0].colorNameList) {
-              this.selectedMultipleColors = this.imprintdata[0].colorNameList.split(',');
-            }
+
           }
           imprint.poSent = null;
           if (res["poSent"]) {
@@ -430,7 +434,6 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   }
   // Last Proof
   lastProof() {
-    console.log('here')
     let params = {
       art_proof: true,
       orderLine_id: this.paramData.pk_orderLineID,
@@ -454,7 +457,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   addComment() {
     this.isAddCommentLoader = true;
     let payload: AddOrderComment = {
-      internalComments: this.ngComment,
+      internalComments: this.ngComment.replace(/'/g, "''"),
       order_id: this.paramData.fk_orderID,
       add_order_comment: true
     }
@@ -478,6 +481,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   }
   // Imprint Colors
   onChangeColor(event) {
+    this.imprintPMSColors = '';
     let imprint = this.imprintdata.filter(item => item.pk_imprintID == event.value);
     this.selectedImprint = imprint[0].pk_imprintID;
     if (imprint[0].allColors) {
@@ -611,8 +615,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
     let base64;
     const { imageUpload } = this.imageValue;
     base64 = imageUpload.split(",")[1];
-    const img_path = `proofDestination/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.selectedProofImprint}.jpg`;
-
+    const img_path = `Proof/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.selectedProofImprint}.jpg`;
     const payload = {
       file_upload: true,
       image_file: base64,
@@ -623,6 +626,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       if (res["success"]) {
         this._smartartService.snackBar(res["message"]);
       }
+      this.manualProofFileInput.nativeElement = '';
       this.isManualProofLoader = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
@@ -655,10 +659,16 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   }
   // Imprint Colors
   updateOrderLineImprintColors() {
+    let colors = this.selectedMultipleColors;
+    if (this.imprintPMSColors) {
+      colors.push(this.imprintPMSColors);
+    }
     this.imprintColorsLoader = true;
     this._changeDetectorRef.markForCheck();
     let payload: updateOrderLineImprintColors = {
       imprintColors: this.selectedMultipleColors.toString(),
+      productName: this.orderData.productName.replace(/'/g, "''"),
+      orderID: this.orderData.pk_orderID,
       orderline_id: Number(this.paramData.pk_orderLineID),
       imprint_id: this.selectedImprint,
       update_order_imprint_colors: true
@@ -668,6 +678,14 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
         const index = this.imprintdata.findIndex(item => item.pk_imprintID == this.selectedImprint);
         this.imprintdata[index].colorNameList = this.selectedMultipleColors.toString();
         this.imprintdata[index].imprintColors = this.selectedMultipleColors.toString();
+        this.imprintPMSColors = '';
+        this.orderData.internalComments = this.orderData.internalComments + res["comment"];
+        setTimeout(() => {
+          const element = document.getElementById('scrollBottomComment');
+          element.scrollIntoView({ behavior: 'smooth' });
+          this._changeDetectorRef.markForCheck();
+          this.ngComment = '';
+        }, 100);
         this._smartartService.snackBar(res["message"]);
       }
       this.imprintColorsLoader = false;
@@ -1071,7 +1089,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       firstName: this.orderData?.firstName,
       lastName: this.orderData?.lastName,
       email: this.orderData.email,
-      comment: imprint.recipientsComment,
+      comment: imprint.recipientsComment.replace(/'/g, "''"),
       userID: Number(this.orderData.pfk_userID),
       approvingStoreUserID: approvingStoreUserID,
       companyName: this.orderData.sessionArtworkCompanyName,

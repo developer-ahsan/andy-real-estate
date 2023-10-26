@@ -217,7 +217,7 @@ export class InternalNotesComponent implements OnInit, OnDestroy {
       product_id: pk_productID,
       product_name: productName,
       product_number: productNumber,
-      comment: comment,
+      comment: comment.replace(/'/g, "''"),
       admin_user_id: this.userData.pk_userID,
       name: this.user?.name,
       emails: emailArr,

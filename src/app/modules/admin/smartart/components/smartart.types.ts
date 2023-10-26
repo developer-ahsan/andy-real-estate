@@ -113,6 +113,8 @@ export interface updateReorderNumberOrder {
 export interface updateOrderLineImprintColors {
     imprintColors: string;
     orderline_id: number;
+    orderID: number;
+    productName: string;
     imprint_id: number;
     update_order_imprint_colors: boolean;
 };
