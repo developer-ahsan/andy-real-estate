@@ -1,12 +1,13 @@
-import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
-import { MatDrawer } from '@angular/material/sidenav';
-import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { SupportTicketService } from '../../support-tickets.service';
 import { CreateTicket } from '../../support-tickets.types';
+import { FLPSService } from 'app/modules/admin/apps/flps/components/flps.service';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -18,78 +19,127 @@ export class SmartCentsDashboardComponent implements OnInit, OnDestroy {
 
 
   isLoading: boolean = false;
-  dataSource = [];
-  displayedColumns: string[] = ['ID', 'Status', 'SPID', 'PID', 'Product', 'Supplier', 'Store', 'proof', 'action'];
+  dataSource: any = [];
+  displayedColumns: any = [
+    {
+      value: 'ID',
+      key: 'pk_ticketID',
+      width: '10'
+    },
+    {
+      value: 'Subject',
+      key: 'subject',
+      width: '35'
+    },
+    {
+      value: 'Updated',
+      key: 'modified',
+      width: '20'
+    },
+    {
+      value: 'Age',
+      key: 'pk_ticketID',
+      width: '10'
+    },
+    {
+      value: 'Submitted by',
+      key: 'firstName',
+      width: '15'
+    },
+    {
+      value: 'Status',
+      key: 'statusName',
+      width: '10'
+    }
+  ];
   totalRecords = 20;
   page = 1;
-
-  parameters: any;
-
-
-  dashboardValues: any;
-  // Order Type 1
-  revenueData = [];
-  revenueColumns: string[] = ['date', 'status', 'order', 'company', 'location', 'amount', 'pm', 'am', 'd'];
-  revenueTotalRecords = 0;
-  revenuePage = 1;
-  // Order Type 2
-  orderCloseData = [];
-  orderCloseColumns: string[] = ['date', 'status', 'order', 'company', 'location', 'amount', 'pm', 'am', 'd'];
-  orderCloseTotalRecords = 0;
-  orderClosePage = 1;
-  // Order Type 3
-  posBillData = [];
-  posBillColumns: string[] = ['date', 'status', 'store', 'po', 'vendor', 'esd', 'amount', 'action'];
-  posBillTotalRecords = 0;
-  posBillPage = 1;
-  // Order Type 4
-  receivePaymentData = [];
-  receivePaymentColumns: string[] = ['date', 'status', 'order', 'company', 'location', 'amount', 'bd', 'po', 'acc', 'sabo', 'action'];
-  receivePaymentTotalRecords = 0;
-  receivePaymentPage = 1;
-  // Order Type 5
-  vendorBillsData = [];
-  vendorBillsColumns: string[] = ['date', 'status', 'po', 'vin', 'vendor', 'esd', 'amount', 'net', 'payment', 'action'];
-  vendorBillsTotalRecords = 0;
-  vendorBillsPage = 1;
-
-  orderType = 2;
 
   mainScreen: string = 'Tickets';
   userData: any;
 
   config = {
-    maxFiles: 5, // Set the maximum number of files
+    maxFiles: 5,
   };
   files = [];
 
   ticketForm: FormGroup;
   isCreateTicketLoader: boolean = false;
+
+
+
+  selectedStatus: string = 'All';
+  selectedTimeFrame: string = 'All';
+  selectedUser: string = 'Anyone'
+  isSubmittedRecieved: boolean = false;
+
+  statuses: any = [
+    {
+      value: 'Open',
+      key: 1
+    },
+    {
+      value: 'Action Required',
+      key: 2
+    },
+    {
+      value: 'Stalled',
+      key: 3
+    },
+    {
+      value: 'Closed',
+      key: 4
+    },
+  ];
+
+  timeFrames: any = [
+    {
+      value: 'Today',
+      key: 'today'
+    },
+    {
+      value: 'This week',
+      key: 'week'
+    },
+    {
+      value: 'This month',
+      key: 'month'
+    },
+    {
+      value: 'This quarter',
+      key: 'quarter'
+    },
+    {
+      value: 'This year',
+      key: 'year'
+    },
+  ];
+
+  params: any = {
+    time_frame: 'all',
+    status_id: 0,
+    admin_user_id: 0,
+    tickets_list: true,
+    page: this.page
+  }
+
+  submittedByUsers: any = [];
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _supportService: SupportTicketService,
     private router: Router,
-    private _route: ActivatedRoute
+    private _route: ActivatedRoute,
+    private _flpsService: FLPSService,
+    private _commonService: DashboardsService
 
   ) { }
   ngOnInit(): void {
     let user = localStorage.getItem('userDetails');
     this.userData = JSON.parse(user);
     this.initForm();
-    this._route.queryParams.subscribe((res: any) => {
-      if (this.revenueData.length > 0 || this.orderCloseData.length > 0 || this.posBillData.length > 0 || this.receivePaymentData.length > 0 || this.vendorBillsData.length > 0) {
-        this.paginator.pageIndex = 0;
-        this.page = 1;
-      }
-      if (res) {
-        if (res.order_type) {
-          this.orderType = res.order_type;
-        }
-        this.parameters = res;
-      }
-      this.isLoading = true;
-      this.getSupportTickets(1);
-    });
+    this.getSubmittedByUsers();
+    this.getData();
   };
   initForm() {
     this.ticketForm = new FormGroup({
@@ -97,14 +147,13 @@ export class SmartCentsDashboardComponent implements OnInit, OnDestroy {
       subject: new FormControl('', Validators.required),
       description: new FormControl('', Validators.required),
       blnUrgent: new FormControl(false),
-      created: new FormControl(''),
-      modified: new FormControl('')
     });
   }
   calledScreen(screen) {
     this.initForm();
     this.mainScreen = screen;
   }
+
   onSelectMain(event) {
     if (event.addedFiles.length > 5) {
       this._supportService.snackBar("Please select maximum 5 images.");
@@ -122,49 +171,29 @@ export class SmartCentsDashboardComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     }, 200);
   }
+
   onRemoveMain(index) {
     this.files.splice(index, 1);
   }
+
   createTicket() {
-    const { userID, subject, description, blnUrgent, created, modified } = this.ticketForm.getRawValue();
+    const { userID, subject, description, blnUrgent } = this.ticketForm.getRawValue();
     let payload: CreateTicket = {
-      userID, subject, description, blnUrgent, created, modified, create_ticket: true
+      userID, subject, description, blnUrgent, create_ticket: true
+    }
+
+    this._supportService.PostAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe((res: any) => {
+      this.uploadMultipleImages(res?.pk_ticketID)
+    }), err => {
+      console.log(err);
     }
   }
-  getSupportTickets(page) {
-    let orderKeyword = '';
-    if (this.parameters.keyword) {
-      orderKeyword = this.parameters.keyword;
-    }
-    let customer = '';
-    if (this.parameters.company_keyword) {
-      customer = this.parameters.company_keyword;
-    }
-    let start_date = '';
-    if (this.parameters.start_date) {
-      start_date = this.parameters.start_date;
-    }
-    let end_date = '';
-    if (this.parameters.end_date) {
-      end_date = this.parameters.end_date;
-    }
-    let status = 0;
-    if (this.parameters.status) {
-      status = this.parameters.status;
-    }
-    let params = {
-      // order_type: this.orderType,
-      // storeID: this.parameters.store_id,
-      // orderKeyword: orderKeyword,
-      // customer: customer,
-      // rangeStart: start_date,
-      // rangeEnd: end_date,
-      // status: status,
-      admin_user_id: this.userData.pk_userID,
-      tickets_list: true
-    }
-    this._supportService.getApiData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      console.log(res);
+
+
+  getData() {
+    this.isLoading = true;
+    this._supportService.getApiData(this.params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.dataSource = res;
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
@@ -172,21 +201,98 @@ export class SmartCentsDashboardComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
-  getNextData(event) {
-    const { previousPageIndex, pageIndex } = event;
-    if (pageIndex > previousPageIndex) {
+
+
+  changePage(increment: boolean) {
+    if (increment && this.page <= Math.ceil(this.dataSource.totalRecords / this.dataSource.size)) {
       this.page++;
-    } else {
+      this.setParams(this.page, 'page')
+    }
+    else if (!increment && this.page > 1) {
       this.page--;
+      this.setParams(this.page, 'page')
+    }
+  }
+
+  setParams(value: any, key: string) {
+    this.params = {
+      ...this.params,
+      [key]: value
     };
-    this.getSupportTickets(this.page);
+    this.getData();
   }
-  goToDetailPage(item) {
-    // const queryParams: NavigationExtras = {
-    //   queryParams: { fk_orderID: item.fk_orderID, pk_orderLineID: item.pk_orderLineID }
-    // };
-    this.router.navigate([`/smartcents/smartcents-details/${item.pk_orderLinePOID}`]);
+
+  resetParams() {
+    this.selectedStatus = 'All';
+    this.selectedTimeFrame = 'All';
+    this.selectedUser = 'Anyone'
+    this.params = {
+      time_frame: 'all',
+      status_id: 0,
+      admin_user_id: 0,
+      tickets_list: true
+    }
+    this.getData();
   }
+
+
+  getSubmittedByUsers() {
+    this.isSubmittedRecieved = false;
+    this._flpsService.getAllReportUsers().pipe(takeUntil(this._unsubscribeAll)).subscribe((res: any) => {
+      if (res && res["data"] && res["data"][0] && res["data"][0].flpsUsers) {
+        let employees = res?.data[0]?.flpsUsers || [];
+        if (employees) {
+          let employee = employees.split(',');
+          employee.forEach(emp => {
+            let colonEmp = emp.split(':');
+            this.submittedByUsers.push({ pk_userID: Number(colonEmp[0]), fullName: colonEmp[2], email: colonEmp[6] });
+          });
+        }
+      }
+      this.isSubmittedRecieved = true;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isSubmittedRecieved = true;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+
+
+  uploadMultipleImages(responseId) {
+    let images = [];
+    this.files.forEach((file, index) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        let image: any = new Image;
+        image.src = reader.result;
+        image.onload = () => {
+          images.push({
+            imageUpload: reader.result,
+            type: file["type"]
+          });
+          if (index == this.files.length - 1) {
+            this.uploadImageToServer(images, responseId);
+          }
+        }
+      }
+    });
+  }
+
+  uploadImageToServer(images, responseId) {
+    let files = [];
+    images.forEach((element, index) => {
+      let d = new Date();
+      let filePath = `/globalAssets/tickets/images/${responseId}/${d.getTime() + index}.jpg`;
+      files.push({
+        image_file: element.imageUpload.split(",")[1],
+        image_path: filePath
+      });
+    });
+    this._commonService.uploadMultipleMediaFiles(files).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    });
+  }
+
   /**
      * On destroy
      */

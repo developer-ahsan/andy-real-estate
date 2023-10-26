@@ -41,16 +41,14 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatTreeModule } from '@angular/material/tree';
 import { SupportTicketsComponent } from './components/support-tickets.component';
 import { SmartCentsDashboardComponent } from './components/pages/dashboard/dashboard.component';
-import { ExportBillDataComponent } from './components/pages/export-bill/export-bill.component';
-import { CustomerInvoiceComponent } from './components/pages/customer-invoice/customer-invoice.component';
-import { SmartCentsDetailsComponent } from './components/pages/smartcents-details/smartcents-details.component';
+import { TicketsDetailsComponent } from './components/pages/tickets-details/tickets-details.component';
 import { supportRoutes } from './support-tickets.routing';
+
 
 @NgModule({
     declarations: [
         SupportTicketsComponent,
-        SmartCentsDashboardComponent,
-        ExportBillDataComponent, CustomerInvoiceComponent, SmartCentsDetailsComponent
+        SmartCentsDashboardComponent, TicketsDetailsComponent
     ],
     imports: [
         RouterModule.forChild(supportRoutes),

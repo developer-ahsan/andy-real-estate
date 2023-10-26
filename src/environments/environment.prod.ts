@@ -72,7 +72,7 @@ export const environment = {
     import_export: "https://consolidusapi.azure-api.net/import_export",
     order_manage: "https://consolidusapi.azure-api.net/order_manage",
     smartcents: "https://consolidusapi.azure-api.net/smartcents",
-    supportTickets: "https://consolidusapi.azure-api.net/api/support_ticket",
+    supportTickets: "https://consolidusapi.azure-api.net/support_ticket",
     vendors: "https://consolidusapi.azure-api.net/vendors",
     reports: "https://consolidusapi.azure-api.net/reports",
     campaignMedia: "https://assets.consolidus.com/globalAssets/Campaigns",
