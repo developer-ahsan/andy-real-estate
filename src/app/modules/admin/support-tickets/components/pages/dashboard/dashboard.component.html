@@ -1,723 +1,199 @@
 <div class="w-full">
-    <div class="mb-2">
-        <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen"
-            (change)="calledScreen(group.value)">
-            <mat-button-toggle [value]="'Tickets'">
-                Current Tickets
-            </mat-button-toggle>
-            <mat-button-toggle [value]="'Create'">
-                Create Ticket
-            </mat-button-toggle>
-        </mat-button-toggle-group>
-    </div>
-    <div class="w-full rounded-2xl shadow bg-card mb-15" *ngIf="mainScreen == 'Tickets'">
-        <div class="px-4 sm:px-4 lg:px-8 pt-4 w-full">
-            <h2 class="text-xl sm:text-xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
-                Current Tickets
-            </h2>
-            <div *ngIf="isLoading" class="py-4 w-full">
-                <ngx-skeleton-loader count="8" appearance="line" animation="pulse"
-                    [theme]="{'background-color': '#dedede' }">
-                </ngx-skeleton-loader>
-            </div>
-        </div>
-        <div *ngIf="!isLoading">
-            <div class="px-4 pb-2" *ngIf="dashboardValues">
-                <div class="flex-auto grid grid-cols-4 gap-4 mt-3">
-                    <div
-                        class="col-span-2 sm:col-span-1 flex flex-col items-center justify-center py-8 px-1 rounded-2xl bg-gray-100 text-green-500 dark:bg-white dark:bg-opacity-5">
-                        <div class="text-5xl font-semibold leading-none tracking-tight"> {{dashboardValues.totalPrice |
-                            currency}} </div>
-                        <div class="mt-1 text-md font-medium text-center text-green-500">Amount</div>
-                    </div>
-                    <div *ngIf="orderType == 2 || orderType == 4 || orderType == 1"
-                        class="col-span-2 sm:col-span-1 flex flex-col items-center justify-center py-8 px-1 rounded-2xl bg-gray-100 text-secondary dark:bg-white dark:bg-opacity-5">
-                        <div class="text-5xl font-semibold leading-none tracking-tight">
-                            {{(dashboardValues.projectedMargin).toFixed(2)}}%</div>
-                        <div class="mt-1 text-md font-medium text-center">Projected margin</div>
-                    </div>
-                    <div *ngIf="orderType == 2 || orderType == 4 || orderType == 1"
-                        class="col-span-2 sm:col-span-1 flex flex-col items-center justify-center py-8 px-1 rounded-2xl bg-gray-100 text-secondary dark:bg-white dark:bg-opacity-5">
-                        <div class="text-5xl font-semibold leading-none tracking-tight">
-                            {{(dashboardValues.ActualMargin).toFixed(2)}}% </div>
-                        <div class="mt-1 text-md font-medium text-center">Actual margin</div>
-                    </div>
-                    <div *ngIf="orderType == 2 || orderType == 4 || orderType == 1"
-                        class="col-span-2 sm:col-span-1 flex flex-col items-center justify-center py-8 px-1 rounded-2xl bg-gray-100 text-secondary dark:bg-white dark:bg-opacity-5">
-                        <div class="text-5xl font-semibold leading-none tracking-tight">
-                            {{(dashboardValues.DifferenceMargin).toFixed(2)}}%
-                        </div>
-                        <div class="mt-1 text-md font-medium text-center">Difference</div>
-                    </div>
-                </div>
-            </div>
+  <div class="mb-2">
+    <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen" (change)="calledScreen(group.value)">
+      <mat-button-toggle [value]="'Tickets'">
+        Current Tickets
+      </mat-button-toggle>
+      <mat-button-toggle [value]="'Create'">
+        Create Ticket
+      </mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
+  <div class="w-full rounded-2xl shadow bg-card mb-15" *ngIf="mainScreen == 'Tickets'">
+    <div class="px-4 pb-3 sm:px-4 lg:px-8 pt-4 w-full">
+      <h2 class="text-xl sm:text-xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate ml-2.5">
+        Current Tickets
+      </h2>
 
-            <!-- Order Type 1 -->
-            <div *ngIf="orderType == 1">
-                <div class="px-4 pb-4" *ngIf="revenueData.length == 0">
-                    <fuse-alert [appearance]="'soft'" [dismissible]="false" [dismissed]="false" [name]="'alertBox3'"
-                        [type]="'warning'">
-                        There are currently no tickets or your filter returned no results.
-                    </fuse-alert>
-                </div>
-                <div *ngIf="revenueData.length > 0">
-                    <table mat-table [dataSource]="revenueData" class="w-full border-t">
-                        <ng-container matColumnDef="date">
-                            <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
-                                <div class="flex">
-                                    <span>Date</span>
-                                    <mat-icon class="icon-size-4 ml-1" matTooltip="The date this order was closed."
-                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                                </div>
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
-                                {{element.orderDate | date: 'MM/dd/yyyy'}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="status">
-                            <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
-                                <div class="flex">
-                                    <span>Status</span>
-                                    <mat-icon class="icon-size-4 ml-1"
-                                        matTooltip="The status of the entire order (from pizza tracker)."
-                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                                </div>
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
-                                {{element.currentStatusName}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="order">
-                            <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
-                                Order#
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
-                                {{element.pk_orderID}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="company">
-                            <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
-                                Company
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
-                                {{element.vendorShippingName}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="location">
-                            <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
-                                Location
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
-                                {{element.userLocationName}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="amount">
-                            <th mat-header-cell *matHeaderCellDef class="w-40 min-w-40 px-2">
-                                <div class="flex">
-                                    <span>Amount</span>
-                                    <mat-icon class="icon-size-4 ml-1"
-                                        matTooltip="The price of this order (no tax or royalties)."
-                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                                </div>
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
-                                {{element.price | currency}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="pm">
-                            <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
-                                <div class="flex">
-                                    <span>PM</span>
-                                    <mat-icon class="icon-size-4 ml-1"
-                                        matTooltip="Projected Margin: the margin of the order."
-                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                                </div>
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
-                                {{element.margin.toFixed(2)}}%
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="am">
-                            <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
-                                <div class="flex">
-                                    <span>AM</span>
-                                    <mat-icon class="icon-size-4 ml-1"
-                                        matTooltip="Actual Margin: the margin of the POs sent for this order."
-                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                                </div>
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
-                                {{element.actualMargin.toFixed(2)}}%
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="d">
-                            <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
-                                <div class="flex">
-                                    <span>D</span>
-                                    <mat-icon class="icon-size-4 ml-1"
-                                        matTooltip="The difference between the projected margin and actual margin."
-                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                                </div>
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
-                                {{element.difference.toFixed(2)}}%
-                            </td>
-                        </ng-container>
-                        <tr mat-header-row *matHeaderRowDef="revenueColumns;" class="h-18 bg-light"></tr>
-                        <tr mat-row *matRowDef="let row; columns: revenueColumns;"
-                            class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
-                        </tr>
-                    </table>
-                    <mat-paginator #paginator
-                        class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                        [length]="revenueTotalRecords" [pageIndex]="0" [pageSize]="20" (page)="getNextData($event)"
-                        [hidePageSize]="true">
-                    </mat-paginator>
-                </div>
-            </div>
-            <!-- Order Type 2 -->
-            <div *ngIf="orderType == 2">
-                <div class="px-4 pb-4" *ngIf="orderCloseData.length == 0">
-                    <fuse-alert [appearance]="'soft'" [dismissible]="false" [dismissed]="false" [name]="'alertBox3'"
-                        [type]="'warning'">
-                        There are no orders to show in this view or your search did not return any results.
-                    </fuse-alert>
-                </div>
-                <div *ngIf="orderCloseData.length > 0">
-                    <table mat-table [dataSource]="orderCloseData" class="w-full border-t">
-                        <ng-container matColumnDef="date">
-                            <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
-                                <div class="flex">
-                                    <span>Date</span>
-                                    <mat-icon class="icon-size-4 ml-1" matTooltip="Date order was placed"
-                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                                </div>
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
-                                {{element.orderDate | date: 'MM/dd/yyyy'}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="status">
-                            <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
-                                <div class="flex">
-                                    <span>Status</span>
-                                    <mat-icon class="icon-size-4 ml-1"
-                                        matTooltip="The status of the entire order (from pizza tracker)."
-                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                                </div>
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
-                                {{element.currentStatusName}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="order">
-                            <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
-                                Order
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
-                                {{element.pk_orderID}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="company">
-                            <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
-                                Company
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
-                                {{element.vendorShippingName}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="location">
-                            <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
-                                Location
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
-                                {{element.userLocationName}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="amount">
-                            <th mat-header-cell *matHeaderCellDef class="w-40 min-w-40 px-2">
-                                <div class="flex">
-                                    <span>Amount</span>
-                                    <mat-icon class="icon-size-4 ml-1"
-                                        matTooltip="The price of this order (no tax or royalties)."
-                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                                </div>
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
-                                {{element.price | currency}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="pm">
-                            <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
-                                <div class="flex">
-                                    <span>PM</span>
-                                    <mat-icon class="icon-size-4 ml-1"
-                                        matTooltip="Projected Margin: the margin of the order."
-                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                                </div>
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
-                                {{element.margin.toFixed(2)}}%
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="am">
-                            <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
-                                <div class="flex">
-                                    <span>AM</span>
-                                    <mat-icon class="icon-size-4 ml-1"
-                                        matTooltip="Actual Margin: the margin of the POs sent for this order."
-                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                                </div>
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
-                                {{element.actualMargin.toFixed(2)}}%
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="d">
-                            <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
-                                <div class="flex">
-                                    <span>D</span>
-                                    <mat-icon class="icon-size-4 ml-1"
-                                        matTooltip="The difference between the projected margin and actual margin."
-                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                                </div>
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
-                                {{element.difference.toFixed(2)}}%
-                            </td>
-                        </ng-container>
-                        <tr mat-header-row *matHeaderRowDef="orderCloseColumns;" class="h-18 bg-light"></tr>
-                        <tr mat-row *matRowDef="let row; columns: orderCloseColumns;"
-                            class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
-                        </tr>
-                    </table>
-                    <mat-paginator #paginator
-                        class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                        [length]="orderCloseTotalRecords" [pageIndex]="0" [pageSize]="20" (page)="getNextData($event)"
-                        [hidePageSize]="true">
-                    </mat-paginator>
-                </div>
-            </div>
-            <!-- Order Type 3 -->
-            <div *ngIf="orderType == 3">
-                <div class="px-4 pb-4" *ngIf="posBillData.length == 0">
-                    <fuse-alert [appearance]="'soft'" [dismissible]="false" [dismissed]="false" [name]="'alertBox3'"
-                        [type]="'warning'">
-                        There are no orders to show in this view or your search did not return any results.
-                    </fuse-alert>
-                </div>
-                <div *ngIf="posBillData.length > 0">
-                    <table mat-table [dataSource]="posBillData" class="w-full border-t">
-                        <ng-container matColumnDef="date">
-                            <th mat-header-cell *matHeaderCellDef>
-                                <div class="flex">
-                                    <span>Date</span>
-                                    <mat-icon class="icon-size-4 ml-1"
-                                        matTooltip="The date the purchase order was created"
-                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                                </div>
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm">
-                                {{element.orderDate | date: 'MM/dd/yyyy'}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="status">
-                            <th mat-header-cell *matHeaderCellDef>
-                                <div class="flex">
-                                    <span>Status</span>
-                                    <mat-icon class="icon-size-4 ml-1"
-                                        matTooltip="Status of the purchase order from OrderManage."
-                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                                </div>
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm">
-                                {{element.statusName}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="store">
-                            <th mat-header-cell *matHeaderCellDef>
-                                Store
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm">
-                                {{element.storeName}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="po">
-                            <th mat-header-cell *matHeaderCellDef>
-                                PO#
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm">
-                                {{element.purchaseOrderNumber}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="vendor">
-                            <th mat-header-cell *matHeaderCellDef>
-                                Vendor
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm ">
-                                {{element.vendorShippingName}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="esd">
-                            <th mat-header-cell *matHeaderCellDef>
-                                <div class="flex">
-                                    <span>ESD</span>
-                                    <mat-icon class="icon-size-4 ml-1"
-                                        matTooltip="Estimated shipping date on the purchase order."
-                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                                </div>
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm ">
-                                {{(element.estimatedShippingDate | date: 'MM/dd/yyyy') || '---'}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="amount">
-                            <th mat-header-cell *matHeaderCellDef>
-                                <div class="flex">
-                                    <span>Amount</span>
-                                    <mat-icon class="icon-size-4 ml-1" matTooltip="Total cost of the purchase order."
-                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                                </div>
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm ">
-                                {{element.POTotal | currency}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="action">
-                            <th mat-header-cell *matHeaderCellDef>
-                                Action
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm">
-                                <button class="min-w-30" mat-button mat-stroked-button
-                                    (click)="goToDetailPage(element)">Vendor Bill</button>
-                            </td>
-                        </ng-container>
-                        <tr mat-header-row *matHeaderRowDef="posBillColumns;" class="h-18 bg-light"></tr>
-                        <tr mat-row *matRowDef="let row; columns: posBillColumns;"
-                            class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
-                        </tr>
-                    </table>
-                    <mat-paginator #paginator
-                        class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                        [length]="posBillTotalRecords" [pageIndex]="0" [pageSize]="20" (page)="getNextData($event)"
-                        [hidePageSize]="true">
-                    </mat-paginator>
-                </div>
-            </div>
-            <!-- Order Type 4 -->
-            <div *ngIf="orderType == 4">
-                <div class="px-4 pb-4" *ngIf="receivePaymentData.length == 0">
-                    <fuse-alert [appearance]="'soft'" [dismissible]="false" [dismissed]="false" [name]="'alertBox3'"
-                        [type]="'warning'">
-                        There are no orders to show in this view or your search did not return any results.
-                    </fuse-alert>
-                </div>
-                <div *ngIf="receivePaymentData.length > 0">
-                    <table mat-table [dataSource]="receivePaymentData" class="w-full border-t">
-                        <ng-container matColumnDef="date">
-                            <th mat-header-cell *matHeaderCellDef>
-                                <div class="flex">
-                                    <span>Date</span>
-                                    <mat-icon class="icon-size-4 ml-1" matTooltip="The date the order was placed."
-                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                                </div>
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
-                                {{element.orderDate | date: 'MM/dd/yyyy'}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="status">
-                            <th mat-header-cell *matHeaderCellDef>
-                                <div class="flex">
-                                    <span>Status</span>
-                                    <mat-icon class="icon-size-4 ml-1" matTooltip="Current status of the order."
-                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                                </div>
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
-                                {{element.currentStatusName}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="order">
-                            <th mat-header-cell *matHeaderCellDef>
-                                Order#
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
-                                {{element.pk_orderID}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="company">
-                            <th mat-header-cell *matHeaderCellDef>
-                                Company
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
-                                {{element.vendorShippingName}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="location">
-                            <th mat-header-cell *matHeaderCellDef>
-                                Location
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
-                                {{element.userLocationName}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="amount">
-                            <th mat-header-cell *matHeaderCellDef>
-                                <div class="flex">
-                                    <span>Amount</span>
-                                    <mat-icon class="icon-size-4 ml-1"
-                                        matTooltip="The price of this order (no tax or royalties)."
-                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                                </div>
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
-                                {{element.price | currency}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="bd">
-                            <th mat-header-cell *matHeaderCellDef>
-                                <div class="flex">
-                                    <span>BD</span>
-                                    <mat-icon class="icon-size-4 ml-1" matTooltip="Balance due"
-                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                                </div>
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
-                                {{element.balanceDue | currency}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="po">
-                            <th mat-header-cell *matHeaderCellDef>
-                                <div class="flex">
-                                    <span>PO</span>
-                                    <mat-icon class="icon-size-4 ml-1" matTooltip="The customer purchase order number."
-                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                                </div>
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
-                                {{element.purchaseOrderNum}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="acc">
-                            <th mat-header-cell *matHeaderCellDef>
-                                <div class="flex">
-                                    <span>ACC</span>
-                                    <mat-icon class="icon-size-4 ml-1" matTooltip="Customer account charge code."
-                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                                </div>
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
-                                {{element.accountChargeCode}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="sabo">
-                            <th mat-header-cell *matHeaderCellDef>
-                                <div class="flex">
-                                    <span>SABO</span>
-                                    <mat-icon class="icon-size-4 ml-1" matTooltip="SABO code."
-                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                                </div>
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
-                                {{element.billingStudentOrgCode}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="action">
-                            <th mat-header-cell *matHeaderCellDef>
-                                Action
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm px-2">
-                            </td>
-                        </ng-container>
-                        <tr mat-header-row *matHeaderRowDef="receivePaymentColumns;" class="h-18 bg-light"></tr>
-                        <tr mat-row *matRowDef="let row; columns: receivePaymentColumns;"
-                            class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
-                        </tr>
-                    </table>
-                    <mat-paginator #paginator
-                        class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                        [length]="receivePaymentTotalRecords" [pageIndex]="0" [pageSize]="20"
-                        (page)="getNextData($event)" [hidePageSize]="true">
-                    </mat-paginator>
-                </div>
-            </div>
-            <!-- Order Type 5 -->
-            <div *ngIf="orderType == 5">
-                <div class="px-4 pb-4" *ngIf="vendorBillsData.length == 0">
-                    <fuse-alert [appearance]="'soft'" [dismissible]="false" [dismissed]="false" [name]="'alertBox3'"
-                        [type]="'warning'">
-                        There are no orders to show in this view or your search did not return any results.
-                    </fuse-alert>
-                </div>
-                <div *ngIf="vendorBillsData.length > 0">
-                    <table mat-table [dataSource]="vendorBillsData" class="w-full border-t">
-                        <ng-container matColumnDef="date">
-                            <th mat-header-cell *matHeaderCellDef>
-                                <div class="flex">
-                                    <span>Date</span>
-                                    <mat-icon class="icon-size-4 ml-1"
-                                        matTooltip="Invoice date, from vendor bill information."
-                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                                </div>
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm">
-                                {{element.orderDate | date: 'MM/dd/yyyy'}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="status">
-                            <th mat-header-cell *matHeaderCellDef>
-                                <div class="flex">
-                                    <span>Status</span>
-                                    <mat-icon class="icon-size-4 ml-1"
-                                        matTooltip="The current status of this purchase order from OrderManage."
-                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                                </div>
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm">
-                                {{element.statusName}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="po">
-                            <th mat-header-cell *matHeaderCellDef>
-                                PO#
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm">
-                                {{element.purchaseOrderNumber}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="vin">
-                            <th mat-header-cell *matHeaderCellDef>
-                                <div class="flex">
-                                    <span>VIN</span>
-                                    <mat-icon class="icon-size-4 ml-1" matTooltip="Vendor invoice number."
-                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                                </div>
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm">
-                                {{element.vendorInvoiceNumber}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="vendor">
-                            <th mat-header-cell *matHeaderCellDef>
-                                Vendor
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm">
-                                {{element.vendorShippingName}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="esd">
-                            <th mat-header-cell *matHeaderCellDef>
-                                <div class="flex">
-                                    <span>ESD</span>
-                                    <mat-icon class="icon-size-4 ml-1" matTooltip="Estimated shipping date."
-                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                                </div>
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm">
-                                {{(element.estimatedShippingDate | date: 'MM/dd/yyyy') || '---'}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="amount">
-                            <th mat-header-cell *matHeaderCellDef>
-                                <div class="flex">
-                                    <span>Amount</span>
-                                    <mat-icon class="icon-size-4 ml-1" matTooltip="The purchase order total cost."
-                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                                </div>
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm">
-                                {{element.POTotal | currency}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="net">
-                            <th mat-header-cell *matHeaderCellDef>
-                                <div class="flex">
-                                    <span>Net Terms</span>
-                                    <mat-icon class="icon-size-4 ml-1" matTooltip="The net terms for this vendor."
-                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                                </div>
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm">
-                                {{element.vendorInvoiceNetTerms }}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="payment">
-                            <th mat-header-cell *matHeaderCellDef>
-                                <div class="flex">
-                                    <span>Payment Method</span>
-                                    <mat-icon class="icon-size-4 ml-1" matTooltip="The payment method of this vendor."
-                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                                </div>
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm">
-                                {{element.paymentMethod}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="action">
-                            <th mat-header-cell *matHeaderCellDef>
-                                Action
-                            </th>
-                            <td mat-cell *matCellDef="let element" class="text-sm">
-                                <button class="min-w-30" mat-button mat-stroked-button
-                                    (click)="goToDetailPage(element)">Bill Pay</button>
-                            </td>
-                        </ng-container>
-                        <tr mat-header-row *matHeaderRowDef="vendorBillsColumns;" class="h-18 bg-light"></tr>
-                        <tr mat-row *matRowDef="let row; columns: vendorBillsColumns;"
-                            class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
-                        </tr>
-                    </table>
-                    <mat-paginator #paginator
-                        class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                        [length]="vendorBillsTotalRecords" [pageIndex]="0" [pageSize]="20" (page)="getNextData($event)"
-                        [hidePageSize]="true">
-                    </mat-paginator>
-                </div>
-            </div>
+      <!-- data table start -->
+
+      <div class="grid grid-cols-3 gap-4 m-2">
+
+        <div>
+
+          <mat-form-field appearance="fill" class="w-full">
+            <mat-label>
+              <span>Status:</span>
+            </mat-label>
+            <mat-select [(ngModel)]="selectedStatus" disableRipple>
+              <mat-option (click)="setParams(0,'status_id')" value="All">All </mat-option>
+              <mat-option (click)="setParams(status.key,'status_id')" [value]="status.value"
+                *ngFor="let status of statuses">
+                {{status.value}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
         </div>
-    </div>
-    <div class="w-full rounded-2xl shadow bg-card pb-5" *ngIf="mainScreen == 'Create'">
-        <div class="px-4 sm:px-4 lg:px-8 pt-4 w-full">
-            <h2 class="text-xl sm:text-xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
-                Create Ticket
-            </h2>
-            <div class="row" [formGroup]="ticketForm">
-                <div class="col-12">
-                    <mat-form-field class="w-full">
-                        <mat-label>Subject*</mat-label>
-                        <input matInput placeholder="Subject" formControlName="subject">
-                    </mat-form-field>
-                </div>
-                <div class="col-12 mb-2">
-                    <mat-checkbox formControlName="blnUrgent">Urgent?</mat-checkbox>
-                </div>
-                <div class="col-12">
-                    <mat-form-field class="w-full">
-                        <mat-label>Please describe your issue or request*</mat-label>
-                        <textarea matInput placeholder="Description" formControlName="description"></textarea>
-                    </mat-form-field>
-                </div>
-                <div class="col-12 mb-2">
-                    <mat-label>Add Images</mat-label>
-                    <ngx-dropzone [config]="config" [multiple]="true" accept="image/jpeg,image/jpg,image/png"
-                        (change)="onSelectMain($event)">
-                        <ngx-dropzone-label>Choose Image</ngx-dropzone-label>
-                        <ngx-dropzone-image-preview *ngFor="let file of files;let i=index" [file]="file"
-                            [removable]="true" (removed)="onRemoveMain(i)">
-                            <img [src]="file?.preview" alt="Preview Image" class="preview-image">
-                        </ngx-dropzone-image-preview>
-                    </ngx-dropzone>
-                </div>
-                <div class="col-12 my-2">
-                    <button color="primary" class="min-w-40" mat-button mat-flat-button (click)="createTicket()"
-                        [disabled]="isCreateTicketLoader">
-                        <span *ngIf="!isCreateTicketLoader">Create Ticket</span>
-                        <mat-progress-spinner *ngIf="isCreateTicketLoader" [diameter]="24" [mode]="'indeterminate'">
-                        </mat-progress-spinner>
-                    </button>
-                </div>
-            </div>
+
+        <div>
+          <mat-form-field appearance="fill" class="w-full">
+            <mat-label>
+              <span>Timeframe:</span>
+            </mat-label>
+            <mat-select [(ngModel)]="selectedTimeFrame" disableRipple>
+              <mat-option (click)="setParams('all','time_frame')" value="All">All Time</mat-option>
+              <mat-option (click)="setParams(timeFrame.key, 'time_frame')" [value]="timeFrame.value"
+                *ngFor="let timeFrame of timeFrames">
+                {{timeFrame.value}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
         </div>
+
+        <div>
+          <!-- Filter Products By Supplier -->
+          <mat-form-field appearance="fill" class="w-full">
+            <mat-label>
+              <span>Submitted by:</span>
+              <span class="ml-3" *ngIf="!isSubmittedRecieved"> (Fetching Users... )</span>
+            </mat-label>
+            <mat-select [(ngModel)]="selectedUser" disableRipple [disabled]="submittedByUsers?.length === 0">
+              <mat-option (click)="setParams(0,'admin_user_id')" value="Anyone">Anyone</mat-option>
+              <mat-option (click)="setParams(user.pk_userID, 'admin_user_id')" [value]="user.fullName"
+                *ngFor="let user of submittedByUsers">
+                {{user.fullName}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="col-12 flex justify-end">
+        <span (click)="resetParams()" class="font-semibold hover:underline text-gray-500 cursor-pointer">
+          Reset Search
+        </span>
+      </div>
+
+
+      <div *ngIf="isLoading" class="py-4 w-full">
+        <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{'background-color': '#dedede' }">
+        </ngx-skeleton-loader>
+      </div>
+
+      <div *ngIf="!isLoading && dataSource?.data.length > 0" class="mt-8 flow-root">
+        <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+          <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+            <div class="overflow-hidden">
+              <table class="min-w-full divide-y divide-gray-300">
+                <thead class="bg-gray-50 w-full">
+                  <tr>
+                    <th *ngFor="let item of displayedColumns" scope="col"
+                      class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                      [ngStyle]="{'width': 'calc(' + item.width/100 + ' * 100%)'}"
+                      >{{item.value}}</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 bg-white">
+                  <tr class="max-w-[100px] hover:bg-gray-50 cursor-pointer" *ngFor="let data of dataSource.data">
+                    <td *ngFor="let item of displayedColumns"
+                      class="py-3.5 pl-4 pr-3 text-left text-sm text-gray-500 sm:pl-6"
+                      [ngStyle]="{'width': 'calc(' + item.width/100 + ' * 100%)'}"
+                      >{{data[item.key]}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <nav class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-2"
+          aria-label="Pagination">
+          <div class="hidden sm:block">
+            <p class="text-sm text-gray-700">
+              Showing
+              <span class="font-medium">{{((dataSource.page-1) * dataSource.size) + 1}}</span>
+              to
+              <span class="font-medium">{{((dataSource.page-1) * dataSource.size) + dataSource.size}}</span>
+              of
+              <span class="font-medium">{{dataSource.totalRecords}}</span>
+              results
+            </p>
+          </div>
+          <div class="flex flex-1 justify-between sm:justify-end">
+            <a (click)="changePage(false)"
+              class="cursor-pointer relative inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 ">Previous</a>
+            <a (click)="changePage(true)"
+              class="cursor-pointer relative ml-3 inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 ">Next</a>
+          </div>
+        </nav>
+
+      </div>
+
+      <div class="mt-2" *ngIf="!isLoading && dataSource?.data?.length === 0">
+        <div>
+          <div class="px-4 pb-4">
+            <fuse-alert [appearance]="'soft'" [dismissible]="false" [dismissed]="false" [name]="'alertBox3'"
+              [type]="'warning'">
+              There are no orders to show in this view or your search did not return any results.
+            </fuse-alert>
+          </div>
+        </div>
+      </div>
     </div>
+    <!-- data table end -->
+  </div>
+  
+
+  <!-- Create Tickets !-->
+  <div class="w-full rounded-2xl shadow bg-card pb-5" *ngIf="mainScreen == 'Create'">
+    <div class="px-4 sm:px-4 lg:px-8 pt-4 w-full">
+      <h2 class="text-xl sm:text-xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate ml-3.5">
+        Create Ticket
+      </h2>
+      <div class="flex flex-col gap-y-3" [formGroup]="ticketForm">
+        <div class="col-12">
+          <mat-form-field class="w-full">
+            <mat-label>Subject*</mat-label>
+            <input matInput placeholder="Subject" formControlName="subject">
+          </mat-form-field>
+          <div *ngIf="ticketForm.get('subject').invalid && ticketForm.get('subject').touched" class="text-red-600 text-sm">
+            Subject is required.
+          </div>
+        </div>
+        <div class="col-12 mb-2">
+          <mat-checkbox formControlName="blnUrgent">Urgent?</mat-checkbox>
+        </div>
+        <div class="col-12">
+          <mat-form-field class="w-full">
+            <mat-label>Please describe your issue or request*</mat-label>
+            <textarea matInput placeholder="Description" formControlName="description"></textarea>
+          </mat-form-field>
+          <div *ngIf="ticketForm.get('description').invalid && ticketForm.get('description').touched" class="text-red-600 text-sm">
+            Description is required.
+          </div>
+        </div>
+        <div class="col-12 mb-2">
+          <mat-label>Add Images</mat-label>
+          <ngx-dropzone [config]="config" [multiple]="true" accept="image/jpeg,image/jpg,image/png"
+            (change)="onSelectMain($event)">
+            <ngx-dropzone-label>Choose Image</ngx-dropzone-label>
+            <ngx-dropzone-image-preview *ngFor="let file of files;let i=index" [file]="file" [removable]="true"
+              (removed)="onRemoveMain(i)">
+              <img [src]="file?.preview" alt="Preview Image" class="preview-image">
+            </ngx-dropzone-image-preview>
+          </ngx-dropzone>
+        </div>
+
+        <div class="col-12 my-2">
+          <button color="primary" class="min-w-40" mat-button mat-flat-button (click)="createTicket()"
+            [disabled]="ticketForm.invalid || isCreateTicketLoader">
+            <span *ngIf="!isCreateTicketLoader">Create Ticket</span>
+            <mat-progress-spinner *ngIf="isCreateTicketLoader" [diameter]="24" [mode]="'indeterminate'">
+            </mat-progress-spinner>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
 </div>

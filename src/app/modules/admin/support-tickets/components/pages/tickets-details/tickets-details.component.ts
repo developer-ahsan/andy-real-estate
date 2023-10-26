@@ -10,15 +10,15 @@ import { AuthService } from 'app/core/auth/auth.service';
 import { OrderManageService } from 'app/modules/admin/orderManage/components/order-manage.service';
 import { SupportTicketService } from '../../support-tickets.service';
 @Component({
-  selector: 'app-smartcents-details-manage',
-  templateUrl: './smartcents-details.component.html',
+  selector: 'app-tickets-details-manage',
+  templateUrl: './tickets-details.component.html',
   styles: [`.buttonComment {
     border: 1px solid #404C5E;
     color: #404C5E;
     border-radius: 3px;
     font-size: 12px;}`]
 })
-export class SmartCentsDetailsComponent implements OnInit, OnDestroy {
+export class TicketsDetailsComponent implements OnInit, OnDestroy {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   paramData: any;
   isLoading: boolean = false;
