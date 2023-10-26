@@ -109,8 +109,8 @@
                                         <p *ngFor="let email of orderData.sessionProofEmails">{{email}}</p>
                                     </div> -->
                                     <!-- *ngIf="orderData.sessionProofEmails.length == 0" -->
-                                    <p>
-                                        {{orderData.sessionArtworkEmail}}</p>
+                                    <span>
+                                        {{orderData.sessionArtworkEmail}}</span>
                                 </div>
                                 <div><b>Designer notes: </b>
                                     <a target="_blank" *ngIf="orderData.sessionArtworkDesignerNotes"
@@ -159,7 +159,7 @@
                                 <div><b>Rush:</b> {{orderData.sessionArtworkBlnRushOrder? 'YES' : 'NO'}}</div>
                             </div>
                             <div *ngIf="smartArtUser.blnMaster">
-                                <div><b>Order:</b> <a [routerLink]="['/apps/orders',orderData.fk_orderID,'summary']"
+                                <div><b>Order: </b> <a [routerLink]="['/apps/orders',orderData.fk_orderID,'summary']"
                                         target="_blank">{{orderData.fk_orderID}}</a>
                                 </div>
                                 <div><b>Quote ID:</b> {{orderData.quoteID}}-{{paramData?.fk_imprintID}}</div>
@@ -228,7 +228,7 @@
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                             <div>
-                                <div><b>SKU:</b>{{orderData.sessionArtwork_productNumber}}
+                                <div><b>SKU: </b>{{orderData.sessionArtwork_productNumber}}
                                     <p>{{orderData.sessionArtwork_sessionSupplierName}}</p>
                                     <p>{{orderData.sessionArtwork_sessionSupplierPhone}}</p>
                                 </div>
@@ -376,6 +376,7 @@
                                     </mat-select>
                                 </mat-form-field>
                                 <mat-label>Select a new proof image file:</mat-label>
+                                <br>
                                 <input type="file" accept=".jpg" id="image" (change)="uploadFile($event)">
                                 <div class="mt-3">
                                     <button [disabled]="isManualProofLoader" (click)="uploadProofMedia()"

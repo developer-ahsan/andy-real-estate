@@ -1,12 +1,12 @@
 import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatDrawer } from '@angular/material/sidenav';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { SupportTicketService } from '../../support-tickets.service';
-import { HideUnhideCart, updateAttentionFlagOrder } from '../../support-tickets.types';
+import { CreateTicket } from '../../support-tickets.types';
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -64,6 +64,7 @@ export class SmartCentsDashboardComponent implements OnInit, OnDestroy {
   files = [];
 
   ticketForm: FormGroup;
+  isCreateTicketLoader: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _supportService: SupportTicketService,
@@ -74,6 +75,7 @@ export class SmartCentsDashboardComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     let user = localStorage.getItem('userDetails');
     this.userData = JSON.parse(user);
+    this.initForm();
     this._route.queryParams.subscribe((res: any) => {
       if (this.revenueData.length > 0 || this.orderCloseData.length > 0 || this.posBillData.length > 0 || this.receivePaymentData.length > 0 || this.vendorBillsData.length > 0) {
         this.paginator.pageIndex = 0;
@@ -91,10 +93,16 @@ export class SmartCentsDashboardComponent implements OnInit, OnDestroy {
   };
   initForm() {
     this.ticketForm = new FormGroup({
-
+      userID: new FormControl(this.userData.pk_userID),
+      subject: new FormControl('', Validators.required),
+      description: new FormControl('', Validators.required),
+      blnUrgent: new FormControl(false),
+      created: new FormControl(''),
+      modified: new FormControl('')
     });
   }
   calledScreen(screen) {
+    this.initForm();
     this.mainScreen = screen;
   }
   onSelectMain(event) {
@@ -116,6 +124,12 @@ export class SmartCentsDashboardComponent implements OnInit, OnDestroy {
   }
   onRemoveMain(index) {
     this.files.splice(index, 1);
+  }
+  createTicket() {
+    const { userID, subject, description, blnUrgent, created, modified } = this.ticketForm.getRawValue();
+    let payload: CreateTicket = {
+      userID, subject, description, blnUrgent, created, modified, create_ticket: true
+    }
   }
   getSupportTickets(page) {
     let orderKeyword = '';

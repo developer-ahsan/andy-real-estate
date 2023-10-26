@@ -9,7 +9,6 @@ import moment from 'moment';
 import { AuthService } from 'app/core/auth/auth.service';
 import { OrderManageService } from 'app/modules/admin/orderManage/components/order-manage.service';
 import { SupportTicketService } from '../../support-tickets.service';
-import { saveBillPay, saveVendorBill } from '../../support-tickets.types';
 @Component({
   selector: 'app-smartcents-details-manage',
   templateUrl: './smartcents-details.component.html',
@@ -191,7 +190,7 @@ export class SmartCentsDetailsComponent implements OnInit, OnDestroy {
     if (this.BillData.billPayPaymentDate) {
       date = moment(this.BillData.billPayPaymentDate).format('L');
     }
-    let payload: saveBillPay = {
+    let payload = {
       orderLinePOID: this.smartCentsData.fk_orderLineID,
       billPayPaymentMethod: this.BillData.billPayPaymentMethod,
       billPayReference: this.BillData.billPayReference,
@@ -220,7 +219,7 @@ export class SmartCentsDetailsComponent implements OnInit, OnDestroy {
     if (this.smartCentsData.vendorInvoiceNetTerms == '0') {
       term = null;
     }
-    let payload: saveVendorBill = {
+    let payload = {
       orderLinePOID: this.smartCentsData.fk_orderLineID,
       vendorInvoiceNumber: this.smartCentsData.vendorInvoiceNumber,
       vendorInvoiceDate: date,
