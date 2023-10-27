@@ -51,7 +51,6 @@
         </div>
 
         <div>
-          <!-- Filter Products By Supplier -->
           <mat-form-field appearance="fill" class="w-full">
             <mat-label>
               <span>Submitted by:</span>
@@ -94,7 +93,7 @@
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 bg-white">
-                  <tr class="max-w-[100px] hover:bg-gray-50 cursor-pointer" *ngFor="let data of dataSource.data">
+                  <tr (click)="navigateToPage(data?.pk_ticketID)" class="max-w-[100px] hover:bg-gray-50 cursor-pointer" *ngFor="let data of dataSource.data">
                     <td *ngFor="let item of displayedColumns"
                       class="py-3.5 pl-4 pr-3 text-left text-sm text-gray-500 sm:pl-6"
                       [ngStyle]="{'width': 'calc(' + item.width/100 + ' * 100%)'}"

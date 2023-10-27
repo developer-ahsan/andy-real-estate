@@ -1,246 +1,272 @@
-import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatDrawer } from '@angular/material/sidenav';
-import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
+import { Component, OnInit, ChangeDetectorRef, OnDestroy, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
-import moment from 'moment';
-import { AuthService } from 'app/core/auth/auth.service';
-import { OrderManageService } from 'app/modules/admin/orderManage/components/order-manage.service';
+import { takeUntil } from 'rxjs/operators';
+import { OrdersService } from 'app/modules/admin/apps/orders/orders-components/orders.service';
 import { SupportTicketService } from '../../support-tickets.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
+import { environment } from 'environments/environment';
+
+declare var $: any;
 @Component({
   selector: 'app-tickets-details-manage',
   templateUrl: './tickets-details.component.html',
-  styles: [`.buttonComment {
-    border: 1px solid #404C5E;
-    color: #404C5E;
-    border-radius: 3px;
-    font-size: 12px;}`]
 })
 export class TicketsDetailsComponent implements OnInit, OnDestroy {
+  isLoading: boolean;
   private _unsubscribeAll: Subject<any> = new Subject<any>();
-  paramData: any;
-  isLoading: boolean = false;
-  orderData: any;
-  orderDataPO: any;
-  imprintdata: any = [];
+  @ViewChild('deleteTicket') deleteTicket: ElementRef;
 
-  statusID = 1;
-  isHandsDateLoader: boolean = false;
-  isCommentsLoader: boolean = false;
+  dataSource: any = [];
+  files: any = [];
+  images: any;
+  commentForm: any;
+  isCreateCommentLoader: boolean = false;
+  selectedStatus: string;
+  estimatedTime: string;
+  email: boolean = true;
+  commentators = [];
   userData: any;
-  ngComment = '';
+  isCommentatorLoader: boolean = false;
+  isLoadMore: boolean = false;
+  config: any = {
+    maxFiles: 5,
+  };
 
-  // Shipping Tracking
-  isTrackingLoader: boolean = false;
-  blnblnSendShippingEmail: boolean = false;
-  blnRevised: boolean = false;
-  shippingCarriers = [
+  statuses: any = [
     {
-      name: 'UPS',
-      id: 1
+      value: 'Open',
+      key: 1
     },
     {
-      name: 'FedEx',
-      id: 2
+      value: 'Action Required',
+      key: 2
     },
     {
-      name: 'Freight',
-      id: 3
+      value: 'Stalled',
+      key: 3
     },
     {
-      name: 'USPS',
-      id: 4
+      value: 'Closed',
+      key: 4
     },
-    {
-      name: 'Delivery',
-      id: 5
-    },
-    {
-      name: 'DHL',
-      id: 6
-    }
   ];
-  // Vendor Bill
-  isEstimatedDateLoader: boolean = false;
-  isBillLoader: boolean = false;
-  BillData = {
-    billPayPaymentMethod: null,
-    billPayPaymentDate: null,
-    billPayReference: null,
-    blnPaid: false
-  }
-  isVendorBillLoader: boolean = false;
-  vendorBillData = {
-    vendorInvoiceNumber: null,
-    vendorInvoiceDate: null,
-    vendorInvoiceNetTerms: '0',
-    blnInvoiced: false
-  }
-  // ColorsBreakdown
-  colorsList: any = [];
-  accessoriesList: any = [];
-  adjustmentsList: any = [];
-  attachmentsList: any = [];
-  // Accessories
-  isAccessoriesLoader: boolean = false;
-  isAccessoriesDelLoader: boolean = false;
-  accessoryForm = {
-    name: '',
-    quantity: '',
-    cost: '',
-    setup: ''
-  }
-  // Adjustment
-  isAdjustmentLoader: boolean = false;
-  isAdjustmentDelLoader: boolean = false;
-  adjustmentForm = {
-    name: '',
-    cost: ''
-  }
-  // Imprints
-  isAddImprintLoader: boolean = false;
-  isDelImprintLoader: boolean = false;
-  imprintForm = {
-    name: '',
-    quantity: '',
-    run: '',
-    setup: '',
-    n_color: '',
-    imprint_color: ''
-  }
-  // Colors
-  isAddColorLoader: boolean = false;
-  isDelColorLoader: boolean = false;
-  colorsForm = {
-    name: '',
-    quantity: '',
-    cost: ''
-  }
-  // Send Purchase Order
-  isSentPOLoader: boolean = false;
-  blnArtNeedsResent: boolean = false;
-  isSavePOLoader: boolean = false;
-  isRemovePOLoader: boolean = false;
-  ngImprint = '';
-
-  smartCentsData: any;
-  colorsData: any;
-
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _activeRoute: ActivatedRoute,
-    private _OrderManageService: OrderManageService,
-    private _smartCentService: SupportTicketService,
-    private _authService: AuthService,
-    private router: Router
+    private _orderService: OrdersService,
+    private _supportService: SupportTicketService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private _commonService: DashboardsService
+
   ) { }
 
   ngOnInit(): void {
-    this._activeRoute.params.subscribe(res => {
-      this.paramData = res;
-      this.isLoading = true;
-      this.getOrderDetails();
+    const user = localStorage.getItem('userDetails');
+    this.userData = JSON.parse(user);
+    console.log(this.userData);
+    this.commentForm = new FormGroup({
+      comment: new FormControl('', Validators.required),
+    });
+    this.getTicketDetail();
+    this.getCommentators();
+
+  };
+  getTicketDetail() {
+    this.isLoading = true;
+    const params = {
+      tickets_list: true,
+      ticket_id: this.route.snapshot.paramMap.get('id')
+    }
+    this._supportService.getApiData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe((res: any) => {
+      this.dataSource = res?.data[0];
+      this.selectedStatus = this.dataSource?.statusName;
+      this.estimatedTime = this.dataSource?.estimatedTime;
+      this.getImages();
+      console.log(this.dataSource);
+
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
     });
   }
-  getOrderDetails() {
+
+  getCommentators() {
     let params = {
-      smarcents_details: true,
-      orderLinePOID: this.paramData.poid
+      get_commentators_emails: true
     }
-    this._smartCentService.getApiData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.smartCentsData = res["data"][0];
-      this.vendorBillData = {
-        vendorInvoiceNumber: this.smartCentsData.vendorInvoiceNumber ? this.smartCentsData.vendorInvoiceNumber : null,
-        vendorInvoiceDate: this.smartCentsData.vendorInvoiceDate ? this.smartCentsData.vendorInvoiceDate : null,
-        vendorInvoiceNetTerms: this.smartCentsData.vendorInvoiceNetTerms ? this.smartCentsData.vendorInvoiceNetTerms : 0,
-        blnInvoiced: false
-      }
-      this.BillData = {
-        billPayPaymentMethod: this.smartCentsData.billPayPaymentMethod ? this.smartCentsData.billPayPaymentMethod : 0,
-        billPayPaymentDate: this.smartCentsData.billPayPaymentDate ? this.smartCentsData.billPayPaymentDate : null,
-        billPayReference: this.smartCentsData.billPayReference ? this.smartCentsData.billPayReference : null,
-        blnPaid: this.smartCentsData.blnPaid
-      }
-      this.getColorsData();
+    this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      let commentators = res["data"][0].commentorsEmail.split(',,');
+      commentators.forEach(commentator => {
+        const [id, email] = commentator.split('::');
+        this.commentators.push({ id, email });
+      });
+      this.isCommentatorLoader = false;
+      this.isLoadMore = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this.isLoading = false;
+      this.isCommentatorLoader = false;
+      this.isLoadMore = false;
       this._changeDetectorRef.markForCheck();
-    });
+    })
   }
-  getColorsData() {
-    let params = {
-      smarcents_color_size_breakdown: true,
-      orderLineID: this.smartCentsData.fk_orderLineID
-    }
-    this._smartCentService.getApiData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.colorsData = res["data"];
-      this.isLoading = false;
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this.isLoading = false;
-      this._changeDetectorRef.markForCheck();
-    });
-  }
-  updateBillPay() {
-    this.isBillLoader = true;
-    let date = null;
-    if (this.BillData.billPayPaymentDate) {
-      date = moment(this.BillData.billPayPaymentDate).format('L');
-    }
+  getImages() {
     let payload = {
-      orderLinePOID: this.smartCentsData.fk_orderLineID,
-      billPayPaymentMethod: this.BillData.billPayPaymentMethod,
-      billPayReference: this.BillData.billPayReference,
-      billPayPaymentDate: date,
-      blnPaid: this.BillData.blnPaid,
-      update_save_bill_pay: true
+      files_fetch: true,
+      path: `/globalAssets/tickets/images/${this.dataSource?.pk_ticketID}/`
     }
-    this._OrderManageService.PutAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      if (res["success"]) {
-        this._OrderManageService.snackBar(res["message"]);
-      }
-      this.isBillLoader = false;
+    this._commonService.getFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe((res: any) => {
+      console.log(res);
+      this.images = res?.data;
+      const newMaxFiles = 5 - (this.images?.length || 0);
+      this.config.maxFiles = newMaxFiles;
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this.isBillLoader = false;
       this._changeDetectorRef.markForCheck();
     });
   }
-  updateVendorBills() {
-    this.isVendorBillLoader = true;
-    let date = null;
-    if (this.smartCentsData.vendorInvoiceDate) {
-      date = moment(this.smartCentsData.vendorInvoiceDate).format('L');
+
+  createComment() {
+    const filteredArray = this.commentators.filter(item => item.checked === true).map(item => item.email);
+    const param = {
+      ticketID: this.route.snapshot.paramMap.get('id'),
+      subject: this.dataSource?.subject,
+      comment: this.commentForm.get('comment').value,
+      emailList: filteredArray,
+      blnMasterAccount: this.userData?.blnMasterAccount,
+      userID: this.userData?.pk_userID,
+      add_ticket_comment: true
     }
-    let term = this.smartCentsData.vendorInvoiceNetTerms;
-    if (this.smartCentsData.vendorInvoiceNetTerms == '0') {
-      term = null;
+    console.log(param);
+  }
+
+  openDeleteModal() {
+    $(this.deleteTicket.nativeElement).modal('show');
+  }
+
+  deleteticket() {
+    this._supportService.UpdateAPiData({
+      ticketID: this.dataSource.pk_ticketID,
+      remove_ticket: true
+    }).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      // this._supportService.snackBar('Support ticket is deleted successfuly.')
+      //  this.router.navigateByUrl(`support-tickets`);
+
+      // this._supportService.snackBar('Error occured whild deleting the support ticket.')
+    })
+  }
+
+  updateTicket() {
+    const param = {
+      ticketID: this.route.snapshot.paramMap.get('id'),
+      subject: this.dataSource?.subject,
+      estimatedTime:this.estimatedTime,
+      statusID: this.statuses.find(status => status.value === this.selectedStatus).key,
+      blnEmail: this.email,
+      update_ticket : true
     }
-    let payload = {
-      orderLinePOID: this.smartCentsData.fk_orderLineID,
-      vendorInvoiceNumber: this.smartCentsData.vendorInvoiceNumber,
-      vendorInvoiceDate: date,
-      vendorInvoiceNetTerms: term,
-      blnInvoiced: this.vendorBillData.blnInvoiced,
-      update_save_vendor_bill: true
+    console.log(param);
+  }
+
+  onSelectMain(event) {
+    if (event.addedFiles.length > this.config.maxFiles) {
+      this._supportService.snackBar("Please select maximum 5 images.");
+      return;
     }
-    this._OrderManageService.PutAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      if (res["success"]) {
-        this._OrderManageService.snackBar(res["message"]);
+    if (this.files.length == this.config.maxFiles) {
+      this._supportService.snackBar("Max limit reached for image upload.");
+      return;
+    } else {
+      event.addedFiles.forEach(element => {
+        this.files.push(element);
+      });
+    }
+    setTimeout(() => {
+      this._changeDetectorRef.markForCheck();
+    }, 200);
+  }
+
+  onRemoveMain(index) {
+    this.files.splice(index, 1);
+  }
+
+  viewImage(route: string) {
+    window.open(route, '_blank');
+  }
+
+  updateImages() {
+    this.removeFiles();
+    this.encodeImage();
+  }
+
+  encodeImage() {
+    let images = [];
+    this.files.forEach((file, index) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        let image: any = new Image;
+        image.src = reader.result;
+        image.onload = () => {
+          images.push({
+            imageUpload: reader.result,
+            type: file["type"]
+          });
+          if (index == this.files.length - 1) {
+            this.uploadImageToServer(images, this.route.snapshot.paramMap.get('id'));
+          }
+        }
       }
-      this.isVendorBillLoader = false;
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this.isVendorBillLoader = false;
-      this._changeDetectorRef.markForCheck();
     });
   }
-  backToList() {
-    this.router.navigateByUrl('ordermanage/dashboard');
+
+  uploadImageToServer(images, responseId) {
+    let files = [];
+    images.forEach((element, index) => {
+      let d = new Date();
+      let filePath = `/globalAssets/tickets/images/${responseId}/${d.getTime() + index}.jpg`;
+      files.push({
+        image_file: element.imageUpload.split(",")[1],
+        image_path: filePath
+      });
+    });
+    this._commonService.uploadMultipleMediaFiles(files).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    });
   }
+
+  removeFiles() {
+    const tempImages: any[] = this.images
+      .filter(item => item.checked === true)
+      .map(item => `globalAssets/tickets/Images/${this.dataSource?.pk_ticketID}/${item.FILENAME}`);
+    console.log(tempImages)
+
+    if (tempImages.length > 0) {
+      let payload = {
+        files: tempImages,
+        delete_multiple_files: true
+      }
+      this._commonService.removeMediaFiles(payload)
+        .subscribe((response) => {
+        }, err => {
+          this._changeDetectorRef.markForCheck();
+        })
+    } else {
+      this._changeDetectorRef.markForCheck();
+    }
+  }
+
+
+  setParams(value: any, key: string) {
+    // this.params = {
+    //   ...this.params,
+    //   [key]: value
+    // };
+    // this.getData();
+  }
+
   /**
      * On destroy
      */
@@ -249,6 +275,5 @@ export class TicketsDetailsComponent implements OnInit, OnDestroy {
     this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
   };
-
 
 }

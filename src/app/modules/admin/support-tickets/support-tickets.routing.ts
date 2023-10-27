@@ -14,13 +14,16 @@ export const supportRoutes: Route[] = [
                 pathMatch: 'full'
             },
             {
-                path: 'dashboard',
-                // canDeactivate: [CanDeactivateGuard],
+                path: '',
                 component: SmartCentsDashboardComponent,
                 data: {
                     title: 'Dashboard',
                     url: 'dashboard'
                 }
+            },
+            {
+                path: 'detail/:id',
+                component: TicketsDetailsComponent,
             },
         ]
     },
