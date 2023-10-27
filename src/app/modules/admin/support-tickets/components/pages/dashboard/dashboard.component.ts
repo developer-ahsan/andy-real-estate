@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { SupportTicketService } from '../../support-tickets.service';
@@ -10,8 +10,7 @@ import { FLPSService } from 'app/modules/admin/apps/flps/components/flps.service
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 @Component({
   selector: 'app-dashboard',
-  templateUrl: './dashboard.component.html',
-  styles: [".mat-paginator  {border-radius: 16px !important} .mat-drawer-container {border-radius: 16px !important} ::-webkit-scrollbar {height: 3px !important}"]
+  templateUrl: './dashboard.component.html'
 })
 export class SmartCentsDashboardComponent implements OnInit, OnDestroy {
   @ViewChild('paginator') paginator: MatPaginator;
@@ -129,7 +128,6 @@ export class SmartCentsDashboardComponent implements OnInit, OnDestroy {
     private _changeDetectorRef: ChangeDetectorRef,
     private _supportService: SupportTicketService,
     private router: Router,
-    private _route: ActivatedRoute,
     private _flpsService: FLPSService,
     private _commonService: DashboardsService
 
@@ -292,6 +290,12 @@ export class SmartCentsDashboardComponent implements OnInit, OnDestroy {
     this._commonService.uploadMultipleMediaFiles(files).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
     });
   }
+
+  
+  navigateToPage(id:string) {
+    this.router.navigateByUrl(`support-tickets/detail/${id}`);
+  }
+
 
   /**
      * On destroy
