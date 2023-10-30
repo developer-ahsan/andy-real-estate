@@ -6,7 +6,6 @@ import { OrdersService } from 'app/modules/admin/apps/orders/orders-components/o
 import { SupportTicketService } from '../../support-tickets.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
-import { environment } from 'environments/environment';
 
 declare var $: any;
 @Component({
@@ -65,7 +64,6 @@ export class TicketsDetailsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const user = localStorage.getItem('userDetails');
     this.userData = JSON.parse(user);
-    console.log(this.userData);
     this.commentForm = new FormGroup({
       comment: new FormControl('', Validators.required),
     });
@@ -84,7 +82,6 @@ export class TicketsDetailsComponent implements OnInit, OnDestroy {
       this.selectedStatus = this.dataSource?.statusName;
       this.estimatedTime = this.dataSource?.estimatedTime;
       this.getImages();
-      console.log(this.dataSource);
 
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
@@ -119,7 +116,6 @@ export class TicketsDetailsComponent implements OnInit, OnDestroy {
       path: `/globalAssets/tickets/images/${this.dataSource?.pk_ticketID}/`
     }
     this._commonService.getFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe((res: any) => {
-      console.log(res);
       this.images = res?.data;
       const newMaxFiles = 5 - (this.images?.length || 0);
       this.config.maxFiles = newMaxFiles;
@@ -140,7 +136,13 @@ export class TicketsDetailsComponent implements OnInit, OnDestroy {
       userID: this.userData?.pk_userID,
       add_ticket_comment: true
     }
-    console.log(param);
+    this._supportService.PostAPIData(param).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._supportService.snackBar('Comment is added successfuly.')
+    }), err => {
+      console.log(err);
+      this._supportService.snackBar('Error occured whild adding a comment.')
+    }
+
   }
 
   openDeleteModal() {
@@ -152,23 +154,29 @@ export class TicketsDetailsComponent implements OnInit, OnDestroy {
       ticketID: this.dataSource.pk_ticketID,
       remove_ticket: true
     }).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      // this._supportService.snackBar('Support ticket is deleted successfuly.')
-      //  this.router.navigateByUrl(`support-tickets`);
-
-      // this._supportService.snackBar('Error occured whild deleting the support ticket.')
-    })
+      this._supportService.snackBar('Support ticket is deleted successfuly.')
+      this.router.navigateByUrl(`support-tickets`);
+    }), err => {
+      console.log(err);
+      this._supportService.snackBar('Error occured whild deleting the support ticket.')
+    }
   }
 
   updateTicket() {
     const param = {
       ticketID: this.route.snapshot.paramMap.get('id'),
       subject: this.dataSource?.subject,
-      estimatedTime:this.estimatedTime,
+      estimatedTime: this.estimatedTime,
       statusID: this.statuses.find(status => status.value === this.selectedStatus).key,
       blnEmail: this.email,
-      update_ticket : true
+      update_ticket: true
     }
-    console.log(param);
+    this._supportService.UpdateAPiData(param).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._supportService.snackBar('Support ticket is updated successfuly.');
+    }), err => {
+      console.log(err);
+      this._supportService.snackBar('Error occured whild updating the support ticket.');
+    }
   }
 
   onSelectMain(event) {
@@ -197,12 +205,12 @@ export class TicketsDetailsComponent implements OnInit, OnDestroy {
     window.open(route, '_blank');
   }
 
-  updateImages() {
-    this.removeFiles();
-    this.encodeImage();
+  async updateImages() {
+    await this.removeFiles();
+    await this.encodeImage();
   }
 
-  encodeImage() {
+  async encodeImage() {
     let images = [];
     this.files.forEach((file, index) => {
       const reader = new FileReader();
@@ -223,7 +231,7 @@ export class TicketsDetailsComponent implements OnInit, OnDestroy {
     });
   }
 
-  uploadImageToServer(images, responseId) {
+  async uploadImageToServer(images, responseId) {
     let files = [];
     images.forEach((element, index) => {
       let d = new Date();
@@ -234,15 +242,17 @@ export class TicketsDetailsComponent implements OnInit, OnDestroy {
       });
     });
     this._commonService.uploadMultipleMediaFiles(files).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._supportService.snackBar('Images updated successfuly.');
+      this.images = []
+      this.files = []
+      this.getImages();
     });
   }
 
   removeFiles() {
     const tempImages: any[] = this.images
       .filter(item => item.checked === true)
-      .map(item => `globalAssets/tickets/Images/${this.dataSource?.pk_ticketID}/${item.FILENAME}`);
-    console.log(tempImages)
-
+      .map(item => `/globalAssets/tickets/images/${this.dataSource?.pk_ticketID}/${item.FILENAME}`);
     if (tempImages.length > 0) {
       let payload = {
         files: tempImages,
@@ -250,21 +260,15 @@ export class TicketsDetailsComponent implements OnInit, OnDestroy {
       }
       this._commonService.removeMediaFiles(payload)
         .subscribe((response) => {
+          this._supportService.snackBar('Images updated successfuly.');
+          this.files = []
+          this.getImages();
         }, err => {
           this._changeDetectorRef.markForCheck();
         })
     } else {
       this._changeDetectorRef.markForCheck();
     }
-  }
-
-
-  setParams(value: any, key: string) {
-    // this.params = {
-    //   ...this.params,
-    //   [key]: value
-    // };
-    // this.getData();
   }
 
   /**
