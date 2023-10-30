@@ -485,7 +485,6 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
             type: file.type,
             extension: fileExtension,
           };
-          console.log(this.imagePOValue)
         }
       }
     }
