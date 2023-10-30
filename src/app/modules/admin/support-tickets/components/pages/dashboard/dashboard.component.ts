@@ -116,7 +116,7 @@ export class SmartCentsDashboardComponent implements OnInit, OnDestroy {
 
   params: any = {
     time_frame: 'all',
-    status_id: 0,
+    status_id: 999,
     admin_user_id: 0,
     tickets_list: true,
     page: this.page
@@ -178,12 +178,14 @@ export class SmartCentsDashboardComponent implements OnInit, OnDestroy {
     const { userID, subject, description, blnUrgent } = this.ticketForm.getRawValue();
     let payload: CreateTicket = {
       userID, subject, description, blnUrgent, create_ticket: true
-    }
-
+    };
     this._supportService.PostAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe((res: any) => {
-      this.uploadMultipleImages(res?.pk_ticketID)
+      this.uploadMultipleImages(res?.pk_ticketID);
+      this._supportService.snackBar('Ticket is added successfuly.');
+      this.mainScreen = 'Tickets';
     }), err => {
       console.log(err);
+      this._supportService.snackBar('Error occured whild creating a ticket.');
     }
   }
 
@@ -291,8 +293,8 @@ export class SmartCentsDashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  
-  navigateToPage(id:string) {
+
+  navigateToPage(id: string) {
     this.router.navigateByUrl(`support-tickets/detail/${id}`);
   }
 

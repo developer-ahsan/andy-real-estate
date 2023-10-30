@@ -31,7 +31,8 @@
 
                     <div class="grid grid-cols-2 gap-3 mt-5">
 
-                        <button (click)="updateTicket()" color="primary" class="w-full rounded-md" mat-button mat-flat-button [disabled]="false">
+                        <button (click)="updateTicket()" color="primary" class="w-full rounded-md" mat-button
+                            mat-flat-button [disabled]="false">
                             <span>Update</span>
                         </button>
 
@@ -107,15 +108,13 @@
 
 
 
-    <div class="row" *ngIf="!isLoading && this.images?.length !==0">
+    <div class="row" *ngIf="!isLoading">
         <div class="col-12 my-2">
             <fuse-card class="rounded-2xl shadow bg-card flex flex-col w-full">
-                <div class="p-6 sm:p-8 lg:p-10 w-full grid grid-cols-5 gap-5">
-                    <div class="cursor-pointer"
-                        
-                        *ngFor="let image of images">
-                        <img
-                        (click)="viewImage('https://assets.consolidus.com/globalAssets/tickets/Images/' + (dataSource?.pk_ticketID) + '/' + (image?.FILENAME))"
+                <div *ngIf="this.images?.length !==0" class="p-6 sm:p-8 lg:p-10 w-full grid grid-cols-5 gap-5">
+                    <div class="cursor-pointer" *ngFor="let image of images">
+                        <img class="w-32 h-32"
+                            (click)="viewImage('https://assets.consolidus.com/globalAssets/tickets/Images/' + (dataSource?.pk_ticketID) + '/' + (image?.FILENAME))"
                             [src]="'https://assets.consolidus.com/globalAssets/tickets/Images/' + (dataSource?.pk_ticketID) + '/' + (image?.FILENAME)">
                         <div class="mt-2">
                             <mat-checkbox [(ngModel)]="image.checked">Remove</mat-checkbox>
@@ -135,8 +134,8 @@
                         </ngx-dropzone-image-preview>
                     </ngx-dropzone>
 
-                    <button (click)="updateImages()" color="primary"
-                        class="w-full rounded-md mt-2" mat-button mat-flat-button>
+                    <button (click)="updateImages()" color="primary" class="w-full rounded-md mt-2" mat-button
+                        mat-flat-button>
                         Update
                     </button>
                 </div>
@@ -160,16 +159,17 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Remove Artwork File</h5>
+                <h5 class="modal-title">Delete Support Ticket</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <p>Are you sure you want to remove this artwork file? This cannot be undone.</p>
+                <p>Are you sure you want to remove this Support Ticket? This cannot be undone.</p>
             </div>
             <div class="modal-footer">
-                <button type="button" color="primary" class="btn bg-gray-700 text-white rounded-md">Yes</button>
+                <button data-dismiss="modal" (click)="deleteticket()" type="button" color="primary"
+                    class="btn bg-gray-700 text-white rounded-md">Yes</button>
                 <button type="button" class="btn bg-red-500 text-white border-red-500 rounded-md"
                     data-dismiss="modal">Cancel</button>
             </div>
