@@ -225,7 +225,7 @@ export class InternalNotesComponent implements OnInit, OnDestroy {
         this._inventoryService.getCommentByProductId(pk_productID)
           .pipe(takeUntil(this._unsubscribeAll))
           .subscribe((comment) => {
-            this._snackBar.open(comment["message"], '', {
+            this._snackBar.open(response["message"], '', {
               horizontalPosition: 'center',
               verticalPosition: 'bottom',
               duration: 3500

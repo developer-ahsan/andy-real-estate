@@ -163,7 +163,7 @@ export class QuoteDashboardComponent implements OnInit, OnDestroy {
       size: 20,
       store_id: this.paramsData.store ? this.paramsData.store : '',
       designerID: this.paramsData.designer ? this.paramsData.designer : '',
-      filter_field: this.ngFilterField,
+      filter_field: this.paramsData.filterField ? this.paramsData.filterField : '2',
       search_field: this.paramsData.search ? this.paramsData.search : '',
       user_search_field: this.paramsData.customer ? this.paramsData.customer : '',
     }
@@ -223,18 +223,6 @@ export class QuoteDashboardComponent implements OnInit, OnDestroy {
       item.proofLoader = false;
       this._changeDetectorRef.markForCheck();
     });
-  }
-  onOrderStatusChange(ev) {
-    this.isLoading = true;
-    if (this.dataSource.length) {
-      this.paginator.pageIndex = 0;
-    }
-    this.ngSearchStore = '';
-    this.ngSearchDesigner = '';
-    this.ngUserField = '';
-    this.ngSearchField = '';
-    this.ngFilterField = ev;
-    this.getSmartArtList(1, 'get', '');
   }
   filterSmartArtList() {
     this.isFilterLoader = true;

@@ -13,6 +13,7 @@ declare var $: any;
 export class OrderStatusComponent implements OnInit {
   @ViewChild('rescheduleModal') rescheduleModal: ElementRef;
   @ViewChild('orderDetailsModal') orderDetailsModal: ElementRef;
+  @ViewChild('orderEmailModal') orderEmailModal: ElementRef;
 
   @Input() userData: any;
   @Input() storesData: any;
@@ -45,6 +46,33 @@ export class OrderStatusComponent implements OnInit {
   rescheduleModalContent: any;
   orderDetailsModalContent: any;
   mediaURL = environment.assetsURL;
+
+  editorConfig = {
+    toolbar: [
+      { name: 'clipboard', items: ['Undo', 'Redo'] },
+      { name: 'styles', items: ['Format'] },
+      { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike'] },
+      { name: 'align', items: ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'] },
+      { name: 'links', items: ['Link', 'Unlink'] },
+      { name: 'insert', items: ['Image', 'Table'] },
+      { name: 'tools', items: ['Maximize'] },
+    ],
+    extraPlugins: 'uploadimage,image2',
+    uploadUrl:
+      'https://ckeditor.com/apps/ckfinder/3.4.5/core/connector/php/connector.php?command=QuickUpload&type=Files&responseType=json',
+    filebrowserUploadMethod: 'base64',
+    // Configure your file manager integration. This example uses CKFinder 3 for PHP.
+    filebrowserBrowseUrl:
+      'https://ckeditor.com/apps/ckfinder/3.4.5/ckfinder.html',
+    filebrowserImageBrowseUrl:
+      'https://ckeditor.com/apps/ckfinder/3.4.5/ckfinder.html?type=Images',
+    filebrowserUploadUrl:
+      'https://ckeditor.com/apps/ckfinder/3.4.5/core/connector/php/connector.php?command=QuickUpload&type=Files',
+    filebrowserImageUploadUrl:
+      'https://ckeditor.com/apps/ckfinder/3.4.5/core/connector/php/connector.php?command=QuickUpload&type=Images'
+    // other options
+  };
+  emailModalContent: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _dashboardService: DashboardsService,
@@ -288,4 +316,10 @@ export class OrderStatusComponent implements OnInit {
       };
     }
   };
+  openEmailDetailsModal(data, title) {
+    this.emailModalContent = data;
+    this.emailModalContent.modalTitle = title;
+    // this.emailModalContent.loader = true;
+    $(this.orderEmailModal.nativeElement).modal('show');
+  }
 }

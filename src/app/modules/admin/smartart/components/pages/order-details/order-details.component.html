@@ -1631,8 +1631,6 @@
                                             <div *ngIf="imprint.viewProofCheck || imprint.viewFinalArtworkCheck">
                                                 <b>
                                                     <div class="flex space-x-1">
-                                                        <p>Send Art To Decorator</p>
-                                                        <br>
                                                         <a target="_blank" class="underline"
                                                             *ngIf="imprint.viewProofCheck"
                                                             href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg">(Click
@@ -1641,16 +1639,40 @@
                                                 </b>
                                             </div>
                                             <div class="row">
-                                                <div class="col-md-8 col-12">
+                                                <div class="col-md-8 col-12" *ngIf="imprint.artworkPOFiles">
+                                                    <fuse-alert class="my-2" [appearance]="'soft'" [type]="'success'"
+                                                        [showIcon]="true">
+                                                        <a href="https://assets.consolidus.com/artwork/POProof/{{paramData.pk_orderLineID}}/{{imprint.artworkPOFiles.FILENAME}}"
+                                                            target="_blank">Artwork has been uploaded for this PO</a>
+                                                    </fuse-alert>
+                                                    <button type="button" [disabled]="imprint?.removeLoader"
+                                                        (click)="removePOFiles(imprint)"
+                                                        class="mr-2 min-w-40 inline-flex items-center gap-x-1.5 rounded-md bg-orange-400 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400">
+                                                        <span *ngIf="!imprint?.removeLoader">Remove PO Artwork</span>
+                                                        <mat-progress-spinner [color]="'light'"
+                                                            *ngIf="imprint?.removeLoader" [diameter]="24"
+                                                            [mode]="'indeterminate'">
+                                                        </mat-progress-spinner>
+                                                    </button>
+                                                </div>
+                                                <div class="col-md-8 col-12" *ngIf="!imprint.artworkPOFiles">
                                                     <div>
                                                         <label>Upload artwork to attach to PO:</label>
                                                         <br>
-                                                        <input type="file">
+                                                        <input #artworkPOFileInput (change)="uploadPOFile($event)"
+                                                            type="file">
                                                     </div>
-                                                    <div>
-                                                        <button
-                                                            class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">Upload
-                                                            PO artwork</button>
+                                                    <div class="my-3">
+                                                        <button type="button" [disabled]="imprint?.uploadPOLoader"
+                                                            (click)="uploadPOFilesServer(imprint)"
+                                                            class="mr-2  min-w-40 inline-flex items-center gap-x-1.5 rounded-md bg-blue-400 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400">
+                                                            <span *ngIf="!imprint?.uploadPOLoader">Upload
+                                                                PO artwork</span>
+                                                            <mat-progress-spinner [color]="'light'"
+                                                                *ngIf="imprint?.uploadPOLoader" [diameter]="24"
+                                                                [mode]="'indeterminate'">
+                                                            </mat-progress-spinner>
+                                                        </button>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4 col-12">

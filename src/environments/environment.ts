@@ -29,6 +29,7 @@
 //   campaignMedia: "https://assets.consolidus.com/globalAssets/Campaigns",
 //   productMedia: "https://assets.consolidus.com/globalAssets/Products",
 //   rapidBuildMedia: "https://assets.consolidus.com/globalAssets/rapidBuild",
+//   supportTickets: "https://consolidusapi.azure-api.net/api/support_ticket",
 //   storeMedia: "https://assets.consolidus.com/globalAssets/Stores",
 //   assetsURL: "https://assets.consolidus.com/",
 //   supportTeam:

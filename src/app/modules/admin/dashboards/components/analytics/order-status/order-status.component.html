@@ -144,7 +144,8 @@
                                         <mat-icon svgIcon="mat_outline:comment" matTooltip="Order Comments"></mat-icon>
                                     </mat-button-toggle>
 
-                                    <mat-button-toggle>
+                                    <mat-button-toggle
+                                        (click)="openEmailDetailsModal(item,'PROOF REMINDER EMAIL FOR ORDER')">
                                         <mat-icon svgIcon="mat_outline:email"
                                             matTooltip="Send Email to the customer"></mat-icon>
                                     </mat-button-toggle>
@@ -279,7 +280,8 @@
                                     <mat-icon svgIcon="mat_outline:comment" matTooltip="Order Comments"></mat-icon>
                                 </mat-button-toggle>
 
-                                <mat-button-toggle>
+                                <mat-button-toggle
+                                    (click)="openEmailDetailsModal(item,'PAYMENT NOTIFICATION REMINDER EMAIL FOR ORDER')">
                                     <mat-icon svgIcon="mat_outline:email"
                                         matTooltip="Send Email to the customer"></mat-icon>
                                 </mat-button-toggle>
@@ -502,6 +504,53 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="mr-2" mat-button mat-stroked-button data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Email Modal -->
+<div #orderEmailModal class="modal fade" id="orderEmailModal" tabindex="-1" role="dialog"
+    aria-labelledby="orderEmailModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="orderEmailModal">{{emailModalContent?.modalTitle}}
+                    {{emailModalContent?.orderID}}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" *ngIf="emailModalContent">
+                <div class="my-5" *ngIf="emailModalContent.loader">
+                    <ngx-skeleton-loader count="5" appearance="line" animation="pulse" [theme]="{ 
+                    'background-color': '#dedede'
+                  }">
+                    </ngx-skeleton-loader>
+                </div>
+                <div *ngIf="!emailModalContent.loader">
+                    <div class="row">
+                        <div class="col-12">
+                            <mat-label>Subject:</mat-label>
+                            <mat-form-field class="w-full">
+                                <input matInput>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12">
+                            <mat-label>Body:</mat-label>
+                            <ckeditor [config]="editorConfig"></ckeditor>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal"
+                    class="mr-2 inline-flex items-center gap-x-1.5 rounded-md bg-red-400 px-2.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-400">
+                    <span>Close</span>
+                </button>
+                <button type="button" data-dismiss="modal"
+                    class="mr-2 inline-flex items-center gap-x-1.5 rounded-md bg-green-400 px-2.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-400">
+                    <span>Send Email</span>
+                </button>
             </div>
         </div>
     </div>

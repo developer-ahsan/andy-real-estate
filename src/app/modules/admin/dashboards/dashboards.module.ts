@@ -33,6 +33,7 @@ import { DataTablesModule } from "angular-datatables";
 import { DashboardHomeComponent } from './components/home/home-dashboard.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { CKEditorModule } from 'ckeditor4-angular';
 
 @NgModule({
     declarations: [
@@ -70,7 +71,8 @@ import { MatNativeDateModule } from '@angular/material/core';
         MatCheckboxModule,
         MatDatepickerModule,
         MatNativeDateModule,
-        DataTablesModule
+        DataTablesModule,
+        CKEditorModule
     ],
     entryComponents: [],
 })

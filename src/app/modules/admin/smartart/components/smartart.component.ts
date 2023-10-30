@@ -35,7 +35,36 @@ export class SmartArtComponent {
     @ViewChild("panel") panel;
     @ViewChild('topScrollAnchor') topScroll: ElementRef;
     @ViewChild('drawer', { static: true }) drawer: MatDrawer;
-
+    // Order Options
+    orderStatus = [
+        { value: 0, label: 'All Orders' },
+        { value: 2, label: 'New Pending' },
+        { value: 3, label: 'Awaiting Approval' },
+        { value: 12, label: 'On Hold' },
+        { value: 13, label: 'Follow up for approval' },
+        { value: 4, label: 'Artwork Revision' },
+        { value: 5, label: 'Decorator Notified' },
+        { value: 7, label: 'No Proof Needed' },
+        { value: 9, label: 'Artwork Approved' },
+        { value: 16, label: 'PO Sent' },
+        { value: 11, label: 'In Production' },
+        { value: 17, label: 'Hidden' },
+        { value: 99, label: 'Waiting for GroupBuy' },
+        { value: 999, label: 'In-Hands Date' },
+    ];
+    //   Quote Options
+    quoteOptions = [
+        { value: 0, label: 'All Quotes' },
+        { value: 2, label: 'New-Pending' },
+        { value: 3, label: 'Awaiting Approval' },
+        { value: 12, label: 'On Hold' },
+        { value: 13, label: 'Follow Up For Approval' },
+        { value: 4, label: 'Artwork Revision' },
+        { value: 7, label: 'No Proof Needed' },
+        { value: 9, label: 'Artwork Approved' },
+        { value: 99, label: 'Hidden' },
+        { value: 999, label: 'Unhidden' },
+    ];
 
     loginCheck: boolean = false;
     isLoginLoader: boolean = false;
@@ -302,13 +331,31 @@ export class SmartArtComponent {
             };
             this._router.navigate(['/smartart/orders-dashboard'], queryParams);
         } else {
+            let status = this.ngFilterField != 0 ? this.ngFilterField : '';
             const queryParams: NavigationExtras = {
-                queryParams: { search: this.ngSearchField, store: this.selectedStore.pk_storeID, customer: this.ngCustomerField, designer: this.selectedDesigner.pk_userID }
+                queryParams: { search: this.ngSearchField, store: this.selectedStore.pk_storeID, customer: this.ngCustomerField, designer: this.selectedDesigner.pk_userID, filterField: status }
             };
             this._router.navigate(['/smartart/quotes-dashboard'], queryParams);
         }
-
-        // this.drawer.toggle();
+    }
+    resetSmartArtFilters() {
+        this.ngFilterField = 2;
+        this.selectedStore.pk_storeID = 0;
+        this.ngSearchField = '';
+        this.ngCustomerField = '';
+        this.selectedDesigner.pk_userID = null;
+        this.ngFilterProduct = '';
+        if (this.ngDashboardCheck == 1) {
+            const queryParams: NavigationExtras = {
+                queryParams: { filterField: 2 }
+            };
+            this._router.navigate(['/smartart/quotes-dashboard'], queryParams);
+        } else {
+            const queryParams: NavigationExtras = {
+                queryParams: { filterField: 2 }
+            };
+            this._router.navigate(['/smartart/orders-dashboard'], queryParams);
+        }
     }
     /**
      * On destroy
