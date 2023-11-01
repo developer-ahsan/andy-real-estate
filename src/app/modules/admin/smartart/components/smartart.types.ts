@@ -359,3 +359,31 @@ export interface updateOrderPurchaseOrderComment {
     imprintID: number;
     update_order_purchase_comment: boolean;
 };
+export interface uploadVirtualProof {
+    storeProductID: number;
+    blnStore: boolean;
+    upload_virtual_proof: boolean;
+};
+export interface removeVirtualProof {
+    virtualProofID: number;
+    remove_virtual_proof: boolean;
+};
+
+export interface UploadOrderFinalArt {
+    decoratorEmail: string;
+    clientFileExt: string; // file extension that is uploaded
+    storeName: string;
+    storeID: number;
+    orderID: number;
+    orderLineID: number;
+    userID: number;
+    orderLineImprintID: number;
+    decorationName: string;
+    locationName: string;
+    productName: string;
+    artworkComments: string;
+    smartArtLoggedInName: string;
+    smartArtAdminEmail: string;
+    blnGroupRun: boolean;
+    upload_order_final_art: boolean;
+};

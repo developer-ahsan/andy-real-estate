@@ -9,7 +9,7 @@ import { Subject, forkJoin, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { SmartArtService } from '../../smartart.service';
 import { interval } from 'rxjs';
-import { AddOrderComment, UpdateOrderLineArtworkTags, UpdateArtworkTgas, UpdateOrderInformation, sendAutoRequest, updateOrderLineImprintColors, updateReorderNumberOrder, UpdateOrderLineClaim, updateOrderProofContact, SmartartImprintStatusUpdate, sendAutoRequestOrder, updateAttentionFlagOrder, sendOrderProofUpdate, UploadOrderArtProof, UploadOrderFinalArt, updateOrderPurchaseOrderComment } from '../../smartart.types';
+import { AddOrderComment, UpdateOrderLineArtworkTags, UpdateArtworkTgas, UpdateOrderInformation, sendAutoRequest, updateOrderLineImprintColors, updateReorderNumberOrder, UpdateOrderLineClaim, updateOrderProofContact, SmartartImprintStatusUpdate, sendAutoRequestOrder, updateAttentionFlagOrder, sendOrderProofUpdate, UploadOrderArtProof, UploadOrderFinalArt, updateOrderPurchaseOrderComment, uploadVirtualProof, removeVirtualProof } from '../../smartart.types';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
@@ -129,6 +129,12 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
 
   imprintPMSColors = '';
 
+  // Virtual Proof Images
+  @ViewChild('virtualProofInput') virtualProofInput: ElementRef;
+  virtualProofImageValue: any;
+  VirtualProofImageLoader: boolean = false;
+
+  userDetails: any;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -140,6 +146,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    this.userDetails = JSON.parse(localStorage.getItem('userDetails'));
     this.smartArtUser = JSON.parse(sessionStorage.getItem('smartArt'));
     this.userData = this._authService.parseJwt(this._authService.accessToken);
     this._activeRoute.queryParams.subscribe(res => {
@@ -156,6 +163,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
     }
     this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.orderData = res["data"][0];
+      this.orderData.blnStoreImage = true;
       this.orderData.sessionProofEmails = [];
       if (this.orderData.proofEmail) {
         let proofEmails = this.orderData.proofEmail.split(',');
@@ -197,6 +205,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
           this.checkIfImageExists(url, imprint)
           imprint.artworkFiles = [];
           imprint.artworkPOFiles = null;
+          imprint.artworkFinalartFiles = [];
           imprint.viewFinalArtworkCheck = null;
           if (imprint.allColors) {
             let colors = imprint.allColors;
@@ -229,12 +238,14 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       // const checkIfImageExistsObservable = of(this.checkIfImageExists(`https://assets.consolidus.com/artwork/Proof/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.paramData.fk_imprintID}.jpg`));
       const getArtworkFiles = of(this.getArtworkFiles());
       const getArtworkPOFiles = of(this.getArtworkPOProofFiles());
+      const getArtworkFinalartFiles = of(this.getArtworkFinalartFiles());
       forkJoin([
         checkFileExistObservable,
         checkFinalArtworkObservable,
         getArtworkOtherObservable,
         // checkIfImageExistsObservable,
         getArtworkPOFiles,
+        getArtworkFinalartFiles,
         getArtworkFiles
       ])
       this._changeDetectorRef.markForCheck();
@@ -432,6 +443,26 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
+  getArtworkFinalartFiles() {
+    let payload = {
+      files_fetch: true,
+      path: `artwork/finalArt/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/`
+    }
+    this._changeDetectorRef.markForCheck();
+    this._smartartService.getFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(files => {
+      this.imprintdata.forEach(element => {
+        files["data"].forEach(file => {
+          if (file.ID.includes(element.pk_imprintID)) {
+            element.artworkFinalartFiles.push(file);
+          }
+        });
+      });
+
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this._changeDetectorRef.markForCheck();
+    });
+  }
   getArtworkPOProofFiles() {
     let payload = {
       files_fetch: true,
@@ -496,7 +527,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
     }
     imprint.uploadPOLoader = true;
     let files = [];
-    let filePath = `artwork/POProof/${this.paramData.pk_orderLineID}/1.${this.imagePOValue.extension}`;
+    let filePath = `artwork/POProof/${this.paramData.pk_orderLineID}/${imprint.pk_olImprintID}.${this.imagePOValue.extension}`;
     files.push({
       image_file: this.imagePOValue.imageUpload.split(",")[1],
       image_path: filePath
@@ -504,7 +535,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
     this._commonService.uploadMultipleMediaFiles(files).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.artworkPOFileInput.nativeElement.value = '';
       this.getArtworkPOProofFiles();
-      this._smartartService.snackBar('PO artwork successfully added.');
+      this._smartartService.snackBar('PO artwork successfully uploaded.');
       imprint.uploadPOLoader = false;
       this._changeDetectorRef.markForCheck();
     });
@@ -1193,7 +1224,8 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       fk_artApprovalContactID: imprint.fk_artApprovalContactID,
       fk_storeUserApprovalContactID: imprint.fk_storeUserApprovalContactID,
       blnRespond: imprint.blnRespond,
-      loggedInUserID: Number(this.smartArtUser.adminUserID),
+      // loggedInUserID: Number(this.smartArtUser.adminUserID),
+      loggedInUserID: Number(this.userDetails.pk_userID),
       groupOrderID: this.orderData.fk_groupOrderID,
       upload_order_art_proof: true
     }
@@ -1240,22 +1272,24 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   uploadFinalArtworkFile(event) {
     this.imageFinalArtworkValue = null;
     const file = event.target.files[0];
-    let type = file["type"];
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => {
-      const extension = type.split("/")[1]; // Extract the extension from the MIME type
+      const fileName = file.name;
+      const fileExtension = fileName.slice(((fileName.lastIndexOf(".") - 1) >>> 0) + 2);
+      // const extension = type.split("/")[1]; // Extract the extension from the MIME type
       this.imageFinalArtworkValue = {
         imageUpload: reader.result,
-        type: extension
+        type: file.type,
+        extension: fileExtension
       };
     }
   };
-  uploadFinalArtworkFileToServer(imprint) {
+  uploadFinalArtworkFileToServer(imprint, msg) {
     if (this.imageFinalArtworkValue) {
       imprint.finalArtworkProofLoader = true;
       let path;
-      path = `/artwork/finalart/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.paramData.fk_imprintID}.${this.imageFinalArtworkValue.type}`;
+      path = `/artwork/finalart/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.paramData.fk_imprintID}.${this.imageFinalArtworkValue.extension}`;
       const base64 = this.imageFinalArtworkValue.imageUpload.split(",")[1];
       const payload = {
         file_upload: true,
@@ -1265,7 +1299,12 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       this._smartartService.addMedia(payload)
         .subscribe((response) => {
           this.uploadFinalArtworkProof(imprint);
-          this._smartartService.snackBar('File Uploaded Successfully');
+          if (msg) {
+            this._smartartService.snackBar(msg);
+            this.getArtworkFinalartFiles();
+          } else {
+            this._smartartService.snackBar('File Uploaded Successfully');
+          }
           this._changeDetectorRef.markForCheck();
         }, err => {
           imprint.finalArtworkProofLoader = false;
@@ -1284,7 +1323,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
     }
     let payload: UploadOrderFinalArt = {
       decoratorEmail: imprint.emailRecipients,
-      clientFileExt: this.imageFinalArtworkValue.type, // file extension that is uploaded
+      clientFileExt: this.imageFinalArtworkValue.extension, // file extension that is uploaded
       storeID: this.orderData.pk_storeID,
       storeName: this.orderData.storeName,
       orderID: this.orderData.pk_orderID,
@@ -1436,5 +1475,163 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
         element.blnStoreUserApproval = element.blnStoreUserApprovalContacts ? 1 : 0;
       });
     }
+  }
+  // Upload Files
+  uploadFilesCommonFn(event, type): void {
+    if (event.target.files[0]) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      if (file)
+        reader.readAsDataURL(file);
+      reader.onload = () => {
+        let image: any = new Image;
+        image.src = reader.result;
+        image.onload = () => {
+          const fileName = file.name;
+          const fileExtension = fileName.slice(((fileName.lastIndexOf(".") - 1) >>> 0) + 2);
+          if (type == 'virtualProof') {
+            if (image.width < 600 || image.height > 1500 || image.width > 1500 || image.height < 600) {
+              this._smartartService.snackBar("Virtual proof images must be at least 600px by 600px, but no larger than 1500px by 1500px. The larger the better. JPG format only.");
+              this.virtualProofImageValue = null;
+              this.virtualProofInput.nativeElement.value = '';
+              this._changeDetectorRef.markForCheck();
+              return;
+            };
+            this.virtualProofImageValue = {
+              imageUpload: reader.result,
+              type: file.type,
+              extension: fileExtension,
+            };
+          }
+        }
+      }
+    }
+  };
+  uploadImagesToServerCommon(paths, type) {
+    let files = [];
+    if (type == 'virtualProof') {
+      paths.forEach(path => {
+        files.push({
+          image_file: this.virtualProofImageValue.imageUpload.split(",")[1],
+          image_path: path
+        });
+      });
+    }
+    this._commonService.uploadMultipleMediaFiles(files).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.virtualProofInput.nativeElement.value = '';
+      this.getArtworkPOProofFiles();
+      if (type == 'virtualProof') {
+        this.getArtworkOther();
+        this._smartartService.snackBar('Virtual proof uploaded successfully.');
+        this.virtualProofImageValue = null;
+        this.VirtualProofImageLoader = false;
+      }
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  removeCommonFiles(paths, type) {
+    let payload = {
+      files: paths,
+      delete_multiple_files: true
+    }
+    this._commonService.removeMediaFiles(payload)
+      .subscribe((response) => {
+        if (type == 'virtualProof') {
+
+        }
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this._changeDetectorRef.markForCheck();
+      });
+  }
+  // Upload Virtual Proof 
+  uploadVirtualProof() {
+    if (!this.virtualProofImageValue) {
+      this._smartartService.snackBar('Virtual Proof Image is required');
+      return;
+    }
+    this.VirtualProofImageLoader = true;
+    let payload: uploadVirtualProof = {
+      storeProductID: this.orderData.pk_storeProductID,
+      blnStore: this.orderData.blnStoreImage ? this.orderData.blnStoreImage : false,
+      upload_virtual_proof: true
+    }
+    this._smartartService.AddSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res) {
+        let paths = [`globalAssets/StoreProducts/VirtualProofs/${this.orderData.pk_storeProductID}/${res["newVirtualProofID"]}.jpg`, `globalAssets/StoreUsers/VirtualProofs/${this.orderData.fk_storeUserID}/${this.orderData.pk_orderID}/${this.paramData.pk_orderLineID}/${res["newVirtualProofID"]}.jpg`];
+        this.uploadImagesToServerCommon(paths, 'virtualProof');
+      } else {
+        this.VirtualProofImageLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }
+    }, err => {
+      this.VirtualProofImageLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  removeVirtualProof(item) {
+    item.removeLoader = true;
+    let payload: removeVirtualProof = {
+      virtualProofID: item.pk_virtualProofID,
+      remove_virtual_proof: true
+    }
+    this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res) {
+        let paths = [`/globalAssets/StoreProducts/VirtualProofs/${this.orderData.pk_storeProductID}/${item.pk_virtualProofID}.jpg`];
+        this.virtualProofData = this.virtualProofData.filter(proof => proof.pk_virtualProofID != item.pk_virtualProofID);
+        this.removeCommonFiles(paths, 'virtualProof');
+        this._smartartService.snackBar(res["message"]);
+      }
+      item.removeLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      item.removeLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  // In Production and Decorator Notified Update FinalArt
+  updateFinalArtFile(imprint) {
+    if (!this.imageFinalArtworkValue) {
+      this._smartartService.snackBar('Please select an image file.');
+      return;
+    }
+    let payload: UploadOrderFinalArt = {
+      decoratorEmail: imprint.emailRecipients.split(','),
+      clientFileExt: this.imageFinalArtworkValue.extension, // file extension that is uploaded
+      storeName: this.orderData.storeName,
+      storeID: this.orderData.storeID,
+      orderID: Number(this.paramData.fk_orderID),
+      orderLineID: Number(this.paramData.pk_orderLineID),
+      userID: this.orderData.fk_storeUserID,
+      orderLineImprintID: imprint.pk_imprintID,
+      decorationName: imprint.decorationName,
+      locationName: imprint.locationName,
+      productName: this.orderData.sessionArtwork_productName,
+      artworkComments: imprint.artworkCommentsText.replace(/'/g, "''"),
+      smartArtLoggedInName: this.smartArtUser.firstName + ' ' + this.smartArtUser.lastName,
+      smartArtAdminEmail: this.smartArtUser.email,
+      blnGroupRun: this.orderData.blnGroupRun,
+      upload_order_final_art: true
+    }
+    imprint.finalArtworkProofLoader = true;
+    this._smartartService.AddSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res) {
+        imprint.pk_statusID = 5;
+        imprint.statusName = 'Decorator Notified';
+        imprint.statusDate = res["currentDate"];
+        this.orderData.internalComments = this.orderData.internalComments + res['orderComment'];
+        this.imprintdata.forEach(element => {
+          element.artworkFinalartFiles = [];
+        });
+        this.uploadFinalArtworkFileToServer(imprint, 'Final artwork successfully uploaded, and decorator has been notified.');
+        this.getArtworkOther();
+      } else {
+        imprint.finalArtworkProofLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }
+    }, err => {
+      imprint.finalArtworkProofLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
   }
 }

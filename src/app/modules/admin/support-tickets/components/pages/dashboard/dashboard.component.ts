@@ -37,7 +37,7 @@ export class SmartCentsDashboardComponent implements OnInit, OnDestroy {
     },
     {
       value: 'Age',
-      key: 'pk_ticketID',
+      key: 'age',
       width: '10'
     },
     {

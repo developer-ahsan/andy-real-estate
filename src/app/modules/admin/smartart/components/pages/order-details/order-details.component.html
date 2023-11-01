@@ -434,38 +434,51 @@
                                     Upload Virtual Proof
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
-                            <div>
-                                <p class="text-secondary text-sm">Uploading a virtual proof will add to the product
+                            <div class="space-y-2">
+                                <p class="text-secondary text-md">Uploading a virtual proof will add to the product
                                     images for
                                     this product on the SmartSite, as well as appear to the customer in various emails
                                     and account detail areas.</p>
-                                <p class="text-red-500 text-sm">
+                                <p class="text-red-500 text-md">
                                     Virtual proof images must be at least 600px by 600px, but no larger than 1500px by
                                     1500px. The larger the better. JPG format only.
                                 </p>
-                                <input type="file">
+                                <input type="file" #virtualProofInput accept=".jpg"
+                                    (change)="uploadFilesCommonFn($event, 'virtualProof')">
                                 <div>
-                                    <mat-checkbox><b>Include on store as an image</b></mat-checkbox>
+                                    <mat-checkbox [(ngModel)]="orderData.blnStoreImage"><b>Include on store as an
+                                            image</b></mat-checkbox>
                                 </div>
                                 <div>
-                                    <button class="min-w-40 btn buttonComment hover:bg-gray-200">Upload</button>
+                                    <button class="min-w-40 btn buttonComment hover:bg-gray-200"
+                                        (click)="uploadVirtualProof()">
+                                        <mat-progress-spinner *ngIf="VirtualProofImageLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                        <span *ngIf="!VirtualProofImageLoader">Upload</span>
+                                    </button>
                                 </div>
                                 <div class="mt-2">
                                     <div *ngIf="artWorkLoader">
                                         <mat-progress-spinner [diameter]="24" [mode]="'indeterminate'">
                                         </mat-progress-spinner>
                                     </div>
-                                    <div *ngIf="!artWorkLoader">
+                                    <div *ngIf="!artWorkLoader && virtualProofData.length">
                                         <p class="text-secondary text-sm w-full border-b">Existing Virtual Proof Images
                                         </p>
-                                        <div class="mt-2 flex space-x-2 overflow-x-auto">
-                                            <div class="text-center" *ngFor="let item of virtualProofData">
-                                                <img class="w-10 border"
+                                        <div class="row mt-2">
+                                            <div class="col-6 col-md-3 text-center"
+                                                *ngFor="let item of virtualProofData">
+                                                <img class="w-full border"
                                                     src="https://assets.consolidus.com/globalAssets/StoreProducts/VirtualProofs/{{item.fk_storeProductID}}/{{item.pk_virtualProofID}}.jpg">
-                                                <mat-icon class="icon-size-5 text-red-500 cursor-pointer"
+                                                <mat-icon class="icon-size-7 text-red-500 cursor-pointer"
+                                                    (click)="removeVirtualProof(item)" *ngIf="!item.removeLoader"
                                                     matTooltip="Remove" fuseAlertIcon
                                                     [svgIcon]="'heroicons_solid:trash'">
                                                 </mat-icon>
+                                                <mat-progress-spinner *ngIf="item.removeLoader" [diameter]="24"
+                                                    [mode]="'indeterminate'">
+                                                </mat-progress-spinner>
                                             </div>
                                         </div>
                                     </div>
@@ -698,8 +711,8 @@
                                             class="text-blue-500">
                                             <div class="flex  py-1">
                                                 <a href="https://assets.consolidus.com/artwork/{{orderData.pk_storeID}}/{{paramData.pfk_userID}}/{{paramData.fk_orderID}}/{{imprint.fk_orderLineID[0]}}/{{artwork.ID}}.{{artwork.EXTENSION}}"
-                                                    target="_blank"
-                                                    matTooltip="Download Artwork File">{{artwork.FILENAME}}
+                                                    target="_blank" matTooltip="Download Artwork File">Download Artwork
+                                                    {{artwork.FILENAME}}
                                                 </a>
                                                 <mat-icon svgIcon="mat_outline:download"></mat-icon>
                                             </div>
@@ -1383,64 +1396,34 @@
                                         </div>
                                         <!--- DECORATOR NOTIFIED --->
                                         <div *ngIf="imprint.pk_statusID == 5" class="rounded-2xl shadow bg-card p-4 ">
-                                            <fuse-alert class="mb-2" [appearance]="'outline'" [type]="'warning'"
+                                            <fuse-alert class="mb-2" [appearance]="'outline'" [type]="'success'"
                                                 [showIcon]="false">
                                                 As of {{imprint.statusDate | date: 'MM/dd/yyyy'}} the status of this
                                                 item is {{imprint.statusName}}.
                                             </fuse-alert>
-                                            <div *ngIf="imprint.viewProofCheck || imprint.viewFinalArtworkCheck">
+                                            <div>
                                                 <b>
                                                     <div class="flex space-x-1">
-                                                        <p>Send Art To Decorator</p>
+                                                        <p>Send Art To Decorator </p>
                                                         <br>
                                                         <a target="_blank" class="underline"
                                                             *ngIf="imprint.viewProofCheck"
                                                             href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg">(Click
                                                             here to view proof)</a>
-                                                        <a target="_blank" class="underline"
-                                                            *ngIf="imprint.viewFinalArtworkCheck"
-                                                            href="https://assets.consolidus.com/artwork/finalArt/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.eps">(Download
-                                                            final artwork)</a>
+                                                        <a target="_blank"
+                                                            *ngFor="let finalArt of imprint?.artworkFinalartFiles"
+                                                            class="underline"
+                                                            href="https://assets.consolidus.com/artwork/finalArt/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{finalArt.FILENAME}}">
+                                                            | (Download final artwork)</a>
                                                     </div>
                                                 </b>
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-8 col-12">
-                                                    <!-- Proof Contact -->
-                                                    <div class="flex space-x-2 align-items-center"
-                                                        *ngIf="smartArtUser.blnMaster && orderData.blnAdditionalArtApproval">
-                                                        <mat-form-field class="w-full">
-                                                            <mat-label>Proof Contact</mat-label>
-                                                            <mat-select matInput [(ngModel)]="imprint.selectedContact">
-                                                                <mat-option
-                                                                    [value]="orderData.sessionArtwork_artApprovalContactID">{{orderData.sessionArtworkFirstName[0]
-                                                                    +
-                                                                    ' '
-                                                                    +orderData.sessionArtworkFirstName[1]}}</mat-option>
-                                                                <mat-option *ngFor="let contact of contactProofs"
-                                                                    [value]="contact"
-                                                                    [attr.data-blnStoreUserApproval]="contact.blnStoreUserApproval">{{contact.firstName
-                                                                    + ' ' +
-                                                                    contact.lastName}}</mat-option>
-                                                            </mat-select>
-                                                        </mat-form-field>
-                                                        <button
-                                                            class="min-w-30 h-10 rounded-md bg-green-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 "
-                                                            type="button" (click)="updateProofContact(imprint)"
-                                                            [disabled]="imprint?.isProofLoader">
-                                                            <span *ngIf="!imprint?.isProofLoader">Update</span>
-                                                            <div class="flex justify-center"
-                                                                *ngIf="imprint?.isProofLoader">
-                                                                <mat-progress-spinner [diameter]="24"
-                                                                    [mode]="'indeterminate'">
-                                                                </mat-progress-spinner>
-                                                            </div>
-                                                        </button>
-                                                    </div>
-                                                    <h3>Please enter the artwork's PO Number: (enter only numbers,
-                                                        dashes, or letters)</h3>
                                                     <mat-form-field class="w-full">
-                                                        <mat-label>Artwork PO</mat-label>
+                                                        <mat-label>Please enter the artwork's PO Number: (enter only
+                                                            numbers,
+                                                            dashes, or letters)</mat-label>
                                                         <input matInput [(ngModel)]="imprint.artworkPO">
                                                     </mat-form-field>
                                                     <mat-form-field class="w-full">
@@ -1451,17 +1434,26 @@
                                                     <mat-form-field class="w-full">
                                                         <mat-label>Add any comments:
                                                         </mat-label>
-                                                        <textarea matInput
+                                                        <textarea matInput [(ngModel)]="imprint.artworkCommentsText"
                                                             id="comment-{{imprint.pk_imprintID}}"></textarea>
                                                     </mat-form-field>
-                                                    <div class="flex justify-between">
+                                                    <div>
                                                         <label>Select the final artwork file:</label>
-                                                        <input type="file">
+                                                        <br>
+                                                        <input type="file" #finalArtworkFileInput
+                                                            (change)="uploadFinalArtworkFile($event)">
                                                     </div>
                                                     <div>
-                                                        <button
-                                                            class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">Send
-                                                            artwork to decorator</button>
+                                                        <button (click)="updateFinalArtFile(imprint)"
+                                                            [disabled]="imprint.finalArtworkProofLoader"
+                                                            class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">
+                                                            <span *ngIf="!imprint?.finalArtworkProofLoader">Send
+                                                                artwork to decorator</span>
+                                                            <mat-progress-spinner [color]="'light'"
+                                                                *ngIf="imprint?.finalArtworkProofLoader" [diameter]="24"
+                                                                [mode]="'indeterminate'">
+                                                            </mat-progress-spinner>
+                                                        </button>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4 col-12">
@@ -1628,12 +1620,12 @@
                                                     *ngIf="imprint.approvalName">{{imprint.approvalName}} </span> <span
                                                     *ngIf="imprint.approvalEmail">({{imprint.approvalEmail}})</span>.
                                             </fuse-alert>
-                                            <div *ngIf="imprint.viewProofCheck || imprint.viewFinalArtworkCheck">
+                                            <div *ngIf="imprint.viewProofCheck">
                                                 <b>
                                                     <div class="flex space-x-1">
                                                         <a target="_blank" class="underline"
                                                             *ngIf="imprint.viewProofCheck"
-                                                            href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg">(Click
+                                                            href="https://assets.consolidus.com/Artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{imprint.pk_imprintID}}.jpg">(Click
                                                             here to view proof)</a>
                                                     </div>
                                                 </b>
@@ -1767,67 +1759,37 @@
                                         </div>
                                         <!--- IN PRODUCTION --->
                                         <div *ngIf="imprint.pk_statusID == 11" class="rounded-2xl shadow bg-card p-4 ">
-                                            <fuse-alert class="mb-2" [appearance]="'outline'" [type]="'warning'"
+                                            <fuse-alert class="mb-2" [appearance]="'outline'" [type]="'success'"
                                                 [showIcon]="false">
                                                 As of {{imprint.statusDate | date: 'MM/dd/yyyy'}} the status of this
                                                 item is {{imprint.statusName}}.
                                             </fuse-alert>
-                                            <div *ngIf="imprint.viewProofCheck || imprint.viewFinalArtworkCheck">
+                                            <div>
                                                 <b>
                                                     <div class="flex space-x-1">
-                                                        <p>Re-Send Art To Decorator | </p>
+                                                        <p>Re-Send Art To Decorator </p>
                                                         <br>
                                                         <a target="_blank" class="underline"
                                                             *ngIf="imprint.viewProofCheck"
                                                             href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg">(Click
                                                             here to view proof)</a>
-                                                        <a target="_blank" class="underline"
-                                                            *ngIf="imprint.viewFinalArtworkCheck"
-                                                            href="https://assets.consolidus.com/artwork/finalArt/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.eps">(Download
-                                                            final artwork)</a>
+                                                        <a target="_blank"
+                                                            *ngFor="let finalArt of imprint?.artworkFinalartFiles"
+                                                            class="underline"
+                                                            href="https://assets.consolidus.com/artwork/finalArt/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{finalArt.FILENAME}}">
+                                                            | (Download final artwork)</a>
                                                     </div>
                                                 </b>
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-8 col-12">
-                                                    <!-- Proof Contact -->
-                                                    <div class="flex space-x-2 align-items-center"
-                                                        *ngIf="smartArtUser.blnMaster && orderData.blnAdditionalArtApproval">
-                                                        <mat-form-field class="w-full">
-                                                            <mat-label>Proof Contact</mat-label>
-                                                            <mat-select matInput [(ngModel)]="imprint.selectedContact">
-                                                                <mat-option
-                                                                    [value]="orderData.sessionArtwork_artApprovalContactID">{{orderData.sessionArtworkFirstName[0]
-                                                                    +
-                                                                    ' '
-                                                                    +orderData.sessionArtworkFirstName[1]}}</mat-option>
-                                                                <mat-option *ngFor="let contact of contactProofs"
-                                                                    [value]="contact"
-                                                                    [attr.data-blnStoreUserApproval]="contact.blnStoreUserApproval">{{contact.firstName
-                                                                    + ' ' +
-                                                                    contact.lastName}}</mat-option>
-                                                            </mat-select>
-                                                        </mat-form-field>
-                                                        <button
-                                                            class="min-w-30 h-10 rounded-md bg-green-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 "
-                                                            type="button" (click)="updateProofContact(imprint)"
-                                                            [disabled]="imprint?.isProofLoader">
-                                                            <span *ngIf="!imprint?.isProofLoader">Update</span>
-                                                            <div class="flex justify-center"
-                                                                *ngIf="imprint?.isProofLoader">
-                                                                <mat-progress-spinner [diameter]="24"
-                                                                    [mode]="'indeterminate'">
-                                                                </mat-progress-spinner>
-                                                            </div>
-                                                        </button>
-                                                    </div>
-                                                    <h3>Please enter the artwork's PO Number: (enter only numbers,
-                                                        dashes, or letters)</h3>
-                                                    <br>
                                                     <mat-form-field class="w-full">
-                                                        <mat-label>Artwork PO</mat-label>
+                                                        <mat-label>Please enter the artwork's PO Number: (enter only
+                                                            numbers,
+                                                            dashes, or letters)</mat-label>
                                                         <input matInput [(ngModel)]="imprint.artworkPO">
                                                     </mat-form-field>
+                                                    <br>
                                                     <mat-form-field class="w-full">
                                                         <mat-label>Email recipients (comma-separated)</mat-label>
                                                         <input matInput [(ngModel)]="imprint.emailRecipients"
@@ -1836,18 +1798,26 @@
                                                     <mat-form-field class="w-full">
                                                         <mat-label>Add any comments:
                                                         </mat-label>
-                                                        <textarea matInput
+                                                        <textarea matInput [(ngModel)]="imprint.artworkCommentsText"
                                                             id="comment-{{imprint.pk_imprintID}}"></textarea>
                                                     </mat-form-field>
                                                     <div>
                                                         <label>Select the final artwork file:</label>
                                                         <br>
-                                                        <input type="file">
+                                                        <input type="file" #finalArtworkFileInput
+                                                            (change)="uploadFinalArtworkFile($event)">
                                                     </div>
                                                     <div>
-                                                        <button
-                                                            class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">Re-send
-                                                            artwork to decorator</button>
+                                                        <button (click)="updateFinalArtFile(imprint)"
+                                                            [disabled]="imprint.finalArtworkProofLoader"
+                                                            class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">
+                                                            <span *ngIf="!imprint?.finalArtworkProofLoader">Re-send
+                                                                artwork to decorator</span>
+                                                            <mat-progress-spinner [color]="'light'"
+                                                                *ngIf="imprint?.finalArtworkProofLoader" [diameter]="24"
+                                                                [mode]="'indeterminate'">
+                                                            </mat-progress-spinner>
+                                                        </button>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4 col-12">
@@ -2348,7 +2318,7 @@
                                                     <input type="file" #finalArtworkFileInput
                                                         (change)="uploadFinalArtworkFile($event)">
                                                     <div>
-                                                        <button (click)="uploadFinalArtworkFileToServer(imprint)"
+                                                        <button (click)="uploadFinalArtworkFileToServer(imprint,'')"
                                                             class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">
                                                             <span *ngIf="!imprint?.finalArtworkProofLoader">Send
                                                                 artwork to decorator</span>

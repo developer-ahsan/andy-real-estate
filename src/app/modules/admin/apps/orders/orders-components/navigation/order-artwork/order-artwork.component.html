@@ -29,10 +29,12 @@
                                 <b>({{imprint.pk_imprintID}}) {{imprint.locationName}}/{{imprint.methodName}}</b>
                             </td>
                             <td width="10%">
-                                <a class="text-decoration-none" *ngIf="imprint.proofImg"
-                                    href="https://assets.consolidus.com/artwork/Proof/{{orderDetail.fk_storeUserID}}/{{orderDetail.pk_orderID}}/{{imprint.fk_orderLineID}}/{{imprint.pk_imprintID}}.jpg"
-                                    target="_blank">View Proof</a>
-                                <span *ngIf="!imprint.proofImg">---</span>
+                                <div *ngFor="let artwork of imprint.artworkProofs; let i=index">
+                                    <a class="text-blue-500"
+                                        href="https://assets.consolidus.com/artwork/Proof/{{orderDetail.fk_storeUserID}}/{{orderDetail.pk_orderID}}/{{imprint.fk_orderLineID}}/{{artwork.FILENAME}}"
+                                        target="_blank">View Proof</a>
+                                    <span *ngIf="imprint.artworkProofs.length == 0">---</span>
+                                </div>
                             </td>
                             <td width="40%">
                                 {{imprint?.status.statusName || not_available}}

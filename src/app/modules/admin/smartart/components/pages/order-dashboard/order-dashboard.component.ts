@@ -190,7 +190,8 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
     }
     let params = {
       smart_art_userID: this.smartArtUser.pk_userID,
-      smartart_list: true,
+      // smartart_list: true,
+      order_dashboard_list: true,
       page: page,
       size: 20,
       store_id: this.paramsData.store ? this.paramsData?.store : '',

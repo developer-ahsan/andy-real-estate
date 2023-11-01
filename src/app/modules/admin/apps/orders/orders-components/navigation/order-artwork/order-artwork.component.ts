@@ -64,6 +64,7 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
         element.products = [];
         element.imprints = [];
         this.orderProducts.push(element);
+        this.getProofFiles(element.pk_orderLineID, index);
         this.getArtworkFiles(element.pk_orderLineID, index);
         value.push(element.pk_orderLineID);
         if (index == res["data"].length - 1) {
@@ -105,15 +106,27 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
       res["data"].forEach(element => {
         const index = this.orderProducts.findIndex(item => item.pk_orderLineID == element.fk_orderLineID);
         element.artworkFiles = [];
+        element.artworkProofs = [];
         element.delLoader = false;
         imprintIds.push(element.pk_imprintID);
-        this.checkIfImageExists(element, `https://assets.consolidus.com/artwork/Proof/${this.orderDetail.fk_storeUserID}/${this.orderDetail.pk_orderID}/${element.fk_orderLineID}/${element.pk_imprintID}.jpg`);
-        if (this.orderProducts[index].artworkFiles.length > 0) {
-          this.orderProducts[index].artworkFiles.forEach(file => {
-            if (file.ID.includes(element.pk_imprintID)) {
-              element.artworkFiles.push(file);
-            }
-          });
+        // this.checkIfImageExists(element, `https://assets.consolidus.com/artwork/Proof/${this.orderDetail.fk_storeUserID}/${this.orderDetail.pk_orderID}/${element.fk_orderLineID}/${element.pk_imprintID}.jpg`);
+        if (this.orderProducts[index]?.artworkFiles) {
+          if (this.orderProducts[index].artworkFiles.length > 0) {
+            this.orderProducts[index].artworkFiles.forEach(file => {
+              if (file.ID.includes(element.pk_imprintID)) {
+                element.artworkFiles.push(file);
+              }
+            });
+          }
+        }
+        if (this.orderProducts[index]?.artworkProofs) {
+          if (this.orderProducts[index].artworkProofs.length > 0) {
+            this.orderProducts[index].artworkProofs.forEach(file => {
+              if (file.ID.includes(element.pk_imprintID)) {
+                element.artworkProofs.push(file);
+              }
+            });
+          }
         }
         this.orderProducts[index].imprints.push(element);
       });
@@ -148,6 +161,19 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
     })
+  }
+  getProofFiles(pk_orderLineID, index) {
+    let payload = {
+      files_fetch: true,
+      path: `/artwork/Proof/${this.orderDetail.fk_storeUserID}/${this.orderDetail.pk_orderID}/${pk_orderLineID}/`
+    }
+    this._changeDetectorRef.markForCheck();
+    this._orderService.getFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(files => {
+      this.orderProducts[index].artworkProofs = files["data"];
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this._changeDetectorRef.markForCheck();
+    });
   }
   getArtworkFiles(pk_orderLineID, index) {
     let payload = {
