@@ -1297,13 +1297,14 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       };
       this._smartartService.addMedia(payload)
         .subscribe((response) => {
-          this.uploadFinalArtworkProof(imprint);
           if (msg) {
             this._smartartService.snackBar(msg);
             this.getArtworkFinalartFiles();
           } else {
+            this.uploadFinalArtworkProof(imprint);
             this._smartartService.snackBar('File Uploaded Successfully');
           }
+          imprint.finalArtworkProofLoader = false;
           this._changeDetectorRef.markForCheck();
         }, err => {
           imprint.finalArtworkProofLoader = false;
@@ -1321,14 +1322,14 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       return;
     }
     let payload: UploadOrderFinalArt = {
-      decoratorEmail: imprint.emailRecipients,
+      decoratorEmail: imprint.emailRecipients.split(','),
       clientFileExt: this.imageFinalArtworkValue.extension, // file extension that is uploaded
       storeID: this.orderData.pk_storeID,
       storeName: this.orderData.storeName,
       orderID: this.orderData.pk_orderID,
+      userID: this.orderData.fk_storeUserID,
+      orderLineImprintID: imprint.pk_imprintID,
       orderLineID: Number(this.paramData.pk_orderLineID),
-      userID: Number(this.orderData.pfk_userID),
-      orderLineImprintID: Number(this.paramData.fk_imprintID),
       decorationName: imprint.decorationName,
       locationName: imprint.locationName,
       productName: this.orderData.productName.replace(/'/g, "''"),
@@ -1622,8 +1623,9 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
         this.imprintdata.forEach(element => {
           element.artworkFinalartFiles = [];
         });
+        imprint.artworkCommentsText = '';
         this.uploadFinalArtworkFileToServer(imprint, 'Final artwork successfully uploaded, and decorator has been notified.');
-        this.getArtworkOther();
+        this.updateImprintsData();
       } else {
         imprint.finalArtworkProofLoader = false;
         this._changeDetectorRef.markForCheck();
