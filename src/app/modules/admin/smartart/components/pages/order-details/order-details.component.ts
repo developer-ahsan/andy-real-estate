@@ -231,7 +231,6 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
           }
         });
       }
-      console.log(this.imprintdata)
       const checkFileExistObservable = of(this.checkFileExist(`https://assets.consolidus.com/globalAssets/Stores/BrandGuide/${this.orderData.pk_storeID}.pdf`, 'brand', 0));
       const checkFinalArtworkObservable = of(this.checkFileExist(`https://assets.consolidus.com/artwork/finalArt/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.paramData.fk_imprintID}.eps`, 'finalArtwork', 0));
       const getArtworkOtherObservable = of(this.getArtworkOther());
