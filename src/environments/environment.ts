@@ -81,6 +81,7 @@ export const environment = {
   supportTickets: "https://consolidusapi.azure-api.net/support_ticket",
   storeMedia: "https://assets.consolidus.com/globalAssets/Stores",
   assetsURL: "https://assets.consolidus.com/",
+  ppCheckout: "https://admin.consolidus.com/pp",
   supportTeam:
     "https://assets.consolidus.com/globalAssets/System/Defaults/SupportTeam/",
   generalFilesPath: 'https://admin.consolidus.com/ssadm/getFiles.cfm?Key=DE3339BDDF8B5D1A6BD3D965D7CCB4B6A7234672505A0023485852397777D05E',

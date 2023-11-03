@@ -135,6 +135,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   VirtualProofImageLoader: boolean = false;
 
   userDetails: any;
+  randomString: any = new Date().getTime();
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,

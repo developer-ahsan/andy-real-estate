@@ -144,8 +144,7 @@
                                         <mat-icon svgIcon="mat_outline:comment" matTooltip="Order Comments"></mat-icon>
                                     </mat-button-toggle>
 
-                                    <mat-button-toggle
-                                        (click)="openEmailDetailsModal(item,'PROOF REMINDER EMAIL FOR ORDER')">
+                                    <mat-button-toggle (click)="openEmailDetailsModal(item,'awaiting')">
                                         <mat-icon svgIcon="mat_outline:email"
                                             matTooltip="Send Email to the customer"></mat-icon>
                                     </mat-button-toggle>
@@ -280,8 +279,7 @@
                                     <mat-icon svgIcon="mat_outline:comment" matTooltip="Order Comments"></mat-icon>
                                 </mat-button-toggle>
 
-                                <mat-button-toggle
-                                    (click)="openEmailDetailsModal(item,'PAYMENT NOTIFICATION REMINDER EMAIL FOR ORDER')">
+                                <mat-button-toggle (click)="openEmailDetailsModal(item,'reminder')">
                                     <mat-icon svgIcon="mat_outline:email"
                                         matTooltip="Send Email to the customer"></mat-icon>
                                 </mat-button-toggle>
@@ -532,17 +530,33 @@
                         <div class="col-12">
                             <mat-label>Subject:</mat-label>
                             <mat-form-field class="w-full">
-                                <input matInput>
+                                <input matInput [(ngModel)]="emailModalContent.subject">
                             </mat-form-field>
                         </div>
                         <div class="col-12">
                             <mat-label>Body:</mat-label>
-                            <ckeditor [config]="editorConfig"></ckeditor>
+                            <ckeditor [config]="editorConfig" [(ngModel)]="emailModalContent.body"></ckeditor>
+                        </div>
+                        <div class="col-12" [innerHTML]="emailModalContent.footer"></div>
+                    </div>
+                    <div class="col-12" *ngIf="emailModalContent?.text" [innerHTML]="emailModalContent.text"></div>
+                    <div class="col-12 my-2">
+                        <div>
+                            <mat-checkbox *ngIf="emailModalContent.type == 'awaiting'">Include images?</mat-checkbox>
+                            <br *ngIf="emailModalContent.type == 'awaiting'">
+                            <mat-checkbox *ngIf="emailModalContent.type == 'awaiting'"
+                                matTooltip="Include the additional content below the message.">Include
+                                content?</mat-checkbox>
+                            <br *ngIf="emailModalContent.type == 'awaiting'">
+                            <mat-checkbox
+                                matTooltip="Include a PDF copy of the invoice as an attachment on the email.">Include
+                                PDF invoice as attachment?</mat-checkbox>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
+
                 <button type="button" data-dismiss="modal"
                     class="mr-2 inline-flex items-center gap-x-1.5 rounded-md bg-red-400 px-2.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-400">
                     <span>Close</span>

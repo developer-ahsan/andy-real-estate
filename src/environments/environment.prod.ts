@@ -86,6 +86,7 @@ export const environment = {
     featureImage:
         "https://assets.consolidus.com/globalAssets/Stores/featureImage/",
     assetsURL: "https://assets.consolidus.com/",
+    ppCheckout: "https://admin.consolidus.com/pp",
     firebaseConfig: {
         apiKey: "AIzaSyDdIDmQFMIa3aXSnoudkf3At_zQ9faFs2k",
         authDomain: "consolidus-cinnova.firebaseapp.com",

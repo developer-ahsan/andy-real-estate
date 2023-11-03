@@ -499,10 +499,7 @@ interface OldIncidentReport {
     pk_incidentReportID: number;
     fk_storeID: number;
     fk_orderID: number;
-    date: string;
-    fk_storeUserID: number;
     priority1: string;
-    priority2: string;
     priority3: string;
     priority4: string;
     rerunCost: string;
@@ -511,17 +508,9 @@ interface OldIncidentReport {
     how: string;
     recommend: string;
     fk_companyID: number;
-    sourceEntity: string;
-    fk_adminUserID: number;
-    fk_sourceAdminUserID: number;
-    sourceEmployeeName: string;
+    fk_sourceAdminUserID: string;
     dateModified: string;
     blnFinalized: boolean;
-    storeName: string;
-    storeCode: string;
-    storeUserFirstName: string;
-    storeUserLastName: string;
-    storeUserCompanyName: string;
     createdBy: string;
     incidentReportSources: string[]; // only names array
 };

@@ -4,6 +4,8 @@ import { finalize, takeUntil } from 'rxjs/operators';
 import { Subject, pipe } from 'rxjs';
 import moment from 'moment';
 import { environment } from 'environments/environment';
+import * as CryptoJS from 'crypto-js';
+
 declare var $: any;
 @Component({
   selector: 'app-order-status-report',
@@ -54,22 +56,22 @@ export class OrderStatusComponent implements OnInit {
       { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike'] },
       { name: 'align', items: ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'] },
       { name: 'links', items: ['Link', 'Unlink'] },
-      { name: 'insert', items: ['Image', 'Table'] },
+      { name: 'insert', items: ['Table'] },
       { name: 'tools', items: ['Maximize'] },
     ],
-    extraPlugins: 'uploadimage,image2',
-    uploadUrl:
-      'https://ckeditor.com/apps/ckfinder/3.4.5/core/connector/php/connector.php?command=QuickUpload&type=Files&responseType=json',
-    filebrowserUploadMethod: 'base64',
-    // Configure your file manager integration. This example uses CKFinder 3 for PHP.
-    filebrowserBrowseUrl:
-      'https://ckeditor.com/apps/ckfinder/3.4.5/ckfinder.html',
-    filebrowserImageBrowseUrl:
-      'https://ckeditor.com/apps/ckfinder/3.4.5/ckfinder.html?type=Images',
-    filebrowserUploadUrl:
-      'https://ckeditor.com/apps/ckfinder/3.4.5/core/connector/php/connector.php?command=QuickUpload&type=Files',
-    filebrowserImageUploadUrl:
-      'https://ckeditor.com/apps/ckfinder/3.4.5/core/connector/php/connector.php?command=QuickUpload&type=Images'
+    // extraPlugins: 'uploadimage,image2',
+    // uploadUrl:
+    //   'https://ckeditor.com/apps/ckfinder/3.4.5/core/connector/php/connector.php?command=QuickUpload&type=Files&responseType=json',
+    // filebrowserUploadMethod: 'base64',
+    // // Configure your file manager integration. This example uses CKFinder 3 for PHP.
+    // filebrowserBrowseUrl:
+    //   'https://ckeditor.com/apps/ckfinder/3.4.5/ckfinder.html',
+    // filebrowserImageBrowseUrl:
+    //   'https://ckeditor.com/apps/ckfinder/3.4.5/ckfinder.html?type=Images',
+    // filebrowserUploadUrl:
+    //   'https://ckeditor.com/apps/ckfinder/3.4.5/core/connector/php/connector.php?command=QuickUpload&type=Files',
+    // filebrowserImageUploadUrl:
+    //   'https://ckeditor.com/apps/ckfinder/3.4.5/core/connector/php/connector.php?command=QuickUpload&type=Images'
     // other options
   };
   emailModalContent: any;
@@ -173,6 +175,7 @@ export class OrderStatusComponent implements OnInit {
       this.tempProcessingOrders = this.processingOrders;
       this.tempAwaitingOrders = this.awaitingOrders;
 
+      console.log(this.awaitingOrders)
       this._changeDetectorRef.markForCheck();
     })
   }
@@ -316,10 +319,76 @@ export class OrderStatusComponent implements OnInit {
       };
     }
   };
-  openEmailDetailsModal(data, title) {
+  openEmailDetailsModal(data, type) {
     this.emailModalContent = data;
-    this.emailModalContent.modalTitle = title;
-    // this.emailModalContent.loader = true;
+    this.emailModalContent.type = type;
+    if (type == 'awaiting') {
+      this.emailModalContent.modalTitle = 'PROOF REMINDER EMAIL FOR ORDER';
+      this.emailModalContent.subject = 'Artwork approval needed for your order';
+    } else {
+      this.emailModalContent.modalTitle = 'PAYMENT NOTIFICATION REMINDER EMAIL FOR ORDER';
+      this.emailModalContent.subject = 'Requesting payment for your order';
+    }
+    this.emailModalContent.loader = true;
+    this.getEmailModalData(type);
     $(this.orderEmailModal.nativeElement).modal('show');
+  }
+  getEmailModalData(type) {
+
+    let payload = {
+      orderID: this.emailModalContent.orderID,
+      storeID: this.emailModalContent.storeID,
+      storeUserID: this.emailModalContent.storeUserID,
+      get_order_email_data: true
+    }
+    this._dashboardService.postDashboardData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.emailModalContent.response = res;
+      let message = '';
+      let footer = '';
+      let greeting = '';
+      if (type == 'awaiting') {
+        greeting = 'Hi';
+        // Body 
+        if (res["qryStoreDefaultEmails"][0].rescheduleFollowUp) {
+          message = res["qryStoreDefaultEmails"][0].rescheduleFollowUp;
+        } else {
+          message = `We were working on the proofs for your order ${this.emailModalContent.orderID} through ${this.emailModalContent.storeName}, and just wanted to make sure that you were receiving the proofs through our system.  For the sake of time and convenience, links to all proofs that still need reviewed on this order are below.<br /><br />
+          Please let us know what you think, and if any changes are needed. <br /><br /> I hope this email finds you well! <br /><br /> Thank you!`
+        }
+        // Footer
+        if (res["data"].localPmID) {
+          footer = `<div class="row">
+          <div class="col-xs-12 add-padding-sm">
+                <h2 style="font-size: 16px; font-weight: bold; color: ##333333; font-family: Arial, Helvetica, sans-serif; margin: 0 0 0 0; padding: 0; text-decoration: none; border: none;">${res["data"].localProgramManager}</h2>
+                <h3 style="font-size: 14px; color: ##999999; font-family: Arial, Helvetica, sans-serif; margin: 0 0 10px 0; padding: 0;">${res["data"].localRole}</h2>
+                526 S. Main Street, ##804 Akron, Ohio 44311<br />
+                (d) #local.phone# | (p) 866.PromoHelp<br />
+                (e) <a href="mailto:#local.email#">#local.email#</a><br /><br />
+                <img src="${environment.assetsURL}globalAssets/Stores/mastheads/${this.emailModalContent.storeID}.gif" style="width: 100%; height: auto; max-width: 200px; border: none;" border="0" />
+              </div>
+            </div>`
+        }
+      } else {
+
+        const hash = CryptoJS.MD5(`storeID=${this.emailModalContent.storeID}&orderID=${this.emailModalContent.orderID}`);
+        const hashedValue = hash.toString(CryptoJS.enc.Hex);
+        greeting = 'Dear';
+        // Body 
+        if (res["qryStoreDefaultEmails"][0].paymentNotification) {
+          message = res["qryStoreDefaultEmails"][0].paymentNotification;
+        } else {
+          message = `The artwork has been approved for your order ${this.emailModalContent.orderID} through ${this.emailModalContent.storeName}. We are now just awaiting payment or payment information.  Once received, your order will move to production. <br /><br /> You can use <a href="${environment.ppCheckout}?orderID=${this.emailModalContent.orderID}&h=${hashedValue}&TPE=${res["orderDate"][0].billingEmail}&UE=${res["orderDate"][0].billingEmail}">this link</a> to pay online, or simply reply with payment information, questions, or concerns. <br /><br /> <br /><br /> Thank you!`
+        }
+        this.emailModalContent.text = `<div style="font-size: 12px; color: ##999;">If the above payment link does not work, you can copy and paste this link into the address bar of your browser:<br />${environment.ppCheckout}?orderID=${this.emailModalContent.orderID}&h=${hashedValue}&TPE=${res["orderDate"][0].billingEmail}&UE=${res["orderDate"][0].billingEmail}</div>`
+      }
+      this.emailModalContent.body = `${greeting} ${res["orderDate"][0].storeUserFirstName},<br /><br />${message}`;
+      this.emailModalContent.footer = footer;
+      this.emailModalContent.loader = false;
+      this._changeDetectorRef.markForCheck();
+      console.log(this.emailModalContent);
+    }, err => {
+      this.emailModalContent.loader = false;
+      this._changeDetectorRef.markForCheck();
+    });
   }
 }

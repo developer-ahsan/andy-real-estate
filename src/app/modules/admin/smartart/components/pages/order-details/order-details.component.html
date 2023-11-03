@@ -470,7 +470,7 @@
                                             <div class="col-6 col-md-3 text-center"
                                                 *ngFor="let item of virtualProofData">
                                                 <img class="w-full border"
-                                                    src="https://assets.consolidus.com/globalAssets/StoreProducts/VirtualProofs/{{item.fk_storeProductID}}/{{item.pk_virtualProofID}}.jpg">
+                                                    src="https://assets.consolidus.com/globalAssets/StoreProducts/VirtualProofs/{{item.fk_storeProductID}}/{{item.pk_virtualProofID}}.jpg?{{randomString}}">
                                                 <mat-icon class="icon-size-7 text-red-500 cursor-pointer"
                                                     (click)="removeVirtualProof(item)" *ngIf="!item.removeLoader"
                                                     matTooltip="Remove" fuseAlertIcon
@@ -687,7 +687,7 @@
                                             <div class="flex justify-end">
                                                 <img class="w-40"
                                                     onError="this.src='https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'"
-                                                    src="https://assets.consolidus.com/globalAssets/Products/HiRes/{{orderData.pk_storeProductID}}.jpg">
+                                                    src="https://assets.consolidus.com/globalAssets/Products/HiRes/{{orderData.pk_storeProductID}}.jpg?{{randomString}}">
                                             </div>
                                             <button (click)="isCommentToggle = !isCommentToggle"
                                                 class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">Customer
@@ -734,11 +734,11 @@
                                                         <br>
                                                         <a target="_blank" class="underline" class="underline"
                                                             *ngIf="imprint.viewProofCheck"
-                                                            href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg">(Click
+                                                            href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg?{{randomString}}">(Click
                                                             here to view proof)</a>
                                                         <a target="_blank" class="underline"
                                                             *ngIf="imprint.viewFinalArtworkCheck"
-                                                            href="https://assets.consolidus.com/artwork/finalArt/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.eps">(Download
+                                                            href="https://assets.consolidus.com/artwork/finalArt/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.eps?{{randomString}}">(Download
                                                             final artwork)</a>
                                                     </div>
                                                 </b>
@@ -970,7 +970,7 @@
                                                         <br>
                                                         <a target="_blank" class="underline"
                                                             *ngIf="imprint.viewProofCheck"
-                                                            href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg">(Click
+                                                            href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg?{{randomString}}">(Click
                                                             here to view proof)</a>
                                                     </div>
                                                 </b>
@@ -1175,7 +1175,7 @@
                                                         <br>
                                                         <a target="_blank" class="underline"
                                                             *ngIf="imprint.viewProofCheck"
-                                                            href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg">(Click
+                                                            href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg?{{randomString}}">(Click
                                                             here to view proof)</a>
                                                     </div>
                                                 </b>
@@ -1408,7 +1408,7 @@
                                                         <br>
                                                         <a target="_blank" class="underline"
                                                             *ngIf="imprint.viewProofCheck"
-                                                            href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg">(Click
+                                                            href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg?{{randomString}}">(Click
                                                             here to view proof)</a>
                                                         <a target="_blank"
                                                             *ngFor="let finalArt of imprint?.artworkFinalartFiles"
@@ -1625,7 +1625,7 @@
                                                     <div class="flex space-x-1">
                                                         <a target="_blank" class="underline"
                                                             *ngIf="imprint.viewProofCheck"
-                                                            href="https://assets.consolidus.com/Artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{imprint.pk_imprintID}}.jpg">(Click
+                                                            href="https://assets.consolidus.com/Artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{imprint.pk_imprintID}}.jpg?{{randomString}}">(Click
                                                             here to view proof)</a>
                                                     </div>
                                                 </b>
@@ -1771,7 +1771,7 @@
                                                         <br>
                                                         <a target="_blank" class="underline"
                                                             *ngIf="imprint.viewProofCheck"
-                                                            href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg">(Click
+                                                            href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg?{{randomString}}">(Click
                                                             here to view proof)</a>
                                                         <a target="_blank"
                                                             *ngFor="let finalArt of imprint?.artworkFinalartFiles"
@@ -1912,7 +1912,7 @@
                                                         <br>
                                                         <a target="_blank" class="underline"
                                                             *ngIf="imprint.viewProofCheck"
-                                                            href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg">(Click
+                                                            href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg?{{randomString}}">(Click
                                                             here to view proof)</a>
                                                     </div>
                                                 </b>
@@ -2122,7 +2122,7 @@
                                                     <div class="flex space-x-1">
                                                         <a target="_blank" class="underline"
                                                             *ngIf="imprint.viewProofCheck"
-                                                            href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg">(Click
+                                                            href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg?{{randomString}}">(Click
                                                             here to view proof)</a>
                                                     </div>
                                                 </b>
@@ -2288,7 +2288,7 @@
                                                         <p>Send Art To Decorator | </p>
                                                         <a target="_blank" class="underline"
                                                             *ngIf="imprint.viewProofCheck"
-                                                            href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg">(Click
+                                                            href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg?{{randomString}}">(Click
                                                             here to view proof)</a>
                                                     </div>
                                                 </b>

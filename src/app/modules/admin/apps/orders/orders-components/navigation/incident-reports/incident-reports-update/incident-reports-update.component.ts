@@ -132,12 +132,18 @@ export class IncidentReportsUpdateComponent implements OnInit {
       this.isUserLoader = false;
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
-      let users = res["data"][0].sourceOfIncidentEmployee.split(',,');
+      let users = [];
+      if (res["data"][0].sourceOfIncidentEmployee) {
+        users = res["data"][0].sourceOfIncidentEmployee.split(',,');
+      }
       users.forEach(user => {
         const [name, email, id, ID] = user.split('::');
         this.usersList.push({ name, email, id, ID });
       });
-      let sources = res["sourceOfIncidentSuppliers"][0]["sourceOfIncidentSuppliers"].split(',,');
+      let sources = [];
+      if (res["sourceOfIncidentSuppliers"][0]["sourceOfIncidentSuppliers"]) {
+        sources = res["sourceOfIncidentSuppliers"][0]["sourceOfIncidentSuppliers"].split(',,');
+      }
       sources.forEach(element => {
         const [id, name] = element.split('::');
         this.supplierList.push({ id: Number(id), name });
@@ -152,7 +158,10 @@ export class IncidentReportsUpdateComponent implements OnInit {
     this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       res["data"].forEach(element => {
         element.sources = [];
-        let sources = element.incidentReportSources.split(',,');
+        let sources = []
+        if (element.incidentReportSources) {
+          sources = element.incidentReportSources.split(',,');
+        }
         sources.forEach(source => {
           const [id, name] = source.split('::');
           element.sources.push({ id, name })
@@ -204,7 +213,10 @@ export class IncidentReportsUpdateComponent implements OnInit {
     if (item.fk_sourceAdminUserID) {
       this.updateFormModal.source_employee = item.fk_sourceAdminUserID.split(',');
     }
-    let sources = item.incidentReportSources.split(',,');
+    let sources = [];
+    if (item.incidentReportSources) {
+      sources = item.incidentReportSources.split(',,');
+    }
     sources.forEach(source => {
       const [id, name] = source.split('::');
       this.updateFormModal.reportsSources.push(Number(id));
@@ -511,29 +523,15 @@ export class IncidentReportsUpdateComponent implements OnInit {
         pk_incidentReportID: id,
         fk_storeID: formData.fk_storeID,
         fk_orderID: formData.fk_orderID,
-        date: formData.date,
-        fk_storeUserID: formData.fk_storeUserID,
-        priority1: formData.priority1,
-        priority2: formData.priority2,
-        priority3: formData.priority3,
-        priority4: formData.priority4,
         rerunCost: formData.rerunCost,
         explanation: formData.explanation,
         corrected: formData.corrected,
         how: formData.how,
         recommend: formData.recommend,
         fk_companyID: formData.fk_companyID,
-        sourceEntity: formData.sourceEntity,
-        fk_adminUserID: formData.fk_adminUserID,
         fk_sourceAdminUserID: formData.fk_sourceAdminUserID,
-        sourceEmployeeName: formData.sourceEmployeeName,
         dateModified: formData.dateModified,
         blnFinalized: formData.blnFinalized,
-        storeName: formData.storeName,
-        storeCode: formData.storeCode,
-        storeUserFirstName: formData.storeUserFirstName,
-        storeUserLastName: formData.storeUserLastName,
-        storeUserCompanyName: formData.storeUserCompanyName,
         createdBy: formData.createdBy,
         incidentReportSources: reports_sources
       }
@@ -552,6 +550,9 @@ export class IncidentReportsUpdateComponent implements OnInit {
       send_incident_report_email: true
     }
     this._orderService.orderPostCalls(paylaod).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._orderService.snackBar("Incident report updated successfully");
+      this.isUpdateLoader = false;
+      this._changeDetectorRef.markForCheck();
     });
   }
 

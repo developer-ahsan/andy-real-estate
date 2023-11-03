@@ -40,6 +40,8 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
   removeFileName: string = '';
   artworkIndex: any;
   user: any;
+  randomString: any = new Date().getTime();
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _authService: AuthService,

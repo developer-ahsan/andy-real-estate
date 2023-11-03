@@ -158,6 +158,11 @@ export class DashboardsService {
             params: params
         }).pipe(retry(3));
     };
+    // Post Dashboard Calls
+    postDashboardData(payload) {
+        return this._httpClient.post(environment.dashboard,
+            payload);
+    };
     // Common Update Call
     updateDashboardData(payload) {
         return this._httpClient.put(
