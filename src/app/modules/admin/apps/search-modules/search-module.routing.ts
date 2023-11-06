@@ -1,6 +1,6 @@
 import { Route } from '@angular/router';
 import { SearchComponents } from './search.component';
-import { SearchProductsComponents } from './search-products/search-products.component';
+import { SearchProductssComponents } from './search-products/search-products.component';
 import { SearchOrdersComponents } from './search-orders/search-orders.component';
 import { SearchCustomersComponents } from './search-customers/search-customers.component';
 import { SearchVendorsComponents } from './search-vendors/search-vendors.component';
@@ -18,7 +18,7 @@ export const searchRoutes: Route[] = [
             },
             {
                 path: 'products/:value',
-                component: SearchProductsComponents
+                component: SearchProductssComponents
             },
             {
                 path: 'orders/:value',

@@ -21,7 +21,7 @@ import { FuseAutogrowModule } from '@fuse/directives/autogrow';
 import { FuseFindByKeyPipeModule } from '@fuse/pipes/find-by-key';
 import { SharedModule } from 'app/shared/shared.module';
 import { SearchComponents } from './search.component';
-import { SearchProductsComponents } from './search-products/search-products.component';
+import { SearchProductssComponents } from './search-products/search-products.component';
 import { searchRoutes } from './search-module.routing';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { MatPaginatorModule } from '@angular/material/paginator';
@@ -35,7 +35,7 @@ import { SearchQuotesComponents } from './search-quotes/search-quotes.component'
 @NgModule({
     declarations: [
         SearchComponents,
-        SearchProductsComponents,
+        SearchProductssComponents,
         SearchOrdersComponents,
         SearchCustomersComponents,
         SearchVendorsComponents,

@@ -10,13 +10,11 @@ import { SearchService } from '../search.service';
 import { MatPaginator } from '@angular/material/paginator';
 
 @Component({
-    selector: 'search-products',
-    templateUrl: './search-products.component.html',
+    selector: 'search-products-data',
+    templateUrl: './search-products-data.component.html',
     styles: [".mat-paginator {border-radius: 16px !important} .ngx-pagination .current {background: #2c3344 !important}"],
-    encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SearchProductsComponents implements OnInit, OnDestroy {
+export class SearchProductssComponents implements OnInit, OnDestroy {
     @ViewChild('paginator') paginator: MatPaginator;
 
     @ViewChild('drawer', { static: true }) matDrawer: MatDrawer;
@@ -67,44 +65,7 @@ export class SearchProductsComponents implements OnInit, OnDestroy {
             this._changeDetectorRef.markForCheck();
             this.getProductsData(1);
         });
-        // Subscribe to MatDrawer opened change
-        this.matDrawer.openedChange.subscribe((opened) => {
-            if (!opened) {
-                // Remove the selected contact when drawer closed
 
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            }
-        });
-
-        // Subscribe to media changes
-        this._fuseMediaWatcherService.onMediaChange$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe(({ matchingAliases }) => {
-
-                // Set the drawerMode if the given breakpoint is active
-                if (matchingAliases.includes('lg')) {
-                    this.drawerMode = 'side';
-                }
-                else {
-                    this.drawerMode = 'over';
-                }
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
-
-        // Listen for shortcuts
-        fromEvent(this._document, 'keydown')
-            .pipe(
-                takeUntil(this._unsubscribeAll),
-                filter<KeyboardEvent>(event =>
-                    (event.ctrlKey === true || event.metaKey) // Ctrl or Cmd
-                    && (event.key === '/') // '/'
-                )
-            )
-            .subscribe(() => {
-            });
     }
     searchProduct() {
         if (this.searchKeyword == '') {
