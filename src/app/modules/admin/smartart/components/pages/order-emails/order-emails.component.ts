@@ -7,6 +7,8 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { SmartArtService } from '../../smartart.service';
 import { sendOrderCustomerEmail } from '../../smartart.types';
+import { Location } from '@angular/common';
+
 @Component({
   selector: 'app-order-emails',
   templateUrl: './order-emails.component.html',
@@ -34,6 +36,7 @@ export class SmartartOrderEmailComponent implements OnInit, OnDestroy {
     private _authService: AuthService,
     private _smartartService: SmartArtService,
     private router: Router,
+    private _location: Location,
     private _activeRoute: ActivatedRoute
   ) { }
 
@@ -104,6 +107,7 @@ export class SmartartOrderEmailComponent implements OnInit, OnDestroy {
       this.ngFrom = '';
       this.ngMessage = '';
       this.sendEmailLoader = false;
+      this._location.back();
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.sendEmailLoader = false;

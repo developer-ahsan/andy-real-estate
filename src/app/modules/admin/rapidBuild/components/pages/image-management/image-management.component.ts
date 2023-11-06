@@ -4,7 +4,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatDrawer } from '@angular/material/sidenav';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, finalize, map, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { RapidBuildService } from '../../rapid-build.service';
 import { HideUnhideCart, bulkRemoveRapidBuildEntry, updateAttentionFlagOrder } from '../../rapid-build.types';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
@@ -46,11 +46,16 @@ export class RapidImageManagementComponent implements OnInit, OnDestroy {
   ) { }
   ngOnInit(): void {
     this.userData = JSON.parse(sessionStorage.getItem('rapidBuild'));
-    this._commonService.storesData$.pipe(takeUntil(this._unsubscribeAll)).subscribe(stores => {
-      this.allStores.push({ storeName: 'All Stores', pk_storeID: 0 });
-      this.allStores = this.allStores.concat(stores['data']);
-      this.selectedStore = this.allStores[0];
-    });
+    this._commonService.storesData$
+      .pipe(
+        takeUntil(this._unsubscribeAll),
+        map(res => res["data"].filter(element => element.blnActive))
+      )
+      .subscribe(filteredData => {
+        this.allStores.push({ storeName: 'All Stores', pk_storeID: 0 });
+        this.allStores.push(...filteredData);
+        this.selectedStore = this.allStores[0];
+      });
     this._RapidBuildService.rapidBuildStatuses$.pipe(takeUntil(this._unsubscribeAll)).subscribe(statuses => {
       this.allStatus.push({ statusName: 'All statuses', pk_statusID: 0 });
       this.allStatus = this.allStatus.concat(statuses['data']);
