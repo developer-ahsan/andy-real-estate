@@ -78,15 +78,25 @@
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Email</b>
-                            <p class="float-right text-sm">{{selectedCustomer?.email || not_available}}</p>
+                            <a class="float-right text-sm"
+                                href="mailto:{{selectedCustomer.email}}">{{selectedCustomer?.email ||
+                                not_available}}</a>
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Phone</b>
                             <p class="float-right text-sm">{{selectedCustomer?.dayPhone || not_available}}</p>
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
-                            <b class="text-secondary text-sm">Address</b>
+                            <b class="text-secondary text-sm">Location</b>
                             <p class="float-right text-sm">{{selectedCustomer?.address1 || not_available}}</p>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Status</b>
+                            <p class="float-right text-sm">
+                                <span *ngIf="selectedCustomer.blnActive" class="text-green-700 font-bold">Active</span>
+                                <span *ngIf="!selectedCustomer.blnActive" class="text-red-700 font-bold
+                                ">Disabled</span>
+                            </p>
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Fax</b>
@@ -95,6 +105,11 @@
                         <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Program Manager</b>
                             <p class="float-right text-sm">{{selectedCustomer?.programManager || not_available}}</p>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12" *ngIf="selectedCustomer.rutgersEmployeeType">
+                            <b class="text-secondary text-sm">Rutgers Attributes:</b>
+                            <p class="float-right text-sm">{{selectedCustomer?.rutgersEmployeeType || not_available}}
+                            </p>
                         </div>
                     </div>
                 </div>

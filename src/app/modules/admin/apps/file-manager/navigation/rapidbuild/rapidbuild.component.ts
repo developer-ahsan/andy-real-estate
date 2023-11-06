@@ -358,7 +358,7 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
     let paylaod: UpdateRapidbuildStatus = {
       rbid: this.editItemData.pk_rapidBuildID,
       imageStatusID: this.imageStatusID,
-      comments: this.buildComments,
+      comments: this.buildComments.replace(/'/g, "''"),
       rbid_userID: this.editItemData.pk_userID,
       rbid_firstName: this.editItemData.rapidBuildUserFirstName,
       rbid_lastName: this.editItemData.rapidBuildUserLastName,
@@ -383,6 +383,7 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
           page: 1,
           size: 20,
         }
+        this.buildComments = '';
         this.dataSourceLoading = true;
         this.ngStatus = 2;
         this.ngPID = '';
