@@ -403,6 +403,11 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
       if (res["success"]) {
         this._smartartService.snackBar(res["message"]);
         this.claimItem.fk_smartArtDesignerClaimID = claimID;
+        this.dataSource.forEach(element => {
+          if (element.pk_orderLineID == this.claimItem.pk_orderLineID) {
+            element.fk_smartArtDesignerClaimID = claimID;
+          }
+        });
       }
       this.claimItem.isClaimLoader = false;
       this.isClaimedModal = false;

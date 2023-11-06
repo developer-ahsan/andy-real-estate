@@ -603,6 +603,9 @@
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                             <div>
+                                <div class="alert alert-success p-3 my-2 text-center" *ngIf="orderData.blnGroupRun">
+                                    GROUP RUN ITEM
+                                </div>
                                 <div class="w-full font-medium text-md">PO: <a *ngIf="imprint.poSent"
                                         href="https://assets.consolidus.com/globalAssets/Orders/purchaseOrders/{{paramData?.fk_orderID}}/{{imprint.poSent.pk_sentPOID}}.html"
                                         target="_blank">{{orderData.fk_orderID}}-{{paramData?.pk_orderLineID}}</a>
@@ -2452,6 +2455,15 @@
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                        </mat-expansion-panel>
+                        <mat-expansion-panel [expanded]="false" *ngIf="orderData.blnGroupRun">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    Additional Group Run Items
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <div>
                             </div>
                         </mat-expansion-panel>
                     </mat-accordion>
