@@ -119,7 +119,8 @@ export class SmartCentsDashboardComponent implements OnInit, OnDestroy {
     status_id: 999,
     admin_user_id: 0,
     tickets_list: true,
-    page: this.page
+    page: this.page,
+    keyword: '',
   }
 
   submittedByUsers: any = [];
@@ -214,11 +215,13 @@ export class SmartCentsDashboardComponent implements OnInit, OnDestroy {
     }
   }
 
-  setParams(value: any, key: string) {
-    this.params = {
-      ...this.params,
-      [key]: value
-    };
+  setParams(value?: any, key?: string) {
+    if (value) {
+      this.params = {
+        ...this.params,
+        [key]: value
+      };
+    }
     this.getData();
   }
 
