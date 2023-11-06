@@ -17,7 +17,7 @@
 
       <!-- data table start -->
 
-      <div class="grid grid-cols-3 gap-4 m-2">
+      <div class="grid grid-cols-4 gap-4 m-2">
 
         <div>
 
@@ -64,6 +64,17 @@
               </mat-option>
             </mat-select>
           </mat-form-field>
+        </div>
+
+        <div>
+          <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full">
+            <mat-label>Search by Keyword</mat-label>
+            <input class="h-6" [(ngModel)]="params.keyword" matInput
+                [matTooltip]="'Press enter key after typing'" (keyup.enter)="setParams('', 'keyword')"
+                (mousewheel)="$event.preventDefault()" [autocomplete]="'off'"
+                [placeholder]="'Search by Keyword'">
+            <mat-icon matPrefix [svgIcon]="'heroicons_outline:search'"></mat-icon>
+        </mat-form-field>
         </div>
       </div>
 
