@@ -18,6 +18,8 @@ export class TicketsDetailsComponent implements OnInit, OnDestroy {
   @ViewChild('deleteTicket') deleteTicket: ElementRef;
 
   dataSource: any = [];
+  ticketComments: any = [];
+
   files: any = [];
   images: any;
   commentForm: any;
@@ -270,13 +272,15 @@ export class TicketsDetailsComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     }
   }
+
   getTicketComments() {
     let params = {
       tickets_comments: true,
       ticket_id: this.route.snapshot.paramMap.get('id')
     }
-    this._supportService.getApiData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      console.log(res)
+    this._supportService.getApiData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe((res: any) => {
+      const splitData = res.data[0].ticket_comments.split(",,");
+      this.ticketComments = splitData.map(item => item.split("||"));
     })
   }
   /**
