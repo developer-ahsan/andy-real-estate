@@ -155,7 +155,7 @@ export class VendorSizingChartComponent implements OnInit, OnDestroy {
       return;
     }
     let payload: AddSizeChart = {
-      name, description, company_id: this.supplierData.pk_companyID, extension: extension, add_size: true
+      name: name.replace(/'/g, "''"), description: description.replace(/'/g, "''"), company_id: this.supplierData.pk_companyID, extension: extension, add_size: true
     }
     this.isAddLoader = true;
     this._vendorService.postVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {

@@ -216,7 +216,7 @@ export class VendorCoopComponent implements OnInit, OnDestroy {
       this._vendorService.snackBar('Please fill out the required fields');
       return;
     }
-    let payload: AddCoops = { coopName, company_id: this.supplierData.pk_companyID, coopExpDay, pricing, ltm, setups, productionTime, add_coop }
+    let payload: AddCoops = { coopName: coopName.replace(/'/g, "''"), company_id: this.supplierData.pk_companyID, coopExpDay, pricing: pricing.replace(/'/g, "''"), ltm: ltm.replace(/'/g, "''"), setups: setups.replace(/'/g, "''"), productionTime: productionTime.replace(/'/g, "''"), add_coop }
     this.isAddLoader = true;
     this._vendorService.postVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
@@ -337,12 +337,12 @@ export class VendorCoopComponent implements OnInit, OnDestroy {
             this.uploadCoopImages(element, coOp_id, index);
           });
         }
-        this.coopData.name = coopName;
+        this.coopData.name = coopName.replace(/'/g, "''");
         this.coopData.expirationDate = coopExpDay;
-        this.coopData.pricing = pricing;
-        this.coopData.ltm = ltm;
-        this.coopData.setups = setups;
-        this.coopData.productionTime = productionTime;
+        this.coopData.pricing = pricing.replace(/'/g, "''");
+        this.coopData.ltm = ltm.replace(/'/g, "''");
+        this.coopData.setups = setups.replace(/'/g, "''");
+        this.coopData.productionTime = productionTime.replace(/'/g, "''");
         this.mainScreen = 'Current';
       }
       this.isUpdateLoader = false;

@@ -80,8 +80,10 @@ export class VendorBlanketColorsComponent implements OnInit, OnDestroy {
     }
     this._vendorService.getVendorsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.allCollections = res["data"];
-      this.seletedCollection = this.allCollections[0];
-      this.searchColorCtrl.setValue({ collectionName: this.seletedCollection.collectionName }, { emitEvent: false });
+      if (this.allCollections.length) {
+        this.seletedCollection = this.allCollections[0];
+        this.searchColorCtrl.setValue({ collectionName: this.seletedCollection?.collectionName }, { emitEvent: false });
+      }
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     }, err => {

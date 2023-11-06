@@ -129,7 +129,7 @@ export class NewVendorsComponent implements OnInit, OnDestroy {
       companyType.push(3);
     }
     let payload: AddCompany = {
-      companyName, address, city, zipCode, phone, fax, ASI, PPAI, artworkEmail, ordersEmail, websiteURL, outsideRep, insideRep, outsideRepPhone, outsideRepEmail, insideRepPhone, insideRepEmail, samplesContactEmail, companyType, state: this.selectedState.state, customerAccountNumber, create_company: true
+      companyName: companyName.replace(/'/g, "''"), address: address.replace(/'/g, "''"), city: city.replace(/'/g, "''"), zipCode, phone, fax, ASI, PPAI, artworkEmail, ordersEmail, websiteURL, outsideRep, insideRep, outsideRepPhone, outsideRepEmail, insideRepPhone, insideRepEmail, samplesContactEmail, companyType, state: this.selectedState.state, customerAccountNumber, create_company: true
     }
     this.isAddLoader = true;
     this._vendorService.postVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {

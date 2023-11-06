@@ -69,7 +69,7 @@ export class TicketsDetailsComponent implements OnInit, OnDestroy {
     });
     this.getTicketDetail();
     this.getCommentators();
-
+    this.getTicketComments();
   };
   getTicketDetail() {
     this.isLoading = true;
@@ -270,7 +270,15 @@ export class TicketsDetailsComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     }
   }
-
+  getTicketComments() {
+    let params = {
+      tickets_comments: true,
+      ticket_id: this.route.snapshot.paramMap.get('id')
+    }
+    this._supportService.getApiData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      console.log(res)
+    })
+  }
   /**
      * On destroy
      */

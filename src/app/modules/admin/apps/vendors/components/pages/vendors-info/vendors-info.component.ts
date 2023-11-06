@@ -195,7 +195,7 @@ export class VendorsInfoComponent implements OnInit, OnDestroy {
     }
 
     let payload: UpdateCompany = {
-      company_id: pk_companyID, companyName, address, city, state, zipCode, phone, fax, ASI, PPAI, artworkEmail, ordersEmail, websiteURL, outsideRep, insideRep, outsideRepPhone, outsideRepEmail, insideRepPhone, insideRepEmail, samplesContactEmail, vendorRelation, screenprintEmail, embroideryEmail, coopPricing, netSetup, ltm, freeRandomSamples, specSamples, production, update_company: true, additionalOrderEmails: this.additionalOrderEmails.toString(), customerAccountNumber, shippingComment, notes
+      company_id: pk_companyID, companyName: companyName.replace(/'/g, "''"), address: address.replace(/'/g, "''"), city: city.replace(/'/g, "''"), state, zipCode, phone, fax, ASI, PPAI, artworkEmail, ordersEmail, websiteURL, outsideRep, insideRep, outsideRepPhone, outsideRepEmail, insideRepPhone, insideRepEmail, samplesContactEmail, vendorRelation, screenprintEmail, embroideryEmail, coopPricing: coopPricing.replace(/'/g, "''"), netSetup: netSetup.replace(/'/g, "''"), ltm: ltm.replace(/'/g, "''"), freeRandomSamples: freeRandomSamples.replace(/'/g, "''"), specSamples: specSamples.replace(/'/g, "''"), production: production.replace(/'/g, "''"), update_company: true, additionalOrderEmails: this.additionalOrderEmails.toString(), customerAccountNumber, shippingComment: shippingComment.replace(/'/g, "''"), notes: notes.replace(/'/g, "''")
     }
     this.isUpdateLoader = true;
     this._vendorService.putVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
