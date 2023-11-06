@@ -139,17 +139,30 @@
                         Update
                     </button>
                 </div>
-
-
-
             </fuse-card>
         </div>
-
-
-
     </div>
 
 
+    <div class="row" *ngIf="!isLoading && this.ticketComments?.length !==0">
+        <div class="col-12 my-2">
+            <fuse-card class="rounded-2xl shadow bg-card flex flex-col w-full">
+
+
+                <div class="py-3 px-3 w-full">
+                    <div *ngFor="let comment of ticketComments">
+                        <div class="flex gap-x-1 font-bold">
+                            <p>{{ comment[5] }} </p>
+                            <p>{{ comment[6] }} </p> 
+                            <span>said on </span>
+                            <p>{{ comment[4] }}</p>
+                        </div>
+                        <p>{{ comment[2] }}</p>
+                    </div>
+                </div>
+            </fuse-card>
+        </div>
+    </div>
 
 
 
