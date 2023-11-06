@@ -270,7 +270,8 @@
             <div class="modal-footer">
                 <button type="button" class="mr-2" mat-button mat-stroked-button data-dismiss="modal">Close</button>
                 <button type="button" class="min-w-30" mat-button mat-stroked-button
-                    [disabled]="removeIncidentData?.isRemoveLoader" (click)="deleteIncidentReport()">
+                    [disabled]="removeIncidentData?.isRemoveLoader"
+                    (click)="sendIncidentEmail('delete', [], this.removeIncidentData.pk_incidentReportID, null, this.removeIncidentData);">
                     <span *ngIf="!removeIncidentData?.isRemoveLoader">Remove</span>
                     <mat-progress-spinner *ngIf="removeIncidentData?.isRemoveLoader" [diameter]="24"
                         [mode]="'indeterminate'">

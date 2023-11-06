@@ -475,7 +475,7 @@ export class IncidentReportsListComponent implements OnInit {
         this.dataSource = this.dataSource.filter(elem => elem.pk_incidentReportID != this.removeIncidentData.pk_incidentReportID);
         this.totalIncidentRecords--;
         $(this.incidentModal.nativeElement).modal('hide');
-        this.sendIncidentEmail('delete', [], this.removeIncidentData.pk_incidentReportID, null, this.removeIncidentData);
+        // this.sendIncidentEmail('delete', [], this.removeIncidentData.pk_incidentReportID, null, this.removeIncidentData);
       }
       this.removeIncidentData.isRemoveLoader = false;
       this._changeDetectorRef.markForCheck();
@@ -604,6 +604,9 @@ export class IncidentReportsListComponent implements OnInit {
   }
   // Send Incident Email
   sendIncidentEmail(type, imgs, id, sources, formData) {
+    if (type == 'delete') {
+      this.removeIncidentData.isRemoveLoader = true;
+    }
     let images = [];
     imgs.forEach(element => {
       images.push(element);
@@ -654,6 +657,9 @@ export class IncidentReportsListComponent implements OnInit {
       send_incident_report_email: true
     }
     this._orderService.orderPostCalls(paylaod).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (type == 'delete') {
+        this.deleteIncidentReport();
+      }
     });
   }
 }
