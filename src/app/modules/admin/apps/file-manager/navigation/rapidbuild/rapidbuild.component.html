@@ -206,7 +206,11 @@
                                 </div>
                                 <div class="col-md-6 col-12 mb-2">
                                     <span class="font-bold">Store: </span>
-                                    <span>{{editItemData?.storeName}}</span>
+                                    <span>
+                                        <a class="text-decoration-none text-primary-500"
+                                            href="{{editItemData?.storeProdURL}}"
+                                            target="_blank">{{editItemData?.storeName}}</a>
+                                    </span>
                                 </div>
                                 <div class="col-md-6 col-12 mb-2">
                                     <span class="font-bold">Product name: </span>
@@ -243,7 +247,7 @@
                                 </div>
                                 <div class="col-md-6 col-12 mb-2">
                                     <span class="font-bold">Categories: </span>
-                                    <span>{{editItemData?.subCategoryName}}</span>
+                                    <span>{{editItemData?.catData.subCatName}}</span>
                                 </div>
                                 <div class="col-md-6 col-12 mb-2" *ngIf="buildDetailColors">
                                     <span class="font-bold">Available colors: </span>

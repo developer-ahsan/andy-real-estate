@@ -248,6 +248,12 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
   editToggle(item) {
     this.currentProof = false;
     this.isDetailOpen = true;
+
+    if (item.categorySubCategory) {
+      const [subCatID, subCatName, subCatLink, catID, catName, catLink] = item.categorySubCategory.split('::');
+      item.catData = { subCatID, subCatName, subCatLink, catID, catName, catLink };
+      item.storeProdURL = `${this.selectedStore.protocol}${item.storeURL}/${catLink}/${subCatLink}/${item.permalink}/${item.fk_storeProductID}`
+    }
     this.editItemData = item;
     let random = Math.random();
     this.getRebuildDetails()

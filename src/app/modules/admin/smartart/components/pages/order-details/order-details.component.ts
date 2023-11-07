@@ -502,23 +502,70 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
     if (event.target.files[0]) {
       const file = event.target.files[0];
       const reader = new FileReader();
-      if (file)
-        reader.readAsDataURL(file);
-      reader.onload = () => {
-        let image: any = new Image;
-        image.src = reader.result;
-        image.onload = () => {
-          const fileName = file.name;
-          const fileExtension = fileName.slice(((fileName.lastIndexOf(".") - 1) >>> 0) + 2);
 
-          this.imagePOValue = {
-            imageUpload: reader.result,
-            type: file.type,
-            extension: fileExtension,
-          };
+      reader.onload = () => {
+        const fileName = file.name;
+        const fileExtension = fileName.slice(((fileName.lastIndexOf(".") - 1) >>> 0) + 2);
+
+        // Check file type based on extension
+        let fileType;
+        if (['png', 'jpg', 'jpeg', 'gif'].includes(fileExtension.toLowerCase())) {
+          fileType = 'image';
+        } else if (['eps', 'ai'].includes(fileExtension.toLowerCase())) {
+          fileType = 'vector';
+        } else if (fileExtension.toLowerCase() === 'pdf') {
+          fileType = 'pdf';
+        } else {
+          fileType = 'unknown';
         }
+
+        // Handle different file types accordingly
+        switch (fileType) {
+          case 'image':
+            let image: any = new Image();
+            image.src = reader.result;
+            image.onload = () => {
+              this.imagePOValue = {
+                imageUpload: reader.result,
+                type: file.type,
+                extension: fileExtension,
+                fileType: 'image',
+              };
+            };
+            break;
+
+          case 'vector':
+            // Handle vector file logic
+            this.imagePOValue = {
+              imageUpload: reader.result,
+              type: file.type,
+              extension: fileExtension,
+              fileType: 'vector',
+            };
+            break;
+
+          case 'pdf':
+            // Handle PDF file logic
+            this.imagePOValue = {
+              imageUpload: reader.result,
+              type: file.type,
+              extension: fileExtension,
+              fileType: 'pdf',
+            };
+            break;
+
+          default:
+            // Handle unknown file type logic
+            console.error('Unsupported file type');
+            break;
+        }
+      };
+
+      if (file) {
+        reader.readAsDataURL(file);
       }
     }
+
   };
   uploadPOFilesServer(imprint) {
     if (!this.imagePOValue) {
