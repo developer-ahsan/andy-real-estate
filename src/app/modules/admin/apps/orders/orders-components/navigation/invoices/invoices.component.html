@@ -129,16 +129,17 @@
                                                     <div class="col-9">
                                                         <p class="font-bold text-medium">
                                                             <a target="_blank"
-                                                                routerLink="/apps/ecommerce/inventory/{{item.products[0]?.pk_productID}}">({{item.products[0]?.pk_productID}})</a>
-                                                            {{item.products[0]?.productNumber}}:
+                                                                routerLink="/apps/ecommerce/inventory/{{item.products[0]?.pk_productID}}">(ID:
+                                                                {{item.products[0]?.pk_productID}})</a>
+                                                            <!-- {{item.products[0]?.productNumber}}: -->
                                                             {{item.products[0]?.productName}}
                                                         </p>
                                                         <p class="font-bold text-medium">PO:
                                                             {{orderDetail?.pk_orderID +
                                                             '-' + item.products[0]?.fk_orderLineID}}</p>
-                                                        <p class="text-secondary">Supplier:
+                                                        <!-- <p class="text-secondary">Supplier:
                                                             {{item.products[0]?.supplier_name}}
-                                                        </p>
+                                                        </p> -->
                                                         <p class="text-secondary">Quantity:
                                                             {{item.totalQuantity}}
                                                         </p>

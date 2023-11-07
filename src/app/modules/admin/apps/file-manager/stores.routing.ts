@@ -31,6 +31,12 @@ import { StoreVideosComponent } from './navigation/store-videos/store-videos.com
 import { StudentOrgComponent } from './navigation/student-org/student-org.component';
 import { SurveysComponent } from './navigation/surveys/surveys.component';
 import { UserDataFileComponent } from './navigation/user-data-file/user-data-file.component';
+import { OfflineProductsComponent } from './navigation/offline-products/offline-products.component';
+import { FulfillOptionsComponent } from './navigation/fulfill-options/fulfill-options.component';
+import { FulfillmentInvoicesComponent } from './navigation/fulfillment-invoices/fulfillment-invoices.component';
+import { ResetTopTenComponent } from './navigation/reset-top-ten/reset-top-ten.component';
+import { GroupOrderSettingsComponent } from './navigation/group-order-settings/group-order-settings.component';
+import { ApparelDecoratorComponent } from './navigation/apparel-decorator/apparel-decorator.component';
 
 export const storeRoutes: Route[] = [
     {
@@ -184,6 +190,14 @@ export const storeRoutes: Route[] = [
                 }
             },
             {
+                path: 'offline-products',
+                component: OfflineProductsComponent,
+                data: {
+                    title: 'Offline Products',
+                    url: 'offline-products'
+                }
+            },
+            {
                 path: 'store-settings',
                 component: StoreSettingsComponent,
                 data: {
@@ -205,6 +219,22 @@ export const storeRoutes: Route[] = [
                 data: {
                     title: 'Fulfillment Contacts',
                     url: 'fulfillment-contacts'
+                }
+            },
+            {
+                path: 'fulfillment-options',
+                component: FulfillOptionsComponent,
+                data: {
+                    title: 'Fulfillment Options',
+                    url: 'fulfillment-options'
+                }
+            },
+            {
+                path: 'fulfillment-invoices',
+                component: FulfillmentInvoicesComponent,
+                data: {
+                    title: 'Fulfillment Invoices',
+                    url: 'fulfillment-invoices'
                 }
             },
             {
@@ -278,7 +308,32 @@ export const storeRoutes: Route[] = [
                     title: 'Store Plan/Strategies',
                     url: 'store-plan'
                 }
-            }
+            },
+            {
+                path: 'reset-top-ten',
+                component: ResetTopTenComponent,
+                data: {
+                    title: 'Reset Top Ten',
+                    url: 'reset-top-ten'
+                }
+            },
+            {
+                path: 'group-order-settings',
+                component: GroupOrderSettingsComponent,
+                data: {
+                    title: 'Group Order Settings',
+                    url: 'group-order-settings'
+                }
+            },
+            {
+                path: 'store-apparel-decorator',
+                component: ApparelDecoratorComponent,
+                data: {
+                    title: 'Store Apparel Decorator',
+                    url: 'store-apparel-decorator'
+                }
+            },
+
         ]
     }
 ];

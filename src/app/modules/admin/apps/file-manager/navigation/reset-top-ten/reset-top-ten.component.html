@@ -8,9 +8,9 @@
                     Reset Top Ten
                 </div>
 
-                <div class="row">
-                    <div class="col-12">
-                        <span class="text-secondary font-semibold text-sm">
+                <div class="row my-2">
+                    <div class="col-12 alert alert-warning">
+                        <span class="text-secondary font-semibold">
                             WARNING: This action cannot be undone. The top ten file will be deleted and the count will
                             be restarted. 10 random products will be selected from the store until there are at least 10
                             product clicks for the top ten list.
@@ -31,7 +31,7 @@
                                 <span class="ml-2">An error occurred, try again!</span>
                             </ng-container>
                         </div>
-                        <button class="min-w-40" mat-stroked-button [matTooltip]="'Assign new store'" (click)="reset()"
+                        <button class="min-w-40" mat-stroked-button [matTooltip]="'Reset Top Ten'" (click)="reset()"
                             [disabled]="updateLoader">
                             <mat-progress-spinner *ngIf="updateLoader" [diameter]="24" [mode]="'indeterminate'">
                             </mat-progress-spinner>

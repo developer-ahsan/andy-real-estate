@@ -571,7 +571,10 @@ export class ProductSubCategoriesComponent implements OnInit, OnDestroy {
       this.productsList = [];
     }
     this._storeManagerService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.productsList = this.productsDisplayList.concat(res["data"]);
+      if (page == 1) {
+        this.productsList = [];
+      }
+      this.productsList = this.productsList.concat(res["data"]);
       this.totalProds = res["totalRecords"];
       this.isProductLoader = false;
       this.isProductLoaderMore = false;

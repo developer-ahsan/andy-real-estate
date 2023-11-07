@@ -5,6 +5,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { InventoryService } from '../../../ecommerce/inventory/inventory.service';
 import { FileManagerService } from '../../store-manager.service';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 @Component({
   selector: 'app-apparel-decorator',
   templateUrl: './apparel-decorator.component.html'
@@ -41,6 +42,7 @@ export class ApparelDecoratorComponent implements OnInit, OnDestroy {
   isPageLoading: boolean = false;
   constructor(
     private _storeManagerService: FileManagerService,
+    private _commonService: DashboardsService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar
   ) { }
@@ -59,7 +61,7 @@ export class ApparelDecoratorComponent implements OnInit, OnDestroy {
   }
   getSuppliers() {
     this.dropdownList.push({ companyName: 'NONE - Use master product level imprint settings' })
-    this._storeManagerService.suppliers$
+    this._commonService.suppliersData$
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
         this.totalSuppliers = res.totalRecords;

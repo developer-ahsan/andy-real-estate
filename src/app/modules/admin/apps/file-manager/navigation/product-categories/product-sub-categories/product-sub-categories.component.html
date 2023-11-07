@@ -210,7 +210,7 @@
                 </table>
             </div>
             <div class="flex justify-center my-2 col-12" *ngIf="totalProds > productsList.length">
-                <span *ngIf="!isProductLoaderMore" (click)="getNextProductDisplayData()" class="cursor-pointer">Load
+                <span *ngIf="!isProductLoaderMore" (click)="getNextProductData()" class="cursor-pointer">Load
                     More</span>
                 <mat-progress-spinner *ngIf="isProductLoaderMore" [diameter]="24" [mode]="'indeterminate'">
                 </mat-progress-spinner>

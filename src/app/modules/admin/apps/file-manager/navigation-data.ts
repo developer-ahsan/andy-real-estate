@@ -67,6 +67,7 @@ export const navigations = [
                 icon: 'mat_outline:supervised_user_circle',
                 route: 'product-suppliers'
             },
+
             {
                 id: 6,
                 title: 'Store Product Videos',
@@ -114,6 +115,12 @@ export const navigations = [
                 icon: 'mat_outline:history',
                 route: 'inventory-summary'
             },
+            {
+                id: 50,
+                title: 'Offline Products',
+                icon: 'heroicons_outline:academic-cap',
+                route: 'offline-products'
+            },
         ]
     },
     {
@@ -127,6 +134,11 @@ export const navigations = [
                 route: 'store-settings'
             },
             {
+                title: 'Reset Top Ten',
+                icon: 'mat_outline:refresh',
+                route: 'reset-top-ten'
+            },
+            {
                 title: 'Margins',
                 icon: 'mat_outline:margin',
                 route: 'margins'
@@ -135,6 +147,16 @@ export const navigations = [
                 title: 'Fulfillment Contacts',
                 icon: 'mat_outline:contacts',
                 route: 'fulfillment-contacts'
+            },
+            {
+                title: 'Fulfillment Invoices',
+                icon: 'mat_outline:inventory',
+                route: 'fulfillment-invoices'
+            },
+            {
+                title: 'Fulfillment Options',
+                icon: 'heroicons_outline:template',
+                route: 'fulfillment-options'
             },
             {
                 title: 'Royalties',
@@ -150,6 +172,16 @@ export const navigations = [
                 title: 'Consolidated Bill',
                 icon: 'mat_outline:house_siding',
                 route: 'consolidated-bill'
+            },
+            {
+                title: 'Group Order Settings',
+                icon: 'mat_outline:settings',
+                route: 'group-order-settings'
+            },
+            {
+                title: 'Store Apparel Decorator',
+                icon: 'mat_outline:animation',
+                route: 'store-apparel-decorator'
             },
             {
                 id: 13,
