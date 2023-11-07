@@ -153,11 +153,11 @@
                     <div *ngFor="let comment of ticketComments">
                         <div class="flex gap-x-1 font-bold">
                             <p>{{ comment[5] }} </p>
-                            <p>{{ comment[6] }} </p> 
+                            <p>{{ comment[6] }} </p>
                             <span>said on </span>
                             <p>{{ comment[4] }}</p>
                         </div>
-                        <p>{{ comment[2] }}</p>
+                        <p [innerHTML]="comment[2]"></p>
                     </div>
                 </div>
             </fuse-card>
