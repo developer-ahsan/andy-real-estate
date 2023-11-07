@@ -17,7 +17,7 @@ import {
 } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
 import { Subject } from "rxjs";
-import { finalize, takeUntil, map } from "rxjs/operators";
+import { finalize, takeUntil, map, concatAll } from "rxjs/operators";
 import { FileManagerService } from "../../store-manager.service";
 import { environment } from "environments/environment";
 import moment from "moment";
@@ -185,6 +185,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
   logoBanksLoadMore: boolean = false;
   ngLogoBank = 0;
   ngLogoKeyword = '';
+  orderOptionImage: boolean = false;
 
   // FavICon
   favImage: string = '';
@@ -387,9 +388,45 @@ export class PresentationComponent implements OnInit, OnDestroy {
         this.getScreenData("header_image_presentation", screenName);
       } else if (screenName == 'Logo bank') {
         this.getLogoBanks(1);
+      } else if (screenName == 'Order Options') {
+        let url = environment.storeMedia + `/orderOptionsHeaders/` + this.selectedStore.pk_storeID + ".jpg";
+        this.checkIfImageExists(url);
       }
     }
   }
+
+  checkIfImageExists(url) {
+    const img = new Image();
+    img.src = url;
+
+    img.onload = () => {
+      this.orderOptionImage = true;
+      this.orderOptions.image = url;
+      this._changeDetectorRef.markForCheck();
+    };
+
+    img.onerror = () => {
+      this.orderOptionImage = false;
+      this._changeDetectorRef.markForCheck();
+    };
+  }
+
+  deleteImage() {
+    let payload = {
+      files: [`/globalAssets/Stores/orderOptionsHeaders/${this.selectedStore.pk_storeID}.jpg`],
+      delete_multiple_files: true
+    }
+    this._commonService.removeMediaFiles(payload).pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((response) => {
+        this._storeManagerService.snackBar('Image Removed Successfully');
+        this.orderOptionImage = false;
+        this.orderOptions.image = '';
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this._changeDetectorRef.markForCheck();
+      })
+  }
+
   getScreenData(value, screen) {
     this.isPageLoading = true;
     let params = {

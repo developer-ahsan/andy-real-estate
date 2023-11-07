@@ -13,7 +13,7 @@
     <div *ngIf="quickGuideCheck">
       <img src="{{quickGuideImage}}" (error)="CheckQuickGuideImage(this)">
       <div class="text-right w-full py-4">
-        <button class="min-w-40" mat-stroked-button [matTooltip]="'Remove image'" [disabled]="quickGuideImageLoader">
+        <button (click) = "removeImage()" class="min-w-40" mat-stroked-button [matTooltip]="'Remove image'" [disabled]="quickGuideImageLoader">
           <mat-progress-spinner *ngIf="quickGuideImageLoader" [diameter]="24" [mode]="'indeterminate'">
           </mat-progress-spinner>
           <mat-icon *ngIf="!quickGuideImageLoader" svgIcon="heroicons_outline:trash"></mat-icon>

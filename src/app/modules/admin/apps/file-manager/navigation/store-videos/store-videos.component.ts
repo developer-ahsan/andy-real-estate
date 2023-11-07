@@ -15,6 +15,7 @@ export class StoreVideosComponent implements OnInit, OnDestroy {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   displayedColumns: string[] = ['pid', 'product_number', 'product_name', 'vendor', 'status'];
   dataSource = [];
+  pageData = [];
   duplicatedDataSource = [];
   productLevelTotalVideos: number;
   dataSourceLoading = false;
@@ -119,6 +120,7 @@ export class StoreVideosComponent implements OnInit, OnDestroy {
   };
 
   getMainStoreCall(page) {
+    this.dataSourceLoading = true;
     const { pk_storeID } = this.selectedStore;
 
     // Get the products videos
@@ -126,6 +128,8 @@ export class StoreVideosComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.dataSource = response["data"];
+        this.pageData = response;
+
         this.dataSourceLoading = false;
 
         // Mark for check

@@ -22,6 +22,7 @@ export class ProductsSuppliersComponent implements OnInit, OnDestroy {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   displayedColumns: string[] = ['pid', 'spid', 'sid', 'name', 'master', 'store'];
   dataSource = [];
+  dataCount= [];
   totalRecords = 0;
   totalProducts = 0;
   duplicatedDataSource = [];
@@ -80,6 +81,7 @@ export class ProductsSuppliersComponent implements OnInit, OnDestroy {
         }
       });
       this.dataSource = res["data"];
+      this.dataCount = res["counts"];
       if (this.duplicatedDataSource.length == 0) {
         this.duplicatedDataSource = res["data"];
         this.dataSourceTotalRecord = res["totalRecords"];

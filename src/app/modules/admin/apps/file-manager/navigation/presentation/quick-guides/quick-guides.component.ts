@@ -5,6 +5,7 @@ import { environment } from 'environments/environment';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { FileManagerService } from '../../../store-manager.service';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 @Component({
   selector: 'app-quick-guides',
   templateUrl: './quick-guides.component.html',
@@ -38,6 +39,8 @@ export class PresentationQuickGuidesComponent implements OnInit {
     private _storeManagerService: FileManagerService,
     private _snackBar: MatSnackBar,
     private _changeDetectorRef: ChangeDetectorRef,
+    private _commonService: DashboardsService,
+
   ) { }
 
 
@@ -217,6 +220,22 @@ export class PresentationQuickGuidesComponent implements OnInit {
       }, err => {
         this.quickGuideImageLoader = false;
         // Mark for check
+        this._changeDetectorRef.markForCheck();
+      })
+  }
+
+
+  removeImage() {
+    let payload = {
+      files: [`/globalAssets/Stores/quickGuides/headers/${this.selectedStore.pk_storeID}.jpg`],
+      delete_multiple_files: true
+    }
+    this._commonService.removeMediaFiles(payload).pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((response) => {
+        this._storeManagerService.snackBar('Image Removed Successfully');
+        this.quickGuideCheck = false;
+        this._changeDetectorRef.markForCheck();
+      }, err => {
         this._changeDetectorRef.markForCheck();
       })
   }

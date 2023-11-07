@@ -251,6 +251,11 @@ export class StoreProductsComponent implements OnInit, OnDestroy {
     const url = this.router.serializeUrl(this.router.createUrlTree(['/apps/ecommerce/inventory/storeProduct', item.pk_storeProductID]));
     window.open(url, '_blank');
   }
+
+  generateDataSheet() {
+
+  }
+
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions
     this._unsubscribeAll.next();
