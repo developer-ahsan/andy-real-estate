@@ -37,9 +37,9 @@ import { NgxStripeModule } from 'ngx-stripe';
 import { QuillModule } from 'ngx-quill';
 import { NgxDropzoneModule } from 'ngx-dropzone';
 import { IncidentReportsComponent } from './incident-reports.component';
-import { incidentRoutes } from './incident-reports.routing';
 import { IncidentReportsListComponent } from './incident-reports-list/incident-reports-list.component';
 import { IncidentReportsUpdateComponent } from './incident-reports-update/incident-reports-update.component';
+import { incidentRoutes } from './incident-reports.routing';
 
 @NgModule({
     declarations: [

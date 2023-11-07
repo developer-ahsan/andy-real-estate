@@ -243,7 +243,11 @@
                                 </div>
                                 <div class="col-md-6 col-12 mb-2">
                                     <span class="font-bold">SPID: </span>
-                                    <span>{{editItemData?.fk_storeProductID}}</span>
+                                    <span>
+                                        <a class="text-decoration-none text-primary-500"
+                                            [routerLink]="['/apps/ecommerce/inventory/storeProduct',editItemData?.fk_storeProductID]"
+                                            target="_blank"> {{editItemData?.fk_storeProductID}}</a>
+                                    </span>
                                 </div>
                                 <div class="col-md-6 col-12 mb-2">
                                     <span class="font-bold">Categories: </span>
@@ -256,7 +260,7 @@
                                 <div class="col-12 mb-2 ">
                                     <span class="font-bold">Proof Comments: </span>
                                     <div [innerHtml]="buildDetailData[0]?.proofComments"
-                                        class="max-h-60 overflow-y-auto">
+                                        class="max-h-60 overflow-y-auto border p-3">
                                     </div>
                                 </div>
                                 <div class="col-12 mb-2">
