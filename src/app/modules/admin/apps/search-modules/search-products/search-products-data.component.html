@@ -1,163 +1,232 @@
 <div class="w-full  inset-0 flex flex-col min-w-0 overflow-hidden h-full">
 
-    <div class="flex-auto h-full bg-card dark:bg-transparent">
+    <mat-drawer-container class="flex-auto h-full bg-card dark:bg-transparent">
 
         <!-- Drawer -->
-
-        <!-- Main -->
-        <div class="flex-auto">
-
-            <!-- Header -->
-            <div class="flex flex-col sm:flex-row md:flex-col flex-auto justify-between py-8 px-6 md:px-8 border-b">
-                <!-- Title -->
+        <mat-drawer class="w-full md:w-160 dark:bg-gray-900" [mode]="'over'" [opened]="false" [position]="'end'"
+            [disableClose]="true" #drawer>
+            <div class="flex justify-between my-5 align-items-center px-8 ">
                 <div>
-                    <div class="text-4xl font-extrabold tracking-tight leading-none">
-                        Products</div>
-                </div>
-
-                <!-- Main actions -->
-                <div class="flex items-center mt-4 sm:mt-0 md:mt-4">
-                    <!-- Search -->
-                    <div class="flex-auto">
-                        <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full min-w-50">
-                            <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:search'"></mat-icon>
-                            <input (keyup.enter)="searchProduct()" matInput [(ngModel)]="searchKeyword"
-                                [autocomplete]="'off'" [placeholder]="'Search Products'">
-                        </mat-form-field>
+                    <div class="text-xl font-semibold tracking-tight leading-8">
+                        Product Details
                     </div>
-                    <!-- Add contact button -->
-                    <button class="ml-4 min-w-30" [disabled]="isSearchLaoder || isProductLoader" mat-flat-button
-                        [color]="'primary'" (click)="searchProduct()">
-                        <mat-icon [svgIcon]="'heroicons_outline:search'" *ngIf="!isSearchLaoder"></mat-icon>
-                        <span class="ml-2 mr-1" *ngIf="!isSearchLaoder">Search</span>
-                        <mat-progress-spinner *ngIf="isSearchLaoder" [diameter]="24" [mode]="'indeterminate'">
-                        </mat-progress-spinner>
-                    </button>
+                    <div class="font-medium tracking-tight text-secondary">
+                        <!-- PDF, EPS, AI, PSD, and JPG file formats only! -->
+                    </div>
                 </div>
+                <svg (click)="drawer.toggle()" [matTooltip]="'Close'" xmlns="http://www.w3.org/2000/svg" width="16"
+                    height="16" fill="currentColor" class="bi bi-x-lg cursor-pointer" viewBox="0 0 16 16">
+                    <path
+                        d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z" />
+                </svg>
             </div>
+            <div class="px-8">
+                <!-- Cost -->
+                <ngx-skeleton-loader *ngIf="costLoader" count="3" appearance="line" animation="pulse" [theme]="{ 
+                    'background-color': '#dedede'
+                  }">
+                </ngx-skeleton-loader>
+                <div *ngIf="tempProdData && !costLoader">
+                    <div class="text-xl font-semibold tracking-tight leading-8">Cost</div>
+                    <table class="table table-striped" *ngIf="tempProdData.costs.length > 0">
+                        <thead>
+                            <tr>
+                                <th *ngFor="let cost of tempProdData.costs">{{cost.quantity}}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td *ngFor="let cost of tempProdData.costs">{{cost.cost | currency}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div *ngIf="tempProdData.costs.length == 0">No cost found for this product.</div>
+                </div>
+                <!-- Imprints -->
+                <div class="text-xl font-semibold tracking-tight leading-8">Imprints</div>
+                <ngx-skeleton-loader *ngIf="imprintLoader" count="8" appearance="line" animation="pulse" [theme]="{ 
+                    'background-color': '#dedede'
+                  }">
+                </ngx-skeleton-loader>
+                <div *ngIf="tempProdData && !imprintLoader">
+                    <ul *ngIf="tempProdData.imprints.length > 0">
+                        <li *ngFor="let item of tempProdData.imprints | paginate : {
+                            itemsPerPage: 10,
+                            currentPage: tempProdData.page,
+                            totalItems: tempProdData.totalImprints
+                          };let i=index">
+                            {{i+1}}. {{item.methodName}}/{{item.locationName}}-({{item.companyName}})
+                        </li>
+                    </ul>
+                    <div *ngIf="tempProdData.imprints.length < tempProdData.totalImprints" class="text-center mt-2">
+                        <pagination-controls previousLabel="Prev" nextLabel="Next"
+                            (pageChange)="getNextImprintsForProduct($event)">
+                        </pagination-controls>
+                    </div>
+                    <div *ngIf="tempProdData.imprints.length == 0">No imprints found for this product.</div>
+                </div>
 
-            <!-- Contacts list -->
-            <div class="relative">
-                <div class="p-5" *ngIf="isProductLoader">
-                    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
+            </div>
+        </mat-drawer>
+
+        <mat-drawer-content class="flex flex-col">
+
+            <!-- Main -->
+            <div class="flex-auto">
+
+                <!-- Header -->
+                <div class="flex flex-col sm:flex-row md:flex-col flex-auto justify-between py-8 px-6 md:px-8 border-b">
+                    <!-- Title -->
+                    <div>
+                        <div class="text-4xl font-extrabold tracking-tight leading-none">
+                            Products</div>
+                    </div>
+
+                    <!-- Main actions -->
+                    <div class="flex items-center mt-4 sm:mt-0 md:mt-4">
+                        <!-- Search -->
+                        <div class="flex-auto">
+                            <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full min-w-50">
+                                <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:search'"></mat-icon>
+                                <input (keyup.enter)="searchProduct()" matInput [(ngModel)]="searchKeyword"
+                                    [autocomplete]="'off'" [placeholder]="'Search Products'">
+                            </mat-form-field>
+                        </div>
+                        <!-- Add contact button -->
+                        <button class="ml-4 min-w-30" [disabled]="isSearchLaoder || isProductLoader" mat-flat-button
+                            [color]="'primary'" (click)="searchProduct()">
+                            <mat-icon [svgIcon]="'heroicons_outline:search'" *ngIf="!isSearchLaoder"></mat-icon>
+                            <span class="ml-2 mr-1" *ngIf="!isSearchLaoder">Search</span>
+                            <mat-progress-spinner *ngIf="isSearchLaoder" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Contacts list -->
+                <div class="relative">
+                    <div class="p-5" *ngIf="isProductLoader">
+                        <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
                             'background-color': '#dedede'
                           }">
-                    </ngx-skeleton-loader>
-                </div>
-                <div *ngIf="!isProductLoader">
-                    <div *ngIf="productsData.length > 0;else other_content" class="w-full">
-                        <table mat-table [dataSource]="productsData" class="w-full border-t">
-                            <ng-container matColumnDef="id">
-                                <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10">
-                                    Product ID
-                                </th>
-                                <td mat-cell *matCellDef="let element" (click)="goToProductDetails(element)">
-                                    {{element.pk_productID}}
-                                </td>
-                            </ng-container>
-                            <ng-container matColumnDef="number">
-                                <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10">
-                                    Number
-                                </th>
-                                <td mat-cell *matCellDef="let element" (click)="goToProductDetails(element)">
-                                    {{element.productNumber}}
-                                </td>
-                            </ng-container>
-                            <ng-container matColumnDef="name">
-                                <th mat-header-cell *matHeaderCellDef class="w-40 min-w-40">
-                                    Name
-                                </th>
-                                <td mat-cell *matCellDef="let element" (click)="goToProductDetails(element)">
-                                    {{element.productName}}
-                                </td>
-                            </ng-container>
-                            <ng-container matColumnDef="supplier">
-                                <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30">
-                                    Supplier
-                                </th>
-                                <td mat-cell *matCellDef="let element">
-                                    <div class="flex align-items-center" (click)="goToVendorsDetails(element)">
-                                        {{element.companyName}}
-                                        <mat-icon *ngIf="element.vendorRelation == 2"
-                                            svgIcon="heroicons_solid:badge-check" class="icon-size-4"
-                                            color="warn"></mat-icon>
-                                        <mat-icon *ngIf="element.vendorRelation == 3" svgIcon="heroicons_solid:star"
-                                            class="icon-size-4 text-green-700"></mat-icon>
-                                    </div>
-                                </td>
-                            </ng-container>
-                            <ng-container matColumnDef="status">
-                                <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10">
-                                    Status
-                                </th>
-                                <td mat-cell *matCellDef="let element" (click)="goToProductDetails(element)">
-                                    <mat-icon svgIcon="heroicons_outline:x" *ngIf="!element.blnActive"
-                                        class="text-red-700 icon-size-4"></mat-icon>
-                                    <mat-icon svgIcon="heroicons_outline:check" *ngIf="element.blnActive"
-                                        class="text-green-700 icon-size-4"></mat-icon>
-                                </td>
-                            </ng-container>
-                            <ng-container matColumnDef="core">
-                                <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10">
-                                    Core
-                                </th>
-                                <td mat-cell *matCellDef="let element" (click)="goToProductDetails(element)">
-                                    <mat-icon svgIcon="heroicons_outline:x" *ngIf="!element.blnCore"
-                                        class="text-red-700 icon-size-4"></mat-icon>
-                                    <mat-icon svgIcon="heroicons_outline:check" *ngIf="element.blnCore"
-                                        class="text-green-700 icon-size-4"></mat-icon>
-                                </td>
-                            </ng-container>
-                            <ng-container matColumnDef="image">
-                                <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10">
-                                    Image
-                                </th>
-                                <td mat-cell *matCellDef="let element" (click)="goToProductDetails(element)">
-                                    <div class="p-2">
-                                        <img class="w-10" *ngIf="!element.pk_storeProductID"
-                                            src="https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg">
-                                        <img *ngIf="element.pk_storeProductID" class="w-10"
-                                            src="https://assets.consolidus.com/globalAssets/Products/HiRes/{{element.pk_storeProductID}}.jpg"
-                                            onError="this.src='https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'">
-
-                                    </div>
-                                </td>
-                            </ng-container>
-                            <ng-container matColumnDef="action">
-                                <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 text-center">
-                                    Action
-                                </th>
-                                <td mat-cell *matCellDef="let element" class="text-center">
-                                    <div class="flex justify-center" (click)="toggleDrawer(element)">
-                                        <mat-icon svgIcon="heroicons_outline:pencil-alt"
-                                            matTooltip="View Details"></mat-icon>
-                                        <span> Imprints</span>
-                                    </div>
-                                </td>
-                            </ng-container>
-                            <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
-                            <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-                                class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
-                            </tr>
-                        </table>
-                        <mat-paginator #paginator
-                            class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                            [ngClass]="{'pointer-events-none': isLoading}" [length]="totalRecords" [pageIndex]="0"
-                            [pageSize]="20" (page)="getNextProductData($event)" [hidePageSize]="true">
-                        </mat-paginator>
+                        </ngx-skeleton-loader>
                     </div>
-                    <!-- No product Found -->
-                    <ng-template #other_content>
-                        <div class="text-secondary font-semibold p-5 text-center">
-                            Your search did not return any results.
+                    <div *ngIf="!isProductLoader">
+                        <div *ngIf="productsData.length > 0;else other_content" class="w-full">
+                            <table mat-table [dataSource]="productsData" class="w-full border-t">
+                                <ng-container matColumnDef="id">
+                                    <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10">
+                                        Product ID
+                                    </th>
+                                    <td mat-cell *matCellDef="let element" (click)="goToProductDetails(element)">
+                                        {{element.pk_productID}}
+                                    </td>
+                                </ng-container>
+                                <ng-container matColumnDef="number">
+                                    <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10">
+                                        Number
+                                    </th>
+                                    <td mat-cell *matCellDef="let element" (click)="goToProductDetails(element)">
+                                        {{element.productNumber}}
+                                    </td>
+                                </ng-container>
+                                <ng-container matColumnDef="name">
+                                    <th mat-header-cell *matHeaderCellDef class="w-40 min-w-40">
+                                        Name
+                                    </th>
+                                    <td mat-cell *matCellDef="let element" (click)="goToProductDetails(element)">
+                                        {{element.productName}}
+                                    </td>
+                                </ng-container>
+                                <ng-container matColumnDef="supplier">
+                                    <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30">
+                                        Supplier
+                                    </th>
+                                    <td mat-cell *matCellDef="let element">
+                                        <div class="flex align-items-center" (click)="goToVendorsDetails(element)">
+                                            {{element.companyName}}
+                                            <mat-icon *ngIf="element.vendorRelation == 2"
+                                                svgIcon="heroicons_solid:badge-check" class="icon-size-4"
+                                                color="warn"></mat-icon>
+                                            <mat-icon *ngIf="element.vendorRelation == 3" svgIcon="heroicons_solid:star"
+                                                class="icon-size-4 text-green-700"></mat-icon>
+                                        </div>
+                                    </td>
+                                </ng-container>
+                                <ng-container matColumnDef="status">
+                                    <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10">
+                                        Status
+                                    </th>
+                                    <td mat-cell *matCellDef="let element" (click)="goToProductDetails(element)">
+                                        <mat-icon svgIcon="heroicons_outline:x" *ngIf="!element.blnActive"
+                                            class="text-red-700 icon-size-4"></mat-icon>
+                                        <mat-icon svgIcon="heroicons_outline:check" *ngIf="element.blnActive"
+                                            class="text-green-700 icon-size-4"></mat-icon>
+                                    </td>
+                                </ng-container>
+                                <ng-container matColumnDef="core">
+                                    <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10">
+                                        Core
+                                    </th>
+                                    <td mat-cell *matCellDef="let element" (click)="goToProductDetails(element)">
+                                        <mat-icon svgIcon="heroicons_outline:x" *ngIf="!element.blnCore"
+                                            class="text-red-700 icon-size-4"></mat-icon>
+                                        <mat-icon svgIcon="heroicons_outline:check" *ngIf="element.blnCore"
+                                            class="text-green-700 icon-size-4"></mat-icon>
+                                    </td>
+                                </ng-container>
+                                <ng-container matColumnDef="image">
+                                    <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10">
+                                        Image
+                                    </th>
+                                    <td mat-cell *matCellDef="let element" (click)="goToProductDetails(element)">
+                                        <div class="p-2">
+                                            <img class="w-10" *ngIf="!element.pk_storeProductID"
+                                                src="https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg">
+                                            <img *ngIf="element.pk_storeProductID" class="w-10"
+                                                src="https://assets.consolidus.com/globalAssets/Products/HiRes/{{element.pk_storeProductID}}.jpg"
+                                                onError="this.src='https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'">
+
+                                        </div>
+                                    </td>
+                                </ng-container>
+                                <ng-container matColumnDef="action">
+                                    <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 text-center">
+                                        Action
+                                    </th>
+                                    <td mat-cell *matCellDef="let element" class="text-center">
+                                        <div class="flex justify-center" (click)="toggleDrawer(element)">
+                                            <mat-icon svgIcon="heroicons_outline:pencil-alt"
+                                                matTooltip="View Details"></mat-icon>
+                                            <span> Imprints</span>
+                                        </div>
+                                    </td>
+                                </ng-container>
+                                <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
+                                <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                                    class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
+                                </tr>
+                            </table>
+                            <mat-paginator #paginator
+                                class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                                [ngClass]="{'pointer-events-none': isLoading}" [length]="totalRecords" [pageIndex]="0"
+                                [pageSize]="20" (page)="getNextProductData($event)" [hidePageSize]="true">
+                            </mat-paginator>
                         </div>
-                    </ng-template>
+                        <!-- No product Found -->
+                        <ng-template #other_content>
+                            <div class="text-secondary font-semibold p-5 text-center">
+                                Your search did not return any results.
+                            </div>
+                        </ng-template>
+                    </div>
                 </div>
+
             </div>
 
-        </div>
+        </mat-drawer-content>
 
+    </mat-drawer-container>
 
-    </div>
 
 </div>
