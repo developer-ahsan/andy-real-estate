@@ -88,6 +88,7 @@ export class StoresDetailsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((items: any) => {
         this.stores = items["data"];
+
         this.selectedStore = items["data"][0];
         this.launchDate = this.selectedStore?.launchDate
           ? moment.utc(this.selectedStore?.launchDate).format("lll")

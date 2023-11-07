@@ -88,8 +88,8 @@
                             </div>
                             <div class="col-lg-4 col-md-6 col-12">
                                 <b class="text-secondary text-sm">Secured</b>
-                                <p class="float-right text-sm text-secondary">{{selectedStore?.blnElectronicInvoicing ?
-                                    'YES' : 'NO'}}</p>
+                                <p class="float-right text-sm text-secondary">{{this.stores[0]?.protocol === 'http://' ?
+                                    'NO' : 'YES'}}</p>
                             </div>
 
                         </div>

@@ -24,6 +24,17 @@
                         </p>
                     </div>
                 </div>
+                <div *ngIf="dataCount?.length > 0">
+                    <div class="text-yellow-500">
+                        <span class="fa fa-check-circle fa-lg"></span> = {{dataCount[1].totalProductsCount}}
+                    </div>
+                    <div class="text-green-500">
+                        <span class="fa fa-star fa-lg"></span> = {{dataCount[2].totalProductsCount}}
+                    </div>
+                    <div>
+                        Normal = {{dataCount[0].totalProductsCount}}
+                    </div>
+                </div>
                 <div class="my-2">
                     <ngx-skeleton-loader count="8" appearance="line" animation="pulse"
                         *ngIf="isLoading || isKeywordSearch">

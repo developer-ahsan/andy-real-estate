@@ -706,11 +706,11 @@
             Order Options Header Image
           </div>
 
-          <div *ngIf="orderOptions.check">
+          <div *ngIf="orderOptionImage">
             <img src="{{orderOptions.image}}" (error)="checkImageExist('options')">
             <div class="text-right w-full py-4">
               <button class="min-w-40" mat-stroked-button [matTooltip]="'Remove image'"
-                [disabled]="orderOptions.delLoader" (click)="removeImage()">
+                [disabled]="orderOptions.delLoader" (click)="deleteImage()">
                 <mat-progress-spinner *ngIf="orderOptions.delLoader" [diameter]="24" [mode]="'indeterminate'">
                 </mat-progress-spinner>
                 <mat-icon *ngIf="!orderOptions.delLoader" svgIcon="heroicons_outline:trash"></mat-icon>
@@ -718,7 +718,7 @@
               </button>
             </div>
           </div>
-          <div *ngIf="!orderOptions.check">
+          <div *ngIf="!orderOptionImage">
             <div class="mt-5 fa fa-info-circle" style="color: rgb(101, 124, 174)">
               There is no order options header uploaded for this store.
             </div>
