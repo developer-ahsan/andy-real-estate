@@ -30,6 +30,8 @@ export class SearchHistoryComponent implements OnInit, OnDestroy {
 
   keywordSearch: string = "";
   isKeywordSearch: boolean = false;
+  showReset: boolean = false;
+  isResetLoader: boolean = false;
 
   // Advanced Search
   isAdvancedSearch: boolean = true;
@@ -43,6 +45,30 @@ export class SearchHistoryComponent implements OnInit, OnDestroy {
 
   sortBy = 'counter';
   sortOrderd = 'ASC';
+
+
+  selectedHistory: string = 'all';
+  selectedHistoryKey: string;
+  statuses: any = [
+    {
+      value: 'All time',
+      key: 'all'
+    },
+    {
+      value: 'This week',
+      key: 'thisWeek'
+    },
+    {
+      value: 'This month',
+      key: 'thisMonth'
+    },
+    {
+      value: 'This year',
+      key: 'thisYear'
+    },
+  ];
+
+
   constructor(
     private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -86,6 +112,7 @@ export class SearchHistoryComponent implements OnInit, OnDestroy {
 
   getFirstCall(page) {
     // this.dataSourceLoading = true;
+    this.isResetLoader = true;
     const { pk_storeID } = this.selectedStore;
     let params = {
       search_history: true,
@@ -107,10 +134,14 @@ export class SearchHistoryComponent implements OnInit, OnDestroy {
         this.duplicatedDataSource = this.dataSource;
         this.dataSourceTotalRecord = response["totalRecords"];
         this.dataSourceLoading = false;
+        this.isResetLoader = false;
+        this.showReset = false;
+        this.filterForm.get('keyword').patchValue('');
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
       }, err => {
+        this.isResetLoader = false;
 
         // Recall on error
         this.getFirstCall(1);
@@ -123,7 +154,6 @@ export class SearchHistoryComponent implements OnInit, OnDestroy {
 
   getNextData(event) {
     const { previousPageIndex, pageIndex } = event;
-
     if (pageIndex > previousPageIndex) {
       this.page++;
     } else {
@@ -163,6 +193,7 @@ export class SearchHistoryComponent implements OnInit, OnDestroy {
     this._changeDetectorRef.markForCheck();
   };
   filterSearchHistory(page) {
+    this.showReset = true;
     if (page == 1) {
       this.page = 1;
       this.paginator.pageIndex = 0;
@@ -224,6 +255,20 @@ export class SearchHistoryComponent implements OnInit, OnDestroy {
   convertDate(date) {
     return moment(date).format('YYYY-MM-DD')
   }
+
+  async getData() {
+    this.getFirstCall(this.page);
+
+  }
+
+  // setParams(value: any, key: string) {
+  //   this.params = {
+  //     ...this.params,
+  //     [key]: value
+  //   };
+  //   this.getData();
+  // }
+
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions
     this._unsubscribeAll.next();

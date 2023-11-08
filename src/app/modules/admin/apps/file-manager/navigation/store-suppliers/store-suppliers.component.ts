@@ -18,6 +18,7 @@ export class StoreSuppliersComponent implements OnInit, OnDestroy {
   dataSource = [];
   searchDataSource = [];
   dataSourceLoading = false;
+  searchValue : string = '';
 
 
   totalProductsCount: number = 0;
@@ -74,9 +75,10 @@ export class StoreSuppliersComponent implements OnInit, OnDestroy {
     }
   }
   searchCompany(value) {
-    if (value != '') {
+    this.searchValue = value
+    if (this.searchValue != '') {
       this.dataSource = this.searchDataSource.filter(res => {
-        return res.companyName.toLowerCase().includes(value.toLowerCase());
+        return res.companyName.toLowerCase().includes(this.searchValue.toLowerCase());
       })
     } else {
       this.dataSource = this.searchDataSource;

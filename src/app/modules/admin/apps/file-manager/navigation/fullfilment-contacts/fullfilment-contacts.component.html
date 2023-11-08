@@ -121,7 +121,7 @@
                           User
                         </th>
                         <td mat-cell *matCellDef="let element;let i=index">
-                          <mat-form-field class="min-w-90 mt-2">
+                          <mat-form-field class="min-w-84 mt-2">
                             <mat-select matInput [(value)]="element.fk_userID" [ngModelOptions]="{standalone: true}"
                               [(ngModel)]="element.fk_userID">
                               <mat-option [value]="item.pk_userID" *ngFor="let item of usersData">
@@ -139,7 +139,7 @@
                           Location
                         </th>
                         <td mat-cell *matCellDef="let element;let i=index">
-                          <mat-form-field class="min-w-50 mt-2">
+                          <mat-form-field class="min-w-44 mt-2">
                             <mat-select matInput [ngModelOptions]="{standalone: true}"
                               [(ngModel)]="element.fk_attributeID">
                               <mat-option [value]="0">No Location</mat-option>
@@ -150,9 +150,19 @@
                         </td>
                       </ng-container>
                       <ng-container matColumnDef="Revised">
-                        <th class="min-w-20 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                        <th class="min-w-30 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
                           *matHeaderCellDef>
-                          Revised Invoices
+                          <div class="flex flex-row gap-x-2">
+                            <div class=" ">
+                              Revised Invoices
+                            </div>
+                            <div class="mt-0.25">
+                              <div class="fa fa-info-circle fa-md "
+                                matTooltip="Determines whether or not this contact will receive revised invoices when invoices are modified."
+                                matTooltipClass="custom-tooltip" matTooltipPosition="above" matTooltipShowDelay="500">
+                              </div>
+                            </div>
+                          </div>
                         </th>
                         <td mat-cell *matCellDef="let element;let i=index" class="text-center">
                           <mat-checkbox [checked]="element.blnRevisedInvoices" [ngModelOptions]="{standalone: true}"
