@@ -24,13 +24,13 @@ export class UserMetricsComponent implements OnInit {
     const { pk_userID } = this.currentSelectedCustomer;
     this.stores = this._customerService.getCustomerStores(pk_userID)
       .subscribe((stores) => {
-          this.storeNames = stores["data"];
-          this.storesCount = this.storeNames.length;
-            this._customerService.getCustomerRegisterInfo(pk_userID)
-            .subscribe((register) => {
-                this.registersInfo = register["data"];
-                this.isLoadingChange.emit(false);
-            });
+        this.storeNames = stores["data"];
+        this.storesCount = this.storeNames.length;
+        this._customerService.getCustomerRegisterInfo(pk_userID)
+          .subscribe((register) => {
+            this.registersInfo = register["data"];
+            this.isLoadingChange.emit(false);
+          });
       });
   }
 

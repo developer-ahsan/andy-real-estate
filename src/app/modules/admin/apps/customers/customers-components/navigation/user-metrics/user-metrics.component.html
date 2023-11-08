@@ -28,20 +28,33 @@
         </fuse-card>
     </div>
 
-    <div class="col-12 my-2">
+    <div class="col-12 my-2" *ngIf="registersInfo">
         <fuse-card class="flex flex-col lg:flex-row bg-card rounded-2xl filter-pricing">
             <div class="p-6 sm:p-8 lg:p-10">
                 <div class="text-2xl font-bold">Registration Information</div>
 
                 <!-- Registrations -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-y-4 gap-x-30 mt-6">
-                    <div *ngFor="let register of registersInfo">
-                        <div class="ml-2 font-semibold">{{register.metricsTypeName}}</div>
-                        <div class="text-sm">
-                            <span class="mx-2">&bull;</span>
-                            {{register.metric || 'Not provided'}}
-                        </div>
-                    </div>
+                    <table class="table">
+                        <tr>
+                            <th>Annual Budget</th>
+                            <td>{{registersInfo?.annualBudget}}</td>
+                        </tr>
+                        <tr>
+                            <th>Annual Promotional Purchases</th>
+                            <td>{{registersInfo?.annualPurchase}}</td>
+                        </tr>
+                        <tr *ngFor="let item of registersInfo.qrySelectedMetrics">
+                            <th>{{item.metricsTypeName}}</th>
+                            <td>
+                                <div *ngFor="let metrics of registersInfo.qryStoreUserMetrics2">
+                                    <p *ngIf="item?.pk_metricsTypeID == metrics?.fk_metricsTypeID">
+                                        {{metrics?.metricsName}}<br />
+                                    </p>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
                 </div>
             </div>
         </fuse-card>
