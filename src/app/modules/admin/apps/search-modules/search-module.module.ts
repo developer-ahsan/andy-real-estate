@@ -31,6 +31,9 @@ import { SearchOrdersComponents } from './search-orders/search-orders.component'
 import { SearchCustomersComponents } from './search-customers/search-customers.component';
 import { SearchVendorsComponents } from './search-vendors/search-vendors.component';
 import { SearchQuotesComponents } from './search-quotes/search-quotes.component';
+import { CustomTooltipComponent } from './search-products/custom-tool-tip/custom-tool-tip.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { OverlayModule } from '@angular/cdk/overlay';
 
 @NgModule({
     declarations: [
@@ -39,7 +42,8 @@ import { SearchQuotesComponents } from './search-quotes/search-quotes.component'
         SearchOrdersComponents,
         SearchCustomersComponents,
         SearchVendorsComponents,
-        SearchQuotesComponents
+        SearchQuotesComponents,
+        CustomTooltipComponent,
     ],
     imports: [
         RouterModule.forChild(searchRoutes),
@@ -65,7 +69,9 @@ import { SearchQuotesComponents } from './search-quotes/search-quotes.component'
         SharedModule,
         NgxSkeletonLoaderModule,
         MatProgressSpinnerModule,
-        NgxPaginationModule
+        NgxPaginationModule,
+        MatDialogModule,
+        OverlayModule
     ],
     providers: [
         {

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
@@ -8,18 +8,34 @@ import { filter, finalize, switchMap, takeUntil } from 'rxjs/operators';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { SearchService } from '../search.service';
 import { MatPaginator } from '@angular/material/paginator';
+import { MatDialog } from '@angular/material/dialog';
+import { CustomTooltipComponent } from './custom-tool-tip/custom-tool-tip.component';
 
 @Component({
     selector: 'search-products-data',
     templateUrl: './search-products-data.component.html',
-    styles: [".mat-paginator {border-radius: 16px !important} .ngx-pagination .current {background: #2c3344 !important}"],
+    styles: [`.mat-paginator {border-radius: 16px !important} .ngx-pagination .current {background: #2c3344 !important} `],
 })
 export class SearchProductssComponents implements OnInit, OnDestroy {
     @ViewChild('paginator') paginator: MatPaginator;
 
     @ViewChild('drawer', { static: true }) matDrawer: MatDrawer;
 
+    customHTML = `<div class="color-red">Top Template<button style="background: white; color: black">Press me</button></div>`;
+    isOpen = false;
+    handleMouseOver() {
+        this.isOpen = true
+        this._changeDetectorRef.markForCheck();
+        // Do something when the mouse is over the button
+        console.log('Mouse over button');
+    }
 
+    handleMouseLeave() {
+        this.isOpen = false
+        this._changeDetectorRef.markForCheck();
+        // Do something when the mouse leaves the button
+        console.log('Mouse leave button');
+    }
     contactsCount: number = 0;
     contactsTableColumns: string[] = ['name', 'email', 'phoneNumber', 'job'];
     drawerMode: 'side' | 'over';
@@ -38,6 +54,7 @@ export class SearchProductssComponents implements OnInit, OnDestroy {
     tempProdData: any;
     imprintLoader: boolean = false;
     costLoader: boolean = false;
+
     /**
      * Constructor
      */
@@ -47,7 +64,8 @@ export class SearchProductssComponents implements OnInit, OnDestroy {
         private _searchService: SearchService,
         @Inject(DOCUMENT) private _document: any,
         private _router: Router,
-        private _fuseMediaWatcherService: FuseMediaWatcherService
+        private _fuseMediaWatcherService: FuseMediaWatcherService,
+        private dialog: MatDialog
     ) {
     }
 
@@ -128,6 +146,26 @@ export class SearchProductssComponents implements OnInit, OnDestroy {
                 this.isProductLoader = false;
                 this._changeDetectorRef.markForCheck();
             })).subscribe(res => {
+                res["data"].forEach(product => {
+                    product.costData = [];
+                    product.imprintData = [];
+                    let costDetails = []; let imprintDetails = [];
+                    if (product.costDetails) {
+                        costDetails = product.costDetails.split(',,');
+                    }
+                    if (product.imprintDetails) {
+                        imprintDetails = product.imprintDetails.split(',,');
+                    }
+                    costDetails.forEach(cost => {
+                        const [qty, price] = cost.split(',');
+                        product.costData.push(qty, price);
+                    });
+                    imprintDetails.forEach(imprints => {
+                        const [name, price] = imprints.split(':');
+                        product.imprintData.push(name, price);
+                    });
+                });
+                console.log(res["data"]);
                 this.productsData = res["data"];
                 this.totalRecords = res["totalRecords"];
             }, err => {
@@ -236,5 +274,31 @@ export class SearchProductssComponents implements OnInit, OnDestroy {
      */
     trackByFn(index: number, item: any): any {
         return item.id || index;
+    }
+
+    openPopover() {
+        const dialogRef = this.dialog.open(CustomTooltipComponent, {
+            width: '250px',
+        });
+
+        // Optional: Close the popover modal after a certain time
+        setTimeout(() => {
+            dialogRef.close();
+        }, 3000);
+    }
+    closeDialog() {
+
+    }
+    @ViewChild('menuTrigger') menuTrigger: ElementRef;
+
+    openMenu() {
+        this.menuTrigger['_elementRef'].nativeElement.click();
+    }
+
+    closeMenu() {
+        const menu = this.menuTrigger['_overlayRef'];
+        if (menu && menu.hasAttached()) {
+            menu.detach();
+        }
     }
 }

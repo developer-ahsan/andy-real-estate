@@ -104,7 +104,8 @@
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Program Manager</b>
-                            <p class="float-right text-sm">{{selectedCustomer?.programManager || not_available}}</p>
+                            <p class="float-right text-sm">
+                                {{selectedCustomer.programManager}}</p>
                         </div>
                         <div class="col-lg-4 col-md-6 col-12" *ngIf="selectedCustomer.rutgersEmployeeType">
                             <b class="text-secondary text-sm">Rutgers Attributes:</b>

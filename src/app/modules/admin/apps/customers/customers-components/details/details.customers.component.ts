@@ -116,7 +116,16 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy {
 
         this._customerService.customer$
             .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((response) => {
+            .subscribe((response: any) => {
+                let programManager = '';
+                if (response.getFLPSStoreUsers) {
+                    programManager = response.getFLPSStoreUsers;
+                } else if (response.qryHeaderUserUsageProgramManager) {
+                    programManager = 'House';
+                } else {
+                    programManager = 'N/A';
+                }
+                response.programManager = programManager;
                 this.selectedCustomer = response;
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
