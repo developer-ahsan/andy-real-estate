@@ -78,8 +78,8 @@
         </div>
         <div class="col-12">
           <mat-paginator class="sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-            [ngClass]="{'pointer-events-none': isLoading}" (page)="getNextData($event)" [length]="dataSourceTotalRecord"
-            [pageIndex]="0" [pageSize]="20" [hidePageSize]="true">
+            (page)="getNextData($event)" [length]="dataSourceTotalRecord"
+            [pageIndex]="this.page - 1" [pageSize]="pageInformation.size" [hidePageSize]="true">
           </mat-paginator>
         </div>
       </div>
@@ -251,13 +251,13 @@
                       <div class="col-md-4 col-12">
                         <mat-form-field class="w-full">
                           <mat-label>Name: *</mat-label>
-                          <input formControlName="name" matInput placeholder="Name" />
+                          <input maxlength="100" formControlName="name" matInput placeholder="Name" />
                         </mat-form-field>
                       </div>
                       <div class="col-md-4 col-12">
                         <mat-form-field class="w-full">
                           <mat-label>Company: *</mat-label>
-                          <input formControlName="company" type="text" matInput>
+                          <input maxlength="100" formControlName="company" type="text" matInput>
                         </mat-form-field>
                       </div>
                       <div class="col-md-4 col-12">
@@ -275,7 +275,7 @@
                       <div class="col-12">
                         <mat-form-field class="w-full">
                           <mat-label>Customer Comments:</mat-label>
-                          <textarea formControlName="comment" rows="10" matInput></textarea>
+                          <textarea maxlength="1000" formControlName="comment" rows="10" matInput></textarea>
                         </mat-form-field>
                       </div>
                       <!-- <div class="col-12">

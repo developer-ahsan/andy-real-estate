@@ -79,8 +79,18 @@ export class SurveysComponent implements OnInit, OnDestroy {
       const payload = {
         survey: true,
         store_id: pk_storeID,
-        name: this.setAddSurveyText
+        name: this.setAddSurveyText.trim()
       };
+
+      if (payload.name === '') {
+        this.setAddSurveyText = ''
+        this._snackBar.open("Survey name is required", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        return;
+      }
 
       this.isUpdate = true;
       this._storeManagerService.addSurvey(payload)

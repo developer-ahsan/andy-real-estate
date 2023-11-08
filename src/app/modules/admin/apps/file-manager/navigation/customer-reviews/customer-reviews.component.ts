@@ -25,6 +25,7 @@ export class CustomerReviewsComponent implements OnInit, OnDestroy {
   dataSourceTotalRecord: number;
   dataSourceLoading = false;
   page: number = 1;
+  pageInformation: any;
 
   keywordSearch: string = "";
   isKeywordSearch: boolean = false;
@@ -105,14 +106,17 @@ export class CustomerReviewsComponent implements OnInit, OnDestroy {
       page: page,
       size: 20
     }
+    this.dataSourceLoading = true;
     this._storeManagerService.getStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
+        this.pageInformation = response;
         this.dataSource = response["data"];
         if (page == 1) {
-          this.dataSourceLoading = false;
           this.dataSourceTotalRecord = response["totalRecords"];
         }
+        this.dataSourceLoading = false;
+
 
         this._changeDetectorRef.markForCheck();
       }, err => {
@@ -245,11 +249,23 @@ export class CustomerReviewsComponent implements OnInit, OnDestroy {
       })
     };
   };
+
+  replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+        obj[key] = obj[key].replace(/'/g, "''");
+      }
+    }
+    return obj;
+  }
+
   updateProductReview(element) {
     element.patchValue({
       loader: true
     })
     let payload = element.value;
+    payload = this.replaceSingleQuotesWithDoubleSingleQuotes(payload);
+
     this._storeManagerService.putStoresData(payload)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
@@ -285,6 +301,7 @@ export class CustomerReviewsComponent implements OnInit, OnDestroy {
       name: name + '-' + company, company, date, rating, comment,
       add_review: true
     };
+    payload = this.replaceSingleQuotesWithDoubleSingleQuotes(payload);
     this._storeManagerService.postStoresData(payload)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {

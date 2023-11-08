@@ -32,6 +32,19 @@
                         </mat-select>
                       </mat-form-field>
                     </div> -->
+
+                    <!-- <div class="col-md-4 col-12">
+                      <mat-form-field>
+                        <mat-label>View History From:</mat-label>
+                        <mat-select [(ngModel)]="selectedHistory" disableRipple>
+                          <mat-option (click)="setParams(status.key,'status_id')" [value]="status.value"
+                            *ngFor="let status of statuses">
+                            {{status.value}}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div> -->
+
                     <div class="col-md-6 col-12">
                       <mat-form-field>
                         <mat-label>Keyword:</mat-label>
@@ -55,7 +68,7 @@
                         </mat-error>
                       </mat-form-field>
                     </div> -->
-                    <div class="col-md-6  col-12">
+                    <div class="col-md-6 col-12">
                       <mat-form-field appearance="fill">
                         <mat-label>Enter a date range</mat-label>
                         <mat-date-range-input [rangePicker]="picker">
@@ -72,14 +85,25 @@
                         <input formControlName="start_date" matInput placeholder="Range start date (mm/dd/yyyy):" />
                       </mat-form-field> -->
                     </div>
-                    <div class="col-12 text-right">
-                      <button (click)="filterSearchHistory(1)" [matTooltip]="'Fetch'" [disabled]="isFilterLoader"
-                        class="order-first sm:order-last min-w-40" mat-flat-button mat-stroked-button>
-                        <mat-progress-spinner *ngIf="isFilterLoader" class="mr-2" [diameter]="24"
-                          [mode]="'indeterminate'">
-                        </mat-progress-spinner>
-                        <span class="mr-1">Fetch</span>
-                      </button>
+                    <div class="flex w-full justify-end">
+                      <div class="flex flex-row gap-3">
+                        <button *ngIf="this.showReset === true" (click)="getData()" [matTooltip]="'Fetch'" [disabled]="isResetLoader"
+                          class="order-first sm:order-last min-w-40" mat-flat-button mat-stroked-button>
+                          <mat-progress-spinner *ngIf="isResetLoader" class="mr-2" [diameter]="24"
+                            [mode]="'indeterminate'">
+                          </mat-progress-spinner>
+                          <span class="mr-1">Reset</span>
+                        </button>
+
+                        <button (click)="filterSearchHistory(1)" [matTooltip]="'Fetch'" [disabled]="isFilterLoader"
+                          class="order-first sm:order-last min-w-40" mat-flat-button mat-stroked-button>
+                          <mat-progress-spinner *ngIf="isFilterLoader" class="mr-2" [diameter]="24"
+                            [mode]="'indeterminate'">
+                          </mat-progress-spinner>
+                          <span class="mr-1">Fetch</span>
+                        </button>
+                        
+                      </div>
                     </div>
                   </div>
                 </form>
