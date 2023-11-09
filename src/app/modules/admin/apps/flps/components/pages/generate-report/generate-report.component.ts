@@ -54,6 +54,10 @@ export class GenerateReportComponent implements OnInit {
     // Report
     WeekDate = new Date();
     monthlyMonth = 1;
+    currentMonth = this.WeekDate.getMonth() + 1
+
+    currentQuarter: string;
+
     monthlyYear = new Date().getFullYear();
     quarterMonth = 1;
     quarterYear = new Date().getFullYear();
@@ -154,7 +158,21 @@ export class GenerateReportComponent implements OnInit {
                 price: '40'
             }
         ];
+        this.setCurrentQuarter();
     }
+
+    setCurrentQuarter() {
+        if (this.currentMonth >= 1 && (this.currentMonth <= 3)) {
+            this.quarterMonth = 1
+        } else if (this.currentMonth >= 4 && (this.currentMonth <= 6)) {
+            this.quarterMonth = 2
+        } else if (this.currentMonth >= 7 && (this.currentMonth <= 9)) {
+            this.quarterMonth = 3
+        } else {
+            this.quarterMonth = 4
+        }
+    }
+
     onSelected(ev) {
         this.selectedEmployee = ev.option.value;
     }

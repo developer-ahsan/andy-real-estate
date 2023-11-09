@@ -61,7 +61,7 @@
                 </div>
                 <div *ngIf="plan.value == 'monthly'" class="w-full mt-2 flex">
                     <mat-form-field class="w-50 mr-2">
-                        <mat-select [(ngModel)]="monthlyMonth">
+                        <mat-select [(ngModel)]="currentMonth">
                             <mat-option *ngFor="let item of months" [value]="item">{{item}}</mat-option>
                         </mat-select>
                     </mat-form-field>
