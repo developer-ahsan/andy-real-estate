@@ -74,6 +74,7 @@ export class WarehouseComponent implements OnInit, OnDestroy {
             }
             this.wareHouseForm.patchValue(warehouse["data"][0]);
             this.isLoadingChange.emit(false);
+            this.isLoading = false;
 
             // Mark for check
             this._changeDetectorRef.markForCheck();
@@ -84,6 +85,8 @@ export class WarehouseComponent implements OnInit, OnDestroy {
               duration: 3500
             });
             this.isLoadingChange.emit(false);
+            this.isLoading = false;
+
 
             // Mark for check
             this._changeDetectorRef.markForCheck();
