@@ -87,11 +87,7 @@ export class InventorySummaryComponent implements OnInit, OnDestroy {
     this.getSummary(this.page);
   };
   routeInventory(id) {
-    this._inventoryService.selectedIndex = 'Warehouse Options';
-    this.router.navigate(['apps/ecommerce/inventory', id]);
-    setTimeout(() => {
-      this._inventoryService.selectedIndex = null;
-    }, 2000);
+    this.router.navigate(['apps/ecommerce/inventory', id,'warehouse-options']);
   }
   backToInventory() {
     this.isEditInventory = false;

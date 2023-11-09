@@ -26,6 +26,8 @@ import { StoreProductService } from "../../product-store/store.service";
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: fuseAnimations,
+  styles: [`layout router-outlet + *  {display: flex !important}`]
+
 })
 export class ProductDetailsComponent implements OnInit, OnDestroy {
   isLoading: boolean = true;
