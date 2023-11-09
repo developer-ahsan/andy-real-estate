@@ -93,7 +93,7 @@
                                     Age
                                 </th>
                                 <td mat-cell *matCellDef="let element" (click)="editToggle(element)">{{
-                                    element.statusName }}</td>
+                                    convertHoursToDays(element.AgeInHours) }}</td>
                             </ng-container>
 
                             <!-- pid Column -->

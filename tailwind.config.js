@@ -69,9 +69,6 @@ const themes = {
  * based on the current environment of the application (prod, dev etc.)
  */
 const config = {
-    content: [
-        "./node_modules/flowbite/**/*.js"
-    ],
     experimental: {},
     future: {},
     darkMode: 'class',
@@ -468,8 +465,7 @@ const config = {
         // Other third party and/or custom plugins
         require('@tailwindcss/typography')({ modifiers: ['sm', 'lg'] }),
         require('@tailwindcss/aspect-ratio'),
-        require('@tailwindcss/line-clamp'),
-        require('flowbite/plugin')
+        require('@tailwindcss/line-clamp')
     ]
 };
 

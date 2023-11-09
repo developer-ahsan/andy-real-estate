@@ -20,22 +20,6 @@ export class SearchProductssComponents implements OnInit, OnDestroy {
     @ViewChild('paginator') paginator: MatPaginator;
 
     @ViewChild('drawer', { static: true }) matDrawer: MatDrawer;
-
-    customHTML = `<div class="color-red">Top Template<button style="background: white; color: black">Press me</button></div>`;
-    isOpen = false;
-    handleMouseOver() {
-        this.isOpen = true
-        this._changeDetectorRef.markForCheck();
-        // Do something when the mouse is over the button
-        console.log('Mouse over button');
-    }
-
-    handleMouseLeave() {
-        this.isOpen = false
-        this._changeDetectorRef.markForCheck();
-        // Do something when the mouse leaves the button
-        console.log('Mouse leave button');
-    }
     contactsCount: number = 0;
     contactsTableColumns: string[] = ['name', 'email', 'phoneNumber', 'job'];
     drawerMode: 'side' | 'over';
@@ -54,6 +38,9 @@ export class SearchProductssComponents implements OnInit, OnDestroy {
     tempProdData: any;
     imprintLoader: boolean = false;
     costLoader: boolean = false;
+
+    activeTooltip: string = '';
+    activeCostTooltip: string = '';
 
     /**
      * Constructor
@@ -301,4 +288,14 @@ export class SearchProductssComponents implements OnInit, OnDestroy {
             menu.detach();
         }
     }
+
+    //#region TOOLTIPS
+    mouseEnter(ev: any) {
+        console.log("--- TOOLTIP EVENT ---", ev.target.id)
+        this.activeTooltip = ev.target.id;
+    }
+    mouseEnterCost(ev: any) {
+        this.activeCostTooltip = ev.target.id;
+    }
+    //#endregion TOOLTIPS
 }

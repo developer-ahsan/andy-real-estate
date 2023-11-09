@@ -50,7 +50,6 @@
         "datatables.net-dt": "^1.13.6",
         "exceljs": "^4.3.0",
         "firebase": "^9.8.3",
-        "flowbite": "^2.0.0",
         "highlight.js": "10.7.2",
         "html-to-pdfmake": "^2.4.25",
         "html2pdf.js": "^0.10.1",

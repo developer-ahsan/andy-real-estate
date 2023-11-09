@@ -16,7 +16,7 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
   isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
-  displayedColumns: string[] = ['id', 'status', 'product', 'supplier', 'last_proof_of'];
+  displayedColumns: string[] = ['id', 'status', 'age', 'pid', 'spid', 'product', 'supplier', 'last_proof_of'];
   dataSource = [];
   dataSourceTotalRecord;
   dataSourceLoading = true;
@@ -428,6 +428,16 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
       this.buildDetailData.deleteLoader = false;
       this._changeDetectorRef.markForCheck();
     });
+  }
+  convertHoursToDays(hours) {
+    if (hours >= 24) {
+      // Convert hours to days
+      const days = Math.floor(hours / 24);
+      return `${days} days`;
+    } else {
+      // Show in hours if less than 1 day
+      return `${hours} hours`;
+    }
   }
 }
 

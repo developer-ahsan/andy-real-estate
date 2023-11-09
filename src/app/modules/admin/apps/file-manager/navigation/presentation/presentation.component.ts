@@ -1034,7 +1034,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
       if (res["success"]) {
         this._storeManagerService.snackBar(res["message"]);
         this.uploadMediaLogoBankVector(res["newId"], base64);
-        this.uploadMediaLogoBank(res["newId"], res["jpgBase64"]);
+        this.uploadMediaLogoBank(res["newId"], res["pngBase64"]);
         this.addLogoBankForm.reset();
       } else {
         this.isAddLogoBankLoader = false;
