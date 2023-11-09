@@ -1,7 +1,22 @@
-<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="dataSourceLoading">
-</ngx-skeleton-loader>
+<div class="w-full" *ngIf="dataSourceLoading">
+  <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+  </ngx-skeleton-loader>
+</div>
+
 <div *ngIf="!dataSourceLoading">
   <div *ngIf="!isLoading">
+
+    <button
+      class="mat-focus-indicator mat-tooltip-trigger min-w-40 mat-stroked-button mat-button-base hover:bg-gray-300 mb-4">
+      <span class="mat-button-wrapper">
+        <span class="ml-1 mr-1 ng-star-inserted">
+          Edit Inventory
+        </span>
+      </span>
+    </button>
+
+
+
     <fuse-card class="rounded-2xl shadow bg-card flex pb-0" *ngIf="!isEditInventory">
       <div class="row" style="width: -webkit-fill-available;">
         <div class="col-12">
@@ -57,6 +72,10 @@
                   </th>
                   <td mat-cell *matCellDef="let element" (click)="routeInventory(element.pk_productID)">
                     {{ element.companyName }}
+                      <mat-icon *ngIf="element.vendorRelation == 2" svgIcon="heroicons_solid:badge-check"
+                        class="icon-size-4 mt-0.5 absolute" color="warn"></mat-icon>
+                      <mat-icon *ngIf="element.vendorRelation == 3" svgIcon="heroicons_solid:star"
+                        class="icon-size-4 mt-0.5 absolute text-green-700"></mat-icon>
                   </td>
                 </ng-container>
                 <ng-container matColumnDef="inventory">

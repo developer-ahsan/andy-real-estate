@@ -349,6 +349,7 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
     } else {
       this.isAddEmailLoader = true;
       let payload = this.isAddEmailForm.value;
+      payload = this.replaceSingleQuotesWithDoubleSingleQuotes(payload);
       this._storeManagerService.postStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         if (res["success"]) {
           this.getAdditionalEmails(1, 'add');
@@ -360,6 +361,16 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
     }
 
   }
+
+  replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+        obj[key] = obj[key].replace(/'/g, "''");
+      }
+    }
+    return obj;
+  }
+
   backToList() {
     this.isEditEmail = false;
   }
