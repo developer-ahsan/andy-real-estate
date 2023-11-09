@@ -204,22 +204,55 @@
                                                     <b>Cost</b>
                                                 </div>
                                                 <div *ngIf="activeCostTooltip === 'tooltipcost-' + i">
-                                                    <div class="absolute bg-yellow-500 -top-4 -left-30 text-light p-2">
-                                                        <table c></table>
+                                                    <div
+                                                        class="absolute bg-yellow-100 top-5 -left-32 text-light p-2 z-10 rounded-lg shadow-md">
+                                                        <!-- Your content here -->
+                                                        <table class="table table-striped"
+                                                            *ngIf="element.costData.length">
+                                                            <tr>
+                                                                <th *ngFor="let item of element.costData">{{item.qty}}
+                                                                </th>
+                                                            </tr>
+                                                            <tr>
+                                                                <td *ngFor="let item of element.costData">{{item.price |
+                                                                    currency}}</td>
+                                                            </tr>
+                                                        </table>
+                                                        <div *ngIf="element.costData.length == 0">No Cost Found</div>
+
+                                                        <!-- Arrow shape -->
+                                                        <div
+                                                            class="absolute w-0 h-0 border-t-4 border-r-4 border-light-500 -top-1 -left-4">
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
+
+                                            <!-- Imprints -->
                                             <div class="relative" [id]="'tooltip-' + i"
                                                 (mouseenter)="mouseEnter($event)" (mouseleave)="activeTooltip = ''">
-                                                <div class="flex">
+                                                <div class="flex align-items-center">
                                                     <mat-icon svgIcon="heroicons_solid:pencil-alt"></mat-icon>
-                                                    <p>Imprints</p>
+                                                    <b>Imprints</b>
                                                 </div>
                                                 <div *ngIf="activeTooltip === 'tooltip-' + i">
-                                                    <span
-                                                        class="absolute bg-gray-900 -top-4 h-44 min-w-100 left-0 text-light">this
-                                                        is a custom
-                                                        tooltip</span>
+                                                    <div class="absolute bg-yellow-100  top-5 -left-60 p-2 z-10 rounded-lg shadow-md"
+                                                        style="max-width: max-content; ">
+                                                        <!-- Your content here -->
+                                                        <ul *ngIf="element.imprintData.length">
+                                                            <li
+                                                                *ngFor="let imprint of element.imprintData; let j = index">
+                                                                <p>{{j + 1}}.{{imprint.name}}: {{imprint.price |
+                                                                    currency}}</p>
+                                                            </li>
+                                                        </ul>
+                                                        <div *ngIf="element.imprintData.length == 0">No Imprints Found
+                                                        </div>
+                                                        <!-- Arrow shape -->
+                                                        <div
+                                                            class="absolute w-0 h-0 border-t-4 border-r-4 border-light-500 -top-1 -left-4">
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

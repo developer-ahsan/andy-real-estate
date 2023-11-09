@@ -138,21 +138,20 @@ export class SearchProductssComponents implements OnInit, OnDestroy {
                     product.imprintData = [];
                     let costDetails = []; let imprintDetails = [];
                     if (product.costDetails) {
-                        costDetails = product.costDetails.split(',,');
+                        costDetails = product.costDetails.split('::');
                     }
                     if (product.imprintDetails) {
                         imprintDetails = product.imprintDetails.split(',,');
                     }
                     costDetails.forEach(cost => {
                         const [qty, price] = cost.split(',');
-                        product.costData.push(qty, price);
+                        product.costData.push({ qty, price: Number(price) });
                     });
                     imprintDetails.forEach(imprints => {
                         const [name, price] = imprints.split(':');
-                        product.imprintData.push(name, price);
+                        product.imprintData.push({ name, price });
                     });
                 });
-                console.log(res["data"]);
                 this.productsData = res["data"];
                 this.totalRecords = res["totalRecords"];
             }, err => {
@@ -291,7 +290,6 @@ export class SearchProductssComponents implements OnInit, OnDestroy {
 
     //#region TOOLTIPS
     mouseEnter(ev: any) {
-        console.log("--- TOOLTIP EVENT ---", ev.target.id)
         this.activeTooltip = ev.target.id;
     }
     mouseEnterCost(ev: any) {

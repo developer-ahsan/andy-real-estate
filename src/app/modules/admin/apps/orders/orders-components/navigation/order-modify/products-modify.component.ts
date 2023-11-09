@@ -592,10 +592,11 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
     if (this.ngSelectedProduct.products[0].estimatedShippingDate) {
       estimated_date = moment(this.ngSelectedProduct.products[0].estimatedShippingDate).format('L');
     }
+    console.log(this.currentSelectedProduct)
     let payload: UpdateProduct = {
       orderLine_id: this.ngSelectedProduct.order_line_id,
       estimated_shipping_date: estimated_date,
-      product_id: Number(this.currentSelectedProduct.fk_productID),
+      product_id: Number(this.currentSelectedProduct.pk_productID),
       quantity: Number(this.currentSelectedProduct.minQuantity),
       bln_override: this.ngSelectedProduct.products[0].blnOverride,
       bln_sample: this.ngSelectedProduct.products[0].blnSample,

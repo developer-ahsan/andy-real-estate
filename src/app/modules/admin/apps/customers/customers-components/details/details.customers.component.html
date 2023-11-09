@@ -77,6 +77,10 @@
                             <p class="float-right text-sm">{{selectedCustomer?.companyName || not_available}}</p>
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
+                            <b class="text-secondary text-sm">Company Profile</b>
+                            <p class="float-right text-sm">{{selectedCustomer?.companyProfileName || not_available}}</p>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Email</b>
                             <a class="float-right text-sm"
                                 href="mailto:{{selectedCustomer.email}}">{{selectedCustomer?.email ||
@@ -88,7 +92,11 @@
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Location</b>
-                            <p class="float-right text-sm">{{selectedCustomer?.address1 || not_available}}</p>
+                            <p class="float-right text-sm" *ngIf="selectedCustomer?.LocationName">
+                                <a class="float-right text-sm"
+                                    [routerLink]="['/apps/customers/',selectedCustomer.pk_userID,'locations']">{{selectedCustomer?.LocationName}}</a>
+                            </p>
+                            <p class="float-right text-sm" *ngIf="!selectedCustomer.LocationName">{{not_available}}</p>
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
                             <b class="text-secondary text-sm">Status</b>
