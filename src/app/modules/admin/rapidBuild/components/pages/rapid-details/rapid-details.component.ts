@@ -146,6 +146,22 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
     }
     this._rapidService.getRapidBuildData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.buildDetails = res["data"][0];
+      if (this.buildDetails) {
+        if (this.buildDetails.categorySubCategory) {
+          const [subCatID, subCatName, subCatLink, catID, catName, catLink] = this.buildDetails.categorySubCategory.split('::');
+          this.buildDetails.catData = { subCatID, subCatName, subCatLink, catID, catName, catLink };
+          if (this.userData.blnMaster) {
+            if (this.buildDetails.blnProductNumbers) {
+              this.buildDetails.storeProdURL = `${this.buildDetails.protocol}${this.buildDetails.storeURL}/${catLink}/${subCatLink}/${this.SEOFilter(this.buildDetails.permalink)}/${this.buildDetails.fk_storeProductID}`;
+            } else {
+              this.buildDetails.storeProdURL = `${this.buildDetails.protocol}${this.buildDetails.storeURL}/${catLink}/${subCatLink}/${this.SEOFilter(this.buildDetails.permalink)}`;
+            }
+          } else {
+            this.buildDetails.storeProdURL = `${this.buildDetails.protocol}${this.buildDetails.storeURL}/${catLink}/${subCatLink}/${this.buildDetails.permalink}`;
+          }
+        }
+
+      }
       this.ngStatus = this.buildDetails.pk_statusID;
       this.brandGuideExist = res["brandGuide"];
       this.getImprintData(this.buildDetails.pk_productID);
@@ -153,6 +169,30 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     });
+  }
+  SEOFilter(name: string): string {
+    name = name.replace(/'/g, '');
+    name = name.replace(/"/g, '');
+    name = name.replace(/,/g, '');
+    // ... continue with other replacements
+
+    name = name.replace(/\//g, '-and-');
+    name = name.replace(/\\/g, '-and-');
+    name = name.replace(/ - /g, '-');
+    name = name.replace(/ /g, '-');
+
+    // Assuming you have a cleanHighASCII function
+    name = this.cleanHighASCII(name);
+
+    name = name.toLowerCase();
+
+    return name;
+  }
+
+  private cleanHighASCII(name: string): string {
+    // Implement your cleanHighASCII logic here
+    // This function is assumed to be defined elsewhere in your code
+    return name;
   }
   getImprintData(pid) {
     let params = {

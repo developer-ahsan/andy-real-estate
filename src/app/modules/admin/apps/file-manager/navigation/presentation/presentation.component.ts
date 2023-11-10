@@ -1057,7 +1057,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
     else {
       this.logoBankImageValue = null;
       this.fileInputLogo.nativeElement.value = '';
-      this._storeManagerService.snackBar('Please select only SVG or PDF file');
+      this._storeManagerService.snackBar('Please select only SVG file');
       return;
     }
     const reader = new FileReader();

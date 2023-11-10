@@ -123,29 +123,33 @@ export class InvoicesComponent implements OnInit {
     this._orderService.getOrderLineProducts(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       let products = [];
       res["data"].forEach(element => {
+        let royaltyPrice = 0;
+        let royaltyBln = false;
+        if (this.orderDetail.blnRoyaltyStore && element.blnRoyalty) {
+          royaltyPrice = element.royaltyPrice;
+          royaltyBln = element.blnRoyalty;
+        }
         let prod = [];
         if (products.length == 0) {
-          let royaltyPrice = element.royaltyPrice;
           let cost = (element.runCost * element.quantity) + element.shippingCost;
-          let price = (element.runPrice * element.quantity) + element.shippingPrice + element.royaltyPrice;
+          let price = (element.runPrice * element.quantity) + element.shippingPrice + royaltyPrice;
           prod.push(element);
-          products.push({ products: prod, order_line_id: element.fk_orderLineID, accessories: [], imprints: [], totalQuantity: element.quantity, totalMercandiseCost: cost, totalMerchendisePrice: price, royaltyPrice: royaltyPrice });
+          products.push({ products: prod, order_line_id: element.fk_orderLineID, accessories: [], imprints: [], totalQuantity: element.quantity, totalMercandiseCost: cost, totalMerchendisePrice: price, royaltyPrice: royaltyPrice, royaltyBln });
         } else {
           const index = products.findIndex(item => item.order_line_id == element.fk_orderLineID);
           if (index < 0) {
             let cost = (element.runCost * element.quantity) + element.shippingCost;
-            let price = (element.runPrice * element.quantity) + element.shippingPrice + element.royaltyPrice;
-            let royaltyPrice = element.royaltyPrice;
+            let price = (element.runPrice * element.quantity) + element.shippingPrice + royaltyPrice;
             prod.push(element);
-            products.push({ products: prod, order_line_id: element.fk_orderLineID, accessories: [], imprints: [], totalQuantity: element.quantity, totalMercandiseCost: cost, totalMerchendisePrice: price, royaltyPrice: royaltyPrice });
+            products.push({ products: prod, order_line_id: element.fk_orderLineID, accessories: [], imprints: [], totalQuantity: element.quantity, totalMercandiseCost: cost, totalMerchendisePrice: price, royaltyPrice: royaltyPrice, royaltyBln });
           } else {
             let cost = (element.runCost * element.quantity);
-            let price = (element.runPrice * element.quantity) + element.royaltyPrice;
+            let price = (element.runPrice * element.quantity) + royaltyPrice;
 
             prod = products[index].products;
             prod.push(element);
             products[index].products = prod;
-            products[index].royaltyPrice = products[index].royaltyPrice + element.royaltyPrice;
+            products[index].royaltyPrice = products[index].royaltyPrice + royaltyPrice;
             products[index].totalQuantity = products[index].totalQuantity + element.quantity;
             products[index].totalMercandiseCost = products[index].totalMercandiseCost + cost;
             products[index].totalMerchendisePrice = products[index].totalMerchendisePrice + price;

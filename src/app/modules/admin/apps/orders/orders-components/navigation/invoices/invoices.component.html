@@ -287,19 +287,23 @@
                                                             'symbol-narrow': '.3-3'}}</span>
                                                     </div>
                                                     <!-- Royalities	 -->
-                                                    <div class="mt-2 col-span-7 font-medium font-bold text-md mb-4">
-                                                        <p>Internal Royalties</p>
-                                                    </div>
-                                                    <div
-                                                        class="font-small text-sm col-span-2 text-center text-secondary">
-                                                    </div>
+                                                    <ng-container
+                                                        *ngIf="orderDetail.blnRoyaltyStore && item.products[0]?.royaltyBln ">
+                                                        <div class="mt-2 col-span-7 font-medium font-bold text-md mb-4">
+                                                            <p>Internal Royalties</p>
+                                                        </div>
+                                                        <div
+                                                            class="font-small text-sm col-span-2 text-center text-secondary">
+                                                            {{orderDetail.royaltyName}}
+                                                        </div>
 
-                                                    <div
-                                                        class="pl-3 flex justify-between mt-2 col-span-3 text-secondary text-center font-small text-sm">
-                                                        <span></span>
-                                                        <span>{{item.products[0]?.royaltyPrice | currency: 'USD':
-                                                            'symbol-narrow': '.3-3'}}</span>
-                                                    </div>
+                                                        <div
+                                                            class="pl-3 flex justify-between mt-2 col-span-3 text-secondary text-center font-small text-sm">
+                                                            <span></span>
+                                                            <span>{{item.products[0]?.royaltyPrice | currency: 'USD':
+                                                                'symbol-narrow': '.3-3'}}</span>
+                                                        </div>
+                                                    </ng-container>
                                                     <!-- Mechandise Subtotal -->
                                                     <div class="mt-2 col-span-7 font-bold font-medium text-md  mb-4">
                                                         <p>Merchandise SubTotal</p>
