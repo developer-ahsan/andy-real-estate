@@ -288,19 +288,19 @@
                                                     </div>
                                                     <!-- Royalities	 -->
                                                     <ng-container
-                                                        *ngIf="orderDetail.blnRoyaltyStore && item.products[0]?.royaltyBln ">
+                                                        *ngIf="orderDetail.blnRoyaltyStore && item.royaltyBln">
                                                         <div class="mt-2 col-span-7 font-medium font-bold text-md mb-4">
-                                                            <p>Internal Royalties</p>
+                                                            <p>{{orderDetail.royaltyName}}</p>
                                                         </div>
                                                         <div
                                                             class="font-small text-sm col-span-2 text-center text-secondary">
-                                                            {{orderDetail.royaltyName}}
+
                                                         </div>
 
                                                         <div
                                                             class="pl-3 flex justify-between mt-2 col-span-3 text-secondary text-center font-small text-sm">
                                                             <span></span>
-                                                            <span>{{item.products[0]?.royaltyPrice | currency: 'USD':
+                                                            <span>{{item.royaltyPrice | currency: 'USD':
                                                                 'symbol-narrow': '.3-3'}}</span>
                                                         </div>
                                                     </ng-container>

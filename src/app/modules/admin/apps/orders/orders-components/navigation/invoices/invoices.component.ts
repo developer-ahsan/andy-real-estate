@@ -192,6 +192,7 @@ export class InvoicesComponent implements OnInit {
       });
 
       this.orderProducts = data;
+      console.log(this.orderProducts)
       // console.log(this.orderProducts)
       this.getProductTotal();
       this.isLoading = false;
