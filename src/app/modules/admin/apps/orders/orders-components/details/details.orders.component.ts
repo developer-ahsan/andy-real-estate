@@ -103,7 +103,20 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
     }
     getOrderDetails() {
         this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(order => {
+            order.testingPrimary = 'Ahsan';
             if (order["data"].length) {
+                if (order["data"][0].managerDetails) {
+                    let [managerFirstName, managerLastName, managerEmail, fk_adminUserID, primary] = order["data"][0].managerDetails.split('::');
+                    if (primary == 1) {
+                        order["data"][0].blnPrimary = true;
+                    } else {
+                        order["data"][0].blnPrimary = false;
+                    }
+                    order["data"][0].managerFirstName = managerFirstName;
+                    order["data"][0].managerLastName = managerLastName;
+                    order["data"][0].managerEmail = managerEmail;
+                    order["data"][0].fk_adminUserID = fk_adminUserID;
+                }
                 this.selectedOrderDetail = order["data"][0];
                 if (this.selectedOrderDetail.blnCancelled) {
                     this._orderService.OrderCancelled = true;

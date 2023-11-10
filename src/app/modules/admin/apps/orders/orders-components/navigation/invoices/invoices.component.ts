@@ -81,6 +81,7 @@ export class InvoicesComponent implements OnInit {
     //     this._changeDetectorRef.markForCheck();
     //   });
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      console.log(res);
       if (res["data"].length) {
         this.orderDetail = res["data"][0];
         let params = {
@@ -192,7 +193,6 @@ export class InvoicesComponent implements OnInit {
       });
 
       this.orderProducts = data;
-      console.log(this.orderProducts)
       // console.log(this.orderProducts)
       this.getProductTotal();
       this.isLoading = false;
