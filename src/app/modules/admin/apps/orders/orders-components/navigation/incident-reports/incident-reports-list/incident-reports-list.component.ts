@@ -318,6 +318,10 @@ export class IncidentReportsListComponent implements OnInit {
     this.formModal.reportsSources.forEach(element => {
       reports_sources.push(element.pk_sourceID);
     });
+    let employees = null;
+    if (this.formModal.source_employee) {
+      employees = this.formModal.source_employee.toString();
+    }
     let payload: CreateIncidentReport = {
       store_id: this.orderDetail.fk_storeID,
       order_id: this.orderDetail.pk_orderID,
@@ -332,7 +336,7 @@ export class IncidentReportsListComponent implements OnInit {
       how: this.formModal.how.replace(/'/g, "''"),
       recommend: this.formModal.recommend.replace(/'/g, "''"),
       source_supplier: Number(this.formModal.source_supplier),
-      source_employee: this.formModal.source_employee.toString(),
+      source_employee: employees,
       admin_user_id: this.userData.pk_userID,
       incident_sources: reports_sources,
       create_incident_report: true
@@ -367,6 +371,14 @@ export class IncidentReportsListComponent implements OnInit {
       this.employeeSource = false;
       this.supplierSource = false;
     }
+    this.formModal.blnFianlized = false;
+    this.formModal.priority1 = 'TBD';
+    this.formModal.priority3 = 'TBD';
+    this.formModal.corrected = 'TBD';
+    this.formModal.rerunCost = '';
+    this.formModal.how = '';
+    this.formModal.explanation = '';
+    this.formModal.recommend = '';
     this.employeeSource = this.formModal.reportsSources.some(elem => {
       if (elem.sourceName == 'Program Manager/Service Rep' || elem.sourceName == 'Support') {
         return true;
