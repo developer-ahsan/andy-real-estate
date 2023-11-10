@@ -25,6 +25,7 @@ export class FLPSUserManagementComponent implements OnInit, OnDestroy {
   totalUsers = 0;
   tempRecords = 0;
   page = 1;
+  flpPages: any;
 
   disabledDataSource = [];
   temdisabledDataSource = [];
@@ -209,6 +210,7 @@ export class FLPSUserManagementComponent implements OnInit, OnDestroy {
       size: 20
     }
     this._flpsService.getFlpsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.flpPages = res;
       this.dataSource = res["data"];
       this.totalUsers = res["totalRecords"];
       if (this.tempDataSource.length == 0) {
@@ -319,7 +321,7 @@ export class FLPSUserManagementComponent implements OnInit, OnDestroy {
     if (admin_user_id == 0) {
       adminId = null;
     }
-    if (userName == '' || password == '' || email == '') {
+    if (userName == '' || password == '' || email == '' || adminId === null) {
       this._flpsService.snackBar('Please fill out the required fields');
       return;
     }
@@ -460,6 +462,7 @@ export class FLPSUserManagementComponent implements OnInit, OnDestroy {
     };
     this.ordersLoader = true;
     this._flpsService.getFlpsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      
       this.ordersDataSource = res["data"];
       this.totalOrders = res["totalRecords"];
       if (this.tempOrdersDataSource.length == 0) {

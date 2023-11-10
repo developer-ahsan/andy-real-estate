@@ -94,7 +94,7 @@
                     </tr>
                 </table>
                 <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                    [ngClass]="{'pointer-events-none': isLoading}" [length]="totalUsers" [pageIndex]="0" [pageSize]="20"
+                    [ngClass]="{'pointer-events-none': isLoading}" [length]="totalUsers" [pageIndex]="this.flpPages.page-1" [pageSize]="20"
                     (page)="getNextData($event)" [hidePageSize]="true">
                 </mat-paginator>
             </div>
@@ -334,7 +334,7 @@
                         </div>
                         <div class="col-12 col-md-6">
                             <mat-form-field class="w-full">
-                                <mat-label>Admin User</mat-label>
+                                <mat-label>Master FLPS User?</mat-label>
                                 <mat-select matInput formControlName="blnAdmin">
                                     <mat-option [value]="false">No</mat-option>
                                     <mat-option [value]="true">Yes</mat-option>
