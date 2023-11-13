@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { retry, tap } from 'rxjs/operators';
 import { environment } from 'environments/environment';
@@ -246,4 +246,16 @@ export class DashboardsService {
             params: params
         }).pipe(retry(3));
     };
+    // encoded Data
+    getEncodedData(data: any): HttpParams {
+        let params = new HttpParams();
+
+        for (const key in data) {
+            if (data.hasOwnProperty(key)) {
+                params = params.append(key, data[key]);
+            }
+        }
+
+        return params;
+    }
 }

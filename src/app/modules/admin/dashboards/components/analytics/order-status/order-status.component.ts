@@ -304,23 +304,29 @@ export class OrderStatusComponent implements OnInit {
     });
   }
   checkIfImageExists(url) {
-    const img = new Image();
-    img.src = url;
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.src = url;
 
-    if (img.complete) {
+      if (img.complete) {
+        resolve(true);
+      } else {
+        img.onload = () => {
+          resolve(true);
+        };
 
-    } else {
-      img.onload = () => {
-        return true;
-      };
-
-      img.onerror = () => {
-        return false;
-      };
-    }
-  };
+        img.onerror = () => {
+          reject(false);
+        };
+      }
+    });
+  }
   openEmailDetailsModal(data, type) {
+    this.emailModalContent = null;
     this.emailModalContent = data;
+    this.emailModalContent.blnImages = true;
+    this.emailModalContent.blnContent = true;
+    this.emailModalContent.sendEmailLoader = false;
     this.emailModalContent.type = type;
     if (type == 'awaiting') {
       this.emailModalContent.modalTitle = 'PROOF REMINDER EMAIL FOR ORDER';
@@ -334,7 +340,6 @@ export class OrderStatusComponent implements OnInit {
     $(this.orderEmailModal.nativeElement).modal('show');
   }
   getEmailModalData(type) {
-
     let payload = {
       orderID: this.emailModalContent.orderID,
       storeID: this.emailModalContent.storeID,
@@ -358,18 +363,17 @@ export class OrderStatusComponent implements OnInit {
         // Footer
         if (res["data"].localPmID) {
           footer = `<div class="row">
-          <div class="col-xs-12 add-padding-sm">
-                <h2 style="font-size: 16px; font-weight: bold; color: ##333333; font-family: Arial, Helvetica, sans-serif; margin: 0 0 0 0; padding: 0; text-decoration: none; border: none;">${res["data"].localProgramManager}</h2>
-                <h3 style="font-size: 14px; color: ##999999; font-family: Arial, Helvetica, sans-serif; margin: 0 0 10px 0; padding: 0;">${res["data"].localRole}</h2>
+          <div class="col-12 p-5">
+                <h2 class="font-weight-bold text-xl" style="font-size: 16px; font-weight: bold; color: ##333333; font-family: Arial, Helvetica, sans-serif; margin: 0 0 0 0; padding: 0; text-decoration: none; border: none;">${res["data"].localProgramManager}</h2>
+                <h3 class="font-weight-bold text-xl text-secondary" style="font-size: 14px; color: ##999999; font-family: Arial, Helvetica, sans-serif; margin: 0 0 10px 0; padding: 0;">${res["data"].localRole}</h2>
                 526 S. Main Street, ##804 Akron, Ohio 44311<br />
-                (d) #local.phone# | (p) 866.PromoHelp<br />
-                (e) <a href="mailto:#local.email#">#local.email#</a><br /><br />
-                <img src="${environment.assetsURL}globalAssets/Stores/mastheads/${this.emailModalContent.storeID}.gif" style="width: 100%; height: auto; max-width: 200px; border: none;" border="0" />
+                (d) ${res["data"].localPhone} | (p) 866.PromoHelp<br />
+                (e) <a href="mailto:${res["data"].localEmail}">${res["data"].localEmail}</a><br /><br />
+                <img class="w-50" src="${environment.assetsURL}globalAssets/Stores/mastheads/${this.emailModalContent.storeID}.gif" />
               </div>
             </div>`
         }
       } else {
-
         const hash = CryptoJS.MD5(`storeID=${this.emailModalContent.storeID}&orderID=${this.emailModalContent.orderID}`);
         const hashedValue = hash.toString(CryptoJS.enc.Hex);
         greeting = 'Dear';
@@ -377,11 +381,58 @@ export class OrderStatusComponent implements OnInit {
         if (res["qryStoreDefaultEmails"][0].paymentNotification) {
           message = res["qryStoreDefaultEmails"][0].paymentNotification;
         } else {
-          message = `The artwork has been approved for your order ${this.emailModalContent.orderID} through ${this.emailModalContent.storeName}. We are now just awaiting payment or payment information.  Once received, your order will move to production. <br /><br /> You can use <a href="${environment.ppCheckout}?orderID=${this.emailModalContent.orderID}&h=${hashedValue}&TPE=${res["orderDate"][0].billingEmail}&UE=${res["orderDate"][0].billingEmail}">this link</a> to pay online, or simply reply with payment information, questions, or concerns. <br /><br /> <br /><br /> Thank you!`
+          message = `The artwork has been approved for your order ${this.emailModalContent.orderID} through ${this.emailModalContent.storeName}. We are now just awaiting payment or payment information.  Once received, your order will move to production. <br /><br /> You can use <a href="${environment.ppCheckout}?orderID=${this.emailModalContent.orderID}&h=${hashedValue}&TPE=${res["orderData"][0].billingEmail}&UE=${res["orderData"][0].billingEmail}">this link</a> to pay online, or simply reply with payment information, questions, or concerns. <br /><br /> <br /><br /> Thank you!`
         }
-        this.emailModalContent.text = `<div style="font-size: 12px; color: ##999;">If the above payment link does not work, you can copy and paste this link into the address bar of your browser:<br />${environment.ppCheckout}?orderID=${this.emailModalContent.orderID}&h=${hashedValue}&TPE=${res["orderDate"][0].billingEmail}&UE=${res["orderDate"][0].billingEmail}</div>`
+        const url = `${environment.ppCheckout}?orderID=${this.emailModalContent.orderID}&h=${hashedValue}&TPE=${res["orderData"][0].billingEmail}&UE=${res["orderData"][0].billingEmail}`;
+        this.emailModalContent.text = `<div style="font-size: 12px; color: ##999;">If the above payment link does not work, you can copy and paste this link into the address bar of your browser:<br /><a target="_blank" href="${url}"><code>${url}</code></a></div>`
       }
-      this.emailModalContent.body = `${greeting} ${res["orderDate"][0].storeUserFirstName},<br /><br />${message}`;
+      if (res["qryOrderLines"].length) {
+        res["qryOrderLines"].forEach(element => {
+          const virtualProofPath = `/globalAssets/StoreUsers/VirtualProofs/${res["orderData"][0].storeUser_pk_userID}/${this.emailModalContent.orderID}/${element.pk_orderLineID}`;
+          element.hasImprints = false;
+          element.imprints = [];
+          if (element.qryOrderLineImprints) {
+            let imprints = element.qryOrderLineImprints.split('#_');
+            imprints.forEach((imprint, index) => {
+              let [IID, location, method, status, approvingStoreUserID] = imprint.split('||');
+              if (!element.hasImprints) {
+                element.hasImprints = [3, 12, 13].some(s => status.includes(s));
+                if (element.hasImprints) {
+                  this.getFilesFromPath(virtualProofPath).then((proofs: any) => {
+                    if (proofs) {
+                      if (proofs.length) {
+                        element.imageUrl = environment.assetsURL + `/globalAssets/StoreUsers/VirtualProofs/${res["orderData"][0].storeUser_pk_userID}/${this.emailModalContent.orderID}/${element.pk_orderLineID}/${element.VirtualProofsData[0].FILENAME}?${Date.now().toString()}`;
+                      } else {
+                        const imageURL = `${environment.assetsURL}/globalAssets/Products/HiRes/${element.storeProductID}.jpg?${Date.now().toString()}`;
+                        this.checkIfImageExists(imageURL).then(image => {
+                          if (image) {
+                            element.imageUrl = imageURL;
+                          } else {
+                            element.imageUrl = `assets/images/coming_soon.jpg`;
+                          }
+                          this._changeDetectorRef.markForCheck();
+                        })
+                      }
+                    }
+                  });
+                }
+              }
+              let statusCheck = [3, 12, 13].some(s => status.includes(s));
+              let proofUrl = null;
+              if (statusCheck) {
+                if (!approvingStoreUserID) {
+                  approvingStoreUserID = res["orderData"][0].fk_storeUserID;
+                }
+                const { protocol, storeURL, storeUserEmail, fk_storeUserID } = res["orderData"][0];
+                proofUrl = `${protocol + storeURL}/proof/approve?rEM=${this._dashboardService.getEncodedData(storeUserEmail)}&rID=${fk_storeUserID}&OLID=${element.pk_orderLineID}&IID=${IID}&approvingID=${approvingStoreUserID}`;
+              }
+              element.imprints.push({ IID, location, method, status, approvingStoreUserID: Number(approvingStoreUserID), statusCheck, proofUrl });
+            });
+          }
+        });
+      }
+      this.emailModalContent.body = `${greeting} ${res["orderData"][0].storeUserFirstName},<br /><br />${message}`;
+      this.emailModalContent.qryOrderLines = res["qryOrderLines"];
       this.emailModalContent.footer = footer;
       this.emailModalContent.loader = false;
       this._changeDetectorRef.markForCheck();
@@ -391,4 +442,60 @@ export class OrderStatusComponent implements OnInit {
       this._changeDetectorRef.markForCheck();
     });
   }
+  getFilesFromPath(path) {
+    return new Promise((resolve, reject) => {
+      let payload = {
+        files_fetch: true,
+        path: path
+      };
+
+      this._dashboardService.getFiles(payload)
+        .pipe(takeUntil(this._unsubscribeAll))
+        .subscribe(
+          res => {
+            resolve(res["data"]);
+          },
+          error => {
+            reject(error);
+          }
+        );
+    });
+  }
+
+  sendEmailsOrders() {
+    this.emailModalContent.sendEmailLoader = true;
+    this._changeDetectorRef.markForCheck();
+    // Orders waiting artwork
+    let payload;
+    const { storeName, orderID, subject, blnImages, blnContent, storeID, body } = this.emailModalContent;
+    const { storeUserEmail, billingEmail } = this.emailModalContent.response["orderData"][0];
+    const { localEmail, localPhone, localPmID, localProgramManager, localRole, ppCheckOut } = this.emailModalContent.response.data;
+    if (this.emailModalContent.type == 'awaiting') {
+      payload = {
+        orderID,
+        copy: body,
+        subject,
+        blnImages, blnContent,
+        contentHtml: '',
+        productRemoveList: '',
+        userEmail: storeUserEmail,
+        storeName, storeID, localPmID, localProgramManager, localPhone, localEmail, localRole, ppCheckOut,
+        send_artwork_reminder_email: true
+      }
+    } else {
+      payload = {
+        orderID, billingEmail, storeUserEmail, subject, storeName, storeID, localPmID, localProgramManager, localPhone, localEmail, localRole, ppCheckOut,
+        copy: '',
+        pdfFilename: '',
+        send_payment_notification_email: true
+      }
+    }
+    this._dashboardService.postDashboardData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.emailModalContent.sendEmailLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      console.log(res);
+    });
+  }
+
 }

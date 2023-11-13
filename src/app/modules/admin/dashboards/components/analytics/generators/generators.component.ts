@@ -2,6 +2,8 @@ import { ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } fr
 import { DashboardsService } from '../../../dashboard.service';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { environment } from 'environments/environment';
+import CryptoJS from 'crypto-js';
 declare var $: any;
 
 @Component({
@@ -496,10 +498,246 @@ export class GeneratorsComponent implements OnInit {
   trackByCartId(index: number, item: any): any {
     return index;
   }
-  openEmailDetailsModal(data, title) {
-    this.emailModalContent = data;
-    this.emailModalContent.modalTitle = title;
-    // this.emailModalContent.loader = true;
+  openEmailDetailsModal(data, type) {
+    console.log(data);
+    this.emailModalContent = null;
+    this.emailModalContent = {
+      ...data,
+      type: type,
+      loader: true
+    };
+
+    switch (type) {
+      case 'sample':
+        this.emailModalContent.modalTitle = `SAMPLE CONVERSION EMAIL FOR ${data.orderID}`;
+        this.emailModalContent.subject = 'How did you like your sample?';
+        break;
+      case 'reorder':
+        this.emailModalContent.modalTitle = `REORDER REMINDER EMAIL FOR ORDER ${data.pk_orderID}`;
+        this.emailModalContent.subject = 'Checking in on your order';
+        break;
+      case 'quotes':
+        this.emailModalContent.modalTitle = `QUOTE FOLLOW UP EMAIL FOR QUOTE ${data.cartID}`;
+        this.emailModalContent.subject = 'Following Up On Your Recent Quote';
+        break;
+    }
+
+    this.getEmailModalData(type);
     $(this.quoteEmailModal.nativeElement).modal('show');
+  }
+  getEmailModalData(type) {
+    let payload;
+    switch (type) {
+      case 'sample':
+        payload = {
+          orderID: this.emailModalContent.orderID,
+          storeID: this.emailModalContent.storeID,
+          storeUserID: this.emailModalContent.storeUserID,
+          get_order_email_data: true
+        };
+        break;
+      case 'reorder':
+        payload = {
+          orderID: this.emailModalContent.pk_orderID,
+          storeID: this.emailModalContent.fk_storeID,
+          storeUserID: this.emailModalContent.fk_storeUserID,
+          get_order_email_data: true
+        };
+        break;
+      case 'quotes':
+        payload = {
+          cartID: this.emailModalContent.cartID,
+          storeID: this.emailModalContent.storeID,
+          storeUserID: this.emailModalContent.storeUserID,
+          get_quote_email_data: true
+        };
+        break;
+    }
+    this._dashboardService.postDashboardData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.emailModalContent.response = res;
+      let message = '';
+      let footer = '';
+      let greeting = '';
+      if (type == 'sample') {
+        greeting = 'Hello';
+        // Body 
+        if (res["qryStoreDefaultEmails"][0].sampleEmail) {
+          message = `${res["orderData"][0].storeUserFirstName} <br /> ${res["qryStoreDefaultEmails"][0].sampleEmail}`;
+        } else {
+          message = `${res["orderData"][0].storeUserFirstName}, <br /><br /> I wanted to reach out today because I noticed you received your sample${res["qryOrderLines"].length > 1 ? 's' : ''} of the item${res["qryOrderLines"].length > 1 ? 's' : ''} below.  How did ${res["qryOrderLines"].length > 1 ? 'they' : 'it'} turn out?  As you know, it is our goal to exceed your expectations, and we would love to hear your feedback.<br /><br /> If the sample${res["qryOrderLines"].length > 1 ? 's' : ''} did not suit your needs, let me know, and I can help you find the perfect product!<br /><br /> Thank you!`;
+        }
+        // Footer
+        if (res["data"].localPmID) {
+          footer = `<div class="row">
+          <div class="col-12 p-5">
+                <h2 class="font-weight-bold text-xl" style="font-size: 16px; font-weight: bold; color: ##333333; font-family: Arial, Helvetica, sans-serif; margin: 0 0 0 0; padding: 0; text-decoration: none; border: none;">${res["data"].localProgramManager}</h2>
+                <h3 class="font-weight-bold text-xl text-secondary" style="font-size: 14px; color: ##999999; font-family: Arial, Helvetica, sans-serif; margin: 0 0 10px 0; padding: 0;">${res["data"].localRole}</h2>
+                526 S. Main Street, ##804 Akron, Ohio 44311<br />
+                (d) ${res["data"].localPhone} | (p) 866.PromoHelp<br />
+                (e) <a href="mailto:${res["data"].localEmail}">${res["data"].localEmail}</a><br /><br />
+                <img class="w-50" src="${environment.assetsURL}globalAssets/Stores/mastheads/${this.emailModalContent.storeID}.gif" />
+              </div>
+            </div>`
+        }
+      } else if (type == 'reorder') {
+        greeting = 'Hello';
+        // Body 
+        if (res["qryStoreDefaultEmails"][0].followUpEmail) {
+          message = `${res["orderData"][0].storeUserFirstName} <br /> ${res["qryStoreDefaultEmails"][0].followUpEmail}`;
+        } else {
+          message = `${res["orderData"][0].storeUserFirstName}, <br /><br /> About this time last year, you ordered the product(s) below with us.  I wanted to check in with you and see if there is anything you are currently 
+          working on or if you have any additional promotional products needs.  I would be happy to get you a quote or suggest some new ideas for you. <br /><br /> It is my job to make sure we help you find the right products!  If I can be of any assistance, please don't hesitate to let me know.  Of course, you can visit your store, <a href="${res["orderData"][0].protocol + res["orderData"][0].storeURL}">${res["orderData"][0].storeName}</a>, for a great selection of custom branded products or to request a quote.<br /><br /> Thank you!`;
+        }
+        // Footer
+        if (res["data"].localPmID) {
+          footer = `<div class="row">
+          <div class="col-12 p-5">
+                <h2 class="font-weight-bold text-xl" style="font-size: 16px; font-weight: bold; color: ##333333; font-family: Arial, Helvetica, sans-serif; margin: 0 0 0 0; padding: 0; text-decoration: none; border: none;">${res["data"].localProgramManager}</h2>
+                <h3 class="font-weight-bold text-xl text-secondary" style="font-size: 14px; color: ##999999; font-family: Arial, Helvetica, sans-serif; margin: 0 0 10px 0; padding: 0;">${res["data"].localRole}</h2>
+                526 S. Main Street, ##804 Akron, Ohio 44311<br />
+                (d) ${res["data"].localPhone} | (p) 866.PromoHelp<br />
+                (e) <a href="mailto:${res["data"].localEmail}">${res["data"].localEmail}</a><br /><br />
+                <img class="w-50" src="${environment.assetsURL}globalAssets/Stores/mastheads/${this.emailModalContent.fk_storeID}.gif" />
+              </div>
+            </div>`
+        }
+      } else if (type == 'quotes') {
+        greeting = 'Hello';
+        // Body 
+        if (res["qryStoreDefaultEmails"][0].quoteEmail) {
+          message = `${res["cartData"][0].storeUserFirstName} <br /> ${res["qryStoreDefaultEmails"][0].quoteEmail}`;
+        } else {
+          message = `${res["cartData"][0].storeUserFirstName}, <br /><br /> I wanted to reach out to follow up on the recent quote you created, which is included below.`;
+        }
+        // Footer
+        if (res["data"].localPmID) {
+          footer = `<div class="row">
+          <div class="col-12 p-5">
+                <h2 class="font-weight-bold text-xl" style="font-size: 16px; font-weight: bold; color: ##333333; font-family: Arial, Helvetica, sans-serif; margin: 0 0 0 0; padding: 0; text-decoration: none; border: none;">${res["data"].localProgramManager}</h2>
+                <h3 class="font-weight-bold text-xl text-secondary" style="font-size: 14px; color: ##999999; font-family: Arial, Helvetica, sans-serif; margin: 0 0 10px 0; padding: 0;">${res["data"].localRole}</h2>
+                526 S. Main Street, ##804 Akron, Ohio 44311<br />
+                (d) ${res["data"].localPhone} | (p) 866.PromoHelp<br />
+                (e) <a href="mailto:${res["data"].localEmail}">${res["data"].localEmail}</a><br /><br />
+                <img class="w-50" src="${environment.assetsURL}globalAssets/Stores/mastheads/${this.emailModalContent.fk_storeID}.gif" />
+              </div>
+            </div>`
+        }
+      }
+      if (type != 'quotes') {
+        if (res["qryOrderLines"].length) {
+          res["qryOrderLines"].forEach(element => {
+            const virtualProofPath = `/globalAssets/StoreUsers/VirtualProofs/${res["orderData"][0].storeUser_pk_userID}/${this.emailModalContent.orderID}/${element.pk_orderLineID}`;
+            this.getFilesFromPath(virtualProofPath).then((proofs: any) => {
+              if (proofs) {
+                if (proofs.length) {
+                  element.imageUrl = environment.assetsURL + `/globalAssets/StoreUsers/VirtualProofs/${res["orderData"][0].storeUser_pk_userID}/${this.emailModalContent.orderID}/${element.pk_orderLineID}/${element.VirtualProofsData[0].FILENAME}?${Date.now().toString()}`;
+                } else {
+                  const imageURL = `${environment.assetsURL}/globalAssets/Products/HiRes/${element.storeProductID}.jpg?${Date.now().toString()}`;
+                  this.checkIfImageExists(imageURL).then(image => {
+                    if (image) {
+                      element.imageUrl = imageURL;
+                    } else {
+                      element.imageUrl = `assets/images/coming_soon.jpg`;
+                    }
+                    this._changeDetectorRef.markForCheck();
+                  });
+                }
+              }
+            });
+            if (type == 'reorder') {
+              const { protocol, storeName, storeURL, storeUserEmail, fk_storeUserID } = res["orderData"][0];
+              const { pk_orderID, fk_storeID } = this.emailModalContent;
+              const hash = CryptoJS.MD5(`storeID=${fk_storeID}`);
+              const hashedValue = hash.toString(CryptoJS.enc.Hex);
+              element.reorderURL = `${protocol}${storeURL}/account/orders/${pk_orderID}?rID=${fk_storeUserID}&h=${hashedValue}&orderID=${pk_orderID}&uE=${storeUserEmail}&oID=${pk_orderID}`;
+
+              element.reviewURL = `${protocol}${storeURL}/review?pID=${element.storeProductID}&email=${storeUserEmail}&orderID=${pk_orderID}&OLID=${element.pk_orderLineID}`;
+            }
+          });
+        }
+        this.emailModalContent.body = `${greeting} ${res["orderData"][0].storeUserFirstName},<br /><br />${message}`;
+        this.emailModalContent.qryOrderLines = res["qryOrderLines"];
+        this.emailModalContent.footer = footer;
+      } else {
+        this.emailModalContent.totalPrice = 0;
+        res["cartData"].forEach(carts => {
+          carts.artworkFiles = [];
+          carts.subTotal = Number(carts.royaltyPrice) + Number(carts.shippingGroundPrice);
+          // Colors Data
+          carts.ColorsData = (carts.Colors || '').split('#_').map(color => {
+            const [colorName, unitPrice, totalPrice, sizeName] = color.split('||');
+            carts.subTotal += Number(totalPrice);
+            return { colorName: colorName + ' & ' + sizeName, unitPrice: Number(unitPrice), totalPrice: Number(totalPrice) };
+          });
+          // Decorations Data
+          carts.DecorationData = (carts.Decoration || '').split('#_').map(decoration => {
+            const [id, locationName, methodName, price, setupPrice, colors, logoID, runningPrice] = decoration.split('||');
+            carts.subTotal += Number(price);
+            this.getArworkFiles(carts, id);
+            return { locationName, methodName, price: Number(price), setupPrice: Number(setupPrice), colors, runningPrice: Number(runningPrice) };
+          });
+          this.emailModalContent.totalPrice += carts.subTotal;
+        });
+        this.emailModalContent.cartData = res["cartData"];
+      }
+      this.emailModalContent.loader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.emailModalContent.loader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  getFilesFromPath(path) {
+    return new Promise((resolve, reject) => {
+      let payload = {
+        files_fetch: true,
+        path: path
+      };
+
+      this._dashboardService.getFiles(payload)
+        .pipe(takeUntil(this._unsubscribeAll))
+        .subscribe(
+          res => {
+            resolve(res["data"]);
+          },
+          error => {
+            reject(error);
+          }
+        );
+    });
+  }
+  checkIfImageExists(url) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.src = url;
+
+      if (img.complete) {
+        resolve(true);
+      } else {
+        img.onload = () => {
+          resolve(true);
+        };
+
+        img.onerror = () => {
+          reject(false);
+        };
+      }
+    });
+  }
+  getArworkFiles(data, imprintID) {
+    let payload = {
+      files_fetch: true,
+      path: `/artwork/temp/${data.pk_cartID}/${data.pk_cartLineID}/${imprintID}/`
+    }
+    this._changeDetectorRef.markForCheck();
+    this._dashboardService.getFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(files => {
+      files["data"].forEach(file => {
+        file.imprintID = imprintID;
+        data.artworkFiles.push(file);
+      });
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this._changeDetectorRef.markForCheck();
+    });
   }
 }

@@ -537,18 +537,48 @@
                             <mat-label>Body:</mat-label>
                             <ckeditor [config]="editorConfig" [(ngModel)]="emailModalContent.body"></ckeditor>
                         </div>
+                        <!-- Imprints -->
+                        <div class="col-12 my-5" *ngIf="emailModalContent.qryOrderLines.length">
+                            <div class="row space-y-1 py-2" *ngFor="let product of emailModalContent.qryOrderLines">
+                                <ng-container *ngIf="product.hasImprints" class="border-b ">
+                                    <div class="col-12 col-md-3">
+                                        <img src="{{product.imageUrl}}" class="w-50">
+                                    </div>
+                                    <div class="col-12 col-md-9">
+                                        <h2 class="font-bold">{{product.productName}}</h2>
+                                        <!-- Imprints -->
+                                        <div *ngFor="let imprint of product.imprints">
+                                            <p class="font-bold text-secondary">
+                                                {{imprint.location
+                                                + '/' + imprint.method}}</p>
+                                            <a *ngIf="imprint.statusCheck" href="{{imprint.proofUrl}}"
+                                                target="_blank">CLICK HERE TO REVIEW THIS PROOF</a>
+                                            <div class="my-2">
+                                                <mat-checkbox></mat-checkbox>
+                                                <mat-icon class="mt-1 cursor-pointer"
+                                                    [svgIcon]="'heroicons_outline:trash'"
+                                                    [matTooltip]="'Remove this item from the email'"></mat-icon>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </div>
+                        <!-- Footer -->
                         <div class="col-12" [innerHTML]="emailModalContent.footer"></div>
                     </div>
                     <div class="col-12" *ngIf="emailModalContent?.text" [innerHTML]="emailModalContent.text"></div>
                     <div class="col-12 my-2">
                         <div>
-                            <mat-checkbox *ngIf="emailModalContent.type == 'awaiting'">Include images?</mat-checkbox>
+                            <mat-checkbox *ngIf="emailModalContent.type == 'awaiting'"
+                                [(ngModel)]="emailModalContent.blnImages">Include images?</mat-checkbox>
                             <br *ngIf="emailModalContent.type == 'awaiting'">
                             <mat-checkbox *ngIf="emailModalContent.type == 'awaiting'"
+                                [(ngModel)]="emailModalContent.blnContent"
                                 matTooltip="Include the additional content below the message.">Include
                                 content?</mat-checkbox>
                             <br *ngIf="emailModalContent.type == 'awaiting'">
-                            <mat-checkbox
+                            <mat-checkbox *ngIf="emailModalContent.type != 'awaiting'"
                                 matTooltip="Include a PDF copy of the invoice as an attachment on the email.">Include
                                 PDF invoice as attachment?</mat-checkbox>
                         </div>
@@ -556,14 +586,17 @@
                 </div>
             </div>
             <div class="modal-footer">
-
                 <button type="button" data-dismiss="modal"
                     class="mr-2 inline-flex items-center gap-x-1.5 rounded-md bg-red-400 px-2.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-400">
                     <span>Close</span>
                 </button>
-                <button type="button" data-dismiss="modal"
-                    class="mr-2 inline-flex items-center gap-x-1.5 rounded-md bg-green-400 px-2.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-400">
-                    <span>Send Email</span>
+                <button (click)="sendEmailsOrders()" [disabled]="emailModalContent?.sendEmailLoader" type="button"
+                    data-dismiss="modal"
+                    class="mr-2 min-w-30 inline-flex items-center gap-x-1.5 rounded-md bg-green-400 px-2.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-400">
+                    <span *ngIf="!emailModalContent?.sendEmailLoader">Send Email</span>
+                    <mat-progress-spinner *ngIf="emailModalContent?.sendEmailLoader" [diameter]="24"
+                        [mode]="'indeterminate'">
+                    </mat-progress-spinner>
                 </button>
             </div>
         </div>

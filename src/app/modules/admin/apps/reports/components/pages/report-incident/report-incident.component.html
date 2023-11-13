@@ -103,7 +103,7 @@
                 <tr *ngFor="let item of dataSource; let i=index;">
                     <td>{{i + 1}}</td>
                     <td>
-                        <a [routerLink]="['/apps/orders',item.fk_orderID]" target="_blank"
+                        <a [routerLink]="['/apps/orders',item.fk_orderID,'incident-reports']" target="_blank"
                             class="text-blue-600">{{item?.fk_orderID}}</a>
                     </td>
                     <td>

@@ -212,6 +212,8 @@ export class IncidentReportsUpdateComponent implements OnInit {
     }
     if (item.fk_sourceAdminUserID) {
       this.updateFormModal.source_employee = item.fk_sourceAdminUserID.split(',');
+    } else {
+      this.updateFormModal.source_employee = [];
     }
     let sources = [];
     if (item.incidentReportSources) {
@@ -219,7 +221,7 @@ export class IncidentReportsUpdateComponent implements OnInit {
     }
     sources.forEach(source => {
       const [id, name] = source.split('::');
-      this.updateFormModal.reportsSources.push(Number(id));
+      this.updateFormModal.reportsSources.push({ sourceName: name, pk_sourceID: Number(id) });
       this.reportSources.filter((item, index) => {
         if (item.pk_sourceID == id) {
           item.checked = true;
@@ -231,12 +233,12 @@ export class IncidentReportsUpdateComponent implements OnInit {
             this.supplierSource = false;
           }
           this.employeeSource = this.updateFormModal.reportsSources.some(elem => {
-            if (elem == 1 || elem == 2 || elem == 4) {
+            if (elem.pk_sourceID == 1 || elem.pk_sourceID == 2 || elem.pk_sourceID == 4) {
               return true;
             }
           });
           this.supplierSource = this.updateFormModal.reportsSources.some(elem => {
-            if (elem == 5) {
+            if (elem.pk_sourceID == 5) {
               return true;
             }
           });
@@ -319,6 +321,8 @@ export class IncidentReportsUpdateComponent implements OnInit {
     this.updateFormModal.reportsSources.filter(elem => {
       if (elem.sourceName == val) {
         this.supplierSource = true;
+        this.updateFormModal.source_supplier = 0;
+        this._changeDetectorRef.markForCheck();
       }
     })
   }
@@ -349,8 +353,16 @@ export class IncidentReportsUpdateComponent implements OnInit {
   // Update Incident
   updateIncident() {
     const { fk_adminUserID, fk_orderID, fk_storeUserID, fk_storeID, fk_companyID, pk_incidentReportID, sources, sourceEmployeeName, images } = this.updateIncidentObj;
-    const { reportsSources, priority1, priority2, priority3, priority4, rerunCost, explanation, corrected, how, recommend, source_supplier, source_employee, blnFinalized } = this.updateFormModal;
+    let { reportsSources, priority1, priority2, priority3, priority4, rerunCost, explanation, corrected, how, recommend, source_supplier, source_employee, blnFinalized } = this.updateFormModal;
     let reports_sources = [];
+    reportsSources.forEach(element => {
+      reports_sources.push(element.pk_sourceID);
+      if (element.pk_sourceID == 2 || element.pk_sourceID == 1) {
+        if (!source_employee) {
+          source_employee = [];
+        }
+      }
+    });
     let payload: UpdateIncidentReport = {
       store_user_id: this.updateIncidentObj.fk_storeUserID,
       date: this.updateIncidentObj.date,
@@ -360,14 +372,14 @@ export class IncidentReportsUpdateComponent implements OnInit {
       priority4: priority4,
       blnFinalized: blnFinalized,
       rerunCost: rerunCost,
-      explanation: explanation.replace(/'/g, "''"),
-      corrected: corrected.replace(/'/g, "''"),
-      how: how.replace(/'/g, "''"),
-      recommend: recommend.replace(/'/g, "''"),
+      explanation: explanation?.replace(/'/g, "''"),
+      corrected: corrected?.replace(/'/g, "''"),
+      how: how?.replace(/'/g, "''"),
+      recommend: recommend?.replace(/'/g, "''"),
       source_supplier: Number(source_supplier),
       admin_user_id: this.userData.pk_userID,
       source_employee: source_employee,
-      incident_sources: reportsSources,
+      incident_sources: reports_sources,
       incident_report_id: pk_incidentReportID,
       order_id: fk_orderID,
       update_incident_report: true
@@ -524,10 +536,10 @@ export class IncidentReportsUpdateComponent implements OnInit {
         fk_storeID: formData.fk_storeID,
         fk_orderID: formData.fk_orderID,
         rerunCost: formData.rerunCost,
-        explanation: formData.explanation.replace(/'/g, "''"),
-        corrected: formData.corrected.replace(/'/g, "''"),
-        how: formData.how.replace(/'/g, "''"),
-        recommend: formData.recommend.replace(/'/g, "''"),
+        explanation: formData?.explanation?.replace(/'/g, "''"),
+        corrected: formData?.corrected?.replace(/'/g, "''"),
+        how: formData?.how?.replace(/'/g, "''"),
+        recommend: formData?.recommend?.replace(/'/g, "''"),
         fk_companyID: formData.fk_companyID,
         fk_sourceAdminUserID: formData.fk_sourceAdminUserID,
         dateModified: formData.dateModified,
