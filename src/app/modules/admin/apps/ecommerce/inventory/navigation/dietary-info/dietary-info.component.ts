@@ -5,6 +5,10 @@ import { environment } from 'environments/environment';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { takeUntil } from 'rxjs/operators';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
+import { SystemService } from 'app/modules/admin/apps/system/components/system.service';
+import { HttpClient } from '@angular/common/http';
+import { SmartArtService } from 'app/modules/admin/smartart/components/smartart.service';
 
 @Component({
   selector: 'app-dietary-info',
@@ -19,20 +23,27 @@ export class DietaryInfoComponent implements OnInit, OnDestroy {
   images = null;
   pdf;
   imageUploadLoader: boolean = false;
+  pdfDeleteLoader: boolean = false;
+  pdfLoader: boolean = false;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _formBuilder: FormBuilder,
     private _inventoryService: InventoryService,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+    private _commonService: DashboardsService,
+    private _systemService: SystemService,
+    private http: HttpClient,
+    private _smartartService: SmartArtService,
+
   ) { }
 
   ngOnInit(): void {
     this.getProductDetail();
   }
-  getProductDetail() {
+  async getProductDetail() {
     this.isLoading = true;
-    this._inventoryService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe((details) => {
+    this._inventoryService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe(async (details) => {
       if (details) {
         this.selectedProduct = details["data"][0];
         const { pk_productID } = this.selectedProduct;
@@ -41,9 +52,7 @@ export class DietaryInfoComponent implements OnInit, OnDestroy {
         this.imageUploadForm = this._formBuilder.group({
           image: ['', Validators.required]
         });
-
-        this.pdf = null;
-
+        this.checkFileExist(`${environment.productMedia}/DietaryInfo/${pk_productID}.pdf`);
         this.isLoading = false;
 
         // Mark for check
@@ -126,6 +135,42 @@ export class DietaryInfoComponent implements OnInit, OnDestroy {
   openPdf() {
     window.open(this.pdf);
   };
+
+  deletePdf() {
+    const { pk_productID } = this.selectedProduct;
+    let payload = {
+      files: [`/globalAssets/Products/DietaryInfo/${pk_productID}.pdf`],
+      delete_multiple_files: true
+    }
+    this.pdfDeleteLoader = true;
+    this._commonService.removeMediaFiles(payload).pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((response) => {
+        this.pdfDeleteLoader = false;
+        this._systemService.snackBar('Pdf Removed Successfully');
+        this.pdf = null;
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.pdfDeleteLoader = false;
+        this._changeDetectorRef.markForCheck();
+      })
+  }
+
+  checkFileExist(url) {
+    let params = {
+      file_check: true,
+      url: url
+    }
+    this.pdfLoader = true;
+    this._changeDetectorRef.markForCheck();
+
+    this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe((res: any) => {
+      if (res?.isFileExist) {
+        this.pdf = url;
+      }
+      this.pdfLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
 
   /**
      * On destroy

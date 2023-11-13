@@ -5,6 +5,7 @@ import { takeUntil } from 'rxjs/operators';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import moment from 'moment';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-reviews',
@@ -22,13 +23,15 @@ export class ReviewsComponent implements OnInit, OnDestroy {
   reviewsData: Reviews = null;
   reviewsDataLength: number = 0;
   storeDataLoader = false;
+  storeList : any = [];
 
   storesData = [];
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
-    private _formBuilder: FormBuilder
+    private _formBuilder: FormBuilder,
+    private _commonService: DashboardsService,
   ) { }
 
   ngOnInit(): void {
@@ -36,6 +39,18 @@ export class ReviewsComponent implements OnInit, OnDestroy {
     this.imageUploadForm = this._formBuilder.group({
       image: ['', Validators.required]
     });
+
+    this._commonService.storesData$
+    .pipe(takeUntil(this._unsubscribeAll))
+    .subscribe((stores: any) => {
+        stores["data"].forEach(element => {
+            if (element.blnActive) {
+              this.storeList.push(element);
+            }
+        });
+        this._changeDetectorRef.markForCheck();
+    });
+
 
     this.getProductDetail();
   }

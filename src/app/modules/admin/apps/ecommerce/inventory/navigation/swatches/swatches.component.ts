@@ -6,6 +6,9 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { environment } from 'environments/environment';
 import * as _ from 'lodash';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { DeleteImage } from 'app/modules/admin/apps/file-manager/stores.types';
+import { SystemService } from 'app/modules/admin/apps/system/components/system.service';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-swatches',
@@ -23,6 +26,7 @@ export class SwatchesComponent implements OnInit, OnDestroy {
   imagesArray = [];
 
   imageUploadLoader: boolean = false;
+  imageDeleteLoader: boolean = false;
 
   imageError = "";
   isImageSaved: boolean;
@@ -32,7 +36,10 @@ export class SwatchesComponent implements OnInit, OnDestroy {
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
     private _formBuilder: FormBuilder,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+    private _systemService: SystemService,
+    private _commonService: DashboardsService,
+
   ) { }
 
   ngOnInit(): void {
@@ -50,10 +57,8 @@ export class SwatchesComponent implements OnInit, OnDestroy {
         this.selectedProduct = details["data"][0];
         const { pk_productID } = this.selectedProduct;
 
-        for (let i = 1; i <= 5; i++) {
-          let url = `${environment.productMedia}/Swatch/${pk_productID}/${pk_productID}-${i}.jpg`;
-          this.checkIfImageExists(url);
-        };
+        let url = `${environment.productMedia}/Swatch/${pk_productID}/${pk_productID}.jpg`;
+        this.checkIfImageExists(url);
         setTimeout(() => {
           this.isLoading = false;
           this._changeDetectorRef.markForCheck();
@@ -130,7 +135,7 @@ export class SwatchesComponent implements OnInit, OnDestroy {
       const payload = {
         file_upload: true,
         image_file: base64,
-        image_path: `/globalAssets/Products/Swatch/${pk_productID}/${pk_productID}-${this.fileName}.jpg`
+        image_path: `/globalAssets/Products/Swatch/${pk_productID}/${pk_productID}.jpg`
       };
 
       this.imageUploadLoader = true;
@@ -142,7 +147,8 @@ export class SwatchesComponent implements OnInit, OnDestroy {
             duration: 3500
           });
           this.imageUploadLoader = false;
-          this.imagesArray.push(`${environment.productMedia}/Swatch/${pk_productID}/${pk_productID}-${this.fileName}.jpg`);
+          this.imagesArray.pop();
+          this.imagesArray.push(`${environment.productMedia}/Swatch/${pk_productID}/${pk_productID}.jpg`);
 
           // Mark for check
           this._changeDetectorRef.markForCheck();
@@ -159,6 +165,26 @@ export class SwatchesComponent implements OnInit, OnDestroy {
         })
     };
   };
+
+  deleteImage() {
+    const { pk_productID } = this.selectedProduct;
+    let payload = {
+      files: [`/globalAssets/Products/Swatch/${pk_productID}/${pk_productID}.jpg`],
+      delete_multiple_files: true
+    }
+    this.imageDeleteLoader = true;
+    this._commonService.removeMediaFiles(payload).pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((response) => {
+        this.imagesArray.pop();
+        this.imageDeleteLoader = false;
+        this._systemService.snackBar('Image Removed Successfully');
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.imageDeleteLoader = false;
+        this._changeDetectorRef.markForCheck();
+      })
+  }
+
 
   /**
      * On destroy

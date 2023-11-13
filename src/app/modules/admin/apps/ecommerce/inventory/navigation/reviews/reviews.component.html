@@ -15,7 +15,7 @@
                             <mat-select disableRipple>
                                 <mat-option (click)="selectByAllStores()" aria-selected="true">All Stores</mat-option>
                                 <mat-option (click)="selectByStore(store)" value="{{store}}"
-                                    *ngFor="let store of storesData">
+                                    *ngFor="let store of storeList">
                                     {{store.storeName}}
                                 </mat-option>
                             </mat-select>
