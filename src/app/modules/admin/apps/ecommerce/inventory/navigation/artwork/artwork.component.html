@@ -78,7 +78,7 @@
                             <a
                                 class="flex flex-col w-40 h-40 m-3 p-4 pb-8 shadow rounded-2xl bg-card ng-star-inserted text-decoration-none">
                                 <div class="flex h-1 justify-end w-full">
-                                    <button (click)="artworkDelete(artWork)" mat-icon-button="" matprefix=""
+                                    <button (click)="openRemoveModal(artWork)" mat-icon-button="" matprefix=""
                                         class="mat-focus-indicator mat-icon-button mat-button-base">
                                         <mat-icon role="img" class="icon-size-5">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
@@ -195,4 +195,24 @@
         </div>
 
     </mat-drawer-container>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" #removeArtwork>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Remove Artwork File</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to remove this artwork file? This cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="artworkDelete()">Yes</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
 </div>

@@ -12,6 +12,7 @@ import { commentObj } from '../../inventory.types';
 import { OrdersService } from 'app/modules/admin/apps/orders/orders-components/orders.service';
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { MatChipInputEvent } from '@angular/material/chips';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-internal-notes',
@@ -55,7 +56,9 @@ export class InternalNotesComponent implements OnInit, OnDestroy {
     private _formBuilder: FormBuilder,
     private _snackBar: MatSnackBar,
     private _authService: AuthService,
-    private _orderService: OrdersService
+    private _orderService: OrdersService,
+    private router: Router,
+
   ) { }
 
   ngOnInit(): void {
@@ -297,6 +300,9 @@ export class InternalNotesComponent implements OnInit, OnDestroy {
           });
       });
   };
+  navigate() {
+    this.router.navigateByUrl('/apps/users/admin-commentors');
+  }
 
   /**
      * On destroy

@@ -313,12 +313,13 @@ export class InventoryService {
         });
     };
 
-    getAllPackages(productId): Observable<any[]> {
+    getAllPackages(productId, page?): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
                 packaging: true,
                 product_id: productId,
-                size: 20
+                size: 20,
+                page: page ? page : 1
             }
         });
     };

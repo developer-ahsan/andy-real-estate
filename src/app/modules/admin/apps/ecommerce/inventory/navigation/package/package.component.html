@@ -319,7 +319,7 @@
 
                     <mat-paginator
                         class="sm:absolute sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                        [ngClass]="{'pointer-events-none': isLoading}" [length]="dataSourceLength" [pageIndex]="0"
+                        [ngClass]="{'pointer-events-none': isLoading}" [length]="dataSourceLength" [pageIndex]="this.pageData.page - 1"
                         [pageSize]="20" (page)="getDisplayNextData($event)" [hidePageSize]="true"></mat-paginator>
                 </div>
 

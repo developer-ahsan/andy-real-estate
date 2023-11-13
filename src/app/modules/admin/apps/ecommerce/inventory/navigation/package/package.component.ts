@@ -26,6 +26,7 @@ export class PackageComponent implements OnInit, OnDestroy {
   zeroLengthCheckMessage = false;
   flashMessage: 'success' | 'error' | null = null;
   packageAddLoader = false;
+  pageData : any;
 
   packageUpdateLoader = false;
   packagePostLoader = false;
@@ -319,9 +320,10 @@ export class PackageComponent implements OnInit, OnDestroy {
 
   getPackAndAccessories(): void {
     const { pk_productID } = this.selectedProduct;
-    this._inventoryService.getAllPackages(pk_productID)
+    this._inventoryService.getAllPackages(pk_productID, this.pageNo)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((packages) => {
+        this.pageData = packages;
         const { list, selected } = packages["data"];
         let letIdsToRemoveWhichAreSelected = [];
         for (const item of selected) {

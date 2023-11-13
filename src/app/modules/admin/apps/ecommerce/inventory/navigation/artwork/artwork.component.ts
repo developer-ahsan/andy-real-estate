@@ -1,10 +1,11 @@
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { environment } from 'environments/environment';
+declare var $: any;
 
 @Component({
   selector: 'app-artwork',
@@ -22,6 +23,10 @@ export class ArtworkComponent implements OnInit, OnDestroy {
   artWorkData = [];
   imageUploadLoader: boolean = false;
   deleteLoader: boolean = false;
+  @ViewChild('removeArtwork') removeArtwork: ElementRef;
+  deleteModalData: any;
+
+
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -154,8 +159,8 @@ export class ArtworkComponent implements OnInit, OnDestroy {
     };
   };
 
-  artworkDelete(data): void {
-    const { pk_artworkTemplateID } = data;
+  artworkDelete(): void {
+    const { pk_artworkTemplateID } = this.deleteModalData;
     const { pk_productID } = this.selectedProduct;
     const payload = {
       product_id: pk_productID,
@@ -168,6 +173,7 @@ export class ArtworkComponent implements OnInit, OnDestroy {
       .subscribe((response) => {
         this.deleteLoader = false;
         this.artWorkData = response["artworks"];
+        $(this.removeArtwork.nativeElement).modal('hide');
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
@@ -209,6 +215,11 @@ export class ArtworkComponent implements OnInit, OnDestroy {
     const url = `${environment.productMedia}/artworkTemplates/${pk_productID}/${pk_artworkTemplateID}.${extension}`;
     window.open(url);
   };
+
+  openRemoveModal(data) {
+    this.deleteModalData = data;
+    $(this.removeArtwork.nativeElement).modal('show');
+  }
 
   /**
      * On destroy

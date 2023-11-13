@@ -48,8 +48,10 @@ export class DuplicateComponent implements OnInit, OnDestroy {
   getProductDetail() {
     this.isLoading = true;
     this._inventoryService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe((details) => {
+      
       if (details) {
         this.selectedProduct = details["data"][0];
+        this.firstFormGroup.get('name').setValue(this.selectedProduct.productName)
         this.isLoading = false;
         this._changeDetectorRef.markForCheck();
       }
