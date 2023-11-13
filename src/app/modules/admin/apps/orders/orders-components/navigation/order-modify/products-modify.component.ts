@@ -592,7 +592,6 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
     if (this.ngSelectedProduct.products[0].estimatedShippingDate) {
       estimated_date = moment(this.ngSelectedProduct.products[0].estimatedShippingDate).format('L');
     }
-    console.log(this.currentSelectedProduct)
     let payload: UpdateProduct = {
       orderLine_id: this.ngSelectedProduct.order_line_id,
       estimated_shipping_date: estimated_date,

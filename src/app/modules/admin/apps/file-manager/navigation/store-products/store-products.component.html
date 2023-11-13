@@ -4,8 +4,7 @@
             <div class="col-12">
                 <div class="p-6 pb-2 sm:p-8 dm:pb-2 lg:p-10 lg:pb-2 w-full">
                     <div>
-                        <button
-                        (click) = "generateDataSheet()"
+                        <button (click)="generateDataSheet()"
                             class="mat-focus-indicator mat-tooltip-trigger mb-3 mat-flat-button mat-button-base mat-primary"
                             aria-describedby="cdk-describedby-message-1">
                             <span class="mat-button-wrapper ml-2 mr-1">Generate Data Sheet</span></button>
@@ -101,11 +100,7 @@
                 </div> -->
 
             <div class="col-12 h-full py-2" #topScrollAnchor>
-                <div class="text-center">
-                    <pagination-controls (pageChange)="getNextPrductData($event)" *ngIf="dataSource.length > 0"
-                        previousLabel="Prev" nextLabel="Next">
-                    </pagination-controls>
-                </div>
+
                 <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
                 </ngx-skeleton-loader>
                 <div *ngIf="!isLoading">
@@ -115,17 +110,17 @@
                             currentPage: page,
                             totalItems: totalRecords
                           };">
-                            <div class="px-6" *ngIf="category.productsCountPerCategory > 0 ">
+                            <div class="px-6" *ngIf="category.products.length > 0 ">
                                 <div class="p-5 text-secondary pb-0 mb-2 text-lg">
                                     <b>
-                                        <span class="badge badge-secondary">{{category.productsCountPerCategory}}
-                                        </span>
+                                        <!-- <span class="badge badge-secondary">{{category.products.length}}
+                                        </span> -->
                                         <span class="text-xl"> {{category.categoryName}} </span>
                                     </b>
                                 </div>
                             </div>
                             <div class="overflow-x-auto">
-                                <table class="table table-striped " *ngIf="category.productsCountPerCategory > 0 ">
+                                <table class="table table-striped " *ngIf="category.products.length > 0 ">
                                     <thead>
                                         <tr>
                                             <td width="1%">SPID</td>
@@ -158,76 +153,86 @@
                                         <tr *ngFor="let product of category.products">
                                             <td>
                                                 <a target="_blank"
-                                                    [routerLink]="['/apps/ecommerce/inventory/storeProduct',product.spid]">{{product.spid}}</a>
+                                                    [routerLink]="['/apps/ecommerce/inventory/storeProduct',product.pk_storeProductID]">{{product.pk_storeProductID}}</a>
                                             </td>
                                             <td>
                                                 <a target="_blank"
-                                                    [routerLink]="['/apps/ecommerce/inventory/storeProduct',product.spid]">{{product.name}}</a>
+                                                    [routerLink]="['/apps/ecommerce/inventory/storeProduct',product.pk_storeProductID]">{{product.productName}}</a>
                                             </td>
                                             <td>
-                                                <div class="flex align-items-center" *ngIf="product.relation == 3">
-                                                    <p [innerHTML]="product.vendor"></p>
+                                                <div class="flex align-items-center"
+                                                    *ngIf="product.vendorRelation == 3">
+                                                    <p [innerHTML]="product.companyName"></p>
                                                     <mat-icon svgIcon="heroicons_solid:star"
                                                         class="icon-size-4 text-green-700"></mat-icon>
                                                 </div>
-                                                <div class="flex align-items-center" *ngIf="product.relation == 2">
-                                                    <p>{{product.vendor}}</p>
+                                                <div class="flex align-items-center"
+                                                    *ngIf="product.vendorRelation == 2">
+                                                    <p>{{product.companyName}}</p>
                                                     <mat-icon svgIcon="heroicons_solid:badge-check" class="icon-size-4"
                                                         color="warn"></mat-icon>
                                                 </div>
-                                                <div class="flex align-items-center" *ngIf="product.relation == 1">
-                                                    <p>{{product.vendor}}</p>
+                                                <div class="flex align-items-center"
+                                                    *ngIf="product.vendorRelation == 1">
+                                                    <p>{{product.companyName}}</p>
                                                 </div>
                                             </td>
-                                            <td>{{product.date}}</td>
+                                            <td>{{product.lastUpdatedDate}}</td>
                                             <td class="text-center">
-                                                <span *ngIf="product.master == 0" class="text-red-700">Disable</span>
-                                                <span *ngIf="product.master == 1" class="text-green-500">Active</span>
+                                                <span *ngIf="!product.blnActive" class="text-red-700">Disable</span>
+                                                <span *ngIf="product.blnActive" class="text-green-500">Active</span>
                                             </td>
                                             <td class="text-center">
-                                                <span *ngIf="product.store == 0" class="text-red-700">Offline</span>
-                                                <span *ngIf="product.store == 1" class="text-green-500">Online</span>
+                                                <span *ngIf="!product.blnStoreActive"
+                                                    class="text-red-700">Offline</span>
+                                                <span *ngIf="product.blnStoreActive"
+                                                    class="text-green-500">Online</span>
                                             </td>
                                             <td class="text-center">
-                                                <mat-icon svgIcon="heroicons_outline:x" *ngIf="product.desc == 0"
+                                                <mat-icon svgIcon="heroicons_outline:x"
+                                                    *ngIf="!product.specialDescription" class="text-red-700"></mat-icon>
+                                                <mat-icon svgIcon="heroicons_outline:check" class="text-green-500"
+                                                    *ngIf="product.specialDescription"></mat-icon>
+                                            </td>
+                                            <td class="text-center">
+                                                <mat-icon svgIcon="heroicons_outline:x" *ngIf="product.blnImage == 0"
                                                     class="text-red-700"></mat-icon>
                                                 <mat-icon svgIcon="heroicons_outline:check" class="text-green-500"
-                                                    *ngIf="product.desc == 1"></mat-icon>
+                                                    *ngIf="product.blnImage == 1"></mat-icon>
                                             </td>
                                             <td class="text-center">
-                                                <mat-icon svgIcon="heroicons_outline:x" *ngIf="product.image == 0"
-                                                    class="text-red-700"></mat-icon>
+                                                <mat-icon svgIcon="heroicons_outline:x"
+                                                    *ngIf="!product.storeProductVideo" class="text-red-700"></mat-icon>
                                                 <mat-icon svgIcon="heroicons_outline:check" class="text-green-500"
-                                                    *ngIf="product.image == 1"></mat-icon>
+                                                    *ngIf="product.storeProductVideo"></mat-icon>
                                             </td>
                                             <td class="text-center">
-                                                <mat-icon svgIcon="heroicons_outline:x" *ngIf="product.video == 0"
+                                                <mat-icon svgIcon="heroicons_outline:x" *ngIf="product.blnColor == 0"
                                                     class="text-red-700"></mat-icon>
                                                 <mat-icon svgIcon="heroicons_outline:check" class="text-green-500"
-                                                    *ngIf="product.video == 1"></mat-icon>
+                                                    *ngIf="product.blnColor == 1"></mat-icon>
                                             </td>
                                             <td class="text-center">
-                                                <mat-icon svgIcon="heroicons_outline:x" *ngIf="product.colors == 0"
+                                                <mat-icon svgIcon="heroicons_outline:x" *ngIf="!product.technoLogoSKU"
                                                     class="text-red-700"></mat-icon>
                                                 <mat-icon svgIcon="heroicons_outline:check" class="text-green-500"
-                                                    *ngIf="product.colors == 1"></mat-icon>
+                                                    *ngIf="product.technoLogoSKU"></mat-icon>
                                             </td>
                                             <td class="text-center">
-                                                <mat-icon svgIcon="heroicons_outline:x" *ngIf="product.logo == 0"
-                                                    class="text-red-700"></mat-icon>
+                                                <mat-icon svgIcon="heroicons_outline:x"
+                                                    *ngIf="product.blnReordered == 0" class="text-red-700"></mat-icon>
                                                 <mat-icon svgIcon="heroicons_outline:check" class="text-green-500"
-                                                    *ngIf="product.logo == 1"></mat-icon>
-                                            </td>
-                                            <td class="text-center">
-                                                <mat-icon svgIcon="heroicons_outline:x" *ngIf="product.o == 0"
-                                                    class="text-red-700"></mat-icon>
-                                                <mat-icon svgIcon="heroicons_outline:check" class="text-green-500"
-                                                    *ngIf="product.o == 1"></mat-icon>
+                                                    *ngIf="product.blnReordered == 1"></mat-icon>
                                             </td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
+                        </div>
+                        <div class="text-center">
+                            <pagination-controls (pageChange)="getNextPrductData($event)" *ngIf="dataSource.length > 0"
+                                previousLabel="Prev" nextLabel="Next">
+                            </pagination-controls>
                         </div>
                     </ng-container>
                     <ng-template #noRecords>

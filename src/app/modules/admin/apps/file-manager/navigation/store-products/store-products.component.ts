@@ -24,7 +24,7 @@ export class StoreProductsComponent implements OnInit, OnDestroy {
   dataSource = [];
   totalRecords = 0;
   totalProducts = 0;
-  itemsPerPage = 5;
+  itemsPerPage = 50;
 
   duplicatedDataSource = [];
   dataSourceTotalRecord: number;
@@ -71,45 +71,62 @@ export class StoreProductsComponent implements OnInit, OnDestroy {
       this.isFilterLoader = true;
     }
     let params = {
-      store_product: true,
+      store_products_per_store: true,
       store_id: this.selectedStore.pk_storeID,
       keyword: this.keyword,
       status: this.status,
-      filter_category: this.category,
+      category_id: this.category,
       has_description: this.hasDescription,
       has_ordered: this.hasOrdered,
       vendor_relation: this.vendorRelation,
       has_video: this.hasVideo,
-      size: 5,
+      // size: 5,
       page: page
     }
     this._storeManagerService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      let data = [];
       res["data"].forEach(element => {
-        element.products = [];
-        if (element.productsList) {
-          let cat_List = element.productsList.split(',,');
-          cat_List.forEach(product => {
-            let data = product.split('==');
-            element.products.push({
-              spid: data[0],
-              name: data[1],
-              vendor: data[2],
-              relation: data[3],
-              date: data[4],
-              master: data[5],
-              store: data[6],
-              desc: data[7],
-              image: data[8],
-              video: data[9],
-              colors: data[10],
-              logo: data[11],
-              o: data[12],
-            })
-          });
+        if (element.categoryName) {
+          let index = data.findIndex(cat => cat.categoryName == element.categoryName);
+          if (index < 0) {
+            data.push({ categoryName: element.categoryName, products: [element] });
+          } else {
+            data[index].products.push(element);
+          }
+        } else {
+          let index = data.findIndex(cat => cat.categoryName == 'UNCATEGORIZED');
+          if (index < 0) {
+            data.push({ categoryName: 'UNCATEGORIZED', products: [element] });
+          } else {
+            data[index].products.push(element);
+          }
         }
+        // element.products = [];
+        // if (element.productsList) {
+        //   let cat_List = element.productsList.split(',,');
+        //   cat_List.forEach(product => {
+        //     let data = product.split('==');
+        //     element.products.push({
+        //       spid: data[0],
+        //       name: data[1],
+        //       vendor: data[2],
+        //       relation: data[3],
+        //       date: data[4],
+        //       master: data[5],
+        //       store: data[6],
+        //       desc: data[7],
+        //       image: data[8],
+        //       video: data[9],
+        //       colors: data[10],
+        //       logo: data[11],
+        //       o: data[12],
+        //     })
+        //   });
+        // }
       });
-      this.dataSource = res["data"];
-      this.totalRecords = res["categoryCount"];
+      this.dataSource = data;
+      // this.totalRecords = res["categoryCount"];
+      this.totalRecords = res["totalRecords"];
       this.totalProducts = res["totalRecords"];
       this.isLoading = false;
       this.isFilterLoader = false;

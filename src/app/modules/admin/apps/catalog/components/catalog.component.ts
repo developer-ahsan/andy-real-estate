@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, finalize, map, startWith, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
@@ -10,6 +10,7 @@ import { MatDrawer } from '@angular/material/sidenav';
 import Swal from 'sweetalert2'
 import { CatalogService } from './catalog.service';
 import { FormControl } from '@angular/forms';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 @Component({
   selector: 'catalog',
   templateUrl: './catalog.component.html',
@@ -52,15 +53,18 @@ export class CatalogComponent {
   isFilterLoader: boolean = false;
 
   // Vendors Searchable
+  filteredOptions: string[] = [];
   allSuppliers = [];
   searchSupplierCtrl = new FormControl();
   selectedSupplier: any;
-  isSearchingSupplier = false;
   // Colors Searchable
   allColors = [];
   searchColorCtrl = new FormControl();
   selectedColor: any;
   isSearchingColor = false;
+  selectedColors: any = [];
+  searchTerm: any = '';
+  dropdownSettings: any;
   // Sizes Searchable
   allSizes = [];
   searchSizeCtrl = new FormControl();
@@ -77,11 +81,20 @@ export class CatalogComponent {
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _catalogService: CatalogService,
+    private _commonService: DashboardsService,
     private _router: Router,
     private route: ActivatedRoute,
     private _authService: AuthService,
     private _fuseMediaWatcherService: FuseMediaWatcherService,
   ) {
+    this.dropdownSettings = {
+      singleSelection: false,
+      idField: 'id',
+      textField: 'name',
+      selectAllText: 'Select All',
+      unSelectAllText: 'UnSelect All',
+      allowSearchFilter: true,
+    };
   }
 
   // -----------------------------------------------------------------------------------------------------
@@ -95,38 +108,35 @@ export class CatalogComponent {
     this.sidenav.toggle();
   }
   getSuppliers() {
-    this._catalogService.Suppliers$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.allSuppliers = res["data"];
-    });
-    let params;
-    this.searchSupplierCtrl.valueChanges.pipe(
-      filter((res: any) => {
-        params = {
-          supplier: true,
-          bln_active: 1,
-          keyword: res,
-          size: 30
-        }
-        return res !== null && res.length >= 3
-      }),
-      distinctUntilChanged(),
-      debounceTime(300),
-      tap(() => {
-        this.allSuppliers = [];
-        this.isSearchingSupplier = true;
+    this.allSuppliers = [];
+    this._commonService.suppliersData$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((supplier) => {
+        this.allSuppliers.push({ pk_companyID: 0, companyName: 'All' });
+        this.allSuppliers = this.allSuppliers.concat(supplier["data"]);
+        this.searchSupplierCtrl.setValue(this.allSuppliers[0].companyName);
+        this.selectedSupplier = this.allSuppliers[0];
         this._changeDetectorRef.markForCheck();
-      }),
-      switchMap(value => this._catalogService.getCatalogData(params)
-        .pipe(
-          finalize(() => {
-            this.isSearchingSupplier = false
-            this._changeDetectorRef.markForCheck();
-          }),
-        )
-      )
-    ).subscribe((data: any) => {
-      this.allSuppliers = data['data'];
+      }, err => {
+        this._changeDetectorRef.markForCheck();
+      });
+    this.searchSupplierCtrl.valueChanges.pipe(
+      startWith(''),
+      map((value) => this._filterSupplier(value))
+    ).subscribe((filteredValues) => {
+      this.filteredOptions = filteredValues;
     });
+  }
+  displayFn(value: any): string {
+    return value;
+  }
+  private _filterSupplier(value: any): any[] {
+    if (value) {
+      const filterValue = value.toLowerCase();
+      return this.allSuppliers.filter((option) =>
+        option.companyName.toLowerCase().includes(filterValue)
+      );
+    }
   }
   getSizes() {
     this._catalogService.Sizes$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -229,24 +239,62 @@ export class CatalogComponent {
   }
   ngOnInit(): void {
     this.getSuppliers();
-    this.getColors();
+    // this.getColors();
     this.getSizes();
     this.getImprints();
-    // this.getCatalogs(1);
+    this.getColorsDecorationSizes();
+  }
+  getColorsDecorationSizes() {
+    let params = {
+      colors_decoration_sizes: true
+    }
+    this._catalogService.getCatalogData(params)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((res: any) => {
+        console.log(res);
+        this.allColors = [];
+        this.allSizes = [];
+        this.allMethods = [];
+        const { qryTopColors, qryTopImprintMethods, qryTopOrderedSizes } = res;
+        // Process colors
+        this.processData(qryTopColors[0].qryTopColors, this.allColors);
+        // Process imprint methods
+        this.processData(qryTopImprintMethods[0].qryTopImprintMethods, this.allMethods);
+        // Process sizes
+        this.processData(qryTopOrderedSizes[0].qryTopOrderedSizes, this.allSizes);
+        console.log(this.allColors);
+      });
+  }
+  // Helper function to process data and populate arrays
+  processData(dataString: string, targetArray: any[]): void {
+    const dataArray = dataString.split(',,');
+    dataArray.forEach(data => {
+      const [name, id, count] = data.split('::');
+      targetArray.push({ name, id, count });
+    });
   }
   // Vendors
   onSelected(ev) {
-    this.selectedSupplier = ev.option.value;
+    this.selectedSupplier = this.allSuppliers.find(vendor => vendor.companyName === ev.option.value);
     this.getCatalogs(1);
-  }
-
-  displayWith(value: any) {
-    return value?.companyName;
   }
   // Colors
-  onSelectedColor(ev) {
-    this.selectedColor = ev.option.value;
-    this.getCatalogs(1);
+  onSelectedColor(selectedItems: any | any[]) {
+    // Ensure selectedItems is always an array
+    const itemsArray = Array.isArray(selectedItems) ? selectedItems : [selectedItems];
+
+    // Combine newly selected items with previously selected items
+    this.selectedColors = [...this.selectedColors, ...itemsArray];
+
+    // Remove duplicates (optional, depending on your use case)
+    this.selectedColors = this.removeDuplicates(this.selectedColors, 'id');
+  }
+
+  // Helper function to remove duplicate items from an array based on a key
+  removeDuplicates(array: any[], key: string) {
+    return array.filter((item, index, self) =>
+      index === self.findIndex(t => t[key] === item[key])
+    );
   }
   displayWithColor(value: any) {
     return value?.colorName;

@@ -87,7 +87,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
         FuseAlertModule,
         MatDialogModule,
         MatDatepickerModule,
-        MatNativeDateModule
+        MatNativeDateModule,
     ],
 })
 export class CatalogModule {

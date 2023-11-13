@@ -47,16 +47,12 @@
                 </div>
                 <div class="col-12">
                     <mat-form-field class="w-full">
-                        <input matInput placeholder="Search Vendors" matTooltip="Search Vendors by name"
-                            [matAutocomplete]="auto" [formControl]="searchSupplierCtrl">
-                        <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelected($event)"
-                            [displayWith]="displayWith">
-                            <mat-option *ngIf="isSearchingSupplier" class="is-loading">Loading...</mat-option>
-                            <ng-container *ngIf="!isSearchingSupplier">
-                                <mat-option *ngFor="let item of allSuppliers" [value]="item">
-                                    <span>{{item.companyName}}</span>
-                                </mat-option>
-                            </ng-container>
+                        <input type="text" placeholder="Vendors" matInput [matAutocomplete]="auto"
+                            [formControl]="searchSupplierCtrl">
+                        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn"
+                            (optionSelected)="onSelected($event)">
+                            <mat-option *ngFor="let item of filteredOptions"
+                                [value]="item.companyName">{{item.companyName}}</mat-option>
                         </mat-autocomplete>
                     </mat-form-field>
                 </div>
@@ -92,20 +88,10 @@
                     </mat-form-field>
                 </div>
                 <div class="col-12">
-                    <mat-form-field class="w-full">
-                        <mat-label>Colors:</mat-label>
-                        <input matInput placeholder="Search Colors" matTooltip="Search Colors by name"
-                            [matAutocomplete]="auto1" [formControl]="searchColorCtrl">
-                        <mat-autocomplete class="w-full" #auto1="matAutocomplete"
-                            (optionSelected)="onSelectedColor($event)" [displayWith]="displayWithColor">
-                            <mat-option *ngIf="isSearchingColor" class="is-loading">Loading...</mat-option>
-                            <ng-container *ngIf="!isSearchingColor">
-                                <mat-option *ngFor="let item of allColors" [value]="item">
-                                    <span>{{item.colorName}}</span>
-                                </mat-option>
-                            </ng-container>
-                        </mat-autocomplete>
-                    </mat-form-field>
+                    <mat-label>Colors:</mat-label>
+                    <ng-multiselect-dropdown [placeholder]="'Select Colors'" [settings]="dropdownSettings"
+                        [data]="allColors" [(ngModel)]="selectedColor" (onSelect)="onSelectedColor($event)">
+                    </ng-multiselect-dropdown>
                 </div>
                 <div class="col-12">
                     <mat-form-field class="w-full">
