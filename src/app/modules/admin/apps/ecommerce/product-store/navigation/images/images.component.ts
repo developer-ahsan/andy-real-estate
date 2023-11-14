@@ -10,6 +10,7 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
 import { AddRapidBuildStoreProduct } from '../../store.types';
 import { HttpClient } from '@angular/common/http';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
+import { environment } from 'environments/environment';
 
 @Component({
   selector: 'app-store-images',
@@ -243,13 +244,46 @@ export class StoreImagesComponent implements OnInit, OnDestroy {
     }
     this._storeService.getStoreProducts(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.imagesData = res["data"];
+      this.imagesData.forEach(element => {
+        this.checkIfImageExistsS(`${environment.assetsURL}globalAssets/Products/HiRes/${element.pk_storeProductID}.jpg`).then(result => {
+          element.imgageCheck = true;
+          // Handle success
+          this._changeDetectorRef.markForCheck();
+          console.clear();
+        })
+          .catch(error => {
+            element.imgageCheck = false;
+            console.clear();
+            // Handle error
+          });
+      });
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     });
+
   }
+  checkIfImageExistsS(url) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.src = url;
+
+      if (img.complete) {
+        resolve(true);
+      } else {
+        img.onload = () => {
+          resolve(true);
+        };
+
+        img.onerror = () => {
+          reject(false);
+        };
+      }
+    });
+  };
+
   checkIfImageExists(url, type) {
     const img = new Image();
     img.src = url;

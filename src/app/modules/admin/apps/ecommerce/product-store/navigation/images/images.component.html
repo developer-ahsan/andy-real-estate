@@ -34,18 +34,20 @@
                         <!-- <div class="grid sm:grid-cols-5 gap-4 w-full mt-8 max-h-100 overflow-y-auto"> -->
                         <div class="flex flex-wrap justify-between mt-8 max-h-100 overflow-y-auto"
                             *ngIf="selectedProduct.blnActive">
-                            <div *ngFor="let item of imagesData"
-                                class="p-6 rounded-md shadow cursor-pointer bg-card mb-4 w-19 text-center"
-                                [ngClass]="{'ring ring-inset ring-primary': ngPlan === item.pk_storeProductID}"
-                                (click)="ngPlan = item.pk_storeProductID">
-                                <ng-container *ngIf="ngPlan === item.pk_storeProductID">
-                                    <mat-icon class="absolute top-0 right-0 mt-3 mr-3 icon-size-7 text-primary"
-                                        [svgIcon]="'heroicons_solid:check-circle'"></mat-icon>
-                                </ng-container>
-                                <img class="w-30"
-                                    src="https://assets.consolidus.com/globalAssets/Products/HiRes/{{item.pk_storeProductID}}.jpg">
-                                <p class="w-full text-center text-secondary font-medium">{{item.storeCode}}</p>
-                            </div>
+                            <ng-container *ngFor="let item of imagesData">
+                                <div *ngIf="item.imgageCheck"
+                                    class="p-6 rounded-md shadow cursor-pointer bg-card mb-4 w-19 text-center"
+                                    [ngClass]="{'ring ring-inset ring-primary': ngPlan === item.pk_storeProductID}"
+                                    (click)="ngPlan = item.pk_storeProductID">
+                                    <ng-container *ngIf="ngPlan === item.pk_storeProductID">
+                                        <mat-icon class="absolute top-0 right-0 mt-3 mr-3 icon-size-7 text-primary"
+                                            [svgIcon]="'heroicons_solid:check-circle'"></mat-icon>
+                                    </ng-container>
+                                    <img class="w-30"
+                                        src="https://assets.consolidus.com/globalAssets/Products/HiRes/{{item.pk_storeProductID}}.jpg">
+                                    <p class="w-full text-center text-secondary font-medium">{{item.storeCode}}</p>
+                                </div>
+                            </ng-container>
                         </div>
                         <!-- <div *ngIf="selectedProduct.blnActive">
                                 <mat-radio-group class="invisible absolute w-0 h-0 pointer-events-none"
