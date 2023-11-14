@@ -41,9 +41,13 @@
                   <!-- <br> -->
                   <mat-form-field class="min-w-60">
                     <mat-label>Select Location</mat-label>
-                    <input matInput placeholder="Search Location" name="test" [(ngModel)]="slectedLocation"
+                    <!-- <input matInput placeholder="Search Location" name="test" [(ngModel)]="slectedLocation"
                       [matAutocomplete]="auto" [formControl]="locationCtrl"
-                      placeholder="Search Location Min 3 Character">
+                      placeholder="Search Location Min 3 Character"> -->
+                      <mat-select matInput [(ngModel)]="slectedLocation" name="selectedLocation">
+                        <mat-option *ngFor="let option of locations">{{option.name}}</mat-option>
+                      </mat-select>
+
                     <button *ngIf="slectedLocation" matSuffix mat-icon-button aria-label="Clear"
                       (click)="clearSelection()">
                       <mat-icon>close</mat-icon>

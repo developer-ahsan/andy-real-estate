@@ -118,7 +118,7 @@ export class FLPSService {
             params: {
                 view_stores: true,
                 bln_active: 1,
-                size: 20
+                size: 65
             }
         }).pipe(
             tap((response: any) => {
