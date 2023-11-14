@@ -8,7 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatNativeDateModule, MatRippleModule } from '@angular/material/core';
+import { DateAdapter, MAT_DATE_LOCALE, MatNativeDateModule, MatRippleModule, NativeDateAdapter } from '@angular/material/core';
 import { MatSortModule } from '@angular/material/sort';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -70,6 +70,7 @@ import { ProductsOrderModifyComponent } from './orders-components/navigation/ord
 import { QuillModule } from 'ngx-quill';
 import { SentOrdersPurchasesComponent } from './orders-components/navigation/sent-purchase-orders/sent-purchase-orders.component';
 import { NgxDropzoneModule } from 'ngx-dropzone';
+import { MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
 
 @NgModule({
     declarations: [
@@ -146,6 +147,8 @@ import { NgxDropzoneModule } from 'ngx-dropzone';
         NgxDropzoneModule,
         QuillModule.forRoot()
     ],
+    providers: [{ provide: MAT_DATE_LOCALE, useValue: 'en-US' }]
 })
 export class OrdersModule {
 }
+

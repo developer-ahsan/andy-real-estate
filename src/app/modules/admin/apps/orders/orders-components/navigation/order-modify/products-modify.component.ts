@@ -1,5 +1,5 @@
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -15,9 +15,23 @@ import { AddNewProduct, AddOption, AddProduct, UpdateAccessory, UpdateColorSize,
 @Component({
   selector: 'app-products-modify',
   templateUrl: './products-modify.component.html',
-  styles: ['::-webkit-scrollbar {width: 2px !important} ::ng-deep {.ql-container {height: auto}}']
+  styles: [`::-webkit-scrollbar {width: 2px !important} ::ng-deep {.ql-container {height: auto}} 
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    background: transparent;
+    bottom: 0;
+    color: transparent;
+    cursor: pointer;
+    height: auto;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: auto;
+}`]
 })
 export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
+  @ViewChild('shipDateInput') shipDateInput: ElementRef;
+
   @Input() isLoading: boolean;
   orderDetail: any;
   @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -378,6 +392,7 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
       });
       this.orderProducts[check].main_imprints = res["main_imprints"];
       this.orderProducts[check].allProducts = this.allProducts;
+
       this.ngSelectedProduct = this.orderProducts[check];
       if (this.ngSelectedProduct.imprintsUnSelected.length > 0) {
         this.ngImprintSelected = this.ngSelectedProduct.imprintsUnSelected[0];

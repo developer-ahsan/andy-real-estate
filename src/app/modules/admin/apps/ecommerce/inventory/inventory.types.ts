@@ -830,3 +830,10 @@ export interface DeleteProductSingleImprint {
     imprintID: number;
     delete_product_single_imprint: boolean;
 };
+
+export interface copyStoreVersionImages {
+    targetStoreProductIDs: number[];
+    sourceStoreProduct: number;
+    images: string[];
+    copy_store_version_images: boolean;
+};

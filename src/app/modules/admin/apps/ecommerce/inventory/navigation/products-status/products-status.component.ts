@@ -42,6 +42,14 @@ export class ProductsStatusComponent implements OnInit {
   assignedStorePage = 1;
   tempDate = new Date().toLocaleString();
   ngSelectedStoreToCopy: any;
+  blankImgUrl: string;
+  hiresImgUrl: string;
+  mainImgUrl: string;
+  thumbImgUrl: string;
+  hires: boolean;
+  main: boolean;
+  thumb: boolean;
+  blank: boolean;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
@@ -162,6 +170,13 @@ export class ProductsStatusComponent implements OnInit {
     this._inventoryService.AddStoreProduct(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.ngComment = null;
       this.getAssignedStores('add', 1);
+      if (this.isCopyImage) {
+        let targetIDs = [];
+        res["newStoreProductIds"].forEach(element => {
+          targetIDs.push(element.storeProductID);
+        });
+        this.storeProductImages(targetIDs);
+      }
       // this.selectedTermUpdateLoader = false;
       // this.addRapidStoreProduct(res);
       this._changeDetectorRef.markForCheck();
@@ -218,6 +233,9 @@ export class ProductsStatusComponent implements OnInit {
 
   copyImageToggle(): void {
     this.isCopyImage = !this.isCopyImage;
+    if (this.assignedStores.length) {
+      this.ngSelectedStoreToCopy = this.assignedStores[0].pk_storeProductID;
+    }
     this._changeDetectorRef.markForCheck();
   };
   addRapidBuildImages() {
@@ -265,4 +283,60 @@ export class ProductsStatusComponent implements OnInit {
       this.checkedStores.push(item.pk_storeProductID);
     }
   }
+  storeProductImages(targetIDs) {
+    let Types = [];
+    const imageTypes = ['Images', 'Thumbnails', 'HiRes', 'Swatch', 'BlankImages'];
+    const checkIfImageExists = (url, type) => {
+      return new Promise<void>((resolve, reject) => {
+        const img = new Image();
+        img.src = url;
+
+        if (img.complete) {
+          Types.push(type);
+          resolve();
+        } else {
+          img.onload = () => {
+            Types.push(type);
+            resolve();
+          };
+          img.onerror = () => {
+            reject();
+          };
+        }
+      });
+    };
+
+    const setImgUrls = (type) => {
+      this[`${type}ImgUrl`] = `${environment.assetsURL}/globalAssets/Products/${type}/${this.ngSelectedStoreToCopy}.jpg`;
+      console.log(this[`${type}ImgUrl`]);
+      return checkIfImageExists(this[`${type}ImgUrl`], type);
+    };
+
+    const imagePromises = imageTypes.map((type) => setImgUrls(type));
+
+    Promise.all(imagePromises)
+      .then(() => {
+        // All images have loaded successfully
+        console.log("All images loaded successfully");
+        // Call another function and pass Types to it
+        this.uploadImages(Types, targetIDs);
+      })
+      .catch(() => {
+        // Handle the case where at least one image failed to load
+        this.uploadImages(Types, targetIDs);
+        console.log("Some images failed to load");
+      });
+  }
+  uploadImages(type, targetIDs) {
+    let payload = {
+      targetStoreProductIDs: targetIDs,
+      sourceStoreProduct: this.ngSelectedStoreToCopy,
+      images: type,
+      copy_store_version_images: true
+    }
+    this._inventoryService.AddStoreProduct(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      console.clear();
+    });
+  }
+
 }

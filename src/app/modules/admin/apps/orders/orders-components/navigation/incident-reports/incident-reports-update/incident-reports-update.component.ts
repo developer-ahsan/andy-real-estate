@@ -288,6 +288,8 @@ export class IncidentReportsUpdateComponent implements OnInit {
     if (this.updateFormModal.reportsSources.length == 0) {
       this.employeeSource = false;
       this.supplierSource = false;
+      this.updateFormModal.source_employee = [];
+      this.updateFormModal.source_supplier = null;
     }
     this.employeeSource = this.updateFormModal.reportsSources.some(elem => {
       if (elem.sourceName == 'Program Manager/Service Rep' || elem.sourceName == 'Customer' || elem.sourceName == 'Support') {
@@ -304,6 +306,7 @@ export class IncidentReportsUpdateComponent implements OnInit {
         return false;
       }
     });
+    this._changeDetectorRef.markForCheck();
   }
   updateuserSelected(user) {
     this.updateFormModal.source_employee = user.pk_userID;
@@ -355,14 +358,12 @@ export class IncidentReportsUpdateComponent implements OnInit {
     const { fk_adminUserID, fk_orderID, fk_storeUserID, fk_storeID, fk_companyID, pk_incidentReportID, sources, sourceEmployeeName, images } = this.updateIncidentObj;
     let { reportsSources, priority1, priority2, priority3, priority4, rerunCost, explanation, corrected, how, recommend, source_supplier, source_employee, blnFinalized } = this.updateFormModal;
     let reports_sources = [];
-    reportsSources.forEach(element => {
-      reports_sources.push(element.pk_sourceID);
-      if (element.pk_sourceID == 2 || element.pk_sourceID == 1) {
-        if (!source_employee) {
-          source_employee = [];
-        }
-      }
-    });
+    reports_sources = reportsSources.map(element => element.pk_sourceID);
+
+    if (!reports_sources.includes(2) && !reports_sources.includes(1) && !reports_sources.includes(4)) {
+      source_employee = [];
+    }
+
     let payload: UpdateIncidentReport = {
       store_user_id: this.updateIncidentObj.fk_storeUserID,
       date: this.updateIncidentObj.date,
@@ -400,17 +401,18 @@ export class IncidentReportsUpdateComponent implements OnInit {
 
   // Select & Upload Images
   onSelectMain(event) {
-    if (event.addedFiles.length > 5) {
+    event.addedFiles.forEach(element => {
+      this.files.push(element);
+    });
+    if ((this.files.length + this.updateIncidentObj.images.length) > 5) {
+      this.files = [];
       this._orderService.snackBar("Please select maximum 5 images.");
       return;
     }
-    if (this.files.length == 5) {
+    if (this.updateIncidentObj.images.length == 5) {
+      this.files = [];
       this._orderService.snackBar("Max limit reached for image upload.");
       return;
-    } else {
-      event.addedFiles.forEach(element => {
-        this.files.push(element);
-      });
     }
     setTimeout(() => {
       this._changeDetectorRef.markForCheck();
@@ -561,7 +563,10 @@ export class IncidentReportsUpdateComponent implements OnInit {
       incidentReportSources: reports_sources, // only names array
       send_incident_report_email: true
     }
-    this._orderService.orderPostCalls(paylaod).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._orderService.orderPostCalls(paylaod).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.isUpdateLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
       this._orderService.snackBar("Incident report updated successfully");
       this.isUpdateLoader = false;
       this._changeDetectorRef.markForCheck();

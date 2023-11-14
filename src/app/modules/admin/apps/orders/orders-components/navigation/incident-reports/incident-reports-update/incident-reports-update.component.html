@@ -195,7 +195,7 @@
                             appearance="line" animation="pulse">
                         </ngx-skeleton-loader>
                         <div class="row" *ngIf="!updateIncidentObj.imgLoader">
-                            <div class="mb-2 col-12" *ngIf="updateIncidentObj.images.length < 5">
+                            <div class="mb-2 col-12" *ngIf="updateIncidentObj.images.length <= 5">
                                 <p class="font-semibold"> Upload images (JPG,GIF,PNG ONLY!) </p>
                                 <ngx-dropzone [config]="config" [multiple]="true"
                                     accept="image/jpeg,image/jpg,image/png" (change)="onSelectMain($event)">

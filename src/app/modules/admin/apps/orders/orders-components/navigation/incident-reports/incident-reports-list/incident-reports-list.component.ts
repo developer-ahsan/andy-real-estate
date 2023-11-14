@@ -161,12 +161,12 @@ export class IncidentReportsListComponent implements OnInit {
       this.totalIncidentRecords = res["totalRecords"];
       if (type == 'add') {
         this.isIncidentLoader = false;
-        this._orderService.snackBar('Incident Created Successfully');
+        this._orderService.snackBar('Incident Report Created Successfully');
         this.mainScreen = 'Current Incident Reports';
       }
       if (type == 'update') {
         this.isUpdateLoader = false;
-        this._orderService.snackBar('Incident Updated Successfully');
+        this._orderService.snackBar('Incident Report Updated Successfully');
       }
       this.isLoading = false;
       this.isLoadingChange.emit(false);
