@@ -49,7 +49,7 @@ export class FLPSUserManagementComponent implements OnInit, OnDestroy {
 
   mainScreenUser: string = 'Edit User';
 
-  ngBlanketPercentage = '';
+  ngBlanketPercentage : any = '';
   isBlanketLoader: boolean = false;
 
   // User Orders
@@ -433,8 +433,8 @@ export class FLPSUserManagementComponent implements OnInit, OnDestroy {
     });
   }
   addBlanketPercentage() {
-    if (this.ngBlanketPercentage == '') {
-      this._flpsService.snackBar('Please enter percentage value.');
+    if (this.ngBlanketPercentage == '' || this.ngBlanketPercentage < 0) {
+      this._flpsService.snackBar('Please enter correct percentage value.');
       return;
     }
     let payload: applyBlanketCustomerPercentage = {
@@ -462,7 +462,7 @@ export class FLPSUserManagementComponent implements OnInit, OnDestroy {
     };
     this.ordersLoader = true;
     this._flpsService.getFlpsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      
+
       this.ordersDataSource = res["data"];
       this.totalOrders = res["totalRecords"];
       if (this.tempOrdersDataSource.length == 0) {

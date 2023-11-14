@@ -11,6 +11,7 @@ import { FinalizeBill } from '../../stores.types';
 const API_KEY = "e8067b53"
 import { jsPDF } from "jspdf";
 import html2canvas from 'html2canvas';
+import { environment } from 'environments/environment';
 @Component({
   selector: 'app-consolidated-bill',
   templateUrl: './consolidated-bill.component.html',
@@ -32,6 +33,7 @@ export class ConsolidatedBillComponent implements OnInit, OnDestroy {
   minLengthTerm = 3;
   slectedLocation: any = "";
   isLoadings: boolean = false;
+  locations: any = [];
 
 
   ngDate = new Date();
@@ -65,7 +67,26 @@ export class ConsolidatedBillComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.getStoreDetails();
+    this.getLocations();
   }
+
+  getLocations() {
+    let payload = {
+      store_id: this.selectedStore.pk_storeID,
+      locations_departments: true
+    }
+    this._storeManagerService.getStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe((res: any) => {
+      const parts = res.qryStoreLocationAttributes[0].qryStoreLocationAttributes.split(",,");
+      this.locations = parts.map(part => {
+        const [id, storeId, name] = part.split("::");
+        return { id, storeId, name };
+    });
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this._changeDetectorRef.markForCheck();
+    })
+  }
+
   getStoreDetails() {
     this._storeManagerService.storeDetail$
       .pipe(takeUntil(this._unsubscribeAll))
