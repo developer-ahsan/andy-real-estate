@@ -7,6 +7,8 @@ import { FLPSService } from '../../flps.service';
 import { AddFLPSStoreUser, DeleteFlpsUser, UpdateFlpsUser } from '../../flps.types';
 import * as Excel from 'exceljs/dist/exceljs.min.js';
 import moment from 'moment';
+import * as pdfMake from "pdfmake/build/pdfmake";
+
 
 @Component({
     selector: 'app-storess-management',
@@ -177,7 +179,6 @@ export class FLPSsStoresManagementComponent implements OnInit {
                 this.totalStores = res["totalRecords"];
                 this.isSearching = false;
             }
-
             this._changeDetectorRef.markForCheck();
         }, err => {
             this.isSearching = false;
@@ -326,6 +327,12 @@ export class FLPSsStoresManagementComponent implements OnInit {
     }
     updateStoreUser(item) {
         item.updateLoader = true;
+        if (item.commission < 0) {
+            this._flpsService.snackBar('Please enter positive value for commission');
+            item.updateLoader = false;
+
+            return;
+        }
         let payload: UpdateFlpsUser = {
             blnPrimary: item.blnPrimary,
             commission: item.commission,
@@ -439,5 +446,47 @@ export class FLPSsStoresManagementComponent implements OnInit {
             });
         }, 500);
 
+    }
+
+    generatePdf() {
+
+
+        const tableBody = [
+            [{ text: 'Stores', bold: true }, { text: 'Users', bold: true  }, { text: 'Default Commission', bold: true  }, { text: 'Management', bold: true  }, { text: 'Store Commission', bold: true  }],
+        ];
+
+        if (this.quickStoresList) {
+            this.quickStoresList.forEach((item: any) => {
+                tableBody.push([
+                    item?.storeName || 'N/A',
+                    {
+                        stack: [
+                            item?.users && item?.users.length === 1
+                                ? item?.users[0]
+                                : item?.users && item?.users.length === 2
+                                    ? `${item?.users[0]}, ${item?.users[1]}`
+                                    : `${item?.users[0]}, ${item?.users[1]}, ${item?.users[2]}`
+                        ]
+                    },
+                    item?.s_Commission[0] || 'N/A',
+                    item?.d_Commission[0] || 'N/A',
+                    item?.flpsManagement || 'N/A'
+                ]);
+            });
+        }
+
+        const dd = {
+            content: [
+                {
+                    style: 'tableExample',
+                    table: {
+                        body: tableBody
+                    }
+                },
+            ],
+            // Rest of your styles...
+        };
+
+        pdfMake.createPdf(dd).download(`store-list.pdf`);
     }
 }
