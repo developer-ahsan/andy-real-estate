@@ -141,11 +141,11 @@ export class SpecialDescComponent implements OnInit, OnDestroy {
     });
     this.isUpdateLoading = true;
     let payload = {
-      masterDescription: this.description.replace(/'/g, '"'),
-      masterMiniDescription: this.miniDescription.replace(/'/g, '"'),
-      specialDescription: this.descriptionStore.replace(/'/g, '"'),
-      specialMiniDescription: this.miniDescriptionStore.replace(/'/g, '"'),
-      specialMetaDescription: this.metaDescriptionStore.replace(/'/g, '"'),
+      masterDescription: this.description !== null ? this.description.replace(/'/g, '"') : this.description,
+      masterMiniDescription: this.miniDescription !== null ? this.miniDescription.replace(/'/g, '"') : this.description,
+      specialDescription: this.descriptionStore !== null ? this.descriptionStore.replace(/'/g, '"') : this.description,
+      specialMiniDescription: this.miniDescriptionStore !== null ? this.miniDescriptionStore.replace(/'/g, '"') : this.description,
+      specialMetaDescription: this.metaDescriptionStore !== null ? this.metaDescriptionStore.replace(/'/g, '"') : this.description,
       storeProducts: stores,
       storeName: this.selectedProduct.storeName,
       update_special_description: true
