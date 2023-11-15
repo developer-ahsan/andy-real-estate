@@ -1,7 +1,19 @@
 <div class="w-full">
     <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
     </ngx-skeleton-loader>
-    <div class="row my-3" *ngIf="!isLoading">
+    <div *ngIf="!isLoading" class="mb-2 flex flex-row gap-x-2 justify-end mr-2">
+        <!-- <button mat-stroked-button class="min-w-20" >
+            <span class="text-sm">Email</span>
+        </button> -->
+        <button (click)="generatePdf()" mat-stroked-button class="min-w-20">
+            <span class="test-sm">Pdf</span>
+        </button>
+        <button (click)="generatePdf()" mat-stroked-button class="min-w-20">
+            <span class="text-sm">HTML</span>
+        </button>
+    </div>
+    <div id="pdf-area" class="row my-3" *ngIf="!isLoading">
+
         <div class="col-12">
             <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
                 <div class="p-6 sm:p-8 lg:p-10 w-full">
@@ -10,7 +22,7 @@
                     </div>
                     <div class="row">
                         <div class="col-2"></div>
-                        <div class="col-10">
+                        <div class="col-10 mb-5">
                             <div class="row">
                                 <div class="col-2 text-center">1</div>
                                 <div class="col-2 text-center">2</div>
@@ -22,50 +34,54 @@
                         </div>
                         <div class="col-12 text-center font-bold bg-light p-2">CURRENT PRICING</div>
                     </div>
-                    <div class="row mb-2 mt-2">
-                        <div class="col-2">Quantity</div>
-                        <div class="col-10">
-                            <div class="row ">
-                                <div class="col-2 text-center" *ngFor="let item of quantityData">{{item}}</div>
-                            </div>
+                    <div class="mb-5">
+                        <div class="row mb-2 mt-2">
+                            <div class="col-2">Quantity</div>
+                            <div class="col-10">
+                                <div class="row ">
+                                    <div class="col-2 text-center" *ngFor="let item of quantityData">{{item}}</div>
+                                </div>
 
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-2 text-blue-500">Standard Price</div>
-                        <div class="col-10">
-                            <div class="row mb-2">
-                                <div class="col-2 text-center text-blue-500" *ngFor="let item of priceData">{{item |
-                                    currency}}</div>
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-2 text-red-500">Standard Cost</div>
-                        <div class="col-10">
-                            <div class="row mb-2" *ngIf="costData.length > 0">
-                                <div class="col-2 text-center text-red-500" *ngFor="let item of costData">{{item |
-                                    currency}}</div>
-                            </div>
-                            <div class="row mb-2" *ngIf="costData.length == 0">
-                                <div class="col-10 text-center text-red-600 font-bold">NO MARGINS HAVE BEEN SET YET
+                        <div class="row">
+                            <div class="col-2 text-blue-500">Standard Price</div>
+                            <div class="col-10">
+                                <div class="row mb-2">
+                                    <div class="col-2 text-center text-blue-500" *ngFor="let item of priceData">{{item |
+                                        currency}}</div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-2">Blank Price</div>
-                        <div class="col-10">
-                            <div class="row mb-2">
-                                <div class="col-2 text-center" *ngFor="let item of blankData">{{item | currency}}</div>
+                        <div class="row">
+                            <div class="col-2 text-red-500">Standard Cost</div>
+                            <div class="col-10">
+                                <div class="row mb-2" *ngIf="costData.length > 0">
+                                    <div class="col-2 text-center text-red-500" *ngFor="let item of costData">{{item |
+                                        currency}}</div>
+                                </div>
+                                <div class="row mb-2" *ngIf="costData.length == 0">
+                                    <div class="col-10 text-center text-red-600 font-bold">NO MARGINS HAVE BEEN SET YET
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-2">Blank Cost</div>
-                        <div class="col-10">
-                            <div class="row mb-2">
-                                <div class="col-2 text-center" *ngFor="let item of blankCostData">{{item | currency}}
+                        <div class="row">
+                            <div class="col-2">Blank Price</div>
+                            <div class="col-10">
+                                <div class="row mb-2">
+                                    <div class="col-2 text-center" *ngFor="let item of blankData">{{item | currency}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-2">Blank Cost</div>
+                            <div class="col-10">
+                                <div class="row mb-2">
+                                    <div class="col-2 text-center" *ngFor="let item of blankCostData">{{item |
+                                        currency}}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -84,56 +100,56 @@
                                     <p>
                                         <br />
                                     </p>
-                                    <mat-form-field class="w-full">
+                                    <mat-form-field class="w-full mt-5">
                                         <input matInput [formControlName]="'quantityOne'"><small
                                             class="text-secondary font-semibold"> 1 </small>
                                     </mat-form-field>
                                 </div>
                                 <div class="col-lg-2 col-4">
-                                    <p class="flex justify-between">
+                                    <div class="flex justify-between mb-5">
                                         <span class="underline ml-1 font-semibold cursor-pointer"
                                             (click)="updateQuantity('quantityTwo')">x2</span>
-                                    </p>
+                                    </div>
                                     <mat-form-field class="w-full">
                                         <input matInput [formControlName]="'quantityTwo'"><small
                                             class="text-secondary font-semibold"> 2 </small>
                                     </mat-form-field>
                                 </div>
-                                <div class="col-lg-2 col-4">
-                                    <p class="flex justify-between">
+                                <div class="col-lg-2 col-4 mb-5">
+                                    <div class="flex justify-between mb-5">
                                         <span class="underline ml-1 font-semibold cursor-pointer"
                                             (click)="updateQuantity('quantityThree')">x2</span>
-                                    </p>
+                                    </div>
                                     <mat-form-field class="w-full">
                                         <input matInput [formControlName]="'quantityThree'"><small
                                             class="text-secondary font-semibold"> 3 </small>
                                     </mat-form-field>
                                 </div>
-                                <div class="col-lg-2 col-4">
-                                    <p class="flex justify-between">
+                                <div class="col-lg-2 col-4 mb-5">
+                                    <div class="flex justify-between mb-5">
                                         <span class="underline ml-1 font-semibold cursor-pointer"
                                             (click)="updateQuantity('quantityFour')">x2</span>
-                                    </p>
+                                    </div>
                                     <mat-form-field class="w-full">
                                         <input matInput [formControlName]="'quantityFour'"><small
                                             class="text-secondary font-semibold"> 4 </small>
                                     </mat-form-field>
                                 </div>
-                                <div class="col-lg-2 col-4">
-                                    <p class="flex justify-between">
+                                <div class="col-lg-2 col-4 mb-5">
+                                    <div class="flex justify-between mb-5">
                                         <span class="underline ml-1 font-semibold cursor-pointer"
                                             (click)="updateQuantity('quantityFive')">x2</span>
-                                    </p>
+                                    </div>
                                     <mat-form-field class="w-full">
                                         <input matInput [formControlName]="'quantityFive'"><small
                                             class="text-secondary font-semibold"> 5 </small>
                                     </mat-form-field>
                                 </div>
-                                <div class="col-lg-2 col-4">
-                                    <p class="flex justify-between">
+                                <div class="col-lg-2 col-4 mb-5">
+                                    <div class="flex justify-between mb-5">
                                         <span class="underline ml-1 font-semibold cursor-pointer"
                                             (click)="updateQuantity('quantitySix')">x2</span>
-                                    </p>
+                                    </div>
                                     <mat-form-field class="w-full">
                                         <input matInput [formControlName]="'quantitySix'"><small
                                             class="text-secondary font-semibold"> 6 </small>

@@ -7,6 +7,10 @@ import { MatRadioChange } from '@angular/material/radio';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { StoreProductService } from '../../store.service';
 import { UpdatePricing } from '../../store.types';
+import html2canvas from 'html2canvas';
+import { jsPDF } from "jspdf";
+
+
 
 @Component({
   selector: 'app-pricing',
@@ -674,6 +678,37 @@ export class PricingComponent implements OnInit, OnDestroy {
     this.storePage++;
     this.getStoresVersions(this.storePage);
   }
+
+  generatePdf() {
+      let element = document.getElementById('pdf-area');
+      var positionInfo = element.getBoundingClientRect();
+      var height = positionInfo.height;
+      var width = positionInfo.width;
+      var top_left_margin = 15;
+      let PDF_Width = width + (top_left_margin * 2);
+      var PDF_Height = (PDF_Width * 1.5) + (top_left_margin * 2);
+      var canvas_image_width = width;
+      var canvas_image_height = height;
+  
+      var totalPDFPages = Math.ceil(height / PDF_Height) - 1;
+      // const { pk_orderID } = this.orderDetail;
+      let data = document.getElementById('pdf-area');
+      const file_name = `OrderReport.pdf`;
+      html2canvas(data, { useCORS: true }).then(canvas => {
+        canvas.getContext('2d');
+        var imgData = canvas.toDataURL("image/jpeg", 1.0);
+        var pdf = new jsPDF('p', 'pt', [PDF_Width, PDF_Height]);
+        pdf.addImage(imgData, 'jpeg', top_left_margin, top_left_margin, canvas_image_width, canvas_image_height);
+  
+  
+        for (var i = 1; i <= totalPDFPages; i++) {
+          pdf.addPage([PDF_Width, PDF_Height]);
+          pdf.addImage(imgData, 'jpeg', top_left_margin, -(PDF_Height * i) + (top_left_margin * 4), canvas_image_width, canvas_image_height);
+        }
+        pdf.save(file_name);
+      });
+  }
+
   /**
      * On destroy
      */
