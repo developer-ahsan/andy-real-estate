@@ -16,7 +16,7 @@
     </div>
 
     <div *ngIf="!isLoading && mainScreen == 'Current'">
-        <div class="px-5 text-right" *ngIf="dataSource.length > 0 && !isUpdate">
+        <div class="px-5 text-right" *ngIf="!isUpdate">
             <mat-form-field class="w-100">
                 <input matInput placeholder="Search By Name" matTooltip="Enter to Search" [disabled]="isSearching"
                     [(ngModel)]="keyword" (keyup.enter)="searchLocations()">

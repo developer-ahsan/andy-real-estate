@@ -6,6 +6,7 @@ import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { VendorsService } from '../../vendors.service';
 import { AddColor, AddImprintColor, AddImprintMethod, DeleteColor, DeleteImprintColor, UpdateColor, UpdateImprintColor, UpdateImprintMethod, UpdateLocation } from '../../vendors.types';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-vendor-products-summary',
@@ -27,7 +28,9 @@ export class VendorProductsSummaryComponent implements OnInit, OnDestroy {
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _vendorService: VendorsService
+    private _vendorService: VendorsService,
+    private router: Router,
+
   ) { }
 
   ngOnInit(): void {
@@ -68,6 +71,12 @@ export class VendorProductsSummaryComponent implements OnInit, OnDestroy {
     };
     this.getTopOrderProducts(this.page);
   };
+
+  navigate() {
+    this.router.navigateByUrl('/apps/ecommerce/inventory');
+
+  }
+
   /**
      * On destroy
      */

@@ -133,6 +133,16 @@ export class VendorCommentsComponent implements OnInit, OnDestroy {
       this.emails.splice(index, 1);
     }
   }
+
+  replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+        obj[key] = obj[key].replace(/'/g, "''");
+      }
+    }
+    return obj;
+  }
+
   addComment() {
     let emailArr = this.emails.concat(this.emailSelected);
     if (this.ngComment! == '') {
@@ -150,6 +160,8 @@ export class VendorCommentsComponent implements OnInit, OnDestroy {
       emails: emailArr,
       add_comment: true
     }
+    payload = this.replaceSingleQuotesWithDoubleSingleQuotes(payload);
+
     this._vendorService.postVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this.getVendorsComments('add');

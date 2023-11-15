@@ -6,6 +6,7 @@ import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { VendorsService } from '../../vendors.service';
 import { AddColor, AddImprintColor, AddImprintMethod, DeleteColor, DeleteImprintColor, UpdateColor, UpdateImprintColor, UpdateImprintMethod, UpdateLocation } from '../../vendors.types';
+import * as pdfMake from "pdfmake/build/pdfmake";
 
 @Component({
   selector: 'app-vendor-core-products',
@@ -18,6 +19,7 @@ export class VendorCoreProductsComponent implements OnInit, OnDestroy {
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   dataSource = [];
+  products = [];
   displayedColumns: string[] = ['pid', 'spid', 'name'];
   totalUsers = 0;
   page = 1;
@@ -60,7 +62,12 @@ export class VendorCoreProductsComponent implements OnInit, OnDestroy {
         });
       });
       this.dataSource = this.dataSource.concat(res["data"]);
+      
+      this.dataSource.forEach((item) => {
+        this.products = this.products.concat(item.products);
+      });
       this.totalUsers = res["totalRecords"];
+
       this.isLoading = false;
       this.isLoadMore = false;
       this._changeDetectorRef.markForCheck();
@@ -76,6 +83,35 @@ export class VendorCoreProductsComponent implements OnInit, OnDestroy {
     this.getProducts(this.page);
   };
 
+  generatePdf() {
+    const tableBody = [
+      [{ text: 'PID', bold: true }, { text: 'SPID', bold: true }, { text: 'PRODUCT', bold: true }],
+    ];
+
+    if (this.products) {
+      this.products.forEach((item: any) => {
+        tableBody.push([
+          item?.id || 'N/A',
+          item?.number || 'N/A',
+          item?.name || 'N/A',
+        ]);
+      });
+    }
+
+    const dd = {
+      content: [
+        {
+          style: 'tableExample',
+          table: {
+            body: tableBody
+          }
+        },
+      ],
+      // Rest of your styles...
+    };
+
+    pdfMake.createPdf(dd).download(`product-list.pdf`);
+  }
   /**
      * On destroy
      */
