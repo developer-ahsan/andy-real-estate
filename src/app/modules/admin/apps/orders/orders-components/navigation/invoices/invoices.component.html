@@ -322,12 +322,28 @@
                                             </div>
                                             <div
                                                 class="col-span-7 my-2 self-center font-medium tracking-tight text-secondary">
+                                                TOTAL MERCHANDISE
+                                            </div>
+                                            <div class=" my-2 col-span-2 font-small text-sm  text-right text-secondary">
+                                            </div>
+                                            <div class="col-span-3 my-2 text-right  font-small text-sm">
+                                                <span *ngIf="orderDetail.blnRoyaltyStore">{{(orderTotal.price +
+                                                    orderTotal.royalties) |
+                                                    currency: 'USD':
+                                                    'symbol-narrow': '.2-2'}}</span>
+                                                <span *ngIf="!orderDetail.blnRoyaltyStore">{{orderTotal.price |
+                                                    currency: 'USD':
+                                                    'symbol-narrow': '.2-2'}}</span>
+                                            </div>
+                                            <div
+                                                class="col-span-7 my-2 self-center font-medium tracking-tight text-secondary">
                                                 TOTAL DISCOUNT
                                             </div>
                                             <div class=" my-2 col-span-2 font-small text-sm  text-right text-secondary">
                                             </div>
                                             <div class="col-span-3 my-2 text-right  font-small text-sm">
-                                                -{{orderTotal.discount | currency: 'USD':
+                                                <span *ngIf="orderTotal.discount > 0">-</span>{{orderTotal.discount |
+                                                currency: 'USD':
                                                 'symbol-narrow': '.2-2'}}
                                             </div>
                                             <div
