@@ -1,5 +1,5 @@
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatPaginator } from '@angular/material/paginator';
@@ -7,6 +7,7 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { VendorsService } from '../../vendors.service';
 import { ApplyBlanketFOBlocation, updateCompanySettings } from '../../vendors.types';
+declare var $: any;
 
 @Component({
   selector: 'app-vendor-blanket-location',
@@ -27,6 +28,8 @@ export class VendorBlanketComponent implements OnInit, OnDestroy {
   isSearchingLocation = false;
 
   allLocations = [];
+  @ViewChild('apply') apply: ElementRef;
+
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -117,6 +120,11 @@ export class VendorBlanketComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
+
+  openApplyModal() {
+    $(this.apply.nativeElement).modal('show');
+  }
+
   /**
      * On destroy
      */

@@ -209,7 +209,17 @@ export class VendorCoopComponent implements OnInit, OnDestroy {
     }
     this._changeDetectorRef.markForCheck();
   }
-  // Add New Coop
+
+  replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+        obj[key] = obj[key].replace(/'/g, "''");
+      }
+    }
+    return obj;
+  }
+
+  // Add New Coop 
   addNewCoop() {
     const { coopName, coopExpDay, pricing, ltm, setups, productionTime, add_coop } = this.addCoopForm.getRawValue();
     if (coopName == '') {
@@ -217,6 +227,7 @@ export class VendorCoopComponent implements OnInit, OnDestroy {
       return;
     }
     let payload: AddCoops = { coopName: coopName.replace(/'/g, "''"), company_id: this.supplierData.pk_companyID, coopExpDay, pricing: pricing.replace(/'/g, "''"), ltm: ltm.replace(/'/g, "''"), setups: setups.replace(/'/g, "''"), productionTime: productionTime.replace(/'/g, "''"), add_coop }
+    payload = this.replaceSingleQuotesWithDoubleSingleQuotes(payload);
     this.isAddLoader = true;
     this._vendorService.postVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
