@@ -561,14 +561,15 @@
                                 <div class="flex space-x-1 align-items-center">
                                     <mat-button-toggle>
                                         <mat-icon svgIcon="mat_outline:note_alt"
+                                            (click)="openEmailDetailsModal(item,'survey')"
                                             matTooltip="Send a survey to customer"></mat-icon>
                                     </mat-button-toggle>
                                     <mat-button-toggle>
                                         <mat-icon svgIcon="mat_outline:info"
+                                            [routerLink]="['/apps/orders',item.pk_orderID,'incident-reports']"
                                             matTooltip="Create an incident report"></mat-icon>
                                     </mat-button-toggle>
-                                    <mat-button-toggle
-                                        (click)="openEmailDetailsModal(item,'FOLLOW UP EMAIL FOR ORDER')">
+                                    <mat-button-toggle (click)="openEmailDetailsModal(item,'follow')">
                                         <mat-icon svgIcon="mat_outline:email"
                                             matTooltip="Send an email to customer"></mat-icon>
                                     </mat-button-toggle>
@@ -671,233 +672,282 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body" *ngIf="emailModalContent">
-                <div class="my-5" *ngIf="emailModalContent.loader">
+            <ng-container *ngIf="emailModalContent && emailModalContent.type != 'survey'">
+                <div class="modal-body" *ngIf="emailModalContent">
+                    <div class="my-5" *ngIf="emailModalContent.loader">
+                        <ngx-skeleton-loader count="5" appearance="line" animation="pulse" [theme]="{ 
+                        'background-color': '#dedede'
+                      }">
+                        </ngx-skeleton-loader>
+                    </div>
+                    <div *ngIf="!emailModalContent.loader">
+                        <div class="row">
+                            <div class="col-12">
+                                <mat-label>Subject:</mat-label>
+                                <mat-form-field class="w-full">
+                                    <input matInput [(ngModel)]="emailModalContent.subject">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12">
+                                <mat-label>Body:</mat-label>
+                                <ckeditor [config]="editorConfig" [(ngModel)]="emailModalContent.body"></ckeditor>
+                            </div>
+                            <!-- Imprints -->
+                            <ng-container
+                                *ngIf="emailModalContent.type != 'quotes' && emailModalContent.type != 'survey'">
+                                <div class="col-12 my-5" *ngIf="emailModalContent.qryOrderLines.length">
+                                    <div class="row space-y-1 border-b py-2"
+                                        *ngFor="let product of emailModalContent.qryOrderLines">
+                                        <div class="col-12 col-md-3">
+                                            <img src="{{product.imageUrl}}" style="width: 60%;">
+                                        </div>
+                                        <div class="col-12 col-md-9">
+                                            <h2 class="font-bold">{{product.productName}}</h2>
+                                            <p *ngIf="emailModalContent.type == 'sample'">Item Number:
+                                                {{product.storeProductID}}</p>
+                                            <ng-container *ngIf="emailModalContent.type == 'follow'">
+                                                <p>Quantity: {{product?.quantity}}</p>
+                                                <a href="{{product?.reviewURL}}" target="_blank">Click here to leave a
+                                                    review
+                                                    for this product</a>
+                                            </ng-container>
+                                            <ng-container *ngIf="emailModalContent.type == 'reorder'">
+                                                <p>Quantity: {{product?.quantity}}</p>
+                                                <a href="{{product?.reorderURL}}" target="_blank">Click here to reorder
+                                                    this
+                                                    product.</a>
+                                                <a href="{{product?.reviewURL}}" target="_blank">Click here to leave a
+                                                    review
+                                                    for this product</a>
+                                            </ng-container>
+                                            <br>
+                                            <mat-checkbox [(ngModel)]="product.checked">Remove this item from the
+                                                email</mat-checkbox>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12" *ngIf="emailModalContent.type == 'follow'">
+                                    If there is anything else I can help you with at this time, please don't hesitate to
+                                    reach out. Thank you for your order and I look forward to working with you again
+                                    soon.
+                                </div>
+                            </ng-container>
+                            <!-- Quotes -->
+                            <ng-container *ngIf="emailModalContent.type == 'quotes'">
+                                <div class="col-12 my-5">
+                                    <div class="row" *ngFor="let quote of emailModalContent.cartData">
+                                        <div class="col-12 col-md-3">
+                                            <img style="display: inline;"
+                                                src="{{assetURL}}globalAssets/products/HiRes/{{quote.productID}}.jpg"
+                                                onError="this.src='{{assetURL}}globalAssets/Products/coming_soon.jpg'">
+                                        </div>
+                                        <div class="col-12 col-md-9">
+                                            <div class="grid grid-cols-12 gap-x-1 mt-1">
+                                                <div
+                                                    class="col-span-12 pb-2 border-b font-medium text-lg text-secondary">
+                                                    ({{quote.storeCode
+                                                    + '-' +
+                                                    quote.productID}}) {{quote.productName}}</div>
+                                                <div class="col-span-12 my-2 font-bold">
+                                                    {{quote?.pk_cartID + '-' + quote?.pk_cartLineID}}
+                                                    <br>
+                                                    {{quote?.productNumber}}
+                                                </div>
+                                                <div
+                                                    class="col-span-12 pb-2 mb-2 border-b font-medium text-md text-secondary">
+                                                    Colors & Sizes</div>
+                                                <!-- Colors -->
+                                                <div class="col-span-12">
+                                                    <div class="grid grid-cols-12">
+                                                        <div class="col-span-6"></div>
+                                                        <div class="col-span-3 font-bold ">Unit</div>
+                                                        <div class="col-span-3 font-bold ">Total</div>
+                                                    </div>
+                                                    <div class="grid grid-cols-12"
+                                                        *ngFor="let color of quote.ColorsData">
+                                                        <div class="col-span-6 text-sm">{{color.colorName}}</div>
+                                                        <div class="col-span-3 font-bold text-sm ">{{color.unitPrice |
+                                                            currency}}
+                                                        </div>
+                                                        <div class="text-sm col-span-3 font-bold ">{{color.totalPrice |
+                                                            currency}}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-span-12 text-sm font-bold">Total Quantity:
+                                                    {{quote.orderQuantity}}</div>
+                                                <!-- Decorations -->
+                                                <div
+                                                    class="col-span-12 pb-2 my-2 border-b font-medium text-md text-secondary">
+                                                    Decoration</div>
+                                                <div class="col-span-12">
+                                                    <div class="grid grid-cols-12"
+                                                        *ngFor="let decoration of quote.DecorationData">
+                                                        <div class="col-span-6 text-sm">
+                                                            {{decoration.locationName}} / {{decoration.methodName}}
+                                                        </div>
+                                                        <div class="col-span-3 font-bold text-sm ">
+                                                        </div>
+                                                        <div class="text-sm col-span-3 font-bold ">{{decoration.price |
+                                                            currency}}
+                                                        </div>
+                                                        <div class="col-span-6 text-sm"> Setup: {{decoration.setupPrice
+                                                            |
+                                                            currency}}</div>
+                                                        <div class="col-span-3 font-bold text-sm "></div>
+                                                        <div class="text-sm col-span-3 font-bold ">
+                                                        </div>
+                                                        <div class="col-span-6 text-sm" *ngIf="runningPrice > 0"> Add
+                                                            Running:
+                                                            {{decoration.runningPrice |
+                                                            currency}}</div>
+                                                        <div class="col-span-3 font-bold text-sm "
+                                                            *ngIf="runningPrice > 0">
+                                                        </div>
+                                                        <div class="text-sm col-span-3 font-bold "
+                                                            *ngIf="runningPrice > 0">
+
+                                                        </div>
+                                                        <div class="col-span-6 text-sm">Colors: {{decoration.colors}}
+                                                        </div>
+                                                        <div class="col-span-3 font-bold text-sm "></div>
+                                                        <div class="text-sm col-span-3 font-bold ">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- Royalities -->
+                                                <div class="col-span-12 my-2" *ngIf="quote?.royaltyPrice > 0">
+                                                    <div class="grid grid-cols-12">
+                                                        <div class="col-span-6 font-medium text-secondary">
+                                                            {{quote.royaltyName}}</div>
+                                                        <div class="col-span-3 font-bold text-sm ">
+                                                        </div>
+                                                        <div class="text-secondary col-span-3 font-bold font-medium ">
+                                                            {{quote.royaltyPrice |
+                                                            currency}}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- Shipping -->
+                                                <div class="col-span-12 my-2" *ngIf="quote?.shippingGroundPrice > 0">
+                                                    <div class="grid grid-cols-12">
+                                                        <div class="col-span-6 font-medium text-secondary">
+                                                            Shipping</div>
+                                                        <div class="col-span-3 font-bold text-sm ">
+                                                        </div>
+                                                        <div class="text-secondary col-span-3 font-bold font-medium ">
+                                                            {{quote.shippingGroundPrice | currency}}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- SubTotal -->
+                                                <div class="col-span-12 my-2 border-b pb-2">
+                                                    <div class="grid grid-cols-12">
+                                                        <div class="col-span-6 font-medium text-secondary">
+                                                            SubTotal</div>
+                                                        <div class="col-span-3 font-bold text-sm ">
+                                                        </div>
+                                                        <div class="text-secondary col-span-3 font-bold font-medium ">
+                                                            {{quote.subTotal | currency}}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- <div class="col-span-12 my-2">
+                                                    <div class="grid grid-cols-12">
+                                                        <div class="col-span-6 font-medium text-secondary">
+                                                            Setup: {{quote.setupPriceTotal | currency}}</div>
+                                                        <div class="col-span-3 font-bold text-sm ">
+                                                        </div>
+                                                        <div class="text-secondary col-span-3 font-bold font-medium ">
+    
+                                                        </div>
+                                                    </div>
+                                                </div> -->
+                                                <div class="col-span-12 my-2 border-b pb-2">
+                                                    <div *ngFor="let file of quote.artworkFiles;let i=index">
+                                                        <a href="{{assetURL}}artwork/temp/{{quote.pk_cartID}}/{{quote.pk_cartLineID}}/{{file.imprintID}}/{{file.FILENAME}}"
+                                                            target="_blank">View
+                                                            Artwork File #{{i+1}}</a>
+                                                        <br />
+                                                    </div>
+                                                    <div *ngIf="quote.artworkFiles.length ==0">
+                                                        <div class="alet alert-primary p-3">
+                                                            No artwork attached to this item.
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class=" mx-4 p-2 text-right bg-gray-200  font-bold">
+                                        <p>Items Total: {{emailModalContent.totalPrice | currency}}</p>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <p>
+                                        If there is anything else I can help you with at this time, please don't
+                                        hesitate to
+                                        reach out. Thank you for your order and I look forward to working with you again
+                                        soon.
+                                    </p>
+                                </div>
+                            </ng-container>
+                            <!-- Footer -->
+                            <div class="col-12" [innerHTML]="emailModalContent.footer"></div>
+                        </div>
+                        <div class="col-12" *ngIf="emailModalContent?.text" [innerHTML]="emailModalContent.text"></div>
+                        <div class="col-12 my-2">
+                            <div>
+                                <ng-container *ngIf="emailModalContent.type != 'quotes' ">
+                                    <mat-checkbox>Include images?</mat-checkbox>
+                                    <br>
+                                    <mat-checkbox matTooltip="Include the additional content below the message.">Include
+                                        content?</mat-checkbox>
+                                </ng-container>
+                                <mat-checkbox *ngIf="emailModalContent.type == 'quotes'"
+                                    matTooltip="Include a PDF copy of the invoice as an attachment on the email.">Include
+                                    PDF invoice as attachment?</mat-checkbox>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal"
+                        class="mr-2 inline-flex items-center gap-x-1.5 rounded-md bg-red-400 px-2.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-400">
+                        <span>Close</span>
+                    </button>
+                    <button type="button" data-dismiss="modal" (click)="sendEmailsOrders()"
+                        class="mr-2 inline-flex items-center gap-x-1.5 rounded-md bg-green-400 px-2.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-400">
+                        <span>Send Email</span>
+                    </button>
+                </div>
+            </ng-container>
+            <ng-container *ngIf="emailModalContent &&  emailModalContent.type == 'survey'">
+                <div class="modal-body" *ngIf="emailModalContent">
+                    <!-- <div class="my-5" *ngIf="emailModalContent.loader">
                     <ngx-skeleton-loader count="5" appearance="line" animation="pulse" [theme]="{ 
                     'background-color': '#dedede'
                   }">
                     </ngx-skeleton-loader>
-                </div>
-                <div *ngIf="!emailModalContent.loader">
-                    <div class="row">
-                        <div class="col-12">
-                            <mat-label>Subject:</mat-label>
-                            <mat-form-field class="w-full">
-                                <input matInput [(ngModel)]="emailModalContent.subject">
-                            </mat-form-field>
-                        </div>
-                        <div class="col-12">
-                            <mat-label>Body:</mat-label>
-                            <ckeditor [config]="editorConfig" [(ngModel)]="emailModalContent.body"></ckeditor>
-                        </div>
-                        <!-- Imprints -->
-                        <ng-container *ngIf="emailModalContent.type != 'quotes'">
-                            <div class="col-12 my-5" *ngIf="emailModalContent.qryOrderLines.length">
-                                <div class="row space-y-1 border-b py-2"
-                                    *ngFor="let product of emailModalContent.qryOrderLines">
-                                    <div class="col-12 col-md-3">
-                                        <img src="{{product.imageUrl}}" class="w-50">
-                                    </div>
-                                    <div class="col-12 col-md-9">
-                                        <h2 class="font-bold">{{product.productName}}</h2>
-                                        <p *ngIf="emailModalContent.type == 'sample'">Item Number: </p>
-                                        <ng-container *ngIf="emailModalContent.type == 'reorder'">
-                                            <p>Quantity: {{product?.quantity}}</p>
-                                            <a href="{{product?.reorderURL}}" target="_blank">Click here to reorder this
-                                                product.</a>
-                                            <a href="{{product?.reviewURL}}" target="_blank">Click here to leave a
-                                                review
-                                                for this product</a>
-                                        </ng-container>
-                                        <br>
-                                        <mat-checkbox></mat-checkbox>
-                                        <mat-icon class="mt-1 cursor-pointer" [svgIcon]="'heroicons_outline:trash'"
-                                            [matTooltip]="'Remove this item from the email'"></mat-icon>
-                                    </div>
-                                </div>
-                            </div>
-                        </ng-container>
-                        <ng-container *ngIf="emailModalContent.type == 'quotes'">
-                            <div class="col-12 my-5">
-                                <div class="row" *ngFor="let quote of emailModalContent.cartData">
-                                    <div class="col-12 col-md-3">
-                                        <img style="display: inline;"
-                                            src="https://assets.consolidus.com/globalAssets/products/HiRes/{{quote.productID}}.jpg"
-                                            onError="this.src='https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'">
-                                    </div>
-                                    <div class="col-12 col-md-9">
-                                        <div class="grid grid-cols-12 gap-x-1 mt-1">
-                                            <div class="col-span-12 pb-2 border-b font-medium text-lg text-secondary">
-                                                ({{quote.storeCode
-                                                + '-' +
-                                                quote.productID}}) {{quote.productName}}</div>
-                                            <div class="col-span-12 my-2 font-bold">
-                                                {{quote?.pk_cartID + '-' + quote?.pk_cartLineID}}
-                                                <br>
-                                                {{quote?.productNumber}}
-                                            </div>
-                                            <div
-                                                class="col-span-12 pb-2 mb-2 border-b font-medium text-md text-secondary">
-                                                Colors & Sizes</div>
-                                            <!-- Colors -->
-                                            <div class="col-span-12">
-                                                <div class="grid grid-cols-12">
-                                                    <div class="col-span-6"></div>
-                                                    <div class="col-span-3 font-bold ">Unit</div>
-                                                    <div class="col-span-3 font-bold ">Total</div>
-                                                </div>
-                                                <div class="grid grid-cols-12" *ngFor="let color of quote.ColorsData">
-                                                    <div class="col-span-6 text-sm">{{color.colorName}}</div>
-                                                    <div class="col-span-3 font-bold text-sm ">{{color.unitPrice |
-                                                        currency}}
-                                                    </div>
-                                                    <div class="text-sm col-span-3 font-bold ">{{color.totalPrice |
-                                                        currency}}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-span-12 text-sm font-bold">Total Quantity:
-                                                {{quote.orderQuantity}}</div>
-                                            <!-- Decorations -->
-                                            <div
-                                                class="col-span-12 pb-2 my-2 border-b font-medium text-md text-secondary">
-                                                Decoration</div>
-                                            <div class="col-span-12">
-                                                <div class="grid grid-cols-12"
-                                                    *ngFor="let decoration of quote.DecorationData">
-                                                    <div class="col-span-6 text-sm">
-                                                        {{decoration.locationName}} / {{decoration.methodName}}</div>
-                                                    <div class="col-span-3 font-bold text-sm ">
-                                                    </div>
-                                                    <div class="text-sm col-span-3 font-bold ">{{decoration.price |
-                                                        currency}}
-                                                    </div>
-                                                    <div class="col-span-6 text-sm"> Setup: {{decoration.setupPrice |
-                                                        currency}}</div>
-                                                    <div class="col-span-3 font-bold text-sm "></div>
-                                                    <div class="text-sm col-span-3 font-bold ">
-                                                    </div>
-                                                    <div class="col-span-6 text-sm" *ngIf="runningPrice > 0"> Add
-                                                        Running:
-                                                        {{decoration.runningPrice |
-                                                        currency}}</div>
-                                                    <div class="col-span-3 font-bold text-sm " *ngIf="runningPrice > 0">
-                                                    </div>
-                                                    <div class="text-sm col-span-3 font-bold " *ngIf="runningPrice > 0">
-
-                                                    </div>
-                                                    <div class="col-span-6 text-sm">Colors: {{decoration.colors}}</div>
-                                                    <div class="col-span-3 font-bold text-sm "></div>
-                                                    <div class="text-sm col-span-3 font-bold ">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <!-- Royalities -->
-                                            <div class="col-span-12 my-2" *ngIf="quote?.royaltyPrice > 0">
-                                                <div class="grid grid-cols-12">
-                                                    <div class="col-span-6 font-medium text-secondary">
-                                                        {{quote.royaltyName}}</div>
-                                                    <div class="col-span-3 font-bold text-sm ">
-                                                    </div>
-                                                    <div class="text-secondary col-span-3 font-bold font-medium ">
-                                                        {{quote.royaltyPrice |
-                                                        currency}}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <!-- Shipping -->
-                                            <div class="col-span-12 my-2" *ngIf="quote?.shippingGroundPrice > 0">
-                                                <div class="grid grid-cols-12">
-                                                    <div class="col-span-6 font-medium text-secondary">
-                                                        Shipping</div>
-                                                    <div class="col-span-3 font-bold text-sm ">
-                                                    </div>
-                                                    <div class="text-secondary col-span-3 font-bold font-medium ">
-                                                        {{quote.shippingGroundPrice | currency}}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <!-- SubTotal -->
-                                            <div class="col-span-12 my-2 border-b pb-2">
-                                                <div class="grid grid-cols-12">
-                                                    <div class="col-span-6 font-medium text-secondary">
-                                                        SubTotal</div>
-                                                    <div class="col-span-3 font-bold text-sm ">
-                                                    </div>
-                                                    <div class="text-secondary col-span-3 font-bold font-medium ">
-                                                        {{quote.subTotal | currency}}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <!-- <div class="col-span-12 my-2">
-                                                <div class="grid grid-cols-12">
-                                                    <div class="col-span-6 font-medium text-secondary">
-                                                        Setup: {{quote.setupPriceTotal | currency}}</div>
-                                                    <div class="col-span-3 font-bold text-sm ">
-                                                    </div>
-                                                    <div class="text-secondary col-span-3 font-bold font-medium ">
-
-                                                    </div>
-                                                </div>
-                                            </div> -->
-                                            <div class="col-span-12 my-2 border-b pb-2">
-                                                <div *ngFor="let file of quote.artworkFiles;let i=index">
-                                                    <a href="https://assets.consolidus.com/artwork/temp/{{quote.pk_cartID}}/{{quote.pk_cartLineID}}/{{file.imprintID}}/{{file.FILENAME}}"
-                                                        target="_blank">View
-                                                        Artwork File #{{i+1}}</a>
-                                                    <br />
-                                                </div>
-                                                <div *ngIf="quote.artworkFiles.length ==0">
-                                                    <div class="alet alert-primary p-3">
-                                                        No artwork attached to this item.
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class=" mx-4 p-2 text-right bg-gray-200  font-bold">
-                                    <p>Items Total: {{emailModalContent.totalPrice | currency}}</p>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <p>
-                                    If there is anything else I can help you with at this time, please don't hesitate to
-                                    reach out. Thank you for your order and I look forward to working with you again
-                                    soon.
-                                </p>
-                            </div>
-                        </ng-container>
-                        <!-- Footer -->
-                        <div class="col-12" [innerHTML]="emailModalContent.footer"></div>
-                    </div>
-                    <div class="col-12" *ngIf="emailModalContent?.text" [innerHTML]="emailModalContent.text"></div>
-                    <div class="col-12 my-2">
-                        <div>
-                            <ng-container *ngIf="emailModalContent.type != 'quotes' ">
-                                <mat-checkbox>Include images?</mat-checkbox>
-                                <br>
-                                <mat-checkbox matTooltip="Include the additional content below the message.">Include
-                                    content?</mat-checkbox>
-                            </ng-container>
-                            <mat-checkbox *ngIf="emailModalContent.type == 'quotes'"
-                                matTooltip="Include a PDF copy of the invoice as an attachment on the email.">Include
-                                PDF invoice as attachment?</mat-checkbox>
-                        </div>
+                </div> -->
+                    <div class="alert alert-warning p-3">
+                        This store does not have any surveys defined. <a
+                            [routerLink]="['/apps/stores',emailModalContent.storeID,'surveys']" target="_blank">Click
+                            here</a> to create a survey for this store.
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" data-dismiss="modal"
-                    class="mr-2 inline-flex items-center gap-x-1.5 rounded-md bg-red-400 px-2.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-400">
-                    <span>Close</span>
-                </button>
-                <button type="button" data-dismiss="modal"
-                    class="mr-2 inline-flex items-center gap-x-1.5 rounded-md bg-green-400 px-2.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-400">
-                    <span>Send Email</span>
-                </button>
-            </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal"
+                        class="mr-2 inline-flex items-center gap-x-1.5 rounded-md bg-red-400 px-2.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-400">
+                        <span>Close</span>
+                    </button>
+                    <button type="button" data-dismiss="modal" disabled (click)="sendEmailsOrders()"
+                        class="mr-2 inline-flex items-center gap-x-1.5 rounded-md bg-green-400 px-2.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-400">
+                        <span>Send Survey</span>
+                    </button>
+                </div>
+            </ng-container>
         </div>
     </div>
 </div>

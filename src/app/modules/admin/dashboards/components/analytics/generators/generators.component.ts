@@ -72,7 +72,7 @@ export class GeneratorsComponent implements OnInit {
     // other options
   };
   emailModalContent: any;
-
+  assetURL = environment.assetsURL;
   constructor(private _changeDetectorRef: ChangeDetectorRef,
     private _dashboardService: DashboardsService,
   ) { }
@@ -499,7 +499,7 @@ export class GeneratorsComponent implements OnInit {
     return index;
   }
   openEmailDetailsModal(data, type) {
-    console.log(data);
+    console.log(data)
     this.emailModalContent = null;
     this.emailModalContent = {
       ...data,
@@ -515,6 +515,14 @@ export class GeneratorsComponent implements OnInit {
       case 'reorder':
         this.emailModalContent.modalTitle = `REORDER REMINDER EMAIL FOR ORDER ${data.pk_orderID}`;
         this.emailModalContent.subject = 'Checking in on your order';
+        break;
+      case 'follow':
+        this.emailModalContent.modalTitle = `FOLLOW UP EMAIL FOR ORDER ${data.pk_orderID}`;
+        this.emailModalContent.subject = 'Following Up';
+        break;
+      case 'survey':
+        this.emailModalContent.modalTitle = `CUSTOMER SURVEY FOR ORDER ${data.pk_orderID}`;
+        this.emailModalContent.subject = '';
         break;
       case 'quotes':
         this.emailModalContent.modalTitle = `QUOTE FOLLOW UP EMAIL FOR QUOTE ${data.cartID}`;
@@ -537,6 +545,14 @@ export class GeneratorsComponent implements OnInit {
         };
         break;
       case 'reorder':
+        payload = {
+          orderID: this.emailModalContent.pk_orderID,
+          storeID: this.emailModalContent.fk_storeID,
+          storeUserID: this.emailModalContent.fk_storeUserID,
+          get_order_email_data: true
+        };
+        break;
+      case 'follow':
         payload = {
           orderID: this.emailModalContent.pk_orderID,
           storeID: this.emailModalContent.fk_storeID,
@@ -601,6 +617,28 @@ export class GeneratorsComponent implements OnInit {
               </div>
             </div>`
         }
+      } else if (type == 'follow') {
+        greeting = 'Hello';
+        // Body 
+        if (res["qryStoreDefaultEmails"][0].reorderEmail) {
+          message = `${res["orderData"][0].storeUserFirstName} <br /> ${res["qryStoreDefaultEmails"][0].reorderEmail}`;
+        } else {
+          message = `${res["orderData"][0].storeUserFirstName}, <br /><br /> I wanted to reach out because I noticed you received your recent order!  How did everything turn out?  As you know, it is always our goal to exceed your expectations so please let us know how we did.<br /><br />
+          Please provide some feedback about the quality of the products and/or service you received.  I would greatly appreciate it!  <u>Simply click on the link below to provide a review or just reply to this email and I can do it for you.</u>`;
+        }
+        // Footer
+        if (res["data"].localPmID) {
+          footer = `<div class="row">
+          <div class="col-12 p-5">
+                <h2 class="font-weight-bold text-xl" style="font-size: 16px; font-weight: bold; color: ##333333; font-family: Arial, Helvetica, sans-serif; margin: 0 0 0 0; padding: 0; text-decoration: none; border: none;">${res["data"].localProgramManager}</h2>
+                <h3 class="font-weight-bold text-xl text-secondary" style="font-size: 14px; color: ##999999; font-family: Arial, Helvetica, sans-serif; margin: 0 0 10px 0; padding: 0;">${res["data"].localRole}</h2>
+                526 S. Main Street, ##804 Akron, Ohio 44311<br />
+                (d) ${res["data"].localPhone} | (p) 866.PromoHelp<br />
+                (e) <a href="mailto:${res["data"].localEmail}">${res["data"].localEmail}</a><br /><br />
+                <img class="w-50" src="${environment.assetsURL}globalAssets/Stores/mastheads/${this.emailModalContent.fk_storeID}.gif" />
+              </div>
+            </div>`
+        }
       } else if (type == 'quotes') {
         greeting = 'Hello';
         // Body 
@@ -623,16 +661,17 @@ export class GeneratorsComponent implements OnInit {
             </div>`
         }
       }
-      if (type != 'quotes') {
+      if (type != 'quotes' && type != 'survey') {
         if (res["qryOrderLines"].length) {
           res["qryOrderLines"].forEach(element => {
+            element.checked = false;
             const virtualProofPath = `/globalAssets/StoreUsers/VirtualProofs/${res["orderData"][0].storeUser_pk_userID}/${this.emailModalContent.orderID}/${element.pk_orderLineID}`;
             this.getFilesFromPath(virtualProofPath).then((proofs: any) => {
               if (proofs) {
                 if (proofs.length) {
-                  element.imageUrl = environment.assetsURL + `/globalAssets/StoreUsers/VirtualProofs/${res["orderData"][0].storeUser_pk_userID}/${this.emailModalContent.orderID}/${element.pk_orderLineID}/${element.VirtualProofsData[0].FILENAME}?${Date.now().toString()}`;
+                  element.imageUrl = environment.assetsURL + `globalAssets/StoreUsers/VirtualProofs/${res["orderData"][0].storeUser_pk_userID}/${this.emailModalContent.orderID}/${element.pk_orderLineID}/${proofs[0].FILENAME}?${Date.now().toString()}`;
                 } else {
-                  const imageURL = `${environment.assetsURL}/globalAssets/Products/HiRes/${element.storeProductID}.jpg?${Date.now().toString()}`;
+                  const imageURL = `${environment.assetsURL}globalAssets/Products/HiRes/${element.storeProductID}.jpg?${Date.now().toString()}`;
                   this.checkIfImageExists(imageURL).then(image => {
                     if (image) {
                       element.imageUrl = imageURL;
@@ -641,6 +680,7 @@ export class GeneratorsComponent implements OnInit {
                     }
                     this._changeDetectorRef.markForCheck();
                   });
+                  this._changeDetectorRef.markForCheck();
                 }
               }
             });
@@ -740,4 +780,268 @@ export class GeneratorsComponent implements OnInit {
       this._changeDetectorRef.markForCheck();
     });
   }
+
+  sendEmailsOrders() {
+    let user = JSON.parse(localStorage.getItem('userDetails'));
+    const emailContent = this.generateEmailTable();
+    this.emailModalContent.sendEmailLoader = true;
+    this._changeDetectorRef.markForCheck();
+    // Orders waiting artwork
+    let payload;
+    const { localEmail, localPhone, localPmID, localProgramManager, localRole, ppCheckOut } = this.emailModalContent.response.data;
+    if (this.emailModalContent.type == 'sample') {
+      const { storeName, orderID, subject, blnImages, blnContent, storeID, body } = this.emailModalContent;
+      const { storeUserEmail, billingEmail } = this.emailModalContent.response["orderData"][0];
+      payload = {
+        orderID,
+        localPmID, localProgramManager, localPhone, localEmail, localRole,
+        billingEmail,
+        storeUserEmail,
+        copy: body,
+        subject: subject,
+        contentHtml: emailContent,
+        storeName,
+        storeID,
+        send_sample_email: true
+      }
+    } else if (this.emailModalContent.type == 'reorder') {
+      const { storeName, pk_orderID, subject, blnImages, blnContent, storeID, body } = this.emailModalContent;
+      const { storeUserEmail, billingEmail } = this.emailModalContent.response["orderData"][0];
+      const emailContent = this.emailModalContent.text;
+      payload = {
+        orderID: pk_orderID, localPmID, localProgramManager, localPhone, localEmail, localRole,
+        storeUserEmail,
+        copy: body,
+        subject,
+        storeName, storeID,
+        contentHtml: emailContent,
+        send_customer_last_year: true
+      }
+    } else if (this.emailModalContent.type == 'follow') {
+      const { storeName, pk_orderID, subject, blnImages, blnContent, storeID, body } = this.emailModalContent;
+      const { storeUserEmail, billingEmail, storeUser_pk_userID } = this.emailModalContent.response["orderData"][0];
+      const emailContent = this.emailModalContent.text;
+      payload = {
+        orderID: pk_orderID, localPmID, localProgramManager, localPhone, localEmail, localRole,
+        storeUserEmail, billingEmail,
+        copy: body,
+        subject,
+        htmlContent: emailContent,
+        storeName, storeID,
+        session_pk_userID: user.pk_userID,
+        send_followUp_email: true
+      }
+    } else if (this.emailModalContent.type == 'quotes') {
+      const { storeName, orderID, subject, blnImages, blnContent, storeID, body } = this.emailModalContent;
+      const { storeUserEmail, billingEmail, pk_cartID } = this.emailModalContent.response["cartData"][0];
+
+      payload = {
+        cartID: pk_cartID,
+        billingEmail,
+        storeUserEmail,
+        copy: body,
+        subject,
+        printableCartHtml: emailContent,
+        storeName,
+        storeID,
+        localPmID,
+        localProgramManager,
+        localPhone,
+        localEmail,
+        localRole,
+        send_quote_email: true
+      }
+    } else if (this.emailModalContent.type == 'survey') {
+      //   orderID: number;
+      // storeUserEmail: string;
+      // storeUserFirstName: string;
+      // copy: string;
+      // subject: string;
+      // htmlContent: string;
+      // storeName: string;
+      // storeID: number;
+      // protocol: string;
+      // storeURL: string;
+      // surveyID: number;
+
+      // localPmID: string;
+      // localProgramManager: string;
+      // localEmail: string;
+      // localPhone: string;
+      // localRole: string;
+      // send_survey_email: boolean;
+    }
+    this._dashboardService.postDashboardData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.emailModalContent.sendEmailLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      console.log(res);
+    });
+  }
+  generateEmailTable(): string {
+    let tableHTML = '';
+    if (this.emailModalContent.type !== 'quotes' && this.emailModalContent.qryOrderLines.length > 0) {
+      tableHTML += `<table width="100%" cellspacing="0" cellpadding="0" border="0">
+        <tbody>`;
+
+      for (const product of this.emailModalContent.qryOrderLines) {
+        if (!product.checked) {
+          tableHTML += `<tr style="border-bottom: 1px solid #000; padding-bottom: 10px;">
+            <td style="width: 30%;"><img src="${product.imageUrl}" style="width: 60%;"></td>
+            <td style="width: 70%;">
+              <h2 style="font-weight: bold; margin: 0;">${product.productName}</h2>`;
+
+          if (this.emailModalContent.type === 'sample') {
+            tableHTML += `<p>Item Number: ${product.storeProductID}</p>`;
+          }
+
+          if (this.emailModalContent.type === 'reorder') {
+            tableHTML += `<p>Quantity: ${product?.quantity}</p>
+              <a href="${product?.reorderURL}" target="_blank" style="text-decoration: none; color: #007bff;">
+                Click here to reorder this product.
+              </a>
+              <br>
+              <a href="${product?.reviewURL}" target="_blank" style="text-decoration: none; color: #007bff;">
+                Click here to leave a review for this product
+              </a>`;
+          }
+          if (this.emailModalContent.type === 'follow') {
+            tableHTML += `<p>Quantity: ${product?.quantity}</p>
+              <br>
+              <a href="${product?.reviewURL}" target="_blank" style="text-decoration: none; color: #007bff;">
+                Click here to leave a review for this product
+              </a>`;
+          }
+
+          tableHTML += `
+            </td>
+          </tr>`;
+        }
+      }
+      tableHTML += `</tbody>
+      </table>`;
+    } else if (this.emailModalContent.type === 'quotes' && this.emailModalContent.cartData.length > 0) {
+      tableHTML += `<table style="width: 100%; border-collapse: collapse;" cellpadding="0" cellspacing="0">
+        <tbody>`;
+
+      for (const quote of this.emailModalContent.cartData) {
+        tableHTML += `<tr>
+          <td style="width: 30%; padding: 10px;"><img style="display: inline; width: 100%;" src="${environment.assetsURL}globalAssets/products/HiRes/${quote.productID}.jpg" onError="this.src='${environment.assetsURL}globalAssets/Products/coming_soon.jpg'" /></td>
+          <td style="width: 70%; padding: 10px;">
+            <div style="margin-top: 10px; margin-bottom: 10px; font-weight: bold; font-size: 18px; color: #333;">
+              (${quote.storeCode}-${quote.productID}) ${quote.productName}
+            </div>
+            <div style="margin-bottom: 10px; font-weight: bold; font-size: 16px; color: #333;">
+              ${quote.pk_cartID}-${quote.pk_cartLineID}<br>${quote.productNumber}
+            </div>
+            <!-- Colors -->
+            <div style="margin-bottom: 20px; font-weight: bold; font-size: 14px; color: #555;">
+              Colors & Sizes
+            </div>
+            <div>
+              <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 14px; color: #555; margin-bottom: 5px;">
+                <div style="width: 60%;">&nbsp;</div>
+                <div style="width: 20%;">Unit</div>
+                <div style="width: 20%;">Total</div>
+              </div>`;
+
+        for (const color of quote.ColorsData) {
+          tableHTML += `<div style="display: flex; justify-content: space-between; font-size: 14px; color: #555; margin-bottom: 5px;">
+              <div style="width: 60%;">${color.colorName}</div>
+              <div style="width: 20%;">${'$' + color.unitPrice}</div>
+              <div style="width: 20%;">${'$' + color.totalPrice}</div>
+            </div>`;
+        }
+
+        tableHTML += `</div>
+              <div style="margin-top: 10px; font-weight: bold; font-size: 14px; color: #555;">Total Quantity: ${quote.orderQuantity}</div>
+              <!-- Decorations -->
+              <div style="margin-bottom: 20px; font-weight: bold; font-size: 14px; color: #555;">
+                Decoration
+              </div>
+              <div>`;
+
+        for (const decoration of quote.DecorationData) {
+          tableHTML += `<div style="display: flex; justify-content: space-between; font-size: 14px; color: #555; margin-bottom: 5px;">
+              <div style="width: 60%;">${decoration.locationName} / ${decoration.methodName}</div>
+              <div style="width: 20%;">&nbsp;</div>
+              <div style="width: 20%;">${'$' + decoration.price}</div>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 14px; color: #555; margin-bottom: 5px;">
+              <div style="width: 60%;">Setup: ${'$' + decoration.setupPrice}</div>
+              <div style="width: 20%;">&nbsp;</div>
+              <div style="width: 20%;">&nbsp;</div>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 14px; color: #777;" *ngIf="quote.subTotal > 0; margin-bottom: 5px;">
+              <div style="width: 60%;">Add Running: ${'$' + decoration.runningPrice}</div>
+              <div style="width: 20%;">&nbsp;</div>
+              <div style="width: 20%;">&nbsp;</div>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 5px;">
+              <div style="width: 60%;">Colors: ${decoration.colors}</div>
+              <div style="width: 20%;">&nbsp;</div>
+              <div style="width: 20%;">&nbsp;</div>
+            </div>`;
+
+        }
+        tableHTML += `</div>`;
+        if (quote.royaltyPrice > 0) {
+          tableHTML += `<div style="margin-top: 20px;">
+          <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 14px; color: #555;">
+            <div style="width: 60%;">${quote.royaltyName}</div>
+            <div style="width: 20%;">&nbsp;</div>
+            <div style="width: 20%;">${'$' + quote.royaltyPrice}</div>
+          </div>
+        </div>`;
+        }
+        if (quote.shippingGroundPrice > 0) {
+          tableHTML += `<div style="margin-top: 20px;">
+          <div style="margin-top: 20px;" >
+          <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 14px; color: #555;">
+            <div style="width: 60%;">Shipping</div>
+            <div style="width: 20%;">&nbsp;</div>
+            <div style="width: 20%;">${'$' + quote.shippingGroundPrice}</div>
+          </div>
+        </div>`;
+        }
+        tableHTML += `
+              <!-- SubTotal -->
+              <div style="margin-top: 20px; margin-bottom: 20px; border-bottom: 1px solid #000;">
+                <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 14px; color: #555;">
+                  <div style="width: 60%;">SubTotal</div>
+                  <div style="width: 20%;">&nbsp;</div>
+                  <div style="width: 20%;">${'$' + quote.subTotal.toFixed(2)}</div>
+                </div>
+              </div>
+              <div style="margin-top: 20px; border-bottom: 1px solid #000; padding-bottom: 20px;">`;
+
+        for (let i = 0; i < quote.artworkFiles.length; i++) {
+          const file = quote.artworkFiles[i];
+          tableHTML += `<a href="${environment.assetsURL}artwork/temp/${quote.pk_cartID}/${quote.pk_cartLineID}/${file.imprintID}/${file.FILENAME}" target="_blank">View Artwork File #${i + 1}</a><br />`;
+        }
+
+        if (quote.artworkFiles.length === 0) {
+          tableHTML += `<div style="color: #007bff; margin-top: 10px;">No artwork attached to this item.</div>`;
+        }
+
+        tableHTML += `</div>
+            </div>
+          </td>
+        </tr>`;
+      }
+
+      tableHTML += `</tbody>
+      </table>
+      <div style="margin: 10px; padding: 10px; text-align: right; background-color: #eee; font-weight: bold;">
+        <p>Items Total: ${'$' + this.emailModalContent.totalPrice.toFixed(2)}</p>
+      </div>
+      <div style="margin: 10px;">
+        <p>If there is anything else I can help you with at this time, please don't hesitate to reach out. Thank you for your order, and I look forward to working with you again soon.</p>
+      </div>`;
+    }
+
+
+    return tableHTML;
+  }
+
 }

@@ -542,7 +542,7 @@
                             <div class="row space-y-1 py-2" *ngFor="let product of emailModalContent.qryOrderLines">
                                 <ng-container *ngIf="product.hasImprints" class="border-b ">
                                     <div class="col-12 col-md-3">
-                                        <img src="{{product.imageUrl}}" class="w-50">
+                                        <img src="{{product.imageUrl}}" style="width: 50%;">
                                     </div>
                                     <div class="col-12 col-md-9">
                                         <h2 class="font-bold">{{product.productName}}</h2>
@@ -554,10 +554,8 @@
                                             <a *ngIf="imprint.statusCheck" href="{{imprint.proofUrl}}"
                                                 target="_blank">CLICK HERE TO REVIEW THIS PROOF</a>
                                             <div class="my-2">
-                                                <mat-checkbox></mat-checkbox>
-                                                <mat-icon class="mt-1 cursor-pointer"
-                                                    [svgIcon]="'heroicons_outline:trash'"
-                                                    [matTooltip]="'Remove this item from the email'"></mat-icon>
+                                                <mat-checkbox [(ngModel)]="imprint.checked">Remove this item from the
+                                                    email</mat-checkbox>
                                             </div>
                                         </div>
                                     </div>

@@ -401,9 +401,10 @@ export class OrderStatusComponent implements OnInit {
                   this.getFilesFromPath(virtualProofPath).then((proofs: any) => {
                     if (proofs) {
                       if (proofs.length) {
-                        element.imageUrl = environment.assetsURL + `/globalAssets/StoreUsers/VirtualProofs/${res["orderData"][0].storeUser_pk_userID}/${this.emailModalContent.orderID}/${element.pk_orderLineID}/${element.VirtualProofsData[0].FILENAME}?${Date.now().toString()}`;
+                        element.imageUrl = environment.assetsURL + `globalAssets/StoreUsers/VirtualProofs/${res["orderData"][0].storeUser_pk_userID}/${this.emailModalContent.orderID}/${element.pk_orderLineID}/${proofs[0].FILENAME}?${Date.now().toString()}`;
+                        this._changeDetectorRef.markForCheck();
                       } else {
-                        const imageURL = `${environment.assetsURL}/globalAssets/Products/HiRes/${element.storeProductID}.jpg?${Date.now().toString()}`;
+                        const imageURL = `${environment.assetsURL}globalAssets/Products/HiRes/${element.storeProductID}.jpg?${Date.now().toString()}`;
                         this.checkIfImageExists(imageURL).then(image => {
                           if (image) {
                             element.imageUrl = imageURL;
@@ -426,7 +427,7 @@ export class OrderStatusComponent implements OnInit {
                 const { protocol, storeURL, storeUserEmail, fk_storeUserID } = res["orderData"][0];
                 proofUrl = `${protocol + storeURL}/proof/approve?rEM=${this._dashboardService.getEncodedData(storeUserEmail)}&rID=${fk_storeUserID}&OLID=${element.pk_orderLineID}&IID=${IID}&approvingID=${approvingStoreUserID}`;
               }
-              element.imprints.push({ IID, location, method, status, approvingStoreUserID: Number(approvingStoreUserID), statusCheck, proofUrl });
+              element.imprints.push({ IID, location, method, status, approvingStoreUserID: Number(approvingStoreUserID), statusCheck, proofUrl, checked: false });
             });
           }
         });
@@ -471,12 +472,13 @@ export class OrderStatusComponent implements OnInit {
     const { storeUserEmail, billingEmail } = this.emailModalContent.response["orderData"][0];
     const { localEmail, localPhone, localPmID, localProgramManager, localRole, ppCheckOut } = this.emailModalContent.response.data;
     if (this.emailModalContent.type == 'awaiting') {
+      const emailContent = this.awaitingGenerateTable();
       payload = {
         orderID,
         copy: body,
         subject,
         blnImages, blnContent,
-        contentHtml: '',
+        contentHtml: emailContent,
         productRemoveList: '',
         userEmail: storeUserEmail,
         storeName, storeID, localPmID, localProgramManager, localPhone, localEmail, localRole, ppCheckOut,
@@ -485,7 +487,7 @@ export class OrderStatusComponent implements OnInit {
     } else {
       payload = {
         orderID, billingEmail, storeUserEmail, subject, storeName, storeID, localPmID, localProgramManager, localPhone, localEmail, localRole, ppCheckOut,
-        copy: '',
+        copy: body,
         pdfFilename: '',
         send_payment_notification_email: true
       }
@@ -494,8 +496,61 @@ export class OrderStatusComponent implements OnInit {
       this.emailModalContent.sendEmailLoader = false;
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
+      if (res) {
+        this._dashboardService.snackBar(res["message"]);
+        if (this.emailModalContent.type == 'awaiting') {
+
+        } else {
+          this.awaitingOrders.forEach(order => {
+            if (order.orderID === orderID) {
+              order.paymentNotification = res["currentDate"];
+            }
+          });
+        }
+      }
+      $(this.orderEmailModal.nativeElement).modal('hide');
       console.log(res);
     });
+  }
+
+  awaitingGenerateTable(): string {
+    let tableHTML = `<table width="100%" cellspacing="0" cellpadding="0" border="0">
+      <tbody>`;
+    for (const product of this.emailModalContent.qryOrderLines) {
+      if (product.hasImprints) {
+        tableHTML += `<tr style="margin-bottom: 8px;">
+          <td style="width: 30%;">
+            <img src="${product.imageUrl}" style="width: 100%;">
+          </td>
+          <td style="width: 70%;">
+            <h2 style="font-weight: bold; margin: 0;">${product.productName}</h2>`;
+
+        for (const imprint of product.imprints) {
+          if (!imprint.checked) {
+            tableHTML += `<div style="border-bottom: 1px solid #000; padding-bottom: 8px;">
+            <p style="font-weight: bold; color: #777; margin: 0;">
+              ${imprint.location + '/' + imprint.method}
+            </p>`;
+
+            if (imprint.statusCheck) {
+              tableHTML += `<a href="${imprint.proofUrl}" target="_blank" style="color: #007bff; text-decoration: none;">
+              CLICK HERE TO REVIEW THIS PROOF
+            </a>`;
+            }
+
+            tableHTML += `</div>`;
+          }
+        }
+
+        tableHTML += `</td>
+        </tr>`;
+      }
+    }
+
+    tableHTML += `</tbody>
+    </table>`;
+
+    return tableHTML;
   }
 
 }

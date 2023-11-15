@@ -84,7 +84,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
 
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
-    mainScreen = 'sales';
+    mainScreen = 'status';
     testData: any;
     // Pie Chart
     @ViewChild("chart") chart: ChartComponent;
