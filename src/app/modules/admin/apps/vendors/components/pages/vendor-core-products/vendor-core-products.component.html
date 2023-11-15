@@ -4,6 +4,11 @@
         </ngx-skeleton-loader>
     </div>
     <div *ngIf="!isLoading">
+        <div class="mb-2 flex flex-row gap-x-2 justify-end mr-2">
+            <button (click) = "generatePdf()" mat-stroked-button class="min-w-20" >
+                <span class="test-sm">Pdf</span>
+            </button>
+        </div>
         <div class="px-5 pb-5" *ngIf="dataSource.length == 0">
             <fuse-alert [appearance]="'soft'" [type]="'warning'" [showIcon]="false">This supplier does not currently
                 have any products in any core product lists.</fuse-alert>

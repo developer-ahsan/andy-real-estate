@@ -449,8 +449,6 @@ export class FLPSsStoresManagementComponent implements OnInit {
     }
 
     generatePdf() {
-
-
         const tableBody = [
             [{ text: 'Stores', bold: true }, { text: 'Users', bold: true  }, { text: 'Default Commission', bold: true  }, { text: 'Management', bold: true  }, { text: 'Store Commission', bold: true  }],
         ];
