@@ -126,17 +126,22 @@ export class InvoicesComponent implements OnInit {
       res["data"].forEach(element => {
         let royaltyPrice = 0;
         let royaltyBln = false;
-        if (this.orderDetail.blnRoyaltyStore && element.blnRoyalty) {
-          royaltyPrice = element.royaltyPrice;
-          royaltyBln = element.blnRoyalty;
-        }
+
         let prod = [];
         if (products.length == 0) {
+          if (this.orderDetail.blnRoyaltyStore && element.blnRoyalty) {
+            royaltyPrice = element.royaltyPrice;
+            royaltyBln = element.blnRoyalty;
+          }
           let cost = (element.runCost * element.quantity) + element.shippingCost;
           let price = (element.runPrice * element.quantity) + element.shippingPrice + royaltyPrice;
           prod.push(element);
           products.push({ products: prod, order_line_id: element.fk_orderLineID, accessories: [], imprints: [], totalQuantity: element.quantity, totalMercandiseCost: cost, totalMerchendisePrice: price, royaltyPrice: royaltyPrice, royaltyBln });
         } else {
+          if (this.orderDetail.blnRoyaltyStore && element.blnRoyalty) {
+            royaltyPrice = element.royaltyPrice;
+            royaltyBln = element.blnRoyalty;
+          }
           const index = products.findIndex(item => item.order_line_id == element.fk_orderLineID);
           if (index < 0) {
             let cost = (element.runCost * element.quantity) + element.shippingCost;
@@ -145,7 +150,7 @@ export class InvoicesComponent implements OnInit {
             products.push({ products: prod, order_line_id: element.fk_orderLineID, accessories: [], imprints: [], totalQuantity: element.quantity, totalMercandiseCost: cost, totalMerchendisePrice: price, royaltyPrice: royaltyPrice, royaltyBln });
           } else {
             let cost = (element.runCost * element.quantity);
-            let price = (element.runPrice * element.quantity) + royaltyPrice;
+            let price = (element.runPrice * element.quantity);
 
             prod = products[index].products;
             prod.push(element);
