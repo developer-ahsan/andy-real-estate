@@ -11,6 +11,7 @@ import { SmartArtService } from '../../smartart.service';
 import { interval } from 'rxjs';
 import { AddOrderComment, UpdateOrderLineArtworkTags, UpdateArtworkTgas, UpdateOrderInformation, sendAutoRequest, updateOrderLineImprintColors, updateReorderNumberOrder, UpdateOrderLineClaim, updateOrderProofContact, SmartartImprintStatusUpdate, sendAutoRequestOrder, updateAttentionFlagOrder, sendOrderProofUpdate, UploadOrderArtProof, UploadOrderFinalArt, updateOrderPurchaseOrderComment, uploadVirtualProof, removeVirtualProof } from '../../smartart.types';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
+import { environment } from 'environments/environment';
 
 @Component({
   selector: 'app-order-details',
@@ -27,7 +28,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   @ViewChild('artworkPOFileInput') artworkPOFileInput: ElementRef;
   @Input() isLoading: boolean;
   private _unsubscribeAll: Subject<any> = new Subject<any>();
-
+  assetUrl = environment.assetsURL;
   dataSource = [];
   tempDataSource = [];
   displayedColumns: string[] = ['check', 'date', 'inhands', 'order', 'line', 'customer', 'product', 'supplier', 'status', 'store', 'proof', 'action'];
@@ -160,10 +161,12 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
     let params = {
       order_online_details_v2: true,
       orderLine_id: this.paramData.pk_orderLineID,
-      order_id: this.paramData.fk_orderID
+      order_id: this.paramData.fk_orderID,
+      imprint_id: this.paramData.fk_imprintID
     }
     this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.orderData = res["data"][0];
+      this.orderData.qryGroupRun = res["qryGroupRun"];
       this.orderData.blnStoreImage = true;
       this.orderData.sessionProofEmails = [];
       if (this.orderData.proofEmail) {

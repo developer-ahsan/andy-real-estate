@@ -1,6 +1,4 @@
 <div class="w-full">
-    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
-    </ngx-skeleton-loader>
     <div class="row" *ngIf="!isLoading">
         <div class="col-12 my-2">
             <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
@@ -10,32 +8,54 @@
                     </div>
                     <!-- Core product -->
                     <div class="gap-y-4 mt-6">
-                        <fuse-alert *ngIf="totalStores > 0" class="mb-2" [appearance]="'soft'" [type]="'warning'"
-                            [showIcon]="true">
-                            ERROR: Product is assigned to {{totalStores}} store(s). Un-assign first.
+                        <fuse-alert *ngIf="selectedProduct.storeProductCheck > 0" class="mb-2" [appearance]="'soft'"
+                            [type]="'warning'" [showIcon]="true">
+                            ERROR: Product is assigned to {{selectedProduct.storeProductCheck}} store(s). Un-assign
+                            first.
                         </fuse-alert>
-                        <div *ngIf="totalStores == 0">
+                        <div *ngIf="selectedProduct.storeProductCheck == 0">
                             <fuse-alert class="mb-2" [appearance]="'soft'" [type]="'success'" [showIcon]="true">
                                 Product is not assigned to any store.
                             </fuse-alert>
                             <mat-form-field class="w-full">
                                 <mat-label>Enter your password to confirm deletion</mat-label>
-                                <input matInput type="password" placeholder="Enter your password">
+                                <input matInput type="password" maxlength="50" [(ngModel)]="ngPassword"
+                                    placeholder="Enter your password">
                             </mat-form-field>
                             <div>
                                 <button class="min-w-40" mat-stroked-button [matTooltip]="'Delete Product'"
-                                    (click)="addDuplicate()" [disabled]="duplicateLoader">
-                                    <mat-progress-spinner *ngIf="duplicateLoader" [diameter]="24"
-                                        [mode]="'indeterminate'">
+                                    (click)="removeModal()" [disabled]="removeLoader">
+                                    <mat-progress-spinner *ngIf="removeLoader" [diameter]="24" [mode]="'indeterminate'">
                                     </mat-progress-spinner>
-                                    <mat-icon *ngIf="!duplicateLoader" svgIcon="heroicons_outline:trash"></mat-icon>
-                                    <span *ngIf="!duplicateLoader" class="ml-1 mr-1">Delete Product</span>
+                                    <mat-icon *ngIf="!removeLoader" svgIcon="heroicons_outline:trash"></mat-icon>
+                                    <span *ngIf="!removeLoader" class="ml-1 mr-1">Delete Product</span>
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
             </fuse-card>
+        </div>
+    </div>
+</div>
+<div class=" modal" tabindex="-1" role="dialog" #deleteProduct>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Product</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to remove this product from the system? This cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button data-dismiss="modal" (click)="removeProduct()" type="button" color="primary"
+                    class="btn bg-gray-700 text-white rounded-md">Yes</button>
+                <button type="button" class="btn bg-red-500 text-white border-red-500 rounded-md"
+                    data-dismiss="modal">Cancel</button>
+            </div>
         </div>
     </div>
 </div>

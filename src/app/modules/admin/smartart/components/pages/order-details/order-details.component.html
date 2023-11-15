@@ -632,8 +632,8 @@
                                         <mat-form-field class="w-full">
                                             <mat-label>Proof Contact</mat-label>
                                             <mat-select matInput [(ngModel)]="imprint.selectedContact">
-                                                <mat-option [value]="0">{{orderData.sessionArtworkFirstName[0] + ' '
-                                                    +orderData.sessionArtworkFirstName[1]}}</mat-option>
+                                                <mat-option [value]="0">{{orderData.sessionArtworkFirstName + ' '
+                                                    +orderData.sessionArtworkLastName}}</mat-option>
                                                 <mat-option *ngFor="let contact of contactProofs" [value]="contact"
                                                     [attr.data-blnStoreUserApproval]="contact.blnStoreUserApproval">{{contact.firstName
                                                     + ' ' +
@@ -755,10 +755,10 @@
                                                             <mat-label>Proof Contact</mat-label>
                                                             <mat-select matInput [(ngModel)]="imprint.selectedContact">
                                                                 <mat-option
-                                                                    [value]="orderData.sessionArtwork_artApprovalContactID">{{orderData.sessionArtworkFirstName[0]
+                                                                    [value]="orderData.sessionArtwork_artApprovalContactID">{{orderData.sessionArtworkFirstName
                                                                     +
                                                                     ' '
-                                                                    +orderData.sessionArtworkFirstName[1]}}</mat-option>
+                                                                    +orderData.sessionArtworkLastName}}</mat-option>
                                                                 <mat-option *ngFor="let contact of contactProofs"
                                                                     [value]="contact"
                                                                     [attr.data-blnStoreUserApproval]="contact.blnStoreUserApproval">{{contact.firstName
@@ -987,15 +987,15 @@
                                                             <mat-label>Proof Contact</mat-label>
                                                             <mat-select matInput [(ngModel)]="imprint.selectedContact">
                                                                 <!-- <mat-option
-                                                                    [value]="0">{{orderData.sessionArtworkFirstName[0]
+                                                                    [value]="0">{{orderData.sessionArtworkFirstName
                                                                     +
                                                                     ' '
-                                                                    +orderData.sessionArtworkFirstName[1]}}</mat-option> -->
+                                                                    +orderData.sessionArtworkLastName}}</mat-option> -->
                                                                 <mat-option
-                                                                    [value]="orderData.sessionArtwork_artApprovalContactID">{{orderData.sessionArtworkFirstName[0]
+                                                                    [value]="orderData.sessionArtwork_artApprovalContactID">{{orderData.sessionArtworkFirstName
                                                                     +
                                                                     ' '
-                                                                    +orderData.sessionArtworkFirstName[1]}}</mat-option>
+                                                                    +orderData.sessionArtworkLastName}}</mat-option>
                                                                 <mat-option *ngFor="let contact of contactProofs"
                                                                     [value]="contact"
                                                                     [attr.data-blnStoreUserApproval]="contact.blnStoreUserApproval">{{contact.firstName
@@ -1192,10 +1192,10 @@
                                                             <mat-label>Proof Contact</mat-label>
                                                             <mat-select matInput [(ngModel)]="imprint.selectedContact">
                                                                 <mat-option
-                                                                    [value]="orderData.sessionArtwork_artApprovalContactID">{{orderData.sessionArtworkFirstName[0]
+                                                                    [value]="orderData.sessionArtwork_artApprovalContactID">{{orderData.sessionArtworkFirstName
                                                                     +
                                                                     ' '
-                                                                    +orderData.sessionArtworkFirstName[1]}}</mat-option>
+                                                                    +orderData.sessionArtworkLastName}}</mat-option>
                                                                 <mat-option *ngFor="let contact of contactProofs"
                                                                     [value]="contact"
                                                                     [attr.data-blnStoreUserApproval]="contact.blnStoreUserApproval">{{contact.firstName
@@ -1929,10 +1929,10 @@
                                                             <mat-label>Proof Contact</mat-label>
                                                             <mat-select matInput [(ngModel)]="imprint.selectedContact">
                                                                 <mat-option
-                                                                    [value]="orderData.sessionArtwork_artApprovalContactID">{{orderData.sessionArtworkFirstName[0]
+                                                                    [value]="orderData.sessionArtwork_artApprovalContactID">{{orderData.sessionArtworkFirstName
                                                                     +
                                                                     ' '
-                                                                    +orderData.sessionArtworkFirstName[1]}}</mat-option>
+                                                                    +orderData.sessionArtworkLastName}}</mat-option>
                                                                 <mat-option *ngFor="let contact of contactProofs"
                                                                     [value]="contact"
                                                                     [attr.data-blnStoreUserApproval]="contact.blnStoreUserApproval">{{contact.firstName
@@ -2139,10 +2139,10 @@
                                                             <mat-label>Proof Contact</mat-label>
                                                             <mat-select matInput [(ngModel)]="imprint.selectedContact">
                                                                 <mat-option
-                                                                    [value]="orderData.sessionArtwork_artApprovalContactID">{{orderData.sessionArtworkFirstName[0]
+                                                                    [value]="orderData.sessionArtwork_artApprovalContactID">{{orderData.sessionArtworkFirstName
                                                                     +
                                                                     ' '
-                                                                    +orderData.sessionArtworkFirstName[1]}}</mat-option>
+                                                                    +orderData.sessionArtworkLastName}}</mat-option>
                                                                 <mat-option *ngFor="let contact of contactProofs"
                                                                     [value]="contact"
                                                                     [attr.data-blnStoreUserApproval]="contact.blnStoreUserApproval">{{contact.firstName
@@ -2464,61 +2464,50 @@
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                             <div class="my-3">
-                                <div class="row">
+                                <div class="row" *ngFor="let item of orderData.qryGroupRun">
                                     <div class="col-md-2 col-12">
-                                        <img src="https://assets.consolidus.com/globalAssets/Products/Images/61074.jpg">
+                                        <img
+                                            src="{{assetUrl}}globalAssets/Products/Images/{{item.pk_storeProductID}}.jpg?{{randomString}}">
                                     </div>
                                     <div class="col-md-8 col-12">
                                         <table>
                                             <tr>
-                                                <td><b>SKU:</b> L217</td>
-                                                <td><b>Supplier:</b> SanMar</td>
+                                                <td><b>SKU: </b>{{item.SKU}}</td>
+                                                <td><b>Supplier: </b>{{item.supplierName}}</td>
                                             </tr>
                                             <tr>
                                                 <td>
-                                                    <b>Product:</b>
+                                                    <b>Product: </b>
                                                     <span>
-                                                        <a href="supplierLink">productName</a>
+                                                        <a href="{{item.supplierLink}}"
+                                                            target="_blank">{{item.productName}}</a>
                                                     </span>
-                                                    <span>productName</span>
                                                 </td>
-                                                <td><b>Quantity:</b> 50</td>
-                                                <td><b>Imprint Colors:</b> Athletic gold 123,Blue 285,Blue 072</td>
+                                                <td><b>Quantity: </b>{{item.quantity}}</td>
+                                                <td><b>Imprint Colors: </b>{{item.imprintColors}}</td>
                                             </tr>
                                             <tr>
                                                 <td>
-                                                    <b>Imprint Location:</b>
-                                                    <span>
-                                                        Left-Chest, Full-Back, Right-Sleeve, Right Chest -
-                                                        Personalization (1) Name/Word
-                                                    </span>
+                                                    <b>Imprint Location: </b>
+                                                    <span> {{item.imprintLocation}}</span>
                                                 </td>
                                                 <td>
-                                                    <b>Item Colors:</b>
-                                                    <span>
-                                                        Left-Chest, Full-Back, Right-Sleeve, Right Chest -
-                                                        Personalization (1) Name/Word
-                                                    </span>
+                                                    <b>Item Colors: </b>
+                                                    <span>{{item.itemColors}}</span>
                                                 </td>
                                                 <td>
-                                                    <b>Imprint Size:</b>
-                                                    <span>
-                                                        Left-Chest, Full-Back, Right-Sleeve, Right Chest -
-                                                        Personalization (1) Name/Word
-                                                    </span>
+                                                    <b>Imprint Size: </b>
+                                                    <span>{{item.area}}</span>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>
-                                                    <b>Item Dimensions:</b>
-                                                    <span>
-                                                    </span>
+                                                    <b>Item Dimensions: </b>
+                                                    <span>{{item.itemDimensions}}</span>
                                                 </td>
                                                 <td>
-                                                    <b>Imprint Method:</b>
-                                                    <span>
-                                                        Embroidering
-                                                    </span>
+                                                    <b>Imprint Method: </b>
+                                                    <span>{{item.imprintMethod}}</span>
                                                 </td>
                                             </tr>
                                         </table>
