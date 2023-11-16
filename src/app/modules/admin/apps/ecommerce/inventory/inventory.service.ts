@@ -1388,7 +1388,7 @@ export class InventoryService {
             environment.products, payload, { headers });
     };
 
-    UpdateProductStatus(payload: UpdateProductStatus) {
+    UpdateProductStatus(payload: any) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(
             environment.products, payload, { headers });
