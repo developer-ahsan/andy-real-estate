@@ -20,6 +20,11 @@ export class ProductStatusComponent implements OnInit, OnDestroy {
   isDisableProductLoader: boolean = false;
   isActivateProductLoader: boolean = false;
   reason: any = '';
+  statusData: any;
+  blnCanBeDisabled: boolean;
+  emailCheck: boolean = false;
+  localStorageData: any;
+  images: any = []
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
@@ -29,7 +34,56 @@ export class ProductStatusComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.getProductDetail();
+    this.getStatusData();
+    this.localStorageData = JSON.parse(localStorage.getItem('userDetails'));
   }
+
+  getStatusData() {
+    let params = {
+      check_disable_status: true,
+      product_id: this.selectedProduct.pk_productID,
+    }
+    this.isLoading = true;
+    this._inventoryService.getProductsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe((res: any) => {
+      this.statusData = res;
+      let productIds = this.statusData.storeProductIDS[0].storeProductIDS.split(',')
+      productIds.forEach(item => {
+        if (this.storeProductImages(item)) {
+          this.images.push({
+            storeProductID: item,
+            image: `${environment.assetsURL}/globalAssets/Products/HiRes/${item}.jpg`
+          })
+        } else {
+          this.images.push({
+            storeProductID: item,
+            image: 'https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'
+          })
+        }
+      })
+      this.isLoading = false;
+      if (this.statusData?.qryCampaigns.length === 0 && this.statusData?.qryCarts.length === 0 && this.statusData?.qryRecommended.length === 0) {
+        this.blnCanBeDisabled = true;
+      } else {
+        this.blnCanBeDisabled = false;
+      }
+      this._changeDetectorRef.markForCheck();
+    })
+  }
+
+  storeProductImages(targetID) {
+    let url = `${environment.assetsURL}/globalAssets/Products/HiRes/${targetID}.jpg`
+    return new Promise<void>((resolve, reject) => {
+      const img = new Image();
+      img.src = url;
+      img.onload = () => {
+        resolve();
+      };
+      img.onerror = () => {
+        reject();
+      };
+    });
+  }
+
   getProductDetail() {
     this.isLoading = true;
     this._inventoryService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe((details) => {
@@ -41,11 +95,16 @@ export class ProductStatusComponent implements OnInit, OnDestroy {
   }
   disableProduct() {
     this.isDisableProductLoader = true;
-    let params: UpdateProductStatus = {
-      product_id: this.selectedProduct.pk_productID,
-      reason: this.reason,
+    let params = {
+      productID: this.selectedProduct.pk_productID,
+      bln_active: this.selectedProduct.blnActive,
+      disabledReason: this.reason,
       is_active: false,
-      update_product_status: true,
+      images: this.images,
+      mainLogin_blnSupplier: this.localStorageData.supplier,
+      mainLogin_companyName: this.localStorageData.companyName,
+      blnEmailProgramManagers: this.localStorageData.blnManager,
+      update_master_product_status: true
     };
     this._inventoryService.UpdateProductStatus(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.isDisableProductLoader = false;
@@ -64,11 +123,17 @@ export class ProductStatusComponent implements OnInit, OnDestroy {
   }
   activateProduct() {
     this.isActivateProductLoader = true;
-    let params: UpdateProductStatus = {
-      product_id: this.selectedProduct.pk_productID,
+    let params = {
+      productID: this.selectedProduct.pk_productID,
+      bln_active: this.selectedProduct.blnActive,
       reason: '',
       is_active: true,
       update_product_status: true,
+      images: this.images,
+      mainLogin_blnSupplier: this.localStorageData.supplier,
+      mainLogin_companyName: this.localStorageData.companyName,
+      blnEmailProgramManagers: this.localStorageData.blnManager,
+      update_master_product_status: true
     };
     this._inventoryService.UpdateProductStatus(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.isActivateProductLoader = false;
