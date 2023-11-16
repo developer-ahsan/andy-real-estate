@@ -6,6 +6,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { environment } from 'environments/environment';
 import { UpdateProductStatus } from '../../inventory.types';
+import { L } from '@angular/cdk/keycodes';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-product-status',
@@ -29,7 +31,8 @@ export class ProductStatusComponent implements OnInit, OnDestroy {
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
     private _formBuilder: FormBuilder,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+    private _router: Router,
   ) { }
 
   ngOnInit(): void {
@@ -46,20 +49,24 @@ export class ProductStatusComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this._inventoryService.getProductsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe((res: any) => {
       this.statusData = res;
-      let productIds = this.statusData.storeProductIDS[0].storeProductIDS.split(',')
-      productIds.forEach(item => {
-        if (this.storeProductImages(item)) {
-          this.images.push({
-            storeProductID: item,
-            image: `${environment.assetsURL}/globalAssets/Products/HiRes/${item}.jpg`
-          })
-        } else {
-          this.images.push({
-            storeProductID: item,
-            image: 'https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'
-          })
-        }
-      })
+      let productIds = this.statusData.storeProductIDS[0].storeProductIDS;
+      if (productIds !== null) {
+        productIds = productIds.split(',');
+        productIds.forEach(item => {
+          if (this.storeProductImages(item)) {
+            this.images.push({
+              storeProductID: item,
+              image: `${environment.assetsURL}/globalAssets/Products/HiRes/${item}.jpg`
+            })
+          } else {
+            this.images.push({
+              storeProductID: item,
+              image: 'https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'
+            })
+          }
+        })
+      }
+
       this.isLoading = false;
       if (this.statusData?.qryCampaigns.length === 0 && this.statusData?.qryCarts.length === 0 && this.statusData?.qryRecommended.length === 0) {
         this.blnCanBeDisabled = true;
@@ -94,7 +101,7 @@ export class ProductStatusComponent implements OnInit, OnDestroy {
     });
   }
   disableProduct() {
-    if(this.reason === '') {
+    if (this.reason === '') {
       this._snackBar.open("Reason for disabling is required field", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
@@ -155,6 +162,10 @@ export class ProductStatusComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     })
 
+  }
+
+  navigate(id) {
+    this._router.navigateByUrl(`/apps/customers/${id}/saved-carts`);
   }
 
 

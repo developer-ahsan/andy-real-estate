@@ -42,7 +42,8 @@
                                     <br /><br />
                                     <div *ngFor="let category of statusData.qryRecommended">
                                         <a>
-                                            <div class="fa fa-info-circle fa-lg mr-1"></div> <b>{{ category?.categoryName
+                                            <div class="fa fa-info-circle fa-lg mr-1"></div> <b>{{
+                                                category?.categoryName
                                                 }}</b>
                                         </a>
                                         on {{ category?.storeName }}<br />
@@ -75,9 +76,16 @@
                                     This item is currently in the following active carts/quotes:
                                     <br /><br />
                                     <ng-container *ngFor="let cartId of statusData.qryCarts">
-                                      <span class="fa fa-info-circle fa-lg"></span>
-                                      <b>CartID: {{ cartId }}</b>
-                                      <!-- <a *ngIf="objCart?.qryCart?.blnQuote"
+
+                                        <div class="flex">
+                                            <div class="fa fa-info-circle fa-lg mr-2 mt-1"></div>
+                                            <div class="mb-1 flex gap-x-1">
+                                            <b>CartID: {{ cartId.pk_cartID }}</b>
+                                            <div (click)="navigate(cartId.storeUserID)" class="underline ml-1 cursor-pointer">{{cartId.storeName}} {{customerFirstName}}
+                                                {{customerLastName}}</div>
+                                            </div>
+                                        </div>
+                                        <!-- <a *ngIf="objCart?.qryCart?.blnQuote"
                                          [href]="'#myself#storeUser.viewStoreUserQuotes&userID=' + objCart?.qryCart?.storeUserID">
                                         {{ qryStore?.storeName }} - {{ objCart?.qryCustomer?.firstName }} {{ objCart?.qryCustomer?.lastName }}
                                       </a>
@@ -85,23 +93,25 @@
                                          [href]="'#myself#storeUser.viewStoreUserCarts&userID=' + objCart?.qryCart?.storeUserID">
                                         {{ qryStore?.storeName }} - {{ objCart?.qryCustomer?.firstName }} {{ objCart?.qryCustomer?.lastName }}
                                       </a> -->
-                                      <br />
+                                        <br />
                                     </ng-container>
-                                  </div>
-                                  
+                                </div>
+
 
 
                             </div>
                         </div>
 
                         <div class="col-12 justify-end mt-2 flex gap-x-3">
-                            <div class="text-red-500 text-wrap text-sm mt-2">(Note: disabling a product will send an email alert to the program manager of each store this product is on)</div>
+                            <div class="text-red-500 text-wrap text-sm mt-2">(Note: disabling a product will send an
+                                email alert to the program manager of each store this product is on)</div>
                             <button class="min-w-40" mat-stroked-button [matTooltip]="'Disable Product'"
-                                (click)="disableProduct()" [disabled]="statusData?.qryCampaigns?.length > 0 || statusData?.qryCarts?.length > 0">
+                                (click)="disableProduct()"
+                                [disabled]="statusData?.qryCampaigns?.length > 0 || statusData?.qryCarts?.length > 0">
                                 <mat-progress-spinner *ngIf="isDisableProductLoader" [diameter]="24"
                                     [mode]="'indeterminate'">
                                 </mat-progress-spinner>
-                                
+
                                 <span *ngIf="!isDisableProductLoader" class="ml-1 mr-1">Disable Product</span>
                             </button>
                         </div>
@@ -116,7 +126,8 @@
                         <div class="row my-3">
                             <div class="col-12 text-right">
                                 <button class="min-w-40" mat-stroked-button [matTooltip]="'Disable Product'"
-                                    (click)="activateProduct()" [disabled]="statusData?.qryCampaigns?.length > 0 || statusData?.qryCarts?.length > 0">
+                                    (click)="activateProduct()"
+                                    [disabled]="statusData?.qryCampaigns?.length > 0 || statusData?.qryCarts?.length > 0">
                                     <mat-progress-spinner *ngIf="isActivateProductLoader" [diameter]="24"
                                         [mode]="'indeterminate'">
                                     </mat-progress-spinner>
