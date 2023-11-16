@@ -75,12 +75,16 @@ export class ProductsStatusComponent implements OnInit {
       page: page,
       store_version: true,
       product_id: this.selectedProduct.pk_productID,
-      size: 100
+      size: 200
     }
     // if (page == 1) {
     //   this.assignedStores = [];
     // } 
     this._inventoryService.getProductsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      res["data"].forEach(store => {
+        store.imageURL = `${this.imgUrl}/HiRes/${store.pk_storeProductID}.jpg?${this.tempDate}`;
+        this._changeDetectorRef.markForCheck();
+      });
       this.assignedStores = res["data"];
       if (type == 'add') {
         this._snackBar.open("Product assigned to the store successfully", '', {
@@ -119,7 +123,7 @@ export class ProductsStatusComponent implements OnInit {
     let params = {
       stores_list: true,
       bln_active: 1,
-      size: 100,
+      size: 200,
       page: this.page,
       exclude_list: exlcude_list_product.toString()
     }
@@ -128,7 +132,6 @@ export class ProductsStatusComponent implements OnInit {
       .subscribe((stores) => {
         this.isStoreLoader = false;
         this.isViewMoreLoader = false;
-
         this.storesData = this.storesData.concat(stores["data"]);
         this.totalStoresData = stores["totalRecords"];
         this._changeDetectorRef.markForCheck();
@@ -169,13 +172,14 @@ export class ProductsStatusComponent implements OnInit {
     }
     this._inventoryService.AddStoreProduct(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.ngComment = null;
-      this.getAssignedStores('add', 1);
       if (this.isCopyImage) {
         let targetIDs = [];
         res["newStoreProductIds"].forEach(element => {
           targetIDs.push(element.storeProductID);
         });
         this.storeProductImages(targetIDs);
+      } else {
+        this.getAssignedStores('add', 1);
       }
       // this.selectedTermUpdateLoader = false;
       // this.addRapidStoreProduct(res);
@@ -192,7 +196,6 @@ export class ProductsStatusComponent implements OnInit {
     }
     this._inventoryService.AddStoreProduct(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.ngComment = null;
-
       this.getAssignedStores('add', 1);
       // this.getAllActiveStores(0);
 
@@ -232,7 +235,7 @@ export class ProductsStatusComponent implements OnInit {
   };
 
   copyImageToggle(): void {
-    this.isCopyImage = !this.isCopyImage;
+    // this.isCopyImage = !this.isCopyImage;
     if (this.assignedStores.length) {
       this.ngSelectedStoreToCopy = this.assignedStores[0].pk_storeProductID;
     }
@@ -308,7 +311,6 @@ export class ProductsStatusComponent implements OnInit {
 
     const setImgUrls = (type) => {
       this[`${type}ImgUrl`] = `${environment.assetsURL}/globalAssets/Products/${type}/${this.ngSelectedStoreToCopy}.jpg`;
-      console.log(this[`${type}ImgUrl`]);
       return checkIfImageExists(this[`${type}ImgUrl`], type);
     };
 
@@ -335,6 +337,7 @@ export class ProductsStatusComponent implements OnInit {
       copy_store_version_images: true
     }
     this._inventoryService.AddStoreProduct(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.getAssignedStores('add', 1);
       console.clear();
     });
   }

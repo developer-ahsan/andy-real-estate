@@ -11,8 +11,7 @@
                         <a class="items-center cursor-pointer" style="text-align: -webkit-center;"
                             [routerLink]="['/apps/ecommerce/inventory/storeProduct',item.pk_storeProductID]"
                             target="_blank">
-                            <img class="w-20 rounded-lg object-cover"
-                                src="{{imgUrl}}/HiRes/{{item.pk_storeProductID}}.jpg?{{tempDate}}"
+                            <img class="w-20 rounded-lg object-cover" src="{{item.imageURL}}"
                                 onError="this.src='https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'"
                                 alt="Store Product Image">
                         </a>
@@ -116,7 +115,8 @@
                             <mat-checkbox (click)="selectAll()"> Un/select all </mat-checkbox>
                         </div>
                         <div class="col-lg-3 col-md-3 col-6">
-                            <mat-checkbox (click)="copyImageToggle()"> Copy Image </mat-checkbox>
+                            <mat-checkbox (click)="copyImageToggle()" [(ngModel)]="isCopyImage"> Copy Image
+                            </mat-checkbox>
                         </div>
                         <div class="col-lg-3 col-md-3 col-6">
                             <mat-checkbox [disabled]="true"> Take Online </mat-checkbox>

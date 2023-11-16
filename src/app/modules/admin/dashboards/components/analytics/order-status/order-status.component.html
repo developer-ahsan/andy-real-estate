@@ -131,7 +131,7 @@
                                 </a>
                             </td>
                             <td>
-                                <div *ngIf="item.artworkNotification != 'N/A'">{{item.artworkNotification}}</div>
+                                <div *ngIf="item.artworkNotification != 'N/A'">{{item?.artworkNotification}}</div>
                                 <div *ngIf="item.artworkNotification == 'N/A'">---</div>
                             </td>
                             <td>
@@ -265,8 +265,7 @@
                             <span class="{{item.status?.statusColor}}">{{item.status?.statusValue}}</span>
                         </td>
                         <td>
-                            <div *ngIf="item.paymentNotification != 'N/A'">{{item.paymentNotification | date:
-                                "MM/dd/yyyy '@' hh:mm a"}}</div>
+                            <div *ngIf="item.paymentNotification != 'N/A'">{{item.paymentNotification}}</div>
                             <div *ngIf="item.paymentNotification == 'N/A'">---</div>
                         </td>
                         <td>
@@ -538,7 +537,8 @@
                             <ckeditor [config]="editorConfig" [(ngModel)]="emailModalContent.body"></ckeditor>
                         </div>
                         <!-- Imprints -->
-                        <div class="col-12 my-5" *ngIf="emailModalContent.qryOrderLines.length">
+                        <div class="col-12 my-5"
+                            *ngIf="emailModalContent.qryOrderLines.length && emailModalContent.type == 'awaiting'">
                             <div class="row space-y-1 py-2" *ngFor="let product of emailModalContent.qryOrderLines">
                                 <ng-container *ngIf="product.hasImprints" class="border-b ">
                                     <div class="col-12 col-md-3">
@@ -563,7 +563,7 @@
                             </div>
                         </div>
                         <!-- Footer -->
-                        <div class="col-12" [innerHTML]="emailModalContent.footer"></div>
+                        <div class="col-12 mt-2" [innerHTML]="emailModalContent.footer"></div>
                     </div>
                     <div class="col-12" *ngIf="emailModalContent?.text" [innerHTML]="emailModalContent.text"></div>
                     <div class="col-12 my-2">

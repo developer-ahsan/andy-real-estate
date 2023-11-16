@@ -123,8 +123,7 @@
                                 <ng-template #na>---</ng-template>
                             </td>
                             <td>
-                                <div *ngIf="item.followUp != 'N/A'">{{item.followUp | date:
-                                    "MM/dd/yyyy '@' hh:mm a"}}</div>
+                                <div *ngIf="item.followUp != 'N/A'">{{item.followUp}}</div>
                                 <div *ngIf="item.followUp == 'N/A'">---</div>
                             </td>
                             <td>
@@ -374,8 +373,7 @@
                                 <ng-template #na>---</ng-template>
                             </td>
                             <td>
-                                <div *ngIf="item.dashboardReorderLastTouch">{{item.dashboardReorderLastTouch | date:
-                                    "MM/dd/yyyy '@' hh:mm a"}}</div>
+                                <div *ngIf="item.dashboardReorderLastTouch">{{item.dashboardReorderLastTouch}}</div>
                                 <div *ngIf="!item.dashboardReorderLastTouch">---</div>
                             </td>
                             <td>
@@ -549,8 +547,7 @@
                             <td>{{item?.products}}</td>
                             <td>0</td>
                             <td>
-                                <div *ngIf="item.dashboardFollowUpLastTouch">{{item.dashboardFollowUpLastTouch | date:
-                                    "MM/dd/yyyy '@' hh:mm a"}}</div>
+                                <div *ngIf="item.dashboardFollowUpLastTouch">{{item.dashboardFollowUpLastTouch}}</div>
                                 <div *ngIf="!item.dashboardFollowUpLastTouch">---</div>
                             </td>
                             <td>
@@ -919,7 +916,10 @@
                     </button>
                     <button type="button" data-dismiss="modal" (click)="sendEmailsOrders()"
                         class="mr-2 inline-flex items-center gap-x-1.5 rounded-md bg-green-400 px-2.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-400">
-                        <span>Send Email</span>
+                        <span *ngIf="!emailModalContent?.sendEmailLoader">Send Email</span>
+                        <mat-progress-spinner *ngIf="emailModalContent?.sendEmailLoader" [diameter]="24"
+                            [mode]="'indeterminate'">
+                        </mat-progress-spinner>
                     </button>
                 </div>
             </ng-container>

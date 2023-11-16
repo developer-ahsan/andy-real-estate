@@ -188,6 +188,9 @@ export interface StatusUpdate {
     bln_active: boolean;
     store_name: string;
     store_product_id: number;
+    offlineReason: string;
+    master_product_id: number;
+    storeProductHiResImage: boolean;
     blnSendEmail: boolean;
     blnAddToRapidBuild: boolean;
     update_status: boolean;

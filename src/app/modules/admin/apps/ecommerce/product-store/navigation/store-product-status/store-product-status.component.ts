@@ -3,6 +3,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { StoreProductService } from '../../store.service';
 import { StatusUpdate } from '../../store.types';
+import { environment } from 'environments/environment';
 
 @Component({
   selector: 'app-store-product-status',
@@ -17,10 +18,11 @@ export class StoreProductStatusComponent implements OnInit, OnDestroy {
   removeProductData: any;
   statusProductData: any;
   isUpdateLoading: boolean = false;
-  offlineReason: any;
+  offlineReason: any = '';
   blnSendEmail: boolean = false;
   blnAddToRapidBuild: boolean = false;
   enableButton: boolean = false;
+  storeProductHiResImage: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _storeService: StoreProductService
@@ -34,7 +36,22 @@ export class StoreProductStatusComponent implements OnInit, OnDestroy {
     this._storeService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.selectedProduct = res["data"][0];
       this.getRemoveProductsDetails();
+      this.checkImageExist();
     });
+  }
+  checkImageExist() {
+    const { pk_storeProductID } = this.selectedProduct;
+    const url = `${environment.assetsURL}/globalAssets/Products/HiRes/${pk_storeProductID}.jpg`
+    const img = new Image();
+    img.src = url;
+    img.onload = () => {
+      this.storeProductHiResImage = true;
+      this._changeDetectorRef.markForCheck();
+    };
+    img.onerror = () => {
+      this.storeProductHiResImage = false;
+      this._changeDetectorRef.markForCheck();
+    };
   }
   getRemoveProductsDetails() {
     let params = {
@@ -56,7 +73,6 @@ export class StoreProductStatusComponent implements OnInit, OnDestroy {
           this.enableButton = true;
         }
       }
-      // console.log(this.enableButton);
       this.isLoading = false;
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
@@ -68,11 +84,16 @@ export class StoreProductStatusComponent implements OnInit, OnDestroy {
   }
 
   UpdateStoreStatus(value) {
+    const { storeName, pk_storeProductID, fk_productID } = this.selectedProduct;
+
     this.isUpdateLoading = true;
     let payload: StatusUpdate = {
       bln_active: value,
-      store_name: this.selectedProduct?.storeName,
-      store_product_id: Number(this.selectedProduct.pk_storeProductID),
+      store_name: storeName,
+      store_product_id: Number(pk_storeProductID),
+      offlineReason: this.offlineReason,
+      master_product_id: fk_productID,
+      storeProductHiResImage: this.storeProductHiResImage,
       blnSendEmail: this.blnSendEmail,
       blnAddToRapidBuild: this.blnAddToRapidBuild,
       update_status: true

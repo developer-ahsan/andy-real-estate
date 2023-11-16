@@ -169,7 +169,9 @@
                                     notification to program
                                     manager?</mat-checkbox>
                                 <mat-checkbox class="w-full" [(ngModel)]="blnAddToRapidBuild">Add to rapidBuild (this
-                                    product currently <span class="disabled bold">DOES NOT</span> have an
+                                    product currently <span class="text-green-500 font-bold"
+                                        *ngIf="storeProductHiResImage">DOES</span> <span class="text-red-500 font-bold"
+                                        *ngIf="!storeProductHiResImage">DOES NOT</span> have an
                                     image)</mat-checkbox>
                                 <button class="min-w-40" mat-stroked-button (click)="UpdateStoreStatus(true)"
                                     [disabled]="isUpdateLoading || !enableButton">

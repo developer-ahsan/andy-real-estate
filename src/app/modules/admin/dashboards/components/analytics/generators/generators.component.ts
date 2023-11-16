@@ -163,7 +163,6 @@ export class GeneratorsComponent implements OnInit {
       this.processQuotes(res);
       this.processSampleOrders(res);
       this.processKeywords(res);
-
       this._changeDetectorRef.markForCheck();
     })
   }
@@ -875,7 +874,30 @@ export class GeneratorsComponent implements OnInit {
       this.emailModalContent.sendEmailLoader = false;
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
-      console.log(res);
+      if (res) {
+        this._dashboardService.snackBar(res["message"]);
+        if (this.emailModalContent.type == 'quotes') {
+          this.pendingQuotes.forEach(quote => {
+            if (quote.cartID === payload.cartID) {
+              quote.followUp = res["currentDate"];
+            }
+          });
+        } else if (this.emailModalContent.type == 'reorder') {
+          this.ordersThisYear.forEach(order => {
+            if (order.orderID === payload.orderID) {
+              order.dashboardReorderLastTouch = res["currentDate"];
+            }
+          });
+        } else if (this.emailModalContent.type == 'activityData') {
+          this.ordersThisYear.forEach(order => {
+            if (order.orderID === payload.orderID) {
+              order.dashboardFollowUpLastTouch = res["currentDate"];
+            }
+          });
+        }
+      }
+      $(this.quoteEmailModal.nativeElement).modal('hide');
+      this._changeDetectorRef.markForCheck();
     });
   }
   generateEmailTable(): string {
@@ -887,7 +909,7 @@ export class GeneratorsComponent implements OnInit {
       for (const product of this.emailModalContent.qryOrderLines) {
         if (!product.checked) {
           tableHTML += `<tr style="border-bottom: 1px solid #000; padding-bottom: 10px;">
-            <td style="width: 30%;"><img src="${product.imageUrl}" style="width: 60%;"></td>
+            <td style="width: 30%;"><img src="${product.imageUrl}" style="width: 30%;"></td>
             <td style="width: 70%;">
               <h2 style="font-weight: bold; margin: 0;">${product.productName}</h2>`;
 
@@ -926,7 +948,7 @@ export class GeneratorsComponent implements OnInit {
 
       for (const quote of this.emailModalContent.cartData) {
         tableHTML += `<tr>
-          <td style="width: 30%; padding: 10px;"><img style="display: inline; width: 100%;" src="${environment.assetsURL}globalAssets/products/HiRes/${quote.productID}.jpg" onError="this.src='${environment.assetsURL}globalAssets/Products/coming_soon.jpg'" /></td>
+          <td style="width: 30%; padding: 10px;"><img style="display: inline; width: 40%;" src="${environment.assetsURL}globalAssets/products/HiRes/${quote.productID}.jpg" onError="this.src='${environment.assetsURL}globalAssets/Products/coming_soon.jpg'" /></td>
           <td style="width: 70%; padding: 10px;">
             <div style="margin-top: 10px; margin-bottom: 10px; font-weight: bold; font-size: 18px; color: #333;">
               (${quote.storeCode}-${quote.productID}) ${quote.productName}

@@ -175,7 +175,6 @@ export class OrderStatusComponent implements OnInit {
       this.tempProcessingOrders = this.processingOrders;
       this.tempAwaitingOrders = this.awaitingOrders;
 
-      console.log(this.awaitingOrders)
       this._changeDetectorRef.markForCheck();
     })
   }
@@ -492,14 +491,21 @@ export class OrderStatusComponent implements OnInit {
         send_payment_notification_email: true
       }
     }
-    this._dashboardService.postDashboardData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-      this.emailModalContent.sendEmailLoader = false;
-      this._changeDetectorRef.markForCheck();
-    })).subscribe(res => {
+    this._dashboardService.postDashboardData(payload).pipe(
+      takeUntil(this._unsubscribeAll),
+      finalize(() => {
+        this.emailModalContent.sendEmailLoader = false;
+        this._changeDetectorRef.markForCheck();
+      })
+    ).subscribe(res => {
       if (res) {
         this._dashboardService.snackBar(res["message"]);
         if (this.emailModalContent.type == 'awaiting') {
-
+          this.approvalOrders.forEach(order => {
+            if (order.orderID === orderID) {
+              order.artworkNotification = res["currentDate"];
+            }
+          });
         } else {
           this.awaitingOrders.forEach(order => {
             if (order.orderID === orderID) {
@@ -509,7 +515,6 @@ export class OrderStatusComponent implements OnInit {
         }
       }
       $(this.orderEmailModal.nativeElement).modal('hide');
-      console.log(res);
     });
   }
 
@@ -520,14 +525,15 @@ export class OrderStatusComponent implements OnInit {
       if (product.hasImprints) {
         tableHTML += `<tr style="margin-bottom: 8px;">
           <td style="width: 30%;">
-            <img src="${product.imageUrl}" style="width: 100%;">
+            <img src="${product.imageUrl}" style="width: 20%;">
           </td>
           <td style="width: 70%;">
-            <h2 style="font-weight: bold; margin: 0;">${product.productName}</h2>`;
+            <h2 style="font-weight: bold; margin: 0;">${product.productName}</h2>
+            <h4 style="font-weight: bold; margin-bottom: 5px;margin-top:2px">Quantity: ${product.quantity}</h4>`;
 
         for (const imprint of product.imprints) {
           if (!imprint.checked) {
-            tableHTML += `<div style="border-bottom: 1px solid #000; padding-bottom: 8px;">
+            tableHTML += `<div style="padding-bottom: 8px;">
             <p style="font-weight: bold; color: #777; margin: 0;">
               ${imprint.location + '/' + imprint.method}
             </p>`;
