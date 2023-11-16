@@ -94,6 +94,14 @@ export class ProductStatusComponent implements OnInit, OnDestroy {
     });
   }
   disableProduct() {
+    if(this.reason === '') {
+      this._snackBar.open("Reason for disabling is required field", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      return;
+    }
     this.isDisableProductLoader = true;
     let params = {
       productID: this.selectedProduct.pk_productID,
