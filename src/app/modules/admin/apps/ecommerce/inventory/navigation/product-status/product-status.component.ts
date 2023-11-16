@@ -105,9 +105,8 @@ export class ProductStatusComponent implements OnInit, OnDestroy {
     this.isDisableProductLoader = true;
     let params = {
       productID: this.selectedProduct.pk_productID,
-      bln_active: this.selectedProduct.blnActive,
+      bln_active: false,
       disabledReason: this.reason,
-      is_active: false,
       images: this.images,
       mainLogin_blnSupplier: this.localStorageData.supplier,
       mainLogin_companyName: this.localStorageData.companyName,
@@ -133,9 +132,8 @@ export class ProductStatusComponent implements OnInit, OnDestroy {
     this.isActivateProductLoader = true;
     let params = {
       productID: this.selectedProduct.pk_productID,
-      bln_active: this.selectedProduct.blnActive,
+      bln_active: true,
       reason: '',
-      is_active: true,
       update_product_status: true,
       images: this.images,
       mainLogin_blnSupplier: this.localStorageData.supplier,
