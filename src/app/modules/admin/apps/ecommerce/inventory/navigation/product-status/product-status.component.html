@@ -121,7 +121,12 @@
                     <div *ngIf="!selectedProduct.blnActive">
                         <fuse-alert [type]="'error'" [appearance]="'soft'">
                             Product is currently DISABLED for all stores.
+                            <div>
+                                Reason : {{this.selectedProduct.disabledReason}}
+                            </div>
                         </fuse-alert>
+
+                        
 
                         <div class="row my-3">
                             <div class="col-12 text-right">
