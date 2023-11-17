@@ -38,6 +38,7 @@ export type ChartOptions1 = {
     fill: ApexFill;
     tooltip: ApexTooltip;
     stroke: ApexStroke;
+    responsive: any;
     legend: ApexLegend;
 };
 export type AnnualChartOptions = {
@@ -277,7 +278,28 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
                     }
                 }
             },
-            colors: []
+            colors: [],
+            legend: {
+                show: false
+            },
+            responsive: [
+                {
+                    breakpoint: 480,
+                    options: {
+                        chart: {
+                            width: 200
+                        }
+                    }
+                },
+                {
+                    breakpoint: 0, // Add a default breakpoint for larger screens
+                    options: {
+                        legend: {
+                            show: false // Hide legend for all screen sizes
+                        }
+                    }
+                }
+            ],
         };
     }
 
@@ -495,11 +517,16 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
             this.ytdChart.xaxis.categories = ['Oct', 'Nov', 'Dec'];
         }
         barChartData.flpsUserStores.forEach((store: any) => {
-            this.ytdChart.series.push({ name: store.storeName, data: store.SALES }),
-                this.ytdChart.colors.push(`#` + store.reportColor);
-            this.ytdChart.series.push({ name: store.storeName, data: store.PY }),
-                this.ytdChart.colors.push(`#` + store.reportColor);
-            this.ytdChart.labels.push(store.storeName);
+            this.ytdChart.series.push(
+                { name: `${store.storeName} - ${this.currentYear - 1}`, data: store.PY }
+            );
+            this.ytdChart.series.push(
+                { name: `${store.storeName} - ${this.currentYear}`, data: store.SALES }
+            );
+            this.ytdChart.colors.push(`#` + store.reportColor); // Adding the color again for the second series
+            this.ytdChart.colors.push(`#` + store.reportColor);
+            this.ytdChart.labels.push(`${store.storeName} - ${this.currentYear - 1}`);
+            this.ytdChart.labels.push(`${store.storeName} - ${this.currentYear}`);
         });
         this.yourPerformanceData.barChartTotal = barChartData.total;
         setTimeout(() => {

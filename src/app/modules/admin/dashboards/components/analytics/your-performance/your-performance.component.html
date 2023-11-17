@@ -227,11 +227,12 @@
                         There is no YTD data to show for this employee.
                     </fuse-alert>
                     <div *ngIf="ytdChart.series.length">
-                        <apx-chart [series]="ytdChart.series" [chart]="ytdChart.chart"
+                        <apx-chart [legend]="ytdChart.legend" [series]="ytdChart.series" [chart]="ytdChart.chart"
                             [dataLabels]="ytdChart.dataLabels" [plotOptions]="ytdChart.plotOptions"
                             [yaxis]="ytdChart.yaxis" [legend]="ytdChart.legend" [fill]="ytdChart.fill"
                             [stroke]="ytdChart.stroke" [tooltip]="ytdChart.tooltip" [labels]="ytdChart.labels"
-                            [colors]="ytdChart.colors" [xaxis]="ytdChart.xaxis"></apx-chart>
+                            [colors]="ytdChart.colors" [xaxis]="ytdChart.xaxis"
+                            [responsive]="ytdChart.responsive"></apx-chart>
                     </div>
                 </div>
             </div>
