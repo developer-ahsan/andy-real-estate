@@ -60,11 +60,17 @@
                                     This item is currently featured in the following campaigns on the following stores:
                                     <br /><br />
                                     <ng-container *ngFor="let campaign of statusData.qryCampaigns">
-                                        <span class="fa fa-info-circle fa-lg"></span>
-                                        <b><a>{{
-                                                campaign.campaignName }}</a></b> on {{ campaign.storeName }}<br />
+                                        
+                                        <div class=" flex gap-x-1">
+                                            <div class="fa fa-info-circle fa-lg mt-1"></div>
+                                            <div (click)="campaignNavigateion(campaign.fk_storeID)" class="font-bold underline cursor-pointer">
+                                                {{campaign.title}}
+                                            </div>
+                                            <div> on {{ campaign.storeName }}</div>
+                                            <br />
+                                        </div>
                                     </ng-container>
-                                    <br />
+                                     <br />
                                     <b><span class="disabled">You must replace this item in these categories before you
                                             can disable this product.</span></b>
                                 </div>
@@ -80,9 +86,11 @@
                                         <div class="flex">
                                             <div class="fa fa-info-circle fa-lg mr-2 mt-1"></div>
                                             <div class="mb-1 flex gap-x-1">
-                                            <b>CartID: {{ cartId.pk_cartID }}</b>
-                                            <div (click)="navigate(cartId.storeUserID)" class="underline ml-1 cursor-pointer">{{cartId.storeName}} {{customerFirstName}}
-                                                {{customerLastName}}</div>
+                                                <b>CartID: {{ cartId.pk_cartID }}</b>
+                                                <div (click)="navigate(cartId.storeUserID)"
+                                                    class="underline ml-1 cursor-pointer">{{cartId.storeName}} -
+                                                    {{cartId.customerFirstName}}
+                                                    {{cartId.customerLastName}}</div>
                                             </div>
                                         </div>
                                         <!-- <a *ngIf="objCart?.qryCart?.blnQuote"
@@ -126,7 +134,7 @@
                             </div>
                         </fuse-alert>
 
-                        
+
 
                         <div class="row my-3">
                             <div class="col-12 text-right">
