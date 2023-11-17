@@ -461,7 +461,7 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
             this.yourPerformanceData.q3Loader = false;
             this.yourPerformanceData.q4Loader = false;
             this._changeDetectorRef.markForCheck();
-        })).subscribe(res => {
+        })).subscribe((res: any) => {
             // console.log(res);
             this.ytDDataMain = res["data"][0][0];
             this.calculatePercentage("YTD", "LAST_YTD", "ytdPercent", "ytdPercentBln");
@@ -490,6 +490,22 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
             console.log(thirdQuarterPiChart);
             console.log(fourthQuarterPiChart);
             console.log(monthlyData);
+
+
+            let barChartData = this.getRefactoredDataForBarCharts(monthlyData, res.flpsUserStores)
+            let firstQarterBarChartData = this.getRefactoredDataForBarCharts(monthlyData.slice(0,3), res.flpsUserStores)
+            let secondQuarterBarChartData = this.getRefactoredDataForBarCharts(monthlyData.slice(3,6), res.flpsUserStores)
+            let thirdQuarterBarChartData = this.getRefactoredDataForBarCharts(monthlyData.slice(6,9), res.flpsUserStores)
+            let FourthQuarterBarChartData = this.getRefactoredDataForBarCharts(monthlyData.slice(9,12), res.flpsUserStores)
+
+            
+            console.log(barChartData)
+            console.log(firstQarterBarChartData)
+            console.log(secondQuarterBarChartData)
+            console.log(thirdQuarterBarChartData)
+            console.log(FourthQuarterBarChartData)
+
+            
 
 
             const monthlySummary = [];
@@ -560,5 +576,28 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
         });
         const resultArray = Object.values(aggregatedData);
         return { data: resultArray, average: totalSales / resultArray.length };
+    }
+
+    getRefactoredDataForBarCharts(data, flpsUserStores) {
+        flpsUserStores.forEach((store) => {
+            const { pk_storeID } = store;
+            const salesArray = [];
+            data.forEach((monthData) => {
+              let found = false;
+              monthData.forEach((storeData) => {
+                if (storeData.storeID === pk_storeID) {
+                  salesArray.push(storeData.SALES);
+                  found = true;
+                }
+              });
+              if (!found) {
+                salesArray.push(0);
+              }
+            });
+          
+            store.SALES = salesArray;
+          });
+          
+          return flpsUserStores;
     }
 }
