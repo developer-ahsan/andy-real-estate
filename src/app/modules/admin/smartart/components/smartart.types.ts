@@ -298,6 +298,7 @@ export interface sendOrderProofUpdate {
 };
 export interface UploadOrderArtProof {
     blnIncludeApproveByDate: boolean;
+    thumbnailImage: string
     approveByDate: string;
     orderLineID: number;
     orderID: number;

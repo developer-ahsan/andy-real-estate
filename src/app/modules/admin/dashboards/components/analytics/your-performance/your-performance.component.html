@@ -1,0 +1,239 @@
+<!-- Your Performance -->
+<div class="flex flex-col flex-auto mt-8 bg-card shadow-lg rounded-2xl overflow-hidden">
+    <div class="flex items-start justify-between m-6 mb-0">
+        <div class="text-lg font-medium tracking-tight leading-6 truncate">Your Performance</div>
+    </div>
+    <!-- Performance -->
+    <div class="flex items-start mt-6 mx-6" *ngIf="!isPerformanceLoader">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-12">
+            <div class="flex flex-col">
+                <div class="flex items-center">
+                    <div class="font-medium text-secondary leading-5">YTD</div>
+                </div>
+                <div class="flex items-start mt-2">
+                    <div class="text-4xl font-bold tracking-tight leading-none">
+                        {{ytDDataMain?.YTD | currency}}</div>
+                    <div *ngIf="ytDDataMain?.mtdPercent != 0">
+                        <div class="flex items-center ml-2" *ngIf="!ytDDataMain?.ytdPercentBln">
+                            <mat-icon class="icon-size-5 text-red-500"
+                                [svgIcon]="'heroicons_solid:arrow-circle-down'"></mat-icon>
+                            <div class="ml-1 text-md font-medium text-red-500">{{ytDDataMain?.ytdPercent}}%</div>
+                        </div>
+                        <div class="flex items-center ml-2" *ngIf="ytDDataMain?.ytdPercentBln">
+                            <mat-icon class="icon-size-5 text-green-500"
+                                [svgIcon]="'heroicons_solid:arrow-circle-up'"></mat-icon>
+                            <div class="ml-1 text-md font-medium text-green-500">{{ytDDataMain?.ytdPercent}}%</div>
+                        </div>
+                    </div>
+                    <div class="flex" *ngIf="ytDDataMain?.ytdPercent == 0">
+                        <span>{{ytDDataMain?.ytdPercent}}%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-col">
+                <div class="flex items-center">
+                    <div class="font-medium text-secondary leading-5">MTD</div>
+                </div>
+                <div class="flex items-start mt-2">
+                    <div class="text-4xl font-bold tracking-tight leading-none">
+                        {{ytDDataMain?.MTD | currency}}</div>
+                    <div *ngIf="ytDDataMain?.mtdPercent != 0">
+                        <div class="flex items-center ml-2" *ngIf="!ytDDataMain?.mtdPercentBln">
+                            <mat-icon class="icon-size-5 text-red-500"
+                                [svgIcon]="'heroicons_solid:arrow-circle-down'"></mat-icon>
+                            <div class="ml-1 text-md font-medium text-red-500">{{ytDDataMain?.mtdPercent}}%</div>
+                        </div>
+                        <div class="flex items-center ml-2" *ngIf="ytDDataMain?.mtdPercentBln">
+                            <mat-icon class="icon-size-5 text-green-500"
+                                [svgIcon]="'heroicons_solid:arrow-circle-up'"></mat-icon>
+                            <div class="ml-1 text-md font-medium text-green-500">{{ytDDataMain?.mtdPercent}}%</div>
+                        </div>
+                    </div>
+                    <div class="flex" *ngIf="ytDDataMain?.mtdPercent == 0">
+                        <span>{{ytDDataMain?.mtdPercent}}%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-col">
+                <div class="flex items-center">
+                    <div class="font-medium text-secondary leading-5">WTD</div>
+                </div>
+                <div class="flex items-start mt-2">
+                    <div class="text-4xl font-bold tracking-tight leading-none">
+                        {{ytDDataMain?.WTD | currency}}</div>
+                    <div *ngIf="ytDDataMain?.wtdPercent != 0">
+                        <div class="flex items-center ml-2" *ngIf="!ytDDataMain?.wtdPercentBln">
+                            <mat-icon class="icon-size-5 text-red-500"
+                                [svgIcon]="'heroicons_solid:arrow-circle-down'"></mat-icon>
+                            <div class="ml-1 text-md font-medium text-red-500">{{ytDDataMain?.wtdPercent}}%</div>
+                        </div>
+                        <div class="flex items-center ml-2" *ngIf="ytDDataMain?.wtdPercentBln">
+                            <mat-icon class="icon-size-5 text-green-500"
+                                [svgIcon]="'heroicons_solid:arrow-circle-up'"></mat-icon>
+                            <div class="ml-1 text-md font-medium text-green-500">{{ytDDataMain?.wtdPercent}}%</div>
+                        </div>
+                    </div>
+                    <div class="flex" *ngIf="ytDDataMain?.wtdPercent == 0">
+                        <span>{{ytDDataMain?.wtdPercent}}%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Charts -->
+    <div class="flex flex-col flex-auto min-h-80 m-6">
+        <div class="row">
+            <!-- Year To Date Sales,By Store -->
+            <div class="col-12 col-md-4">
+                <div class="text-lg font-medium tracking-tight leading-6 truncate border-b">Year To Date
+                    Sales,
+                    By Store ($0.00)
+                </div>
+                <div class="text-center mt-2"
+                    *ngIf="yourPerformanceData.allStoresGraphLoader || isPortfolioLoader || isPerformanceLoader">
+                    <!-- <img src="assets/loader2.gif" class="w-40" /> -->
+                    <img src="assets/loader2.gif" class="w-40" />
+
+                </div>
+                <div id="myChart"
+                    *ngIf="!yourPerformanceData.allStoresGraphLoader && !isPortfolioLoader && !isPerformanceLoader">
+                    <div *ngIf="!programPortfolioData.length">
+                        <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
+                            <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
+                            </mat-icon>
+                            There is no data to show for this quarter.
+                        </fuse-alert>
+                    </div>
+                    <apx-chart *ngIf="programPortfolioData.length" [yaxis]="performanceChartOptions.yaxis"
+                        [series]="yourPerformanceData.allSeriesData" [chart]="performanceChartOptions.chart"
+                        [labels]="yourPerformanceData.allSeriesLabel" [colors]="yourPerformanceData.allColors"
+                        [title]="performanceChartOptions.title" [theme]="performanceChartOptions.theme"
+                        [responsive]="performanceChartOptions.responsive"></apx-chart>
+                </div>
+            </div>
+            <div class="col-12 col-md-8">
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <div class="text-lg font-medium tracking-tight leading-6 truncate border-b">Q1 <span
+                                *ngIf="!yourPerformanceData.q1Loader">({{yourPerformanceData.q1Earnings |
+                                currency}})</span></div>
+                        <div class="text-center mt-2"
+                            *ngIf="yourPerformanceData.q1Loader || isPortfolioLoader || isPerformanceLoader">
+                            <img src="assets/loader2.gif" class="w-40" />
+
+
+                        </div>
+                        <div id="myChart"
+                            *ngIf="!yourPerformanceData.q1Loader && !isPortfolioLoader && !isPerformanceLoader">
+                            <div *ngIf="!yourPerformanceData.q1SeriesData.length">
+                                <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
+                                    <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
+                                    </mat-icon>
+                                    There is no data to show for this quarter.
+                                </fuse-alert>
+                            </div>
+                            <apx-chart *ngIf="yourPerformanceData.q1SeriesData.length"
+                                [series]="yourPerformanceData.q1SeriesData" [chart]="chartOptions.chart"
+                                [labels]="yourPerformanceData.q1SeriesLabel" [yaxis]="chartOptions.yaxis"
+                                [colors]="yourPerformanceData.q1Colors" [title]="chartOptions.title"
+                                [theme]="chartOptions.theme" [responsive]="chartOptions.responsive"></apx-chart>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="text-lg font-medium tracking-tight leading-6 truncate border-b">Q2</div>
+                        <div class="text-center mt-2"
+                            *ngIf="yourPerformanceData.q2Loader || isPortfolioLoader || isPerformanceLoader">
+                            <img src="assets/loader2.gif" class="w-40" />
+
+
+                        </div>
+                        <div id="myChart"
+                            *ngIf="!yourPerformanceData.q2Loader && !isPortfolioLoader && !isPerformanceLoader">
+                            <div *ngIf="!yourPerformanceData.q2SeriesData.length">
+                                <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
+                                    <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
+                                    </mat-icon>
+                                    There is no data to show for this quarter.
+                                </fuse-alert>
+                            </div>
+                            <apx-chart *ngIf="yourPerformanceData.q2SeriesData.length"
+                                [series]="yourPerformanceData.q2SeriesData" [chart]="chartOptions.chart"
+                                [labels]="yourPerformanceData.q2SeriesLabel" [yaxis]="chartOptions.yaxis"
+                                [colors]="yourPerformanceData.q2Colors" [title]="chartOptions.title"
+                                [theme]="chartOptions.theme" [responsive]="chartOptions.responsive"></apx-chart>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="text-lg font-medium tracking-tight leading-6 truncate border-b">Q3</div>
+                        <div class="text-center mt-2"
+                            *ngIf="yourPerformanceData.q3Loader || isPortfolioLoader || isPerformanceLoader">
+                            <img src="assets/loader2.gif" class="w-40" />
+
+
+                        </div>
+                        <div id="myChart"
+                            *ngIf="!yourPerformanceData.q3Loader && !isPortfolioLoader && !isPerformanceLoader">
+                            <div *ngIf="!yourPerformanceData.q3SeriesData.length">
+                                <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
+                                    <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
+                                    </mat-icon>
+                                    There is no data to show for this quarter.
+                                </fuse-alert>
+                            </div>
+                            <apx-chart *ngIf="yourPerformanceData.q3SeriesData.length"
+                                [series]="yourPerformanceData.q3SeriesData" [chart]="chartOptions.chart"
+                                [labels]="yourPerformanceData.q3SeriesLabel" [yaxis]="chartOptions.yaxis"
+                                [colors]="yourPerformanceData.q3Colors" [title]="chartOptions.title"
+                                [theme]="chartOptions.theme" [responsive]="chartOptions.responsive"></apx-chart>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="text-lg font-medium tracking-tight leading-6 truncate border-b">Q4</div>
+                        <div class="text-center mt-2"
+                            *ngIf="yourPerformanceData.q4Loader || isPortfolioLoader || isPerformanceLoader">
+                            <img src="assets/loader2.gif" class="w-40" />
+
+
+                        </div>
+                        <div id="myChart"
+                            *ngIf="!yourPerformanceData.q4Loader && !isPortfolioLoader && !isPerformanceLoader">
+                            <div *ngIf="!yourPerformanceData.q4SeriesData.length">
+                                <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
+                                    <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
+                                    </mat-icon>
+                                    There is no data to show for this quarter.
+                                </fuse-alert>
+                            </div>
+                            <apx-chart *ngIf="yourPerformanceData.q4SeriesData.length"
+                                [series]="yourPerformanceData.q4SeriesData" [chart]="chartOptions.chart"
+                                [labels]="yourPerformanceData.q4SeriesLabel" [yaxis]="chartOptions.yaxis"
+                                [colors]="yourPerformanceData.q4Colors" [title]="chartOptions.title"
+                                [theme]="chartOptions.theme" [responsive]="chartOptions.responsive"></apx-chart>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Year To Date Sales By Quarter, By Store ($0.00) -->
+            <div class="col-12">
+                <div class="text-lg font-medium tracking-tight leading-6 truncate border-b">Year To Date
+                    Sales
+                    By Quarter, By Store ($0.00)</div>
+                <mat-form-field class="w-full mt-2">
+                    <mat-select matInput>
+                        <mat-option value="1">First Quarter</mat-option>
+                        <mat-option value="2">Second Quarter</mat-option>
+                        <mat-option value="3">Third Quarter</mat-option>
+                        <mat-option value="4">Fourth Quarter</mat-option>
+                        <mat-option value="5">YTD</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
+                    <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
+                    </mat-icon>
+                    There is no YTD data to show for this employee.
+                </fuse-alert>
+            </div>
+        </div>
+
+    </div>
+</div>

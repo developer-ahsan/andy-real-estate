@@ -1193,28 +1193,59 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
     }
   };
   uploadArtworkFileToServer(imprint) {
+    const img = new Image();
+    img.src = `${environment.assetsURL}globalAssets/Products/HiRes/${this.orderData.pk_storeProductID}.jpg`;
+    img.onload = () => {
+      imprint.thumbnailURL = `${environment.assetsURL}globalAssets/Products/HiRes/${this.orderData.pk_storeProductID}.jpg`;
+      return;
+    };
+
+    img.onerror = () => {
+      imprint.thumbnailURL = `https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg`;
+      return;
+    };
     imprint.artworkProofLoader = true;
     if (this.imageArtworkValue) {
-      let path;
-      path = `/artwork/Proof/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.paramData.fk_imprintID}.${this.imageArtworkValue.type}`;
-      const base64 = this.imageArtworkValue.imageUpload.split(",")[1];
-      const payload = {
-        file_upload: true,
-        image_file: base64,
-        image_path: path
-      };
-      this._smartartService.addMedia(payload)
-        .subscribe((response) => {
-          this.uploadArtworkProof(imprint);
-          this._smartartService.snackBar('File Uploaded Successfully');
-          this._changeDetectorRef.markForCheck();
-        }, err => {
-          imprint.artworkProofLoader = false;
-          this._changeDetectorRef.markForCheck();
-        })
+      if (imprint.viewProofCheck) {
+        this.removeProofArtImage(imprint);
+      } else {
+        this.uploadProofArtDelCheck(imprint);
+      }
     } else {
       this.uploadArtworkProof(imprint);
     }
+  }
+  removeProofArtImage(imprint) {
+    let payload = {
+      files: [`/artwork/Proof/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.paramData.fk_imprintID}.jpg`],
+      delete_multiple_files: true
+    }
+    this._commonService.removeMediaFiles(payload)
+      .subscribe((response) => {
+        this.uploadProofArtDelCheck(imprint);
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this._changeDetectorRef.markForCheck();
+      });
+  }
+  uploadProofArtDelCheck(imprint) {
+    let path;
+    path = `/artwork/Proof/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.paramData.fk_imprintID}.${this.imageArtworkValue.type}`;
+    const base64 = this.imageArtworkValue.imageUpload.split(",")[1];
+    const payload = {
+      file_upload: true,
+      image_file: base64,
+      image_path: path
+    };
+    this._smartartService.addMedia(payload)
+      .subscribe((response) => {
+        this.uploadArtworkProof(imprint);
+        this._smartartService.snackBar('File Uploaded Successfully');
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        imprint.artworkProofLoader = false;
+        this._changeDetectorRef.markForCheck();
+      })
   }
   uploadArtworkProof(imprint) {
     let approvingStoreUserID = null;
@@ -1240,6 +1271,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       return;
     }
     let payload: UploadOrderArtProof = {
+      thumbnailImage: imprint.thumbnailURL,
       blnIncludeApproveByDate: imprint.blnIncludeApproveByDate,
       approveByDate: date,
       orderLineID: Number(this.paramData.pk_orderLineID),

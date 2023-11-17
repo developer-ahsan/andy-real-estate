@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { ApexAxisChartSeries, ApexChart, ApexDataLabels, ApexFill, ApexGrid, ApexLegend, ApexNonAxisChartSeries, ApexOptions, ApexPlotOptions, ApexResponsive, ApexStroke, ApexTheme, ApexTitleSubtitle, ApexTooltip, ApexXAxis, ApexYAxis, ChartComponent } from 'ng-apexcharts';
-import { DashboardsService } from '../../dashboard.service';
+import { DashboardsService } from '../../../dashboard.service';
 import { AuthService } from 'app/core/auth/auth.service';
 import moment from 'moment';
 export type ChartOptions = {
@@ -53,15 +53,15 @@ export type AnnualChartOptions = {
     title: ApexTitleSubtitle;
 };
 @Component({
-    selector: 'analytics',
-    templateUrl: './analytics.component.html',
+    selector: 'your-performance',
+    templateUrl: './your-performance.component.html',
     styles: [`#myChart .apexcharts-legend {
         display: none !important;
     }`],
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AnalyticsComponent implements OnInit, OnDestroy {
+export class YourPerformanceComponent implements OnInit, OnDestroy {
     chartVisitors: ApexOptions;
     chartConversions: ApexOptions;
     chartImpressions: ApexOptions;
@@ -423,30 +423,10 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
         this.isYTDLoader = true;
         this.isPortfolioLoader = true;
         this.isPerformanceLoader = true;
-        this.getYTDData();
-        this.getPortfolioData();
         this.getPerformanceData();
     }
     calledScreen(screen) {
         this.mainScreen = screen;
-    }
-    getYTDData() {
-        this._analyticsService.ytdData$
-            .pipe(
-                takeUntil(this._unsubscribeAll),
-                finalize(() => {
-                    this._changeDetectorRef.markForCheck();
-                })
-            )
-            .subscribe((res) => {
-                this.ytDDataMain = res["data"][0];
-                this.calculatePercentage("YTD", "LAST_YTD", "ytdPercent", "ytdPercentBln");
-                this.calculatePercentage("MTD", "LAST_MTD", "mtdPercent", "mtdPercentBln");
-                this.calculatePercentage("WTD", "LAST_WTD", "wtdPercent", "wtdPercentBln");
-            },
-                (err) => {
-                    // Handle errors if needed
-                });
     }
     calculatePercentage(currentKey, lastKey, percentKey, percentBlnKey) {
         const current = this.ytDDataMain[currentKey];
@@ -468,109 +448,11 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
         this.ytDDataMain[percentKey] = percent;
         this.ytDDataMain[percentBlnKey] = percentBln;
     }
-    getPortfolioData() {
-        this.yourPerformanceData.allStoresGraphLoader = true;
-        this.yourPerformanceData.q1Loader = true;
-        this.yourPerformanceData.q2Loader = true;
-        this.yourPerformanceData.q3Loader = true;
-        this.yourPerformanceData.q4Loader = true;
-
-        this.storesData = [];
+    getPerformanceData() {
         const userData = JSON.parse(localStorage.getItem('userDetails'));
         let params = {
-            portfolio_performance: true,
-            // email: this.userData.email
+            company_overview_your_performance: true,
             user_id: userData.FLPSUserID
-        }
-        this.totalStoreSummary = {
-            SALES: 0,
-            PY: 0,
-            percent: 0,
-            DIFF: 0,
-            N_DIFF: 0,
-            NS: 0,
-            PYNS: 0,
-            AVG: 0,
-            MARGIN: 0,
-            COST: 0,
-            PRICE: 0,
-            TAX: 0,
-            blnPercent: false
-        }
-        this._analyticsService.getDashboardData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-            this.isPortfolioLoader = false;
-            this._changeDetectorRef.markForCheck();
-        })).subscribe(res => {
-            this.programPortfolioData = res["data"];
-            this.programPortfolioData.forEach(element => {
-                // Add data to Chrt
-                this.yourPerformanceData.allSeriesData.push(element.SALES);
-                this.yourPerformanceData.allSeriesLabel.push(element.storeName);
-                this.storesData.push({ storeName: element.storeName, pk_storeID: element.storeID });
-                if (element.SALES > element.PY) {
-                    element.blnPercent = true;
-                    const diff = element.SALES - element.PY;
-                    if (element.PY == 0) {
-                        element.percent = 100;
-                    } else {
-                        element.percent = Math.round((diff / element.PY) * 100);
-                    }
-                } else if (element.SALES < element.PY) {
-                    element.blnPercent = false;
-                    const diff = element.PY - element.SALES;
-                    if (element.SALES == 0) {
-                        element.percent = 100;
-                    } else {
-                        element.percent = Math.round((diff / element.PY) * 100);
-                    }
-                } else {
-                    element.percent = 0;
-                }
-                this.totalStoreSummary.SALES += element.SALES;
-                this.totalStoreSummary.PY += element.PY;
-                this.totalStoreSummary.NS += element.NS;
-                this.totalStoreSummary.PYNS += element.PYNS;
-                this.totalStoreSummary.COST += element.cost;
-                this.totalStoreSummary.PRICE += element.price;
-                this.totalStoreSummary.TAX += element.tax;
-                if (element.DIFF > 0) {
-                    this.totalStoreSummary.DIFF += element.DIFF;
-                } else {
-                    this.totalStoreSummary.DIFF = this.totalStoreSummary.DIFF + (element.DIFF * -1);
-                }
-            });
-            if (this.totalStoreSummary.SALES > this.totalStoreSummary.PY) {
-                this.totalStoreSummary.blnPercent = true;
-                const diff = this.totalStoreSummary.SALES - this.totalStoreSummary.PY;
-                if (this.totalStoreSummary.PY == 0) {
-                    this.totalStoreSummary.PERCENT = 100;
-                } else {
-                    this.totalStoreSummary.PERCENT = Math.round((diff / this.totalStoreSummary.PY) * 100);
-                }
-            } else if (this.totalStoreSummary.SALES < this.totalStoreSummary.PY) {
-                this.totalStoreSummary.blnPercent = false;
-                const diff = this.totalStoreSummary.PY - this.totalStoreSummary.SALES;
-                if (this.totalStoreSummary.SALES == 0) {
-                    this.totalStoreSummary.PERCENT = 100;
-                } else {
-                    this.totalStoreSummary.PERCENT = Math.round((diff / this.totalStoreSummary.PY) * 100);
-                }
-            } else {
-                this.totalStoreSummary.PERCENT = 0;
-            }
-            this.totalStoreSummary.N_DIFF = Math.abs((this.totalStoreSummary?.PYNS - this.totalStoreSummary?.NS));
-            this.totalStoreSummary.AVG = this.totalStoreSummary.SALES / this.totalStoreSummary.NS;
-            this.totalStoreSummary.MARGIN = Math.ceil(((this.totalStoreSummary.PRICE - this.totalStoreSummary.COST) / this.totalStoreSummary.PRICE) * 10000) / 100;
-            // this.totalStoreSummary.DIFF = this.totalStoreSummary.SALES - this.totalStoreSummary.PY;
-            this.yourPerformanceData.allStoresGraphLoader = false;
-            this._changeDetectorRef.markForCheck();
-        }, err => {
-        });
-    }
-    getPerformanceData() {
-        let params = {
-            program_performance: true,
-            email: this.userData.email
         }
         this._analyticsService.getDashboardData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
             this.isPerformanceLoader = false;
@@ -580,124 +462,36 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
             this.yourPerformanceData.q4Loader = false;
             this._changeDetectorRef.markForCheck();
         })).subscribe(res => {
-            this.programPerformanceData = [];
-            let stores = [];
-            const { ytd, annual, quarter } = res["data"];
-            ytd.forEach(element => {
-                const { earnings, reportColor, orderDate, pk_storeID, storeName } = element;
-                const existingStore = stores.find(store => store.pk_storeID === pk_storeID);
-                const ytdValues = {
-                    earnings: earnings, reportColor: reportColor, orderDate: orderDate
-                }
-                if (!existingStore) {
-                    stores.push({
-                        storeName: storeName, pk_storeID: pk_storeID,
-                        ytdSeries: [{ name: 'Sales', data: [earnings] }],
-                        xaxis: { categories: [orderDate] },
-                        colors: ['#' + reportColor],
-                        ytd: [ytdValues],
-                        annual: [],
-                        annualSeries: [{ name: 'Sales', data: [] }],
-                        anuualxaxis: { categories: [] },
-                        annualColors: [],
-                        quarter: [],
-                        quarterSeries: [{ name: '', data: [] }, { name: '', data: [] }, { name: '', data: [] }],
-                        quarterxaxis: { categories: [1, 2, 3, 4] },
-                        quarterColors: [],
-                    });
-                } else {
-                    existingStore.ytd.push(ytdValues);
-                    existingStore.ytdSeries[0].data.push(earnings);
-                    existingStore.xaxis.categories.push(orderDate);
-                    existingStore.colors.push('#' + reportColor);
-                }
-            });
-            annual.forEach(element => {
-                const { total, year, reportColor, pk_storeID, storeName } = element;
-                const existingStore = stores.find(store => store.pk_storeID === pk_storeID);
-                const annualValues = {
-                    total: total, reportColor: reportColor, year: year
-                }
-                if (!existingStore) {
-                    stores.push({
-                        storeName: storeName, pk_storeID: pk_storeID,
-                        annualSeries: [{ data: [total] }],
-                        anuualxaxis: { categories: [year] },
-                        annualColors: ['#' + reportColor],
-                        ytdSeries: [],
-                        xaxis: { categories: [] },
-                        colors: [],
-                        ytd: [], annual: [annualValues], quarter: []
-                    });
-                } else {
-                    existingStore.annual.push(annualValues);
-                    existingStore.annualSeries[0].data.push(total);
-                    existingStore.anuualxaxis.categories.push(year);
-                    existingStore.annualColors.push('#' + reportColor);
-                }
-            });
-            quarter.forEach(element => {
-                const { orderYear, orderQuarter, earnings, reportColor, pk_storeID, storeName } = element;
-                const existingStore = stores.find(store => store.pk_storeID === pk_storeID);
+            console.log(res);
+            this.ytDDataMain = res["data"][0][0];
+            this.calculatePercentage("YTD", "LAST_YTD", "ytdPercent", "ytdPercentBln");
+            this.calculatePercentage("MTD", "LAST_MTD", "mtdPercent", "mtdPercentBln");
+            this.calculatePercentage("WTD", "LAST_WTD", "wtdPercent", "wtdPercentBln");
+            // Monthly Summary 
+            let monthlyData = res["data"].slice(1);
 
-                if (!existingStore.quarter) {
-                    existingStore.quarter = {};
-                }
 
-                if (!existingStore.quarter[orderYear]) {
-                    existingStore.quarter[orderYear] = [];
-                }
+            const monthlySummary = [];
 
-                const quarterValues = {
-                    earnings: earnings,
-                    reportColor: reportColor,
-                    year: orderYear,
-                    orderQuarter: orderQuarter
-                };
+            monthlyData.forEach((month, index) => {
+                month.forEach((store) => {
+                    const { storeID, storeName, SALES, PY, NS } = store;
+                    const index = monthlySummary.findIndex(mSD => mSD.storeID == storeID);
+                    if (!monthlySummary[storeID]) {
+                        monthlySummary[storeID] = {
+                            storeID,
+                            storeName,
+                            monthlyData: Array(monthlyData.length).fill({ SALES: 0, PY: 0, NS: 0 }),
+                        };
+                    }
 
-                const existingQuarter = existingStore.quarter[orderYear].find(q => q.quarter === orderQuarter);
-
-                if (existingQuarter) {
-                    existingQuarter.data.push(quarterValues);
-                } else {
-                    existingStore.quarter[orderYear].push({ quarter: orderQuarter, data: quarterValues });
-                }
-
-                existingStore.quarterColors.push('#' + reportColor);
-            });
-            const year: any = moment().year();
-            stores.forEach(store => {
-                this.yourPerformanceData.allColors.push(store.colors[0]);
-                let quarters = Object.keys(store.quarter);
-                quarters.forEach((quarter, index) => {
-                    store.quarterSeries[index].name = quarter;
-                    store.quarterColors[index] = '#' + store.quarter[quarter][index]?.data.reportColor;
-                    store.quarter[quarter].forEach(element => {
-                        store.quarterSeries[index].data.push(element.data.earnings);
-                        if (year == quarter) {
-                            if (element.quarter == 1) {
-                                this.yourPerformanceData.q1Earnings += element.data.earnings;
-                                this.yourPerformanceData.q1SeriesData.push(element.data.earnings);
-                                this.yourPerformanceData.q1SeriesLabel.push(store.storeName);
-                                this.yourPerformanceData.q1Colors.push('#' + element.data.reportColor);
-                            } else if (element.quarter == 2) {
-                                this.yourPerformanceData.q2SeriesData.push(element.data.earnings);
-                                this.yourPerformanceData.q2SeriesLabel.push(store.storeName);
-                                this.yourPerformanceData.q2Colors.push('#' + element.data.reportColor);
-                            } else if (element.quarter == 3) {
-                                this.yourPerformanceData.q3SeriesData.push(element.data.earnings);
-                                this.yourPerformanceData.q3SeriesLabel.push(store.storeName);
-                                this.yourPerformanceData.q3Colors.push('#' + element.data.reportColor);
-                            } else if (element.quarter == 4) {
-                                this.yourPerformanceData.q3SeriesData.push(element.data.earnings);
-                                this.yourPerformanceData.q3SeriesLabel.push(store.storeName);
-                                this.yourPerformanceData.q3Colors.push('#' + element.data.reportColor);
-                            }
-                        }
-                    });
+                    monthlySummary[storeID].monthlyData[index] = {
+                        SALES: monthlySummary[storeID].monthlyData[index].SALES + SALES,
+                        PY: monthlySummary[storeID].monthlyData[index].PY + PY,
+                        NS: monthlySummary[storeID].monthlyData[index].NS + NS,
+                    };
                 });
             });
-            this.programPerformanceData = stores;
             this._changeDetectorRef.markForCheck();
         })
         this._changeDetectorRef.markForCheck();

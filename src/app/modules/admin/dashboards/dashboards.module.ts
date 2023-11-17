@@ -34,6 +34,7 @@ import { DashboardHomeComponent } from './components/home/home-dashboard.compone
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { CKEditorModule } from 'ckeditor4-angular';
+import { YourPerformanceComponent } from './components/analytics/your-performance/your-performance.component';
 
 @NgModule({
     declarations: [
@@ -43,6 +44,7 @@ import { CKEditorModule } from 'ckeditor4-angular';
         AnalyticsComponent,
         ProjectComponent,
         OrderStatusComponent,
+        YourPerformanceComponent,
         GeneratorsComponent
     ],
     imports: [
