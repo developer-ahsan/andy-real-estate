@@ -168,6 +168,11 @@ export class ProductStatusComponent implements OnInit, OnDestroy {
     this._router.navigateByUrl(`/apps/customers/${id}/saved-carts`);
   }
 
+  campaignNavigateion(id) {
+    this._router.navigateByUrl(`/apps/stores/${id}/campaigns`);
+
+  }
+
 
   /**
      * On destroy
