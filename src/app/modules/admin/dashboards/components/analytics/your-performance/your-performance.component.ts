@@ -462,13 +462,34 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
             this.yourPerformanceData.q4Loader = false;
             this._changeDetectorRef.markForCheck();
         })).subscribe(res => {
-            console.log(res);
+            // console.log(res);
             this.ytDDataMain = res["data"][0][0];
             this.calculatePercentage("YTD", "LAST_YTD", "ytdPercent", "ytdPercentBln");
             this.calculatePercentage("MTD", "LAST_MTD", "mtdPercent", "mtdPercentBln");
             this.calculatePercentage("WTD", "LAST_WTD", "wtdPercent", "wtdPercentBln");
             // Monthly Summary 
             let monthlyData = res["data"].slice(1);
+
+
+            const completePiChart = this.getRefactoredDataForPiCharts(monthlyData);
+            const firstQuarterPiChart = this.getRefactoredDataForPiCharts(monthlyData.slice(0, 3));
+            const secondQuarterPiChart = this.getRefactoredDataForPiCharts(monthlyData.slice(3, 6));
+            const thirdQuarterPiChart = this.getRefactoredDataForPiCharts(monthlyData.slice(6, 9));
+            const fourthQuarterPiChart = this.getRefactoredDataForPiCharts(monthlyData.slice(9, 12));
+
+
+            const firstQuarterBarChart = monthlyData.slice(0, 3);
+            const secondQuarterBarChart = monthlyData.slice(3, 6);
+            const thirdQuarterBarChart = monthlyData.slice(6, 9);
+            const fourthQuarterBarChart = monthlyData.slice(9, 12);
+
+
+            console.log(completePiChart);
+            console.log(firstQuarterPiChart);
+            console.log(secondQuarterPiChart);
+            console.log(thirdQuarterPiChart);
+            console.log(fourthQuarterPiChart);
+            console.log(monthlyData);
 
 
             const monthlySummary = [];
@@ -511,5 +532,33 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
     }
     trackByIndex(index: number, item: any): number {
         return index;
+    }
+
+    getRefactoredDataForPiCharts(data) {
+        let aggregatedData = {};
+        let totalSales = 0;
+
+        data.forEach((dataArray) => {
+            dataArray.forEach((store) => {
+                const { storeID, SALES, PY, NS } = store;
+
+                if (!aggregatedData[storeID]) {
+                    aggregatedData[storeID] = {
+                        storeID,
+                        totalSales: 0,
+                        totalPY: 0,
+                        totalNS: 0,
+                    };
+                }
+
+                aggregatedData[storeID].totalSales += SALES;
+                aggregatedData[storeID].totalPY += PY;
+                aggregatedData[storeID].totalNS += NS;
+
+                totalSales += SALES
+            });
+        });
+        const resultArray = Object.values(aggregatedData);
+        return { data: resultArray, average: totalSales / resultArray.length };
     }
 }
