@@ -32,13 +32,13 @@ export type ChartOptions1 = {
     dataLabels: ApexDataLabels;
     plotOptions: ApexPlotOptions;
     yaxis: ApexYAxis;
-    colors: string[];
     xaxis: ApexXAxis;
+    colors: any[];
+    labels: any[];
     fill: ApexFill;
     tooltip: ApexTooltip;
     stroke: ApexStroke;
     legend: ApexLegend;
-    title: ApexTitleSubtitle;
 };
 export type AnnualChartOptions = {
     series: ApexAxisChartSeries;
@@ -109,7 +109,9 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
     userData: any;
     storesData: any;
     yourPerformanceData: any = {
+        barChartLoader: false,
         allStoresGraphLoader: false,
+        userYTDMonthQuarter: '5',
         allSeriesData: [],
         allSeriesLabel: [],
         allColors: [],
@@ -133,7 +135,10 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
         q4SeriesData: [],
         q4SeriesLabel: [],
         q4Colors: [],
+        // BarCharts
+        barChartTotal: 0
     };
+    currentYear = moment().year();
     /**
      * Constructor
      */
@@ -144,6 +149,9 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
         private _router: Router
     ) {
         this.userData = this._authService.parseJwt(this._authService.accessToken);
+        this.initCharts();
+    }
+    initCharts() {
         this.performanceChartOptions = {
             series: [],
             chart: {
@@ -238,13 +246,13 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
             plotOptions: {
                 bar: {
                     horizontal: false,
-                    columnWidth: "55%"
+                    columnWidth: "55%",
                 }
             },
+            labels: [],
             dataLabels: {
                 enabled: false
             },
-            colors: [],
             stroke: {
                 show: true,
                 width: 2,
@@ -255,11 +263,9 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
                 ]
             },
             yaxis: {
-                labels: {
-                    formatter: function (val) {
-                        return '$' + `${val.toLocaleString()}`;
-                    },
-                },
+                title: {
+                    text: "$"
+                }
             },
             fill: {
                 opacity: 1
@@ -267,144 +273,11 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
             tooltip: {
                 y: {
                     formatter: function (val) {
-                        return '$' + `${val.toLocaleString()}`;
-                    },
+                        return "$ " + val;
+                    }
                 }
             },
-            title: {
-                text: "YTD Sales",
-                align: "left"
-            },
-        };
-        this.quarterChart = {
-            series: [
-                {
-                    "name": "1",
-                    data: [
-                        161070.8812,
-                        168645.3247,
-                        274948.0738
-                    ]
-                },
-                {
-                    name: "2",
-                    data: [
-                        116023.1558,
-                        268538.4856,
-                        337882.7501,
-                    ]
-                },
-                {
-                    name: "3",
-                    data: [
-                        250311.6733,
-                        340202.86,
-                        273543.5929,
-
-                    ]
-                },
-                {
-                    name: "4",
-                    data: [
-                        218198.2745,
-                        320052.1767,
-                        0,
-
-                    ]
-                }
-            ],
-            chart: {
-                type: "bar",
-                height: 350
-            },
-            plotOptions: {
-                bar: {
-                    horizontal: false,
-                    columnWidth: "55%"
-                }
-            },
-            dataLabels: {
-                enabled: false
-            },
-            stroke: {
-                show: true,
-                width: 2,
-                colors: ["transparent"]
-            },
-            xaxis: {
-                categories: [1, 2, 3, 4]
-            },
-            yaxis: {
-                labels: {
-                    formatter: function (val) {
-                        return '$' + `${val.toLocaleString()}`;
-                    },
-                },
-            },
-            fill: {
-                opacity: 1
-            },
-            tooltip: {
-                y: {
-                    formatter: function (val) {
-                        return '$' + `${val.toLocaleString()}`;
-                    },
-                }
-            },
-            colors: [],
-            title: {
-                text: "Quarterly Sales",
-                align: "left"
-            },
-        };
-        this.annualChartOptions = {
-            series: [
-                {
-                    name: "Sales",
-                    data: []
-                }
-            ],
-            chart: {
-                height: 350,
-                type: "line",
-                zoom: {
-                    enabled: false
-                }
-            },
-            dataLabels: {
-                enabled: false
-            },
-            stroke: {
-                curve: "straight"
-            },
-            colors: [],
-            title: {
-                text: "Annual Total Sales",
-                align: "left"
-            },
-            grid: {
-                row: {
-                    colors: ["#f3f3f3", "transparent"], // takes an array which will be repeated on columns
-                    opacity: 0.5
-                }
-            },
-            xaxis: {
-                categories: []
-            },
-            tooltip: {
-                y: {
-                    formatter: function (val) {
-                        return '$' + `${val.toLocaleString()}`;
-                    },
-                }
-            },
-            yaxis: {
-                labels: {
-                    formatter: function (val) {
-                        return '$' + `${val.toLocaleString()}`;
-                    },
-                },
-            },
+            colors: []
         };
     }
 
@@ -446,6 +319,7 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
         this.ytDDataMain[percentBlnKey] = percentBln;
     }
     getPerformanceData() {
+        this.yourPerformanceData.barChartLoader = true;
         const userData = JSON.parse(localStorage.getItem('userDetails'));
         let params = {
             company_overview_your_performance: true,
@@ -458,14 +332,14 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
             this.yourPerformanceData.q4Loader = false;
             this._changeDetectorRef.markForCheck();
         })).subscribe((res: any) => {
-            // console.log(res);
             this.ytDDataMain = res["data"][0][0];
             this.calculatePercentage("YTD", "LAST_YTD", "ytdPercent", "ytdPercentBln");
             this.calculatePercentage("MTD", "LAST_MTD", "mtdPercent", "mtdPercentBln");
             this.calculatePercentage("WTD", "LAST_WTD", "wtdPercent", "wtdPercentBln");
             // Monthly Summary 
             let monthlyData = res["data"].slice(1);
-
+            this.ytDDataMain.monthlyData = res["data"].slice(1);
+            this.ytDDataMain.flpsUserStores = res["flpsUserStores"];
 
             const completePiChart = this.getRefactoredDataForPiCharts(monthlyData);
             const firstQuarterPiChart = this.getRefactoredDataForPiCharts(monthlyData.slice(0, 3));
@@ -507,55 +381,16 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
             });
             this.yourPerformanceData.q4Earnings = fourthQuarterPiChart?.totalSales;
 
-
-
-            console.log(this.performanceChartOptions);
-
-            console.log(completePiChart);
-            console.log(firstQuarterPiChart);
-            console.log(secondQuarterPiChart);
-            console.log(thirdQuarterPiChart);
-            console.log(fourthQuarterPiChart);
-            console.log(monthlyData);
-
-
-            let barChartData = this.getRefactoredDataForBarCharts(monthlyData, res.flpsUserStores)
-            let firstQarterBarChartData = this.getRefactoredDataForBarCharts(monthlyData.slice(0, 3), res.flpsUserStores)
-            let secondQuarterBarChartData = this.getRefactoredDataForBarCharts(monthlyData.slice(3, 6), res.flpsUserStores)
-            let thirdQuarterBarChartData = this.getRefactoredDataForBarCharts(monthlyData.slice(6, 9), res.flpsUserStores)
-            let FourthQuarterBarChartData = this.getRefactoredDataForBarCharts(monthlyData.slice(9, 12), res.flpsUserStores)
-
-
-            console.log(barChartData)
-            console.log(firstQarterBarChartData)
-            console.log(secondQuarterBarChartData)
-            console.log(thirdQuarterBarChartData)
-            console.log(FourthQuarterBarChartData)
+            // Bar Chart Data
+            this.barChartData();
+            // let firstQarterBarChartData = this.getRefactoredDataForBarCharts(monthlyData.slice(0, 3), res.flpsUserStores)
+            // let secondQuarterBarChartData = this.getRefactoredDataForBarCharts(monthlyData.slice(3, 6), res.flpsUserStores)
+            // let thirdQuarterBarChartData = this.getRefactoredDataForBarCharts(monthlyData.slice(6, 9), res.flpsUserStores)
+            // let FourthQuarterBarChartData = this.getRefactoredDataForBarCharts(monthlyData.slice(9, 12), res.flpsUserStores)
 
 
 
-
-            const monthlySummary = [];
-
-            monthlyData.forEach((month, index) => {
-                month.forEach((store) => {
-                    const { storeID, storeName, SALES, PY, NS } = store;
-                    const index = monthlySummary.findIndex(mSD => mSD.storeID == storeID);
-                    if (!monthlySummary[storeID]) {
-                        monthlySummary[storeID] = {
-                            storeID,
-                            storeName,
-                            monthlyData: Array(monthlyData.length).fill({ SALES: 0, PY: 0, NS: 0 }),
-                        };
-                    }
-
-                    monthlySummary[storeID].monthlyData[index] = {
-                        SALES: monthlySummary[storeID].monthlyData[index].SALES + SALES,
-                        PY: monthlySummary[storeID].monthlyData[index].PY + PY,
-                        NS: monthlySummary[storeID].monthlyData[index].NS + NS,
-                    };
-                });
-            });
+            this.isPerformanceLoader = false;
             this._changeDetectorRef.markForCheck();
         })
         this._changeDetectorRef.markForCheck();
@@ -608,25 +443,70 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
     }
 
     getRefactoredDataForBarCharts(data, flpsUserStores) {
+        let total = 0;
         flpsUserStores.forEach((store) => {
             const { pk_storeID } = store;
             const salesArray = [];
+            const pyArray = [];
             data.forEach((monthData) => {
                 let found = false;
                 monthData.forEach((storeData) => {
                     if (storeData.storeID === pk_storeID) {
                         salesArray.push(storeData.SALES);
+                        pyArray.push(storeData.PY);
+                        total = total + storeData.SALES
                         found = true;
                     }
                 });
                 if (!found) {
                     salesArray.push(0);
+                    pyArray.push(0);
                 }
             });
 
             store.SALES = salesArray;
+            store.PY = pyArray;
         });
 
-        return flpsUserStores;
+        return { flpsUserStores, total };
+    }
+
+    barChartData() {
+        this.ytdChart.series = [];
+        this.ytdChart.colors = [];
+        this.ytdChart.xaxis.categories = [];
+        this.yourPerformanceData.barChartLoader = true;
+        this._changeDetectorRef.markForCheck();
+        let barChartData: any = [];
+        if (this.yourPerformanceData.userYTDMonthQuarter == '5') {
+            barChartData = this.getRefactoredDataForBarCharts(this.ytDDataMain.monthlyData, this.ytDDataMain.flpsUserStores);
+            this.ytdChart.xaxis.categories = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        } else if (this.yourPerformanceData.userYTDMonthQuarter == '1') {
+            barChartData = this.getRefactoredDataForBarCharts(this.ytDDataMain.monthlyData.slice(0, 3), this.ytDDataMain.flpsUserStores);
+            this.ytdChart.xaxis.categories = ['Jan', 'Feb', 'Mar'];
+        } else if (this.yourPerformanceData.userYTDMonthQuarter == '2') {
+            barChartData = this.getRefactoredDataForBarCharts(this.ytDDataMain.monthlyData.slice(3, 6), this.ytDDataMain.flpsUserStores);
+            this.ytdChart.xaxis.categories = ['Apr', 'May', 'Jun'];
+        } else if (this.yourPerformanceData.userYTDMonthQuarter == '3') {
+            barChartData = this.getRefactoredDataForBarCharts(this.ytDDataMain.monthlyData.slice(6, 9), this.ytDDataMain.flpsUserStores);
+            this.ytdChart.xaxis.categories = ['Jul', 'Aug', 'Sep'];
+        } else if (this.yourPerformanceData.userYTDMonthQuarter == '4') {
+            barChartData = this.getRefactoredDataForBarCharts(this.ytDDataMain.monthlyData.slice(9, 12), this.ytDDataMain.flpsUserStores);
+            this.ytdChart.xaxis.categories = ['Oct', 'Nov', 'Dec'];
+        }
+        barChartData.flpsUserStores.forEach((store: any) => {
+            this.ytdChart.series.push({ name: store.storeName, data: store.SALES }),
+                this.ytdChart.colors.push(`#` + store.reportColor);
+            this.ytdChart.series.push({ name: store.storeName, data: store.PY }),
+                this.ytdChart.colors.push(`#` + store.reportColor);
+            this.ytdChart.labels.push(store.storeName);
+        });
+        this.yourPerformanceData.barChartTotal = barChartData.total;
+        setTimeout(() => {
+            this.yourPerformanceData.barChartLoader = false;
+            this._changeDetectorRef.markForCheck();
+        }, 100);
+        console.log(barChartData);
+        // this.ytdChart
     }
 }

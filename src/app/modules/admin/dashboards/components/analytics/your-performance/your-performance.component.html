@@ -206,9 +206,10 @@
             <div class="col-12">
                 <div class="text-lg font-medium tracking-tight leading-6 truncate border-b">Year To Date
                     Sales
-                    By Quarter, By Store ($0.00)</div>
+                    By Quarter, By Store ({{yourPerformanceData.barChartTotal | currency}})</div>
                 <mat-form-field class="w-full mt-2">
-                    <mat-select matInput>
+                    <mat-select matInput [(ngModel)]="yourPerformanceData.userYTDMonthQuarter"
+                        (selectionChange)="barChartData()">
                         <mat-option value="1">First Quarter</mat-option>
                         <mat-option value="2">Second Quarter</mat-option>
                         <mat-option value="3">Third Quarter</mat-option>
@@ -216,11 +217,23 @@
                         <mat-option value="5">YTD</mat-option>
                     </mat-select>
                 </mat-form-field>
-                <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
-                    <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
-                    </mat-icon>
-                    There is no YTD data to show for this employee.
-                </fuse-alert>
+                <div class="text-center mt-2" *ngIf="yourPerformanceData.barChartLoader">
+                    <img src="assets/loader2.gif" class="w-40" />
+                </div>
+                <div *ngIf="!yourPerformanceData.barChartLoader">
+                    <fuse-alert *ngIf="!ytdChart.series.length" class="mt-2" [appearance]="'soft'" [type]="'warning'">
+                        <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
+                        </mat-icon>
+                        There is no YTD data to show for this employee.
+                    </fuse-alert>
+                    <div *ngIf="ytdChart.series.length">
+                        <apx-chart [series]="ytdChart.series" [chart]="ytdChart.chart"
+                            [dataLabels]="ytdChart.dataLabels" [plotOptions]="ytdChart.plotOptions"
+                            [yaxis]="ytdChart.yaxis" [legend]="ytdChart.legend" [fill]="ytdChart.fill"
+                            [stroke]="ytdChart.stroke" [tooltip]="ytdChart.tooltip" [labels]="ytdChart.labels"
+                            [colors]="ytdChart.colors" [xaxis]="ytdChart.xaxis"></apx-chart>
+                    </div>
+                </div>
             </div>
         </div>
 
