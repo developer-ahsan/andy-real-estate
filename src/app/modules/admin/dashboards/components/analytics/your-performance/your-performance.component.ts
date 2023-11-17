@@ -115,6 +115,9 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
         allColors: [],
         q1Loader: false,
         q1Earnings: 0,
+        q2Earnings: 0,
+        q3Earnings: 0,
+        q4Earnings: 0,
         q1SeriesData: [],
         q1SeriesLabel: [],
         q1Colors: [],
@@ -142,19 +145,13 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
     ) {
         this.userData = this._authService.parseJwt(this._authService.accessToken);
         this.performanceChartOptions = {
-            series: [25, 15, 44, 55, 41, 17],
+            series: [],
             chart: {
                 width: "70%",
                 type: "pie"
             },
             colors: [],
             labels: [
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday",
-                "Saturday"
             ],
             theme: {
                 monochrome: {
@@ -455,7 +452,6 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
             user_id: userData.FLPSUserID
         }
         this._analyticsService.getDashboardData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-            this.isPerformanceLoader = false;
             this.yourPerformanceData.q1Loader = false;
             this.yourPerformanceData.q2Loader = false;
             this.yourPerformanceData.q3Loader = false;
@@ -477,12 +473,43 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
             const thirdQuarterPiChart = this.getRefactoredDataForPiCharts(monthlyData.slice(6, 9));
             const fourthQuarterPiChart = this.getRefactoredDataForPiCharts(monthlyData.slice(9, 12));
 
+            completePiChart.data.forEach((store: any) => {
+                this.performanceChartOptions.series.push(store.totalSales);
+                this.performanceChartOptions.labels.push(store.storeName);
+                this.performanceChartOptions.colors.push('#' + store.reportColor);
+            });
 
-            const firstQuarterBarChart = monthlyData.slice(0, 3);
-            const secondQuarterBarChart = monthlyData.slice(3, 6);
-            const thirdQuarterBarChart = monthlyData.slice(6, 9);
-            const fourthQuarterBarChart = monthlyData.slice(9, 12);
+            firstQuarterPiChart.data.forEach((store: any) => {
+                this.yourPerformanceData.q1SeriesData.push(store.totalSales);
+                this.yourPerformanceData.q1SeriesLabel.push(store.storeName);
+                this.yourPerformanceData.q1Colors.push('#' + store.reportColor);
+            });
+            this.yourPerformanceData.q1Earnings = firstQuarterPiChart?.totalSales;
 
+            secondQuarterPiChart.data.forEach((store: any) => {
+                this.yourPerformanceData.q2SeriesData.push(store.totalSales);
+                this.yourPerformanceData.q2SeriesLabel.push(store.storeName);
+                this.yourPerformanceData.q2Colors.push('#' + store.reportColor);
+            });
+            this.yourPerformanceData.q2Earnings = secondQuarterPiChart?.totalSales;
+
+            thirdQuarterPiChart.data.forEach((store: any) => {
+                this.yourPerformanceData.q3SeriesData.push(store.totalSales);
+                this.yourPerformanceData.q3SeriesLabel.push(store.storeName);
+                this.yourPerformanceData.q3Colors.push('#' + store.reportColor);
+            });
+            this.yourPerformanceData.q3Earnings = thirdQuarterPiChart?.totalSales;
+
+            fourthQuarterPiChart.data.forEach((store: any) => {
+                this.yourPerformanceData.q4SeriesData.push(store.totalSales);
+                this.yourPerformanceData.q4SeriesLabel.push(store.storeName);
+                this.yourPerformanceData.q4Colors.push('#' + store.reportColor);
+            });
+            this.yourPerformanceData.q4Earnings = fourthQuarterPiChart?.totalSales;
+
+
+
+            console.log(this.performanceChartOptions);
 
             console.log(completePiChart);
             console.log(firstQuarterPiChart);
@@ -493,19 +520,19 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
 
 
             let barChartData = this.getRefactoredDataForBarCharts(monthlyData, res.flpsUserStores)
-            let firstQarterBarChartData = this.getRefactoredDataForBarCharts(monthlyData.slice(0,3), res.flpsUserStores)
-            let secondQuarterBarChartData = this.getRefactoredDataForBarCharts(monthlyData.slice(3,6), res.flpsUserStores)
-            let thirdQuarterBarChartData = this.getRefactoredDataForBarCharts(monthlyData.slice(6,9), res.flpsUserStores)
-            let FourthQuarterBarChartData = this.getRefactoredDataForBarCharts(monthlyData.slice(9,12), res.flpsUserStores)
+            let firstQarterBarChartData = this.getRefactoredDataForBarCharts(monthlyData.slice(0, 3), res.flpsUserStores)
+            let secondQuarterBarChartData = this.getRefactoredDataForBarCharts(monthlyData.slice(3, 6), res.flpsUserStores)
+            let thirdQuarterBarChartData = this.getRefactoredDataForBarCharts(monthlyData.slice(6, 9), res.flpsUserStores)
+            let FourthQuarterBarChartData = this.getRefactoredDataForBarCharts(monthlyData.slice(9, 12), res.flpsUserStores)
 
-            
+
             console.log(barChartData)
             console.log(firstQarterBarChartData)
             console.log(secondQuarterBarChartData)
             console.log(thirdQuarterBarChartData)
             console.log(FourthQuarterBarChartData)
 
-            
+
 
 
             const monthlySummary = [];
@@ -556,11 +583,13 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
 
         data.forEach((dataArray) => {
             dataArray.forEach((store) => {
-                const { storeID, SALES, PY, NS } = store;
+                const { storeID, SALES, PY, NS, storeName, reportColor } = store;
 
                 if (!aggregatedData[storeID]) {
                     aggregatedData[storeID] = {
+                        storeName,
                         storeID,
+                        reportColor,
                         totalSales: 0,
                         totalPY: 0,
                         totalNS: 0,
@@ -575,7 +604,7 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
             });
         });
         const resultArray = Object.values(aggregatedData);
-        return { data: resultArray, average: totalSales / resultArray.length };
+        return { data: resultArray, totalSales };
     }
 
     getRefactoredDataForBarCharts(data, flpsUserStores) {
@@ -583,21 +612,21 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
             const { pk_storeID } = store;
             const salesArray = [];
             data.forEach((monthData) => {
-              let found = false;
-              monthData.forEach((storeData) => {
-                if (storeData.storeID === pk_storeID) {
-                  salesArray.push(storeData.SALES);
-                  found = true;
+                let found = false;
+                monthData.forEach((storeData) => {
+                    if (storeData.storeID === pk_storeID) {
+                        salesArray.push(storeData.SALES);
+                        found = true;
+                    }
+                });
+                if (!found) {
+                    salesArray.push(0);
                 }
-              });
-              if (!found) {
-                salesArray.push(0);
-              }
             });
-          
+
             store.SALES = salesArray;
-          });
-          
-          return flpsUserStores;
+        });
+
+        return flpsUserStores;
     }
 }
