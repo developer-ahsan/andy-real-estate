@@ -98,10 +98,10 @@
                                     </span>
                                 </div>
                                 <!--  imprintsCheck -->
-                                <div *ngIf="selectedProduct.blnService">
+                                <div *ngIf="!selectedProduct.blnService">
                                     <span *ngIf="statusProductData.data[0]?.imprintsCheck > 0; else elseimprintsCheck"
                                         class="text-green-600">
-                                        Imprint(s) found
+                                        Imprint(s) found ({{statusProductData.data[0]?.imprintsCheck}})
                                     </span>
                                     <ng-template #elseimprintsCheck>
                                         <span class="text-red-600">WARNING: No imprints were found</span>

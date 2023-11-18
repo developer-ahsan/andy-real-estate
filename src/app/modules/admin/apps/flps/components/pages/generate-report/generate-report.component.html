@@ -168,44 +168,46 @@
                 <tbody>
                     <ng-container *ngFor="let item of reportSummaryData;">
                         <tr class="font-bold">
-                            <td colspan="3">
+                            <td colspan="3" class="py-5">
                                 <div class="text-secondary pb-0 mb-2 text-lg flex justify-between">
                                     <b>{{item.storeName}}</b>
                                 </div>
                             </td>
-                            <td>
+                            <td class="py-5">
                                 {{item?.Sales | currency}}
                             </td>
-                            <td>{{item?.Revenue | currency}}</td>
-                            <td>{{item?.MARGIN}}%</td>
+                            <td class="py-5">{{item?.Revenue | currency}}</td>
+                            <td class="py-5">{{item?.MARGIN}}%</td>
 
-                            <td>
+                            <td class="py-5">
                                 <span *ngIf="item.Profit > 0; else Profit">{{item?.Profit | currency}}</span>
                                 <ng-template #Profit>
                                     <span>({{(item?.Profit * -1) | currency}})</span>
                                 </ng-template>
                             </td>
-                            <td>
+                            <td class="py-5">
                                 <span *ngIf="item.Commission > 0; else Commission">{{item?.Commission |
                                     currency}}</span>
                                 <ng-template #Commission>
                                     <span>({{(item?.Commission * -1) | currency}})</span>
                                 </ng-template>
                             </td>
-                            <td></td>
-                            <td></td>
-                            <td>
+                            <td class="py-5"></td>
+                            <td class="py-5"></td>
+                            <td class="py-5">
                                 <mat-checkbox
                                     (change)="checkOrUncheckStoresOrders($event,item.date_data)"></mat-checkbox>
                             </td>
                         </tr>
                         <ng-container *ngFor="let data of item.date_data">
-                            <tr class="text-center">
+                            <tr class="text-center bg-gray-200">
                                 <td colspan="11" class="font-bold">{{data.date}}</td>
                             </tr>
                             <tr *ngFor="let order of data.data" [ngClass]="{'bg-green-300': order.color}">
                                 <td>{{order.date | date:'MM/dd/yyyy'}}</td>
-                                <td>{{order.id}}</td>
+                                <td>
+                                    <a [routerLink]="['/apps/orders',order.id]" target="_blank">{{order.id}}</a>
+                                </td>
                                 <td>{{order.customer}}</td>
                                 <td>{{order?.sales | currency}}</td>
                                 <td>{{order?.revenue | currency}}</td>
@@ -256,12 +258,21 @@
                                 *ngIf="storeTotals?.orderCommission > 0; else Commission">{{storeTotals?.orderCommission
                                 |
                                 currency}}</span>
+
                             <ng-template #Commission>
                                 <span>({{(storeTotals?.orderCommission * -1) | currency}})</span>
                             </ng-template>
+                            <span class="fa fa-question-circle"
+                                matTooltip="Total commission that should be paid in this range."></span>
                         </td>
                         <td></td>
-                        <td>{{storeTotals?.amountPaid | currency}}</td>
+                        <td>
+                            <span>
+                                {{storeTotals?.amountPaid | currency}}
+                            </span>
+                            <span class="fa fa-question-circle"
+                                matTooltip="Total commission that was actually paid in this range."></span>
+                        </td>
                         <td></td>
                     </tr>
                 </tbody>

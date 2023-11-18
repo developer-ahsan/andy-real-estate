@@ -184,12 +184,31 @@ export interface updateQuoteAttentionFlag {
 export interface updateQuoteBulkStatusUpdate {
     status_id: number;
     quotes: Quote[];
+    cartID: number;
+    storeUserID: number;
+    storeID: number;
+    storeName: string;
+    blnAdditionalArtApproval: boolean;
+    blnAdditionalApprovalOverride: boolean;
+    smartArtLoggedInUserName: string;
     update_quote_bulk_status: boolean;
 };
 
 interface Quote {
     imprint_id: number;
+    status_id: number;
+    blnRespond: boolean;
     cartLine_id: number;
+    productNumber: string;
+    productName: string;
+    customerName: string;
+    customerEmail: string;
+    customerAdditionalEmails: string[];
+    customerCompanyName: string;
+    locationName: string;
+    decorationName: string;
+    blnGroupRun: boolean;
+    proofComments: string;
 };
 
 

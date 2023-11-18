@@ -343,7 +343,14 @@ export class QuoteDashboardComponent implements OnInit, OnDestroy {
     this.isBulkLoader = true;
     let payload: updateQuoteBulkStatusUpdate = {
       status_id: this.status_id,
-      quotes: quotes,
+      quotes: [],
+      cartID: 0,
+      storeUserID: 0,
+      storeID: 0,
+      storeName: 'string;',
+      blnAdditionalArtApproval: false,
+      blnAdditionalApprovalOverride: false,
+      smartArtLoggedInUserName: 'string;',
       update_quote_bulk_status: true
     }
     this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
