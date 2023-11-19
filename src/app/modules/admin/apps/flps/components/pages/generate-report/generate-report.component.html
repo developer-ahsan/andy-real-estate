@@ -203,8 +203,8 @@
                             <tr class="text-center bg-gray-200">
                                 <td colspan="11" class="font-bold">{{data.date}}</td>
                             </tr>
-                            <tr *ngFor="let order of data.data" [ngClass]="{'bg-green-300': order.color}">
-                                <td>{{order.date | date:'MM/dd/yyyy'}}</td>
+                            <tr *ngFor="let order of data.data; let i =index" [ngClass]="{'bg-green-300': order.color}">
+                                <td><b>{{i+1}}.</b> {{order.date | date:'MM/dd/yyyy'}}</td>
                                 <td>
                                     <a [routerLink]="['/apps/orders',order.id]" target="_blank">{{order.id}}</a>
                                 </td>
