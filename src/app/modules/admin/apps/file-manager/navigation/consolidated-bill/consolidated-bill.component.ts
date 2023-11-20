@@ -80,7 +80,7 @@ export class ConsolidatedBillComponent implements OnInit, OnDestroy {
       this.locations = parts.map(part => {
         const [id, storeId, name] = part.split("::");
         return { id, storeId, name };
-    });
+      });
       this._changeDetectorRef.markForCheck();
     }, err => {
       this._changeDetectorRef.markForCheck();
@@ -140,21 +140,29 @@ export class ConsolidatedBillComponent implements OnInit, OnDestroy {
       });
   }
   getConsolidatedBill() {
+    let isCurrentDate = 0;
+    let dateData = ''
     if (this.selectedTerm == 'today') {
       this.date = moment(this.today).format('MM/DD/yyyy');
+      dateData = '';
+      isCurrentDate = 1;
     } else {
+      isCurrentDate = 0;
       this.date = moment(this.ngDate).format('MM/DD/yyyy');
+      dateData = moment(this.ngDate).format('MM/DD/yyyy');
     }
     this.isConsolidatedBill = true;
     this.isApplyLoader = true;
     let payload = {
-      get_consolidated_bill: true,
+      consolidated_bill: true,
       store_id: this.selectedStore.pk_storeID,
-      order_date: this.date,
+      isCurrentDate,
+      order_date: dateData,
       order_type: this.ngOrder,
-      attribute_id: this.slectedLocation
+      // attribute_id: this.slectedLocation
     }
     this._storeManagerService.getStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      console.log(res);
       res["data"].forEach(element => {
         element.Prducts = [];
         if (element.products) {

@@ -157,8 +157,8 @@ export class QuoteDashboardComponent implements OnInit, OnDestroy {
       }
     }
     let params = {
-      quote_dashboard: true,
-      userName: this.smartArtUser.userName,
+      quote_dashboard_list: true,
+      // userName: this.smartArtUser.userName,
       page: page,
       size: 20,
       store_id: this.paramsData.store ? this.paramsData.store : '',

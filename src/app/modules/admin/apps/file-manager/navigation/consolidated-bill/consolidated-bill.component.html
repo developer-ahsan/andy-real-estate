@@ -44,9 +44,9 @@
                     <!-- <input matInput placeholder="Search Location" name="test" [(ngModel)]="slectedLocation"
                       [matAutocomplete]="auto" [formControl]="locationCtrl"
                       placeholder="Search Location Min 3 Character"> -->
-                      <mat-select matInput [(ngModel)]="slectedLocation" name="selectedLocation">
-                        <mat-option *ngFor="let option of locations">{{option.name}}</mat-option>
-                      </mat-select>
+                    <mat-select matInput [(ngModel)]="slectedLocation" name="selectedLocation">
+                      <mat-option *ngFor="let option of locations">{{option.name}}</mat-option>
+                    </mat-select>
 
                     <button *ngIf="slectedLocation" matSuffix mat-icon-button aria-label="Clear"
                       (click)="clearSelection()">
@@ -212,6 +212,19 @@
             <img class="w-40" src="assets/images/logo/consolidus-logo.jpeg">
           </div>
         </div>
+      </div>
+
+      <!-- Finalize -->
+      <div class="my-5">
+        <button mat-button mat-flat-button color="primary" [disabled]="consolidatedData.finalizeLoader" class="min-w-40"
+          (click)="finalizeBill()">
+          <span *ngIf="!consolidatedData.finalizeLoader">Finalize This Bill</span>
+          <mat-progress-spinner *ngIf="consolidatedData.finalizeLoader" [diameter]="24" [mode]="'indeterminate'">
+          </mat-progress-spinner>
+        </button>
+        <br>
+        <span class="text-red-500">Finalizing the bill will flag all orders on this bill as "finalized."</span>
+        <br>
       </div>
     </div>
   </div>
