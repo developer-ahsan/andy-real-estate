@@ -629,21 +629,19 @@
                                     <td></td>
                                     <td></td>
                                 </tr>
-                                <ng-container *ngFor="let imprint of item.imprints">
+                                <ng-container>
                                     <tr>
                                         <td>
-                                            <span class="pl-2">{{imprint.location}}/{{imprint.method}}</span>
+                                            <span class="pl-2">{{item.locationName}} ({{item.decorationName}})</span>
                                         </td>
-                                        <td>{{imprint.status}}</td>
+                                        <td>{{item.statusName}}</td>
                                         <td>
-                                            <span *ngIf="imprint.approver">{{imprint.approver}}</span>
-                                            <span *ngIf="!imprint.approver">---</span>
+                                            <span *ngIf="item.qryContact">{{item.qryContact}}</span>
+                                            <span *ngIf="!item.qryContact">---</span>
                                         </td>
                                         <td>
-                                            <span>---</span>
-                                            <!-- <a target="_blank"
-                                                href="{{mediaURL}}artwork/Proof/{{item.fk_storeUserID}}/{{item.orderID}}/{{item.orderLineID}}/{{imprint.id}}.jpg"
-                                                target="_blank">VIEW</a> -->
+                                            <span *ngIf="!item.proofUrl">---</span>
+                                            <a target="_blank" *ngIf="item.proofUrl" href="{{item.proofUrl}}">VIEW</a>
                                         </td>
                                     </tr>
                                 </ng-container>

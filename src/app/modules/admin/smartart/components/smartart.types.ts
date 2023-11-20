@@ -184,12 +184,6 @@ export interface updateQuoteAttentionFlag {
 export interface updateQuoteBulkStatusUpdate {
     status_id: number;
     quotes: Quote[];
-    cartID: number;
-    storeUserID: number;
-    storeID: number;
-    storeName: string;
-    blnAdditionalArtApproval: boolean;
-    blnAdditionalApprovalOverride: boolean;
     smartArtLoggedInUserName: string;
     update_quote_bulk_status: boolean;
 };
@@ -209,6 +203,12 @@ interface Quote {
     decorationName: string;
     blnGroupRun: boolean;
     proofComments: string;
+    cartID: number;
+    storeUserID: number;
+    storeID: number;
+    storeName: string;
+    blnAdditionalArtApproval: boolean;
+    blnAdditionalApprovalOverride: boolean;
 };
 
 

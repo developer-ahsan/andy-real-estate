@@ -233,6 +233,21 @@
                             [stroke]="ytdChart.stroke" [tooltip]="ytdChart.tooltip" [labels]="ytdChart.labels"
                             [colors]="ytdChart.colors" [xaxis]="ytdChart.xaxis"
                             [responsive]="ytdChart.responsive"></apx-chart>
+
+                        <ng-container *ngIf="ytdChart.labels">
+                            <ng-container>
+                                <div class="flex flex-wrap items-center justify-center gap-x-2 gap-y-4">
+                                    <div class="cursor-pointer flex items-center gap-x-1"
+                                        *ngFor="let store of ytdChart.labels; let i = index">
+                                        <div class="h-3 w-3 rounded-full"
+                                            [style.background]="yourPerformanceData.allColors[i]">
+                                        </div>
+                                        <div class="whitespace-nowrap text-xs text-gray-800 font-Poppins font-normal">{{
+                                            store }}</div>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </ng-container>
                     </div>
                 </div>
             </div>

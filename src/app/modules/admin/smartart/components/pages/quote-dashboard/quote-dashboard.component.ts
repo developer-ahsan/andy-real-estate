@@ -158,7 +158,7 @@ export class QuoteDashboardComponent implements OnInit, OnDestroy {
     }
     let params = {
       quote_dashboard_list: true,
-      // userName: this.smartArtUser.userName,
+      smartArt_userID: this.smartArtUser.pk_userID,
       page: page,
       size: 20,
       store_id: this.paramsData.store ? this.paramsData.store : '',
@@ -322,17 +322,36 @@ export class QuoteDashboardComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
-  // Update checked
-  OrderSelectionChange(ev, order) {
-    order.checked = ev.checked
-  }
+  // Bulk Update checked
   bulkUploadStatus() {
     let quotes = [];
     this.dataSource.forEach(element => {
       if (element.checked) {
+        let additionalEmails = [];
+        if (element.additionalEmails) {
+          additionalEmails = element.additionalEmails?.split(',');
+        }
         quotes.push({
           imprint_id: Number(element.fk_imprintID),
-          cartLine_id: Number(element.pk_cartLineID)
+          status_id: element.pk_statusID,
+          blnRespond: element.blnRespond,
+          cartLine_id: element.pk_cartLineID,
+          productNumber: element.productNumber,
+          productName: element.productName,
+          customerName: element.firstName + ' ' + element.lastName,
+          customerEmail: element.email,
+          customerAdditionalEmails: additionalEmails,
+          customerCompanyName: element.companyName,
+          locationName: element?.locationName ? element?.locationName : '',
+          decorationName: element?.attributeName ? element?.attributeName : '',
+          blnGroupRun: element.blnGroupRun,
+          proofComments: '',
+          cartID: element.pk_cartID,
+          storeUserID: element.storeUserID,
+          storeID: element.pk_storeID,
+          storeName: element.storeName,
+          blnAdditionalArtApproval: element.blnAdditionalArtApproval,
+          blnAdditionalApprovalOverride: element.blnAdditionalApprovalOverride
         });
       }
     });
@@ -343,14 +362,8 @@ export class QuoteDashboardComponent implements OnInit, OnDestroy {
     this.isBulkLoader = true;
     let payload: updateQuoteBulkStatusUpdate = {
       status_id: this.status_id,
-      quotes: [],
-      cartID: 0,
-      storeUserID: 0,
-      storeID: 0,
-      storeName: 'string;',
-      blnAdditionalArtApproval: false,
-      blnAdditionalApprovalOverride: false,
-      smartArtLoggedInUserName: 'string;',
+      quotes: quotes,
+      smartArtLoggedInUserName: this.smartArtUser.userName,
       update_quote_bulk_status: true
     }
     this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {

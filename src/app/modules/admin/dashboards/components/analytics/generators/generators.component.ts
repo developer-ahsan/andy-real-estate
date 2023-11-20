@@ -481,16 +481,30 @@ export class GeneratorsComponent implements OnInit {
       this.orderDetailsModalContent.loader = false;
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
+      let data = [];
       res["data"].forEach(element => {
-        element.imprints = []
-        if (element.imprintDetails) {
-          let imprints = element.imprintDetails.split('#_');
-          imprints.forEach(imprint => {
-            const [location, method, id, status, approver] = imprint.split('||');
-            element.imprints.push({ location, method, status, id, approver })
-          });
+        element.proofUrl = null;
+        const url = `/artwork/Proof/Quotes/${element.storeUserID}/${element.cartID}/${element.cartLineID}`;
+        let payload = {
+          files_fetch: true,
+          path: url
+        };
+        this._dashboardService.getFiles(payload).subscribe(res => {
+          if (res) {
+            if (res["data"].length) {
+              element.proofUrl = `${environment.assetsURL}artwork/Proof/Quotes/${element.storeUserID}/${element.cartID}/${element.cartLineID}/${res["data"][0].FILENAME}`;
+              this._changeDetectorRef.markForCheck();
+            }
+          }
+        });
+        if (element.fk_artApprovalContactID || element.fk_storeUserApprovalContactID) {
+          if (element.blnStoreUserApprovalDone) {
+            data.push(element);
+          }
         }
       });
+      // data = res["data"];
+      console.log(res["data"]);
       this.orderDetailsModalContent.artworkData = res["data"];
     });
   }

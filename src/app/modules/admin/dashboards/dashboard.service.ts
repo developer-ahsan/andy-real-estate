@@ -224,6 +224,10 @@ export class DashboardsService {
     };
     // Get Files
     getFiles(payload) {
+        // let payload = {
+        //     files_fetch: true,
+        //     path: path
+        //   };
         return this._httpClient.post(environment.products,
             payload);
     };
@@ -257,5 +261,24 @@ export class DashboardsService {
         }
 
         return params;
+    }
+
+    // checkImageExist
+    checkImageExist(url) {
+        return new Promise<void>((resolve, reject) => {
+            const img = new Image();
+            img.src = url;
+
+            if (img.complete) {
+                resolve();
+            } else {
+                img.onload = () => {
+                    resolve();
+                };
+                img.onerror = () => {
+                    reject();
+                };
+            }
+        });
     }
 }

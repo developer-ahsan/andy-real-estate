@@ -523,17 +523,23 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
             this.ytdChart.series.push(
                 { name: `${store.storeName} - ${this.currentYear}`, data: store.SALES }
             );
+            this.yourPerformanceData.allColors.push(`#` + store.reportColor);
             this.ytdChart.colors.push(`#` + store.reportColor); // Adding the color again for the second series
             this.ytdChart.colors.push(`#` + store.reportColor);
-            this.ytdChart.labels.push(`${store.storeName} - ${this.currentYear - 1}`);
-            this.ytdChart.labels.push(`${store.storeName} - ${this.currentYear}`);
+            this.ytdChart.labels.push(`${store.storeName}`);
         });
         this.yourPerformanceData.barChartTotal = barChartData.total;
         setTimeout(() => {
             this.yourPerformanceData.barChartLoader = false;
             this._changeDetectorRef.markForCheck();
         }, 100);
-        console.log(barChartData);
         // this.ytdChart
+    }
+    // Store Remove From BarChart
+    checkIfStoreIsRemovedForBarChart(store) {
+        console.log(store);
+    }
+    addItemToBarChartHideList(store) {
+        console.log(store);
     }
 }

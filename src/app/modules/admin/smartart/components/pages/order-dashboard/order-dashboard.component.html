@@ -79,39 +79,41 @@
                     </div>
                 </mat-drawer>
                 <mat-drawer-content class="bg-white">
-                    <div class="px-4 sm:px-4 lg:px-8 pb-2 pt-4 flex justify-between">
-                        <div class="text-2xl font-bold">
-                            Order Dashboard
+                    <div class="bg-blue-300 py-2">
+                        <div class="px-4 sm:px-4 lg:px-8 pb-2 pt-4 flex justify-between">
+                            <div class="text-2xl font-bold">
+                                Order Dashboard
+                            </div>
                         </div>
-                    </div>
-                    <div class="px-8 flex space-x-2 overflow-x-auto">
-                        <div>
-                            <p>Rush Orders (not flexible)</p>
-                            <hr class="m-0 h-2" style="background: #ffcaca;">
-                        </div>
-                        <div>
-                            <p>Rush Orders (flexible)</p>
-                            <hr class="m-0 h-2" style="background: #F2D1A0;">
-                        </div>
-                        <div>
-                            <p>Paid Orders</p>
-                            <hr class="m-0 h-2" style="background: #ADFFB6;">
-                        </div>
-                        <div>
-                            <p>Reorder</p>
-                            <hr class="m-0 h-2" style="background: #feee84;">
-                        </div>
-                        <div>
-                            <p>Group Run</p>
-                            <hr class="m-0 h-2" style="background: #DBD7FF;">
-                        </div>
-                        <div>
-                            <p>Awaiting info</p>
-                            <hr class="m-0 h-2" style="background: #75bbf5;">
-                        </div>
-                        <div>
-                            <p>Group order</p>
-                            <hr class="m-0 h-2" style="background: #fca769;">
+                        <div class="px-8 flex space-x-2 overflow-x-auto">
+                            <div>
+                                <p>Rush Orders (not flexible)</p>
+                                <hr class="m-0 h-2" style="background: #ffcaca;">
+                            </div>
+                            <div>
+                                <p>Rush Orders (flexible)</p>
+                                <hr class="m-0 h-2" style="background: #F2D1A0;">
+                            </div>
+                            <div>
+                                <p>Paid Orders</p>
+                                <hr class="m-0 h-2" style="background: #ADFFB6;">
+                            </div>
+                            <div>
+                                <p>Reorder</p>
+                                <hr class="m-0 h-2" style="background: #feee84;">
+                            </div>
+                            <div>
+                                <p>Group Run</p>
+                                <hr class="m-0 h-2" style="background: #DBD7FF;">
+                            </div>
+                            <div>
+                                <p>Awaiting info</p>
+                                <hr class="m-0 h-2" style="background: #75bbf5;">
+                            </div>
+                            <div>
+                                <p>Group order</p>
+                                <hr class="m-0 h-2" style="background: #fca769;">
+                            </div>
                         </div>
                     </div>
                     <div *ngIf="isLoading" class="my-2 px-5">
@@ -120,7 +122,7 @@
                           }">
                         </ngx-skeleton-loader>
                     </div>
-                    <div *ngIf="!isLoading" class="mt-2 overflow-hidden">
+                    <div *ngIf="!isLoading" class="overflow-hidden">
                         <div *ngIf="dataSource.length > 0;else other_content" class="w-full overflow-x-auto">
                             <div class="m-5 text-center" *ngIf="isSortingLoader">
                                 <div class="spinner-grow"></div>
