@@ -59,7 +59,6 @@ export class RemoveProductComponent implements OnInit, OnDestroy {
       pk_userID: userData.pk_userID,
       password: this.ngPassword
     }
-    console.log(obj);
     const secretKey = 'verify_password';
     const objectString = JSON.stringify(obj);
     const encryptedObject = CryptoJS.AES.encrypt(objectString, secretKey).toString();

@@ -124,8 +124,6 @@ export class StoreImprintsComponent implements OnInit, OnDestroy {
   UpdateImprint() {
     this.editImprintLoader = true;
     const { fk_decoratorID, fk_setupChargeID, fk_runChargeID, fk_collectionID } = this.EditImprintData;
-    console.log(this.editImprintData)
-    console.log(this.EditImprintData)
     let decorator = fk_decoratorID;
     if (fk_decoratorID == this.editImprintData.fk_decoratorID || fk_decoratorID == this.editImprintData.storeProductDecoratorID) {
       decorator = null;

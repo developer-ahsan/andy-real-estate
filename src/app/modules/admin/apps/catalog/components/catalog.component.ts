@@ -251,7 +251,6 @@ export class CatalogComponent {
     this._catalogService.getCatalogData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((res: any) => {
-        console.log(res);
         this.allColors = [];
         this.allSizes = [];
         this.allMethods = [];
@@ -262,7 +261,6 @@ export class CatalogComponent {
         this.processData(qryTopImprintMethods[0].qryTopImprintMethods, this.allMethods);
         // Process sizes
         this.processData(qryTopOrderedSizes[0].qryTopOrderedSizes, this.allSizes);
-        console.log(this.allColors);
       });
   }
   // Helper function to process data and populate arrays

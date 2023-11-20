@@ -1375,7 +1375,6 @@ export class ImprintComponent implements OnInit, OnDestroy {
       locations_methods: true
     }
     this._inventoryService.getProductsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      console.log(res);
     })
   }
   addArea(value: string): void {

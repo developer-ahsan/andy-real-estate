@@ -76,7 +76,6 @@ export class QuotesComponent implements OnInit, OnDestroy {
             }
           });
           this.dataSource = quotes["data"];
-          console.log(this.dataSource)
           this.quotesLength = quotes["totalRecords"];
         }, err => {
           this.isLoading = false;
@@ -95,7 +94,6 @@ export class QuotesComponent implements OnInit, OnDestroy {
     this.getQuotes(this.page);
   };
   viewArtworkDetails(cart) {
-    console.log(cart)
     this.isCartLoader = true;
     this.cartData = cart;
     this.isArtworkDetails = true;

@@ -319,14 +319,12 @@ export class ProductsStatusComponent implements OnInit {
     Promise.all(imagePromises)
       .then(() => {
         // All images have loaded successfully
-        console.log("All images loaded successfully");
         // Call another function and pass Types to it
         this.uploadImages(Types, targetIDs);
       })
       .catch(() => {
         // Handle the case where at least one image failed to load
         this.uploadImages(Types, targetIDs);
-        console.log("Some images failed to load");
       });
   }
   uploadImages(type, targetIDs) {

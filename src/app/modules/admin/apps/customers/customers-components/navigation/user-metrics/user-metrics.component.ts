@@ -88,7 +88,6 @@ export class UserMetricsComponent implements OnInit {
       }
 
       this.registersInfo = response;
-      console.log(response);
     });
   }
   ngOnDestroy(): void {

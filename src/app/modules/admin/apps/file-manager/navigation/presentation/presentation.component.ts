@@ -1314,7 +1314,6 @@ export class PresentationComponent implements OnInit, OnDestroy {
       // Convert the binary image to base64 encoded string
       // const base64String = Buffer.from(convertedImage).toString('base64');
       const base64String = '';
-      console.log('Conversion to base64 done');
       return base64String;
     } catch (error) {
       console.error('Error converting the image:', error);
