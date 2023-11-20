@@ -87,24 +87,23 @@
             <div class="col-12 col-md-4">
                 <div class="text-lg font-medium tracking-tight leading-6 truncate border-b">Year To Date
                     Sales,
-                    By Store ($0.00)
+                    By Store ({{ytDDataMain?.YTD | currency}})
                 </div>
-                <div class="text-center mt-2"
-                    *ngIf="yourPerformanceData.allStoresGraphLoader || isPortfolioLoader || isPerformanceLoader">
+                <div class="text-center mt-2" *ngIf="isPerformanceLoader">
                     <img src="assets/loader2.gif" class="w-40" />
+
                 </div>
-                <div id="myChart"
-                    *ngIf="!yourPerformanceData.allStoresGraphLoader && !isPortfolioLoader && !isPerformanceLoader">
-                    <div *ngIf="!programPortfolioData.length">
+                <div id="myChart" *ngIf="!isPerformanceLoader">
+                    <div *ngIf="!performanceChartOptions.series.length">
                         <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
                             <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
                             </mat-icon>
                             There is no data to show for this quarter.
                         </fuse-alert>
                     </div>
-                    <apx-chart *ngIf="programPortfolioData.length" [yaxis]="performanceChartOptions.yaxis"
-                        [series]="yourPerformanceData.allSeriesData" [chart]="performanceChartOptions.chart"
-                        [labels]="yourPerformanceData.allSeriesLabel" [colors]="yourPerformanceData.allColors"
+                    <apx-chart *ngIf="performanceChartOptions.series" [yaxis]="performanceChartOptions.yaxis"
+                        [series]="performanceChartOptions.series" [chart]="performanceChartOptions.chart"
+                        [labels]="performanceChartOptions.labels" [colors]="performanceChartOptions.colors"
                         [title]="performanceChartOptions.title" [theme]="performanceChartOptions.theme"
                         [responsive]="performanceChartOptions.responsive"></apx-chart>
                 </div>
@@ -115,14 +114,12 @@
                         <div class="text-lg font-medium tracking-tight leading-6 truncate border-b">Q1 <span
                                 *ngIf="!yourPerformanceData.q1Loader">({{yourPerformanceData.q1Earnings |
                                 currency}})</span></div>
-                        <div class="text-center mt-2"
-                            *ngIf="yourPerformanceData.q1Loader || isPortfolioLoader || isPerformanceLoader">
+                        <div class="text-center mt-2" *ngIf="yourPerformanceData.q1Loader || isPerformanceLoader">
                             <img src="assets/loader2.gif" class="w-40" />
 
 
                         </div>
-                        <div id="myChart"
-                            *ngIf="!yourPerformanceData.q1Loader && !isPortfolioLoader && !isPerformanceLoader">
+                        <div id="myChart" *ngIf="!yourPerformanceData.q1Loader && !isPerformanceLoader">
                             <div *ngIf="!yourPerformanceData.q1SeriesData.length">
                                 <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
                                     <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
@@ -138,15 +135,13 @@
                         </div>
                     </div>
                     <div class="col-12 col-md-6">
-                        <div class="text-lg font-medium tracking-tight leading-6 truncate border-b">Q2</div>
-                        <div class="text-center mt-2"
-                            *ngIf="yourPerformanceData.q2Loader || isPortfolioLoader || isPerformanceLoader">
+                        <div class="text-lg font-medium tracking-tight leading-6 truncate border-b">Q2 <span
+                                *ngIf="!yourPerformanceData.q2Loader">({{yourPerformanceData.q2Earnings |
+                                currency}})</span></div>
+                        <div class="text-center mt-2" *ngIf="yourPerformanceData.q2Loader || isPerformanceLoader">
                             <img src="assets/loader2.gif" class="w-40" />
-
-
                         </div>
-                        <div id="myChart"
-                            *ngIf="!yourPerformanceData.q2Loader && !isPortfolioLoader && !isPerformanceLoader">
+                        <div id="myChart" *ngIf="!yourPerformanceData.q2Loader && !isPerformanceLoader">
                             <div *ngIf="!yourPerformanceData.q2SeriesData.length">
                                 <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
                                     <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
@@ -162,15 +157,13 @@
                         </div>
                     </div>
                     <div class="col-12 col-md-6">
-                        <div class="text-lg font-medium tracking-tight leading-6 truncate border-b">Q3</div>
-                        <div class="text-center mt-2"
-                            *ngIf="yourPerformanceData.q3Loader || isPortfolioLoader || isPerformanceLoader">
+                        <div class="text-lg font-medium tracking-tight leading-6 truncate border-b">Q3 <span
+                                *ngIf="!yourPerformanceData.q3Loader">({{yourPerformanceData.q3Earnings |
+                                currency}})</span></div>
+                        <div class="text-center mt-2" *ngIf="yourPerformanceData.q3Loader || isPerformanceLoader">
                             <img src="assets/loader2.gif" class="w-40" />
-
-
                         </div>
-                        <div id="myChart"
-                            *ngIf="!yourPerformanceData.q3Loader && !isPortfolioLoader && !isPerformanceLoader">
+                        <div id="myChart" *ngIf="!yourPerformanceData.q3Loader && !isPerformanceLoader">
                             <div *ngIf="!yourPerformanceData.q3SeriesData.length">
                                 <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
                                     <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
@@ -186,15 +179,13 @@
                         </div>
                     </div>
                     <div class="col-12 col-md-6">
-                        <div class="text-lg font-medium tracking-tight leading-6 truncate border-b">Q4</div>
-                        <div class="text-center mt-2"
-                            *ngIf="yourPerformanceData.q4Loader || isPortfolioLoader || isPerformanceLoader">
+                        <div class="text-lg font-medium tracking-tight leading-6 truncate border-b">Q4 <span
+                                *ngIf="!yourPerformanceData.q4Loader">({{yourPerformanceData.q4Earnings |
+                                currency}})</span></div>
+                        <div class="text-center mt-2" *ngIf="yourPerformanceData.q4Loader || isPerformanceLoader">
                             <img src="assets/loader2.gif" class="w-40" />
-
-
                         </div>
-                        <div id="myChart"
-                            *ngIf="!yourPerformanceData.q4Loader && !isPortfolioLoader && !isPerformanceLoader">
+                        <div id="myChart" *ngIf="!yourPerformanceData.q4Loader && !isPerformanceLoader">
                             <div *ngIf="!yourPerformanceData.q4SeriesData.length">
                                 <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
                                     <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
@@ -215,9 +206,10 @@
             <div class="col-12">
                 <div class="text-lg font-medium tracking-tight leading-6 truncate border-b">Year To Date
                     Sales
-                    By Quarter, By Store ($0.00)</div>
+                    By Quarter, By Store ({{yourPerformanceData.barChartTotal | currency}})</div>
                 <mat-form-field class="w-full mt-2">
-                    <mat-select matInput>
+                    <mat-select matInput [(ngModel)]="yourPerformanceData.userYTDMonthQuarter"
+                        (selectionChange)="barChartData()">
                         <mat-option value="1">First Quarter</mat-option>
                         <mat-option value="2">Second Quarter</mat-option>
                         <mat-option value="3">Third Quarter</mat-option>
