@@ -41,18 +41,6 @@ export type ChartOptions1 = {
     responsive: any;
     legend: ApexLegend;
 };
-export type AnnualChartOptions = {
-    series: ApexAxisChartSeries;
-    chart: ApexChart;
-    yaxis: ApexYAxis;
-    xaxis: ApexXAxis;
-    dataLabels: ApexDataLabels;
-    colors: string[];
-    grid: ApexGrid;
-    tooltip: ApexTooltip;
-    stroke: ApexStroke;
-    title: ApexTitleSubtitle;
-};
 @Component({
     selector: 'your-performance',
     templateUrl: './your-performance.component.html',
@@ -63,52 +51,16 @@ export type AnnualChartOptions = {
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class YourPerformanceComponent implements OnInit, OnDestroy {
-    chartVisitors: ApexOptions;
-    chartConversions: ApexOptions;
-    chartImpressions: ApexOptions;
-    chartVisits: ApexOptions;
-    chartVisitorsVsPageViews: ApexOptions;
-    data: any;
-
-    chartAge: ApexOptions;
-    averagePurchaseValueOptions: ApexOptions;
-    browsersOptions: ApexOptions;
-    channelsOptions: ApexOptions;
-    devicesOptions: ApexOptions;
-    chartGender: ApexOptions;
-    chartLanguage: ApexOptions;
-    chartNewVsReturning: ApexOptions;
-    refundsOptions: ApexOptions;
-    totalVisitsOptions: ApexOptions;
-    uniqueVisitorsOptions: ApexOptions;
-    uniquePurchasesOptions: ApexOptions;
-
     private _unsubscribeAll: Subject<any> = new Subject<any>();
-
-    mainScreen = 'sales';
-    testData: any;
     // Pie Chart
-    @ViewChild("chart") chart: ChartComponent;
     public chartOptions: Partial<ChartOptions>;
     public performanceChartOptions: Partial<PerformanceChartOptions>;
-    @ViewChild("chart1") chart1: ChartComponent;
     public ytdChart: Partial<ChartOptions1>;
-    public quarterChart: Partial<ChartOptions1>;
-    annualChartOptions: Partial<AnnualChartOptions>;
-    public chartOptions2: Partial<ChartOptions1>;
-    programPortfolioData = [];
-    programPerformanceData = [];
-    totalStoreSummary: any;
 
-    pagePerformance = 1;
-    totalPerformanceRecords = 0;
     isPerformanceLoader: boolean;
-    isPortfolioLoader: boolean;
-    isYTDLoader: boolean = false;
     ytDDataMain: any;
 
     userData: any;
-    storesData: any;
     yourPerformanceData: any = {
         barChartLoader: false,
         allStoresGraphLoader: false,
@@ -247,7 +199,7 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
             plotOptions: {
                 bar: {
                     horizontal: false,
-                    columnWidth: "55%",
+                    columnWidth: "70%",
                 }
             },
             labels: [],
@@ -312,13 +264,8 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         // Get the data
-        this.isYTDLoader = true;
-        this.isPortfolioLoader = true;
         this.isPerformanceLoader = true;
         this.getPerformanceData();
-    }
-    calledScreen(screen) {
-        this.mainScreen = screen;
     }
     calculatePercentage(currentKey, lastKey, percentKey, percentBlnKey) {
         const current = this.ytDDataMain[currentKey];
@@ -405,12 +352,6 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
 
             // Bar Chart Data
             this.barChartData();
-            // let firstQarterBarChartData = this.getRefactoredDataForBarCharts(monthlyData.slice(0, 3), res.flpsUserStores)
-            // let secondQuarterBarChartData = this.getRefactoredDataForBarCharts(monthlyData.slice(3, 6), res.flpsUserStores)
-            // let thirdQuarterBarChartData = this.getRefactoredDataForBarCharts(monthlyData.slice(6, 9), res.flpsUserStores)
-            // let FourthQuarterBarChartData = this.getRefactoredDataForBarCharts(monthlyData.slice(9, 12), res.flpsUserStores)
-
-
 
             this.isPerformanceLoader = false;
             this._changeDetectorRef.markForCheck();

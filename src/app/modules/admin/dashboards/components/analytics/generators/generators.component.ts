@@ -168,49 +168,26 @@ export class GeneratorsComponent implements OnInit {
   }
   private processQuotes(res: any): void {
     const getQuotes = res?.data?.[0]?.[0]?.getQuotes || '';
-    const quotes = getQuotes.split(',,');
-    this.pendingQuotes = quotes.map(quote => {
-      const [
-        cartID, cartDate, inHandsDate, storeID, blnReorder,
-        storeUserID, price, tax, firstName, lastName,
-        phone, companyName, locationName, storeCode, storeName,
-        followUp, priority
-      ] = quote.split('::');
+    if (getQuotes) {
+      const quotes = getQuotes.split(',,');
+      this.pendingQuotes = quotes.map(quote => {
+        const [
+          cartID, cartDate, inHandsDate, storeID, blnReorder,
+          storeUserID, price, tax, firstName, lastName,
+          phone, companyName, locationName, storeCode, storeName,
+          followUp, priority
+        ] = quote.split('::');
 
-      let priorityChecked = false;
-      if (Number(priority) > 0) {
-        priorityChecked = true;
-      }
+        let priorityChecked = false;
+        if (Number(priority) > 0) {
+          priorityChecked = true;
+        }
 
-      const existingStoreIndex = this.pendingStores.findIndex(store => store.store === storeName);
+        const existingStoreIndex = this.pendingStores.findIndex(store => store.store === storeName);
 
-      if (existingStoreIndex > -1) {
-        // Store already exists, add data to existing store
-        this.pendingStores[existingStoreIndex].data.push({
-          cartID: Number(cartID),
-          cartDate,
-          blnReorder: Number(blnReorder),
-          inHandsDate,
-          storeCode,
-          storeName,
-          storeUserID: Number(storeUserID),
-          storeID: Number(storeID),
-          firstName,
-          lastName,
-          locationName,
-          companyName,
-          followUp,
-          price: Number(price),
-          tax: Number(tax),
-          phone,
-          priority,
-          priorityChecked
-        });
-      } else {
-        // Store does not exist, add a new store
-        this.pendingStores.push({
-          store: storeName,
-          data: [{
+        if (existingStoreIndex > -1) {
+          // Store already exists, add data to existing store
+          this.pendingStores[existingStoreIndex].data.push({
             cartID: Number(cartID),
             cartDate,
             blnReorder: Number(blnReorder),
@@ -229,77 +206,105 @@ export class GeneratorsComponent implements OnInit {
             phone,
             priority,
             priorityChecked
-          }]
-        });
-      }
+          });
+        } else {
+          // Store does not exist, add a new store
+          this.pendingStores.push({
+            store: storeName,
+            data: [{
+              cartID: Number(cartID),
+              cartDate,
+              blnReorder: Number(blnReorder),
+              inHandsDate,
+              storeCode,
+              storeName,
+              storeUserID: Number(storeUserID),
+              storeID: Number(storeID),
+              firstName,
+              lastName,
+              locationName,
+              companyName,
+              followUp,
+              price: Number(price),
+              tax: Number(tax),
+              phone,
+              priority,
+              priorityChecked
+            }]
+          });
+        }
 
-      return {
-        cartID: Number(cartID),
-        cartDate,
-        blnReorder: Number(blnReorder),
-        inHandsDate,
-        storeCode,
-        storeName,
-        storeUserID: Number(storeUserID),
-        storeID: Number(storeID),
-        firstName,
-        lastName,
-        locationName,
-        companyName,
-        followUp,
-        price: Number(price),
-        tax: Number(tax),
-        phone,
-        priority,
-        priorityChecked
-      };
-    });
+        return {
+          cartID: Number(cartID),
+          cartDate,
+          blnReorder: Number(blnReorder),
+          inHandsDate,
+          storeCode,
+          storeName,
+          storeUserID: Number(storeUserID),
+          storeID: Number(storeID),
+          firstName,
+          lastName,
+          locationName,
+          companyName,
+          followUp,
+          price: Number(price),
+          tax: Number(tax),
+          phone,
+          priority,
+          priorityChecked
+        };
+      });
+    }
     this.tempPendingQuotes = this.pendingQuotes;
   }
 
   private processSampleOrders(res: any): void {
     const getSampleOrders = res?.data?.[1]?.[0]?.getSampleOrders || '';
-    const samples = getSampleOrders.split(',,');
-    this.sampleStatus = samples.map(sample => {
-      const [
-        orderID, cost, firstName, lastName, companyName,
-        locationName, orderDate, storeCode, storeName,
-        storeID, storeUserID, blnSampleConverted, sampleComment,
-        days, priority
-      ] = sample.split('::');
-      let priorityChecked = false;
-      if (Number(priority) > 0) {
-        priorityChecked = true;
-      }
-      const existingStoreIndex = this.sampleStores.findIndex(store => store.store === storeName);
+    if (getSampleOrders) {
+      const samples = getSampleOrders.split(',,');
+      this.sampleStatus = samples.map(sample => {
+        const [
+          orderID, cost, firstName, lastName, companyName,
+          locationName, orderDate, storeCode, storeName,
+          storeID, storeUserID, blnSampleConverted, sampleComment,
+          days, priority
+        ] = sample.split('::');
+        let priorityChecked = false;
+        if (Number(priority) > 0) {
+          priorityChecked = true;
+        }
+        const existingStoreIndex = this.sampleStores.findIndex(store => store.store === storeName);
 
-      if (existingStoreIndex > -1) {
-        // Store already exists, add data to existing store
-        this.sampleStores[existingStoreIndex].data.push({
-          orderID: Number(orderID), orderDate, storeCode, storeName,
-          storeUserID: Number(storeUserID), storeID: Number(storeID),
-          firstName, lastName, locationName, companyName, blnSampleConverted,
-          cost: Number(cost), days, priority, sampleComment, priorityChecked
-        });
-      } else {
-        // Store does not exist, add a new store
-        this.sampleStores.push({
-          store: storeName,
-          data: [{
+        if (existingStoreIndex > -1) {
+          // Store already exists, add data to existing store
+          this.sampleStores[existingStoreIndex].data.push({
             orderID: Number(orderID), orderDate, storeCode, storeName,
             storeUserID: Number(storeUserID), storeID: Number(storeID),
             firstName, lastName, locationName, companyName, blnSampleConverted,
             cost: Number(cost), days, priority, sampleComment, priorityChecked
-          }]
-        });
-      }
-      return {
-        orderID: Number(orderID), orderDate, storeCode, storeName,
-        storeUserID: Number(storeUserID), storeID: Number(storeID),
-        firstName, lastName, locationName, companyName, blnSampleConverted,
-        cost: Number(cost), days, priority, sampleComment, priorityChecked
-      };
-    });
+          });
+        } else {
+          // Store does not exist, add a new store
+          this.sampleStores.push({
+            store: storeName,
+            data: [{
+              orderID: Number(orderID), orderDate, storeCode, storeName,
+              storeUserID: Number(storeUserID), storeID: Number(storeID),
+              firstName, lastName, locationName, companyName, blnSampleConverted,
+              cost: Number(cost), days, priority, sampleComment, priorityChecked
+            }]
+          });
+        }
+        return {
+          orderID: Number(orderID), orderDate, storeCode, storeName,
+          storeUserID: Number(storeUserID), storeID: Number(storeID),
+          firstName, lastName, locationName, companyName, blnSampleConverted,
+          cost: Number(cost), days, priority, sampleComment, priorityChecked
+        };
+      });
+    }
+
     this.tempSampleStatus = this.sampleStatus;
   }
 
@@ -481,30 +486,29 @@ export class GeneratorsComponent implements OnInit {
       this.orderDetailsModalContent.loader = false;
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
-      let data = [];
       res["data"].forEach(element => {
-        element.proofUrl = null;
-        const url = `/artwork/Proof/Quotes/${element.storeUserID}/${element.cartID}/${element.cartLineID}`;
-        let payload = {
-          files_fetch: true,
-          path: url
-        };
-        this._dashboardService.getFiles(payload).subscribe(res => {
-          if (res) {
-            if (res["data"].length) {
-              element.proofUrl = `${environment.assetsURL}artwork/Proof/Quotes/${element.storeUserID}/${element.cartID}/${element.cartLineID}/${res["data"][0].FILENAME}`;
-              this._changeDetectorRef.markForCheck();
+        element.imprints = [];
+        if (element.imprintDetails) {
+          const imprints = element.imprintDetails?.split('##');
+          imprints.forEach(imprint => {
+            const [impritID, location, method, status, statusID, contactName] = imprint.split('||');
+            element.imprints.push({ impritID, location, method, status, statusID, contactName });
+          });
+          const url = `/artwork/Proof/Quotes/${element.storeUserID}/${element.pk_cartID}/${element.pk_cartLineID}`;
+          let payload = {
+            files_fetch: true,
+            path: url
+          };
+          this._dashboardService.getFiles(payload).subscribe(res => {
+            if (res) {
+              if (res["data"].length) {
+                element.proofUrl = `${environment.assetsURL}artwork/Proof/Quotes/${element.storeUserID}/${element.pk_cartID}/${element.pk_cartLineID}/${res["data"][0].FILENAME}`;
+                this._changeDetectorRef.markForCheck();
+              }
             }
-          }
-        });
-        if (element.fk_artApprovalContactID || element.fk_storeUserApprovalContactID) {
-          if (element.blnStoreUserApprovalDone) {
-            data.push(element);
-          }
+          });
         }
       });
-      // data = res["data"];
-      console.log(res["data"]);
       this.orderDetailsModalContent.artworkData = res["data"];
     });
   }
@@ -746,7 +750,6 @@ export class GeneratorsComponent implements OnInit {
         files_fetch: true,
         path: path
       };
-
       this._dashboardService.getFiles(payload)
         .pipe(takeUntil(this._unsubscribeAll))
         .subscribe(
