@@ -39,28 +39,13 @@
                     </mat-select>
                   </mat-form-field>
                   <!-- <br> -->
-                  <mat-form-field class="min-w-60">
+                  <mat-form-field class="min-w-100">
                     <mat-label>Select Location</mat-label>
-                    <!-- <input matInput placeholder="Search Location" name="test" [(ngModel)]="slectedLocation"
-                      [matAutocomplete]="auto" [formControl]="locationCtrl"
-                      placeholder="Search Location Min 3 Character"> -->
                     <mat-select matInput [(ngModel)]="slectedLocation" name="selectedLocation">
-                      <mat-option *ngFor="let option of locations">{{option.name}}</mat-option>
+                      <mat-option value="0-0-0">No location</mat-option>
+                      <mat-option *ngFor="let option of locations"
+                        [value]="option.value">{{option.companyName}}</mat-option>
                     </mat-select>
-
-                    <button *ngIf="slectedLocation" matSuffix mat-icon-button aria-label="Clear"
-                      (click)="clearSelection()">
-                      <mat-icon>close</mat-icon>
-                    </button>
-                    <mat-autocomplete [panelWidth]="400" #auto="matAutocomplete" (optionSelected)="onSelected()"
-                      [displayWith]="displayWith">
-                      <mat-option *ngIf="isLoadings" class="is-loading">Loading...</mat-option>
-                      <ng-container *ngIf="!isLoadings">
-                        <mat-option *ngFor="let loc of filteredLocations" [value]="loc.attributeName">
-                          <span>{{loc.attributeName}}</span>
-                        </mat-option>
-                      </ng-container>
-                    </mat-autocomplete>
                   </mat-form-field>
                   <br>
                   <mat-checkbox class="example-margin min-w-60" [(ngModel)]="ngDiscount" name="check">Include discounts
@@ -118,7 +103,9 @@
 
   <div *ngIf="isConsolidatedBill && !isApplyLoader">
     <div *ngIf="consolidatedData.length == 0">
-      <div class="text-center font-bold text-lg">No Data Found</div>
+      <div class="text-center font-bold text-lg alert alert-warning p-5">There are no orders to bill with the date or
+        order type specified.
+      </div>
     </div>
     <div class="inline-block text-left print:p-0 w-full" id="htmltable" #htmltable *ngIf="consolidatedData.length > 0">
       <div class="text-xl mb-2" *ngIf="consolidatedData && consolidatedData?.length > 0">
@@ -149,7 +136,7 @@
       <div id="printPDf" #printPDf>
         <div
           class="p-5 rounded-2xl mb-5 shadow bg-card print:w-auto print:p-0 print:rounded-none print:shadow-none print:bg-transparent"
-          *ngFor="let item of consolidatedData" >
+          *ngFor="let item of consolidatedData">
 
           <div class="flex items-start">
             <div class="grid place-items-start gap-y-12 mt-5">

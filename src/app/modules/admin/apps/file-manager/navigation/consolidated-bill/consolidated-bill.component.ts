@@ -27,12 +27,6 @@ export class ConsolidatedBillComponent implements OnInit, OnDestroy {
   isApplyLoader: boolean = false;
   isApplyMsg: boolean = false;
 
-
-  locationCtrl = new FormControl();
-  filteredLocations: any;
-  minLengthTerm = 3;
-  slectedLocation: any = "";
-  isLoadings: boolean = false;
   locations: any = [];
 
 
@@ -45,6 +39,9 @@ export class ConsolidatedBillComponent implements OnInit, OnDestroy {
   date: any;
   consolidatedData: any;
   totalAmount = 0;
+  currentCompanyProfileID = 0;
+  currentLocationID = 0;
+  slectedLocation = '0-0-0'
   constructor(
     private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -52,18 +49,6 @@ export class ConsolidatedBillComponent implements OnInit, OnDestroy {
     private http: HttpClient
   ) { }
 
-  onSelected() {
-    this.slectedLocation = this.slectedLocation;
-  }
-
-  displayWith(value: any) {
-    return value;
-  }
-
-  clearSelection() {
-    this.slectedLocation = "";
-    this.filteredLocations = [];
-  }
 
   ngOnInit() {
     this.getStoreDetails();
@@ -76,10 +61,51 @@ export class ConsolidatedBillComponent implements OnInit, OnDestroy {
       locations_departments: true
     }
     this._storeManagerService.getStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe((res: any) => {
-      const parts = res.qryStoreLocationAttributes[0].qryStoreLocationAttributes.split(",,");
-      this.locations = parts.map(part => {
-        const [id, storeId, name] = part.split("::");
-        return { id, storeId, name };
+      let departments = [];
+      let attributes = [];
+      let currentCompanyProfileID = 0;
+      let currentLocationID = 0;
+
+      if (res.qryDepartments[0]?.qryDepartments) {
+        departments = res.qryDepartments[0].qryDepartments.split(',,').map(department => {
+          const [companyName, pk_companyProfileID, departmentID, locationID, departmentName, locationName, count] = department.split('::');
+          return {
+            companyName,
+            pk_companyProfileID,
+            departmentID,
+            locationID,
+            departmentName,
+            locationName,
+            count,
+          };
+        });
+      }
+
+      if (res.qryStoreLocationAttributes[0]?.qryStoreLocationAttributes) {
+        attributes = res.qryStoreLocationAttributes[0].qryStoreLocationAttributes.split(",,").map(attribute => {
+          const [id, storeId, name] = attribute.split("::");
+          return { id, storeId, name };
+        });
+      }
+      let companyName = '';
+      let value = '0-0-0';
+      departments.forEach(department => {
+        if (department.pk_companyProfileID !== currentCompanyProfileID) {
+          currentCompanyProfileID = department.pk_companyProfileID;
+          value = `${department.pk_companyProfileID}-0-0`;
+          companyName = `${department.companyName} - All locations/departments`;
+          this.locations.push({ value, companyName });
+        }
+        if (department.locationID !== currentLocationID) {
+          currentLocationID = department.locationID;
+          value = `${department.pk_companyProfileID}-${department.locationID}-0`;
+          companyName = `${department.companyName} - ${department.locationName}-departments`;
+          this.locations.push({ value, companyName });
+        }
+        value = `${department.pk_companyProfileID}-${department.locationID}-${department.departmentID}`;
+        companyName = `${department.companyName} - ${department.locationName} - ${department.departmentName}`;
+        this.locations.push({ value, companyName });
+
       });
       this._changeDetectorRef.markForCheck();
     }, err => {
@@ -92,7 +118,6 @@ export class ConsolidatedBillComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((items: any) => {
         this.selectedStore = items["data"][0];
-        this.getLocationsSearch();
       });
   }
   ngOnDestroy(): void {
@@ -100,45 +125,6 @@ export class ConsolidatedBillComponent implements OnInit, OnDestroy {
     this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
   };
-  getLocationsSearch() {
-    this.locationCtrl.valueChanges
-      .pipe(
-        filter(res => {
-          return res !== null && res.length >= this.minLengthTerm
-        }),
-        distinctUntilChanged(),
-        debounceTime(1000),
-        tap(() => {
-          this.filteredLocations = [];
-          this.isLoadings = true;
-          this._changeDetectorRef.markForCheck();
-
-        }),
-        switchMap(value => this._storeManagerService.getStoresData({
-          store_id: this.selectedStore.pk_storeID,
-          store_locations: true,
-          size: 20,
-          keyword: value
-        }).pipe(takeUntil(this._unsubscribeAll),
-          finalize(() => {
-            this.isLoadings = false
-            this._changeDetectorRef.markForCheck();
-
-          }),
-        )
-        )
-      )
-      .subscribe((data: any) => {
-        if (data['data'].length == 0) {
-          this.filteredLocations = [];
-          this._changeDetectorRef.markForCheck();
-
-        } else {
-          this.filteredLocations = data['data'];
-          this._changeDetectorRef.markForCheck();
-        }
-      });
-  }
   getConsolidatedBill() {
     let isCurrentDate = 0;
     let dateData = ''
@@ -151,6 +137,20 @@ export class ConsolidatedBillComponent implements OnInit, OnDestroy {
       this.date = moment(this.ngDate).format('MM/DD/yyyy');
       dateData = moment(this.ngDate).format('MM/DD/yyyy');
     }
+    let locations = this.slectedLocation.split('-');
+    let index = -1;
+    let locationID = -1;
+    if (locations[2]) {
+      index = 3;
+      locationID = Number(locations[2]);
+    } else if (locations[1]) {
+      index = 2;
+      locationID = Number(locations[1]);
+
+    } else if (locations[0]) {
+      index = 1;
+      locationID = Number(locations[0]);
+    }
     this.isConsolidatedBill = true;
     this.isApplyLoader = true;
     let payload = {
@@ -159,7 +159,9 @@ export class ConsolidatedBillComponent implements OnInit, OnDestroy {
       isCurrentDate,
       order_date: dateData,
       order_type: this.ngOrder,
-      // attribute_id: this.slectedLocation
+      department_id: locationID,
+      department_index: index,
+      blnIncludeDiscounts: this.ngDiscount
     }
     this._storeManagerService.getStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       res["data"].forEach(element => {
@@ -246,10 +248,17 @@ export class ConsolidatedBillComponent implements OnInit, OnDestroy {
         pdf.addPage([PDF_Width, PDF_Height]);
         pdf.addImage(imgData, 'jpeg', top_left_margin, -(PDF_Height * i) + (top_left_margin * 4), canvas_image_width, canvas_image_height);
       }
-      
+
       pdf.save(file_name);
       this.consolidatedData.pdfLoader = false;
       this._changeDetectorRef.markForCheck();
     });
+  }
+  updateCompanyProfileID(id: number): void {
+    this.currentCompanyProfileID = id;
+  }
+
+  updateLocationID(id: number): void {
+    this.currentLocationID = id;
   }
 }

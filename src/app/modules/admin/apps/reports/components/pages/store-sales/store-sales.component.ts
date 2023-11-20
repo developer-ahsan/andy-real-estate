@@ -271,7 +271,7 @@ export class ReportsStoreSalesComponent implements OnInit, OnDestroy {
                   } else {
                     sattusData = this._reportService.getStatusValue(data[7]);
                   }
-                  element.storeDetails.push({ date: data[0], id: data[1], company: data[2], sale: data[3], tax: data[4], margin: Number(data[5]).toFixed(2), paid: paid, status: sattusData.statusValue, statusColor: sattusData.statusColor, cost: Number(data[10]) });
+                  element.storeDetails.push({ date: data[0], id: data[1], company: data[2], sale: data[3], tax: data[4], margin: Number(data[5]) ? data[5]?.toFixed(2) : 0.0, paid: paid, status: sattusData.statusValue, statusColor: sattusData.statusColor, cost: Number(data[10]) });
                 });
               }
             }
@@ -556,12 +556,12 @@ export class ReportsStoreSalesComponent implements OnInit, OnDestroy {
           store.storeName,
           this.currencyPipe.transform(Number(store.SALES), 'USD', 'symbol', '1.0-2', 'en-US'),
           this.currencyPipe.transform(Number(store.PY), 'USD', 'symbol', '1.0-2', 'en-US'),
-          `${store.percent.toFixed(2)}%`,
+          `${store.percent ? store.percent?.toFixed(2) : 0.0}%`,
           this.currencyPipe.transform(Number(store.DIFF), 'USD', 'symbol', '1.0-2', 'en-US'),
           store.NS,
           store.PYNS,
           this.currencyPipe.transform(Number(store.AVG), 'USD', 'symbol', '1.0-2', 'en-US'),
-          `${store.MARGIN.toFixed(2)}%`
+          `${store.MARGIN ? store.MARGIN?.toFixed(2) : 0.0}%`
         ]
       )
     });
@@ -636,7 +636,7 @@ export class ReportsStoreSalesComponent implements OnInit, OnDestroy {
             store.storeName,
             this.currencyPipe.transform(Number(store.SALES), 'USD', 'symbol', '1.0-2', 'en-US'),
             this.currencyPipe.transform(Number(store.PY), 'USD', 'symbol', '1.0-2', 'en-US'),
-            `${store.percent.toFixed(2)}%`,
+            `${store.percent ? store.percent?.toFixed(2) : 0.0}%`,
             store.NS,
             store.PYNS,
           ]
