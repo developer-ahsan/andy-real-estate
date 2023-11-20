@@ -162,7 +162,6 @@ export class ConsolidatedBillComponent implements OnInit, OnDestroy {
       // attribute_id: this.slectedLocation
     }
     this._storeManagerService.getStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      console.log(res);
       res["data"].forEach(element => {
         element.Prducts = [];
         if (element.products) {
@@ -223,7 +222,7 @@ export class ConsolidatedBillComponent implements OnInit, OnDestroy {
   }
   public exportHtmlToPDF() {
     this.consolidatedData.pdfLoader = true;
-    let element = document.getElementById('htmltable');
+    let element = document.getElementById('printPDf');
     var positionInfo = element.getBoundingClientRect();
     var height = positionInfo.height;
     var width = positionInfo.width;
@@ -235,9 +234,8 @@ export class ConsolidatedBillComponent implements OnInit, OnDestroy {
 
     var totalPDFPages = Math.ceil(height / PDF_Height) - 1;
     const { pk_storeID } = this.selectedStore;
-    let data = document.getElementById('printPDf');
     const file_name = `ConsolidatedBill_${pk_storeID}.pdf`;
-    html2canvas(data, { useCORS: true }).then(canvas => {
+    html2canvas(element, { useCORS: true }).then(canvas => {
       canvas.getContext('2d');
       var imgData = canvas.toDataURL("image/jpeg", 1.0);
       var pdf = new jsPDF('p', 'pt', [PDF_Width, PDF_Height]);
@@ -248,6 +246,7 @@ export class ConsolidatedBillComponent implements OnInit, OnDestroy {
         pdf.addPage([PDF_Width, PDF_Height]);
         pdf.addImage(imgData, 'jpeg', top_left_margin, -(PDF_Height * i) + (top_left_margin * 4), canvas_image_width, canvas_image_height);
       }
+      
       pdf.save(file_name);
       this.consolidatedData.pdfLoader = false;
       this._changeDetectorRef.markForCheck();

@@ -121,6 +121,9 @@
       <div class="text-center font-bold text-lg">No Data Found</div>
     </div>
     <div class="inline-block text-left print:p-0 w-full" id="htmltable" #htmltable *ngIf="consolidatedData.length > 0">
+      <div class="text-xl mb-2" *ngIf="consolidatedData && consolidatedData?.length > 0">
+        <span class="font-bold"> Total </span> : {{consolidatedData[0].theTotal}}
+      </div>
       <div class="flex justify-between">
         <div>
           <button mat-button mat-flat-button color="primary" [disabled]="consolidatedData.finalizeLoader"
@@ -143,36 +146,37 @@
         </div>
       </div>
       <!-- Invoice -->
-      <div
-        class="p-5 rounded-2xl mb-5 shadow bg-card print:w-auto print:p-0 print:rounded-none print:shadow-none print:bg-transparent"
-        *ngFor="let item of consolidatedData" id="printPDf" #printPDf>
+      <div id="printPDf" #printPDf>
+        <div
+          class="p-5 rounded-2xl mb-5 shadow bg-card print:w-auto print:p-0 print:rounded-none print:shadow-none print:bg-transparent"
+          *ngFor="let item of consolidatedData" >
 
-        <div class="flex items-start">
-          <div class="grid place-items-start gap-y-12 mt-5">
-            <div class="grid auto-cols-max grid-flow-col gap-x-2">
-              <div class="pl-6 text-lg">
-                <div class="font-bold tracking-tight text-secondary">INVOICE DATE
+          <div class="flex items-start">
+            <div class="grid place-items-start gap-y-12 mt-5">
+              <div class="grid auto-cols-max grid-flow-col gap-x-2">
+                <div class="pl-6 text-lg">
+                  <div class="font-bold tracking-tight text-secondary">INVOICE DATE
+                  </div>
+                  <div class="font-bold">{{item.INVOICE_DATE | date}}</div>
+                  <div>Dept: {{item.DEPT}}</div>
+                  <div>Contact: {{item.CONTACT}}</div>
+                  <div>Email: {{item.EMAIL}}</div>
+                  <div>Charge Code: {{item.CHARGE_CODE == '' ? 'N/A' : item.CHARGE_CODE }}</div>
                 </div>
-                <div class="font-bold">{{item.INVOICE_DATE | date}}</div>
-                <div>Dept: {{item.DEPT}}</div>
-                <div>Contact: {{item.CONTACT}}</div>
-                <div>Email: {{item.EMAIL}}</div>
-                <div>Charge Code: {{item.CHARGE_CODE == '' ? 'N/A' : item.CHARGE_CODE }}</div>
               </div>
             </div>
-          </div>
-          <div class="grid grid-cols-2 gap-x-4 gap-y-1 ml-auto">
-            <div class="justify-self-start font-semibold text-3xl tracking-tight">INVOICE</div>
-            <div class="justify-self-start text-3xl font-semibold">#{{item.INVOICE}}</div>
+            <div class="grid grid-cols-2 gap-x-4 gap-y-1 ml-auto">
+              <div class="justify-self-start font-semibold text-3xl tracking-tight">INVOICE</div>
+              <div class="justify-self-start text-3xl font-semibold">#{{item.INVOICE}}</div>
 
-            <div class="justify-self-start font-medium tracking-tight text-secondary">TOTAL DUE
+              <div class="justify-self-start font-medium tracking-tight text-secondary">TOTAL DUE
+              </div>
+              <div class="font-medium">{{item.TOTAL_DUE | currency}}</div>
+              <div class="justify-self-start font-medium tracking-tight text-secondary">TOTAL PAID</div>
+              <div class="font-medium">{{item.TOTAL_PAID | currency }}</div>
             </div>
-            <div class="font-medium">{{item.TOTAL_DUE | currency}}</div>
-            <div class="justify-self-start font-medium tracking-tight text-secondary">TOTAL PAID</div>
-            <div class="font-medium">{{item.TOTAL_PAID | currency }}</div>
           </div>
-        </div>
-        <!-- <div *ngIf="!item.loader" class="text-center mt-5">
+          <!-- <div *ngIf="!item.loader" class="text-center mt-5">
           <button (click)="getConsolidatedBillDetail(item)" *ngIf="!item?.hide"
             class="font-medium text-md text-secondary">View Details</button>
         </div>
@@ -180,38 +184,38 @@
           <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
           </ngx-skeleton-loader>
         </div> -->
-        <div *ngIf="item?.Prducts">
-          <div class="row mt-16">
-            <div class="col-1 font-medium text-md text-secondary">ITEM</div>
-            <div class="col-3 font-medium text-md text-secondary">DESCRIPTION</div>
-            <div class="col-2 font-medium text-md text-secondary">Unit Price</div>
-            <div class="col-1 font-medium text-md text-secondary">QTY</div>
-            <div class="col-2 font-medium text-md text-secondary">EXTENDED PRICE (Qty * Unit Price)</div>
-            <div class="col-1 font-medium text-md text-secondary">SETUPS</div>
-            <div class="col-1 font-medium text-md text-secondary">SHIPPING</div>
-            <div class="col-1 font-medium text-md text-secondary">TOTAL</div>
-            <div class="col-12 my-4 border-b"></div>
+          <div *ngIf="item?.Prducts">
+            <div class="grid grid-cols-12 gap-x-2 mt-16">
+              <div class="col-span-1 font-medium text-md text-secondary">ITEM</div>
+              <div class="col-span-3 font-medium text-md text-secondary">DESCRIPTION</div>
+              <div class="col-span-2 font-medium text-md text-secondary">Unit Price</div>
+              <div class="col-span-1 font-medium text-md text-secondary">QTY</div>
+              <div class="col-span-2 font-medium text-md text-secondary">EXTENDED PRICE (Qty * Unit Price)</div>
+              <div class="col-span-1 font-medium text-md text-secondary">SETUPS</div>
+              <div class="col-span-1 font-medium text-md text-secondary">SHIPPING</div>
+              <div class="col-span-1 font-medium text-md text-secondary">TOTAL</div>
+            </div>
+            <div class="grid grid-cols-12 gap-x-2 my-1" *ngFor="let product of item.Prducts">
+              <div class="col-span-1 text-secondary">{{ product.id ? product.id : 'N/A' }}</div>
+              <div class="col-span-3 text-secondary">{{ product.name ? product.name : 'N/A' }}</div>
+              <div class="col-span-2 text-secondary">{{ product.unit ? product.unit : 'N/A' }}</div>
+              <div class="col-span-1 text-secondary">{{ product.qty ? product.qty : 'N/A' }}</div>
+              <div class="col-span-2 text-secondary">{{ product.extended ? product.extended : 'N/A' }}</div>
+              <div class="col-span-1 text-secondary">{{ product.setup ? product.setup : 'N/A' }}</div>
+              <div class="col-span-1 text-secondary">{{ product.shipping ? product.shipping : 'N/A' }}</div>
+              <div class="col-span-1 text-secondary font-bold">{{ product.total ? product.total : 'N/A' }}</div>
+            </div>
           </div>
-          <div class="row" *ngFor="let product of item?.Prducts">
-            <div class="col-1 text-secondary">{{product.id ? product.id : 'N/A' }}</div>
-            <div class="col-3 text-secondary">{{product.name}}</div>
-            <!-- <div class="col-2 text-secondary">{{product.runPrice | currency}}</div> -->
-            <div class="col-2 text-secondary">{{product.unit | currency}}</div>
-            <div class="col-1 text-secondary">{{product.qty }}</div>
-            <!-- <div class="col-1  text-secondary">{{product.quantity}}</div> -->
-            <div class="col-2 text-secondary">{{product.extended | currency}}</div>
-            <div class="col-1 text-secondary">{{product.setup | currency}}</div>
-            <div class="col-1 text-secondary">{{product.shipping | currency}}</div>
-            <div class="col-1 text-secondary font-bold">{{product.total |
-              currency}}</div>
-            <div class="col-12 my-4 border-b"></div>
-          </div>
-        </div>
-        <div class="mt-10">
-          <div style="text-align: -webkit-center;">
-            <img class="w-40" src="assets/images/logo/consolidus-logo.jpeg">
+          <div class="mt-10">
+            <div style="text-align: -webkit-center;">
+              <img class="w-40" src="assets/images/logo/consolidus-logo.jpeg">
+            </div>
           </div>
         </div>
+      </div>
+
+      <div class="text-xl " *ngIf="consolidatedData && consolidatedData?.length > 0">
+        <span class="font-bold"> Total </span> : {{consolidatedData[0].theTotal}}
       </div>
 
       <!-- Finalize -->
