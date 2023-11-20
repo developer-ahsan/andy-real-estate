@@ -41,7 +41,8 @@ export class ConsolidatedBillComponent implements OnInit, OnDestroy {
   totalAmount = 0;
   currentCompanyProfileID = 0;
   currentLocationID = 0;
-  slectedLocation = '0-0-0'
+  slectedLocation = '0-0-0';
+  grandTotal = 0;
   constructor(
     private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -164,13 +165,27 @@ export class ConsolidatedBillComponent implements OnInit, OnDestroy {
       blnIncludeDiscounts: this.ngDiscount
     }
     this._storeManagerService.getStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      res["data"].forEach(element => {
-        element.Prducts = [];
+      res["data"].forEach((element, index) => {
+        if (index == 0) {
+          this.grandTotal = element.theTotal;
+          if (this.ngDiscount) {
+            element.discount1Date = moment().add(7, 'days').format('MMM DD, YYYY');
+            element.discount2Date = moment().add(21, 'days').format('MMM DD, YYYY');
+            element.totalDueDate = moment().add(21, 'days').format('MMM DD, YYYY');
+
+            element.discount1Amount = this.grandTotal * 0.02;
+            element.discountedTotal1 = this.grandTotal - element.discount1Amount;
+
+            element.discount2Amount = this.grandTotal * 0.01;
+            element.discountedTotal2 = this.grandTotal - element.discount2Amount;
+          }
+        }
+        element.Products = [];
         if (element.products) {
           let products = element.products.split(',');
           products.forEach(item => {
             let prods = item.split(':');
-            element.Prducts.push({ id: prods[0], name: prods[1], unit: prods[2], qty: prods[3], extended: prods[4], setup: prods[5], shipping: prods[6], total: prods[7] });
+            element.Products.push({ id: prods[0], name: prods[1], unit: prods[2], qty: prods[3], extended: prods[4], setup: prods[5], shipping: prods[6], total: prods[7] });
           });
         }
       });

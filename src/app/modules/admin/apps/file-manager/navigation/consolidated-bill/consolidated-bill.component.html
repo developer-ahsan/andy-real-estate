@@ -108,9 +108,6 @@
       </div>
     </div>
     <div class="inline-block text-left print:p-0 w-full" id="htmltable" #htmltable *ngIf="consolidatedData.length > 0">
-      <div class="text-xl mb-2" *ngIf="consolidatedData && consolidatedData?.length > 0">
-        <span class="font-bold"> Total </span> : {{consolidatedData[0].theTotal}}
-      </div>
       <div class="flex justify-between">
         <div>
           <button mat-button mat-flat-button color="primary" [disabled]="consolidatedData.finalizeLoader"
@@ -130,6 +127,44 @@
             <mat-progress-spinner *ngIf="consolidatedData.pdfLoader" [diameter]="24" [mode]="'indeterminate'">
             </mat-progress-spinner>
           </button>
+        </div>
+      </div>
+      <div class="bg-card p-5 shadow rounded-2xl my-2" *ngIf="consolidatedData && consolidatedData?.length > 0">
+        <div class="text-xl mb-2">
+          <table class="text-right">
+            <tr>
+              <th>Total: </th>
+              <td>{{consolidatedData[0].theTotal | currency}}</td>
+            </tr>
+            <ng-container *ngIf="ngDiscount">
+              <tr>
+                <td>2% discount by check on or before {{consolidatedData[0]?.discount1Date}}: </td>
+                <td>
+                  <span class="text-red-500">({{consolidatedData[0]?.discount1Amount | currency}})</span>
+                </td>
+              </tr>
+              <tr>
+                <td></td>
+                <td>{{consolidatedData[0]?.discountedTotal1 | currency}}</td>
+              </tr>
+              <tr>
+                <td>1% discount by check on or before {{consolidatedData[0]?.discount2Date}}: </td>
+                <td>
+                  <span class="text-red-500">({{consolidatedData[0]?.discount2Amount | currency}})</span>
+                </td>
+              </tr>
+              <tr>
+                <td></td>
+                <td>{{consolidatedData[0]?.discountedTotal2 | currency}}</td>
+              </tr>
+              <tr>
+                <td>Total due if after {{consolidatedData[0]?.totalDueDate}} or by credit card: </td>
+                <td>
+                  {{consolidatedData[0]?.theTotal | currency}}
+                </td>
+              </tr>
+            </ng-container>
+          </table>
         </div>
       </div>
       <!-- Invoice -->
@@ -171,7 +206,7 @@
           <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
           </ngx-skeleton-loader>
         </div> -->
-          <div *ngIf="item?.Prducts">
+          <div *ngIf="item?.Products">
             <div class="grid grid-cols-12 gap-x-2 mt-16">
               <div class="col-span-1 font-medium text-md text-secondary">ITEM</div>
               <div class="col-span-3 font-medium text-md text-secondary">DESCRIPTION</div>
@@ -182,7 +217,7 @@
               <div class="col-span-1 font-medium text-md text-secondary">SHIPPING</div>
               <div class="col-span-1 font-medium text-md text-secondary">TOTAL</div>
             </div>
-            <div class="grid grid-cols-12 gap-x-2 my-1" *ngFor="let product of item.Prducts">
+            <div class="grid grid-cols-12 gap-x-2 my-1" *ngFor="let product of item.Products">
               <div class="col-span-1 text-secondary">{{ product.id ? product.id : 'N/A' }}</div>
               <div class="col-span-3 text-secondary">{{ product.name ? product.name : 'N/A' }}</div>
               <div class="col-span-2 text-secondary">{{ product.unit ? product.unit : 'N/A' }}</div>
@@ -201,8 +236,43 @@
         </div>
       </div>
 
-      <div class="text-xl " *ngIf="consolidatedData && consolidatedData?.length > 0">
-        <span class="font-bold"> Total </span> : {{consolidatedData[0].theTotal}}
+      <div class="bg-card p-5 shadow rounded-2xl my-2" *ngIf="consolidatedData && consolidatedData?.length > 0">
+        <div class="text-xl mb-2">
+          <table class="text-right">
+            <tr>
+              <th>Total: </th>
+              <td>{{consolidatedData[0].theTotal | currency}}</td>
+            </tr>
+            <ng-container *ngIf="ngDiscount">
+              <tr>
+                <td>2% discount by check on or before {{consolidatedData[0]?.discount1Date}}: </td>
+                <td>
+                  <span class="text-red-500">({{consolidatedData[0]?.discount1Amount | currency}})</span>
+                </td>
+              </tr>
+              <tr>
+                <td></td>
+                <td>{{consolidatedData[0]?.discountedTotal1 | currency}}</td>
+              </tr>
+              <tr>
+                <td>1% discount by check on or before {{consolidatedData[0]?.discount2Date}}: </td>
+                <td>
+                  <span class="text-red-500">({{consolidatedData[0]?.discount2Amount | currency}})</span>
+                </td>
+              </tr>
+              <tr>
+                <td></td>
+                <td>{{consolidatedData[0]?.discountedTotal2 | currency}}</td>
+              </tr>
+              <tr>
+                <td>Total due if after {{consolidatedData[0]?.totalDueDate}} or by credit card: </td>
+                <td>
+                  {{consolidatedData[0]?.theTotal | currency}}
+                </td>
+              </tr>
+            </ng-container>
+          </table>
+        </div>
       </div>
 
       <!-- Finalize -->
