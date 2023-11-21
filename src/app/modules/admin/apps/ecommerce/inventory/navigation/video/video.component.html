@@ -46,11 +46,19 @@
                                         <input matInput [formControlName]="'video'">
                                         <mat-error>Please fill this field</mat-error>
                                     </mat-form-field>
-
+                                    <div *ngIf="videoData?.button?.length">
+                                        <div *ngIf="imgLogoExit">
+                                            Current Button Image: <img
+                                                src="{{imgUrl}}/globalAssets/Products/Videos/{{selectedProduct.pk_productID}}/{{selectedProduct.pk_productID}}.jpg"
+                                                style="width:10%; height:auto;" /><br /><br /></div>
+                                        <div *ngIf="!imgLogoExit">
+                                            Current Button Image: NONE
+                                        </div>
+                                    </div>
                                     <div class="font-semibold text-secondary">
                                         Play Button Image: (355px W by 209px H, JPG ONLY)
                                     </div>
-                                    <input type="file" accept=".jpg" (change)="upload($event)"
+                                    <input type="file" accept=".jpg" #videoImg (change)="upload($event)"
                                         style="line-height: 2.5;" />
                                 </div>
                                 <div class="col-12 mt-2" *ngIf="videoLength > 0" style="height: 350px;">
@@ -73,15 +81,32 @@
                                     <span class="ml-2">An error occurred, try again!</span>
                                 </ng-container>
                             </div>
-                            <button class="min-w-40" mat-stroked-button
+
+                            <button color="primary" class="w-full rounded-md mr-2" mat-button mat-flat-button
                                 [matTooltip]="'Videos must be free from any vendor branding'" (click)="uploadImage()"
                                 [disabled]="videoUpdateLoader">
                                 <mat-progress-spinner *ngIf="videoUpdateLoader" [diameter]="24"
                                     [mode]="'indeterminate'">
                                 </mat-progress-spinner>
-                                <mat-icon *ngIf="!videoUpdateLoader" svgIcon="mode_edit_outline"></mat-icon>
                                 <span *ngIf="!videoUpdateLoader" class="ml-1 mr-1">Update</span>
                             </button>
+
+                            <button color="danger" class="w-full rounded-md text-light bg-red-500 mr-1" mat-button
+                                mat-flat-button>
+                                <mat-progress-spinner *ngIf="videoUpdateLoader" [diameter]="24"
+                                    [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                                <span *ngIf="!videoUpdateLoader" class="ml-1 mr-1">Remove Video</span>
+                            </button>
+
+                            <button color="danger" class="w-full min-w-50 text-light rounded-md bg-red-500 mr-1"
+                                mat-button mat-flat-button>
+                                <mat-progress-spinner *ngIf="videoUpdateLoader" [diameter]="24"
+                                    [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                                <span *ngIf="!videoUpdateLoader" class="ml-1 mr-1">Remove play button image</span>
+                            </button>
+
                         </div>
                     </div>
                 </div>

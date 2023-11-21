@@ -56,7 +56,7 @@
     <div class="row my-3" *ngIf="!isLoading">
         <div class="col-12">
             <div class="p-2" *ngIf="!imagesArray.length">
-                <div class="font-semibold text-danger">
+                <div class="font-semibold p-5 alert alert-warning">
                     No product quote for this product.
                 </div>
             </div>
@@ -77,7 +77,8 @@
 
 
                     </fuse-card>
-                    <p (click)="openPDF()" class="underline cursor-pointer text-blue-500" *ngIf="extData === 'pdf'">Click here to view
+                    <p (click)="openPDF()" class="underline cursor-pointer text-blue-500" *ngIf="extData === 'pdf'">
+                        Click here to view
                         the product quote</p>
                 </div>
             </div>

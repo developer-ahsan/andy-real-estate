@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ElementRef, ViewChild } from '@angular/core';
 import { Package } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -6,6 +6,8 @@ import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inv
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
+import { environment } from 'environments/environment';
 
 @Component({
   selector: 'app-video',
@@ -28,10 +30,15 @@ export class VideoComponent implements OnInit, OnDestroy {
   flashMessage: 'success' | 'error' | null = null;
 
   url: SafeResourceUrl;
-
+  @ViewChild('videoImg') videoImg: ElementRef;
+  mainImageValue: any;
+  imgLogoExit: boolean = false;
+  videoData: any;
+  imgUrl = environment.assetsURL;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
+    private _commonService: DashboardsService,
     private _formBuilder: FormBuilder,
     private sanitizer: DomSanitizer,
     private _snackBar: MatSnackBar
@@ -45,17 +52,40 @@ export class VideoComponent implements OnInit, OnDestroy {
     this.getProductDetail();
 
   }
+  checkImageButton() {
+    const { pk_productID } = this.selectedProduct;
+    const url = `${environment.assetsURL}globalAssets/Products/Videos/${pk_productID}/${pk_productID}.jpg`
+    const img = new Image();
+    img.src = url;
+
+    if (img.complete) {
+
+    } else {
+      img.onload = () => {
+        this.imgLogoExit = true;
+        this._changeDetectorRef.markForCheck();
+        return true;
+      };
+
+      img.onerror = () => {
+        this.imgLogoExit = false;
+        this._changeDetectorRef.markForCheck();
+        return;
+      };
+    };
+  }
   getProductDetail() {
     this.isLoading = true;
     this._inventoryService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe((details) => {
       if (details) {
         this.selectedProduct = details["data"][0];
         const { pk_productID } = this.selectedProduct;
-
+        this.checkImageButton();
         this._inventoryService.getVideoByProductId(pk_productID)
           .pipe(takeUntil(this._unsubscribeAll))
           .subscribe((video) => {
             if (video["data"]?.length) {
+              this.videoData = video["data"][0];
               this.videoLink = video["data"][0].video;
               this.embeddedLink = `//www.youtube.com/embed/${this.getId(this.videoLink)}`;
               this.url = this.sanitizer.bypassSecurityTrustResourceUrl(this.embeddedLink);
@@ -103,10 +133,29 @@ export class VideoComponent implements OnInit, OnDestroy {
     return url.replace(/^https?:\/\//, '');
   }
 
-  upload(event: Event) {
-    const target = event.target as HTMLInputElement;
-    const files = target.files as FileList;
-    this.images = files;
+  upload(event: any) {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      let image: any = new Image;
+      image.src = reader.result;
+      image.onload = () => {
+        if (image.width != 355 || image.height != 209) {
+          this._snackBar.open("Please select image with 355px width and 209px height!", '', {
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+            duration: 3500
+          });
+          this.videoImg.nativeElement.value = '';
+          this._changeDetectorRef.markForCheck();
+          return;
+        }
+        this.mainImageValue = {
+          imageUpload: reader.result
+        };
+      }
+    }
   }
 
   uploadImage(): void {
