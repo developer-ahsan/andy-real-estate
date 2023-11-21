@@ -6,19 +6,63 @@
             <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
                 <div class="p-6 sm:p-8 lg:p-10 w-full">
                     <div class="text-2xl font-bold">
+                        Current Core Product Options
+                    </div>
+                    <!-- Core product -->
+                    <div class="gap-y-4 mt-6">
+                        <table class="table table-striped" *ngIf="coreProducts.length > 0;else not_found">
+                            <thead>
+                                <tr>
+                                    <th>Core</th>
+                                    <th>Category</th>
+                                    <th>SubCategory</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of coreProducts">
+                                    <td><a target="_blank"
+                                            [routerLink]="['/apps/system/core-products/categories/',item.pk_coreID]">{{item.coreName}}</a>
+                                    </td>
+                                    <td>{{item.categoryName}}</td>
+                                    <td>{{item.subCategoryName}}</td>
+                                    <td>
+                                        <mat-icon matTooltip="Remove" class="text-red-500 text-2xl font-bold"
+                                            [svgIcon]="'heroicons_outline:x'">
+                                        </mat-icon>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <ng-template #not_found>
+                            <div class="text-secondary font-semibold p-3 alert alert-warning">
+                                *This product is not currently in any core product list.
+                            </div>
+                        </ng-template>
+                    </div>
+                </div>
+            </fuse-card>
+        </div>
+        <div class="col-12 my-2">
+            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                <div class="p-6 sm:p-8 lg:p-10 w-full">
+                    <div class="text-2xl font-bold">
                         <button
                             [matTooltip]="'A product can only be in a subcategory once. Sub categories that already have this product in them will not be available in the list below.'">
                             <i class="fa fa-info-circle"></i>
                         </button>
                         Add To Core
                     </div>
+                    <p class="text-red-500">NOTE: A product can only be in a subcategory once. Sub categories that
+                        already have this product in them will not be available in the list below.
+                    </p>
                     <!-- Core product -->
                     <div class="gap-y-4 mt-6">
                         <div class="row">
                             <div class="col-lg-4 col-12">
                                 <mat-form-field class="w-full">
                                     <mat-label>Select a core</mat-label>
-                                    <mat-select [(ngModel)]="selectedCore" name="order">
+                                    <mat-select [(ngModel)]="selectedCore" name="order" [disabled]="selectedCore">
                                         <mat-option (click)="coreSelection(available_core)"
                                             *ngFor="let available_core of available_cores" [value]="available_core">
                                             {{available_core.coreName}}
@@ -29,7 +73,7 @@
                             <div class="col-lg-4 col-12">
                                 <mat-form-field class="w-full">
                                     <mat-label>Select a category</mat-label>
-                                    <mat-select [(ngModel)]="selectedCategory"
+                                    <mat-select [(ngModel)]="selectedCategory" [disabled]="selectedCategory"
                                         [disabled]="categories.length ? false : true" name="order">
                                         <mat-option (click)="categorySelection(category)"
                                             *ngFor="let category of categories" [value]="category">
@@ -41,7 +85,7 @@
                             <div class="col-lg-4 col-12">
                                 <mat-form-field class="w-full">
                                     <mat-label>Select a subcategory</mat-label>
-                                    <mat-select [(ngModel)]="selectedSubCategory"
+                                    <mat-select [(ngModel)]="selectedSubCategory" [disabled]="selectedSubCategory"
                                         [disabled]="subCategory.length ? false : true" name="order">
                                         <mat-option (click)="subCategorySelection(category)"
                                             *ngFor="let category of subCategory" [value]="category">
@@ -67,7 +111,12 @@
                                     </span>
                                 </ng-container>
                             </div>
+                            <button class="min-w-30 mr-2" mat-stroked-button (click)="cancelCore()"
+                                *ngIf="selectedCore">
+                                <span>Cancel</span>
+                            </button>
                             <button class="min-w-40" mat-stroked-button
+                                *ngIf="selectedCategory && selectedCore && selectedSubCategory"
                                 [matTooltip]="'A product can only be in a subcategory once. Sub categories that already have this product in them will not be available in the list below.'"
                                 (click)="addCore()" [disabled]="coreAddLoader">
                                 <mat-progress-spinner *ngIf="coreAddLoader" [diameter]="24" [mode]="'indeterminate'">
@@ -81,44 +130,40 @@
             </fuse-card>
         </div>
     </div>
-    <div class="row" *ngIf="!isLoading">
-        <div class="col-12 mb-2">
+    <div class="row" *ngIf="!isLoading ">
+        <div class="col-12" *ngIf="isProductLoading">
+            <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+            </ngx-skeleton-loader>
+        </div>
+        <div class="col-12 mb-2" *ngIf="!isProductLoading">
             <mat-card class="w-full p-0 mb-10 h-full rounded-2xl shadow">
                 <div class="text-2xl font-bold p-5">
-                    Current Core Product Options
+                    Please review the current products in this subcategory before adding this product.
                 </div>
                 <div *ngIf="dataSource.length > 0;else other_content">
-                    <table mat-table [dataSource]="dataSource" class="w-full border-t">
-
-                        <!-- Core Column -->
-                        <ng-container matColumnDef="core">
-                            <th mat-header-cell *matHeaderCellDef class="w-24 min-w-24"> Core </th>
-                            <td mat-cell *matCellDef="let element"> {{element.coreName}} </td>
-                        </ng-container>
-
-                        <!-- Cateogory Column -->
-                        <ng-container matColumnDef="category">
-                            <th mat-header-cell *matHeaderCellDef class="w-24 min-w-24"> Cateogory </th>
-                            <td mat-cell *matCellDef="let element"> {{element.categoryName}} </td>
-                        </ng-container>
-
-                        <!-- SUBCATEGORY Column -->
-                        <ng-container matColumnDef="sub_category">
-                            <th mat-header-cell *matHeaderCellDef class="w-24 min-w-24"> SUBCATEGORY </th>
-                            <td mat-cell *matCellDef="let element"> {{element.subCategoryName}} </td>
-                        </ng-container>
-
-                        <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
-                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-                            class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
-                            (click)="selection.toggle(row)">
-                        </tr>
-                    </table>
+                    <div class="row">
+                        <div class="col-12 col-md-4 text-center" *ngFor="let item of dataSource">
+                            <div style="text-align: -webkit-center;">
+                                <img class="w-40 rounded-lg object-cover" src="{{item.imgUrl}}"
+                                    onError="this.src='https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'"
+                                    alt="Product Image">
+                            </div>
+                            <div>
+                                <p class="font-bold">{{item.productName}}</p>
+                                <p class="font-bold">Starting at: {{item.cost | currency}}</p>
+                                <p class="font-bold">Imprints:</p>
+                                <br>
+                                <div *ngFor="let imprint of item.imprints">
+                                    <span>{{imprint.name}}: {{imprint.price | currency}}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <ng-template #other_content>
-                    <div class="text-secondary font-semibold p-3">
-                        *This product is not currently in any core product list.
+                    <div class="text-secondary mx-5 font-semibold p-3 alert alert-warning">
+                        *There are currently no other products in this subcategory.
                     </div>
                 </ng-template>
             </mat-card>
