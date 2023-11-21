@@ -223,7 +223,7 @@ export class GenerateReportComponent implements OnInit {
             this.reportParams.end_date = moment(this.WeekDate).endOf('isoWeek').format('yyyy-MM-DD');
             this.report_type = 'Weekly Sales';
         } else if (this.ngPlan == 'monthly') {
-            let d = new Date(this.monthlyYear, this.monthlyMonth - 1, 1);
+            let d = new Date(this.monthlyYear, this.currentMonth - 1, 1);
             this.reportParams.start_date = moment(d).startOf('month').format('yyyy-MM-DD');
             this.reportParams.end_date = moment(d).endOf('month').format('yyyy-MM-DD');
             this.report_type = 'Monthly Sales';
