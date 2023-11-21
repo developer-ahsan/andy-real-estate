@@ -14,10 +14,10 @@
                 <div class="text-4xl font-extrabold tracking-tight">Products</div>
             </div>
 
-            <div class="col-lg-3 col-6">
+            <div class="col-lg-2 flex col-6">
 
                 <!-- Export products button -->
-                <button class="min-w-40 w-full" mat-stroked-button [matTooltip]="'Export Products'"
+                <button class="w-40 w-full" mat-stroked-button [matTooltip]="'Export Products'"
                     (click)="exportProducts()" [disabled]="exportLoader">
                     <mat-progress-spinner *ngIf="exportLoader" [diameter]="24" [mode]="'indeterminate'">
                     </mat-progress-spinner>
@@ -25,9 +25,13 @@
                     <span class="ml-2 mr-1" *ngIf="!exportLoader">Export Products</span>
                 </button>
             </div>
-
-            <div class="col-lg-3 col-6">
-
+            <div class="col-lg-2 flex col-6">
+                <!-- Export products button -->
+                <button class="w-40 w-full" mat-stroked-button [matTooltip]="'Export Store Products'">
+                    <span>Export Store Products</span>
+                </button>
+            </div>
+            <div class="col-lg-2 flex col-6">
                 <!-- Add product button -->
                 <button class="min-w-40 w-full" mat-flat-button [color]="'primary'" [matTooltip]="'Add new product'"
                     (click)="enableProductAddFormFn()" [disabled]="firstFormLoader || isSupplierNotReceived">
