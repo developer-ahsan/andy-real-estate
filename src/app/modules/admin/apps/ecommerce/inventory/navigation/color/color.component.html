@@ -82,10 +82,15 @@
                         <form [formGroup]="colorForm">
                             <div class="row">
                                 <div class="col-12">
+                                    <!-- <mat-form-field class="w-100">
+                                        <mat-label>Color: ({{colorValue}})</mat-label>
+                                        <input placeholder="" matInput [(ngModel)]="colorValue" [ngModelOptions]=" 
+                                        {standalone: true}">
+                                    </mat-form-field> -->
                                     <mat-form-field class="w-full">
                                         <mat-label>Color: ({{colorValue}})</mat-label>
                                         <input matInput type="color" value="{{colorValue}}"
-                                            (change)="changeColor($event)" placeholder="Color">
+                                            (input)="changeColor($event)" placeholder="Color">
                                     </mat-form-field>
                                 </div>
                                 <div class="col-lg-6 col-12">
@@ -184,8 +189,9 @@
                 </div>
                 <div>
                     <mat-form-field class="w-full">
-                        <mat-label>Color Comment</mat-label>
-                        <input matInput placeholder="Color Comment" maxlength="50" [(ngModel)]="txtColorParts">
+                        <mat-label>Color Comment(50): <span class="text-red-500">(i.e. trim/body)</span></mat-label>
+                        <input matInput placeholder="Color Comment (body/trim)" maxlength="50"
+                            [(ngModel)]="txtColorParts">
                     </mat-form-field>
                 </div>
 

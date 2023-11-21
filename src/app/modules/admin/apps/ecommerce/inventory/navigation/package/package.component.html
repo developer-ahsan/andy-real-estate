@@ -1,10 +1,24 @@
 <div class="w-full">
+    <div class="px-2 pb-2">
+        <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen"
+            (change)="calledScreen(group.value)">
+            <mat-button-toggle value="packages">
+                Selected Packages
+            </mat-button-toggle>
+            <mat-button-toggle value="add">
+                Add Package
+            </mat-button-toggle>
+            <mat-button-toggle value="accessories">
+                Pack & Accessories
+            </mat-button-toggle>
+        </mat-button-toggle-group>
+    </div>
     <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
     </ngx-skeleton-loader>
-
     <div class="row mb-6" *ngIf="!isLoading">
-        <div class="col-12">
-            <mat-card class="w-full p-0 mb-10 h-full rounded-2xl">
+        <!-- Selected Packages -->
+        <div class="col-12" *ngIf="mainScreen == 'packages'">
+            <div class="w-full p-0 mb-10 h-full shadow-lg rounded-2xl">
                 <div class="row p-5">
                     <div class="col-lg-6 col-12">
                         <div class="text-2xl font-bold">
@@ -38,8 +52,7 @@
                     </ngx-skeleton-loader>
                 </div>
                 <div *ngIf="dataSource1.length > 0;else other_content">
-                    <table mat-table [dataSource]="dataSource1" class="w-full border-t mb-18">
-
+                    <table mat-table [dataSource]="dataSource1" class="w-full border-t mb-5">
                         <!-- Checkbox Column -->
                         <ng-container matColumnDef="select">
                             <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15">
@@ -63,7 +76,6 @@
                                 </span>
                             </td>
                         </ng-container>
-
                         <!-- Run Column -->
                         <ng-container matColumnDef="run">
                             <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15"> Run </th>
@@ -75,7 +87,6 @@
                                 </mat-form-field>
                             </td>
                         </ng-container>
-
                         <!-- Setup Column -->
                         <ng-container matColumnDef="setup">
                             <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15"> Setup </th>
@@ -87,7 +98,6 @@
                                 </mat-form-field>
                             </td>
                         </ng-container>
-
                         <!-- Units Column -->
                         <ng-container matColumnDef="packagingUnit">
                             <th mat-header-cell *matHeaderCellDef class="w-24 min-w-24"> Units per packaging </th>
@@ -99,7 +109,6 @@
                                 </mat-form-field>
                             </td>
                         </ng-container>
-
                         <!-- Decorator Column -->
                         <ng-container matColumnDef="po">
                             <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15"> Decorator PO </th>
@@ -113,7 +122,6 @@
                                 </mat-form-field>
                             </td>
                         </ng-container>
-
                         <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
                         <tr mat-row *matRowDef="let row; columns: displayedColumns;"
                             class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
@@ -123,23 +131,15 @@
                 </div>
 
                 <ng-template #other_content>
-                    <div class="text-secondary font-semibold p-8 pb-10">
+                    <div class="text-secondary font-semibold p-8 pb-10 alert alert-warning">
                         No packages and accessories found.
                     </div>
                 </ng-template>
-
-                <mat-paginator
-                    class="sm:absolute sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                    [ngClass]="{'pointer-events-none': isLoading}" [length]="dataSource1.length" [pageIndex]="0"
-                    [pageSize]="20" (page)="getDisplayNextData($event)" [hidePageSize]="true"></mat-paginator>
-
-            </mat-card>
+            </div>
         </div>
-    </div>
-
-    <div class="row" *ngIf="!isLoading">
-        <div class="col-12 my-2">
-            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+        <!-- Add New Package -->
+        <div class="col-12 my-2" *ngIf="mainScreen == 'add'">
+            <div class="shadow-lg rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
                 <div class="p-6 sm:p-8 lg:p-10 w-full">
                     <div class="text-2xl font-bold">
                         Add Package
@@ -149,14 +149,15 @@
                         <mat-form-field class="example-chip-list w-full">
                             <mat-label>Package Name</mat-label>
                             <mat-chip-list #chipList aria-label="Fruit selection">
-                                <mat-chip *ngFor="let fruit of fruits" (removed)="remove(fruit)">
-                                    {{fruit.name}}
+                                <mat-chip *ngFor="let package of packages" (removed)="remove(package)">
+                                    {{package.name}}
                                     <button matChipRemove>
                                         <mat-icon svgIcon="close" style="transform: scale(0.8);margin-top: -2.5px;">
                                         </mat-icon>
                                     </button>
                                 </mat-chip>
-                                <input [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                <input maxlength="75" [matChipInputFor]="chipList"
+                                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                                     [matChipInputAddOnBlur]="addOnBlur" (matChipInputTokenEnd)="add($event)">
                             </mat-chip-list>
                         </mat-form-field>
@@ -192,13 +193,11 @@
                         </div>
                     </div>
                 </div>
-            </fuse-card>
+            </div>
         </div>
-    </div>
-
-    <div class="row" *ngIf="!isLoading">
-        <div class="col-12">
-            <mat-card class="w-full p-0 mb-10 h-full rounded-2xl">
+        <!-- Pack and Accessories List -->
+        <div class="col-12" *ngIf="mainScreen == 'accessories'">
+            <div class="shadow-lg w-full p-0 mb-10 h-full rounded-2xl">
                 <div class="row p-5">
                     <div class="col-lg-9 col-12">
                         <div class="text-2xl font-bold">
@@ -319,11 +318,12 @@
 
                     <mat-paginator
                         class="sm:absolute sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                        [ngClass]="{'pointer-events-none': isLoading}" [length]="dataSourceLength" [pageIndex]="this.pageData.page - 1"
-                        [pageSize]="20" (page)="getDisplayNextData($event)" [hidePageSize]="true"></mat-paginator>
+                        [ngClass]="{'pointer-events-none': isLoading}" [length]="dataSourceLength"
+                        [pageIndex]="this.pageData.page - 1" [pageSize]="20" (page)="getDisplayNextData($event)"
+                        [hidePageSize]="true"></mat-paginator>
                 </div>
 
-            </mat-card>
+            </div>
         </div>
     </div>
 </div>

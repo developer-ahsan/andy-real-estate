@@ -136,7 +136,19 @@ export class CoreProductsComponent implements OnInit, OnDestroy {
   }
 
   subCategorySelection(subCategory): void {
+    console.log(subCategory)
     this.selectedSubCategory = subCategory;
+    this.getCoreProductsData();
+  }
+
+  getCoreProductsData() {
+    let params = {
+      core_sub_category_products: true,
+      sub_category_id: this.selectedSubCategory.pk_subCategoryID
+    }
+    this._inventoryService.getProductsData(params).subscribe(res => {
+      console.log(res);
+    })
   }
 
   addCore(): void {

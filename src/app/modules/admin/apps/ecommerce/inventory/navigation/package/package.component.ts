@@ -17,6 +17,8 @@ export class PackageComponent implements OnInit, OnDestroy {
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
+  mainScreen = 'packages';
+
   displayedColumns: string[] = ['select', 'packaging', 'run', 'setup', 'packagingUnit', 'po'];
   dataSource: Package[] = [];
   dataSource1: Package[] = [];
@@ -26,7 +28,7 @@ export class PackageComponent implements OnInit, OnDestroy {
   zeroLengthCheckMessage = false;
   flashMessage: 'success' | 'error' | null = null;
   packageAddLoader = false;
-  pageData : any;
+  pageData: any;
 
   packageUpdateLoader = false;
   packagePostLoader = false;
@@ -42,7 +44,10 @@ export class PackageComponent implements OnInit, OnDestroy {
   domain = "true";
 
   searchLoader = false;
-
+  searchKeywordVal: string = '';
+  addOnBlur = true;
+  readonly separatorKeysCodes = [ENTER, COMMA] as const;
+  packages = [];
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     this.selectedRowsLength = this.selection.selected.length;
@@ -52,14 +57,7 @@ export class PackageComponent implements OnInit, OnDestroy {
   }
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
-  masterToggle() {
-    if (this.isAllSelected()) {
-      this.selection.clear();
-      return;
-    }
 
-    this.selection.select(...this.dataSource);
-  };
 
   /** The label for the checkbox on the passed row */
   checkboxLabel(row?: any): string {
@@ -86,6 +84,9 @@ export class PackageComponent implements OnInit, OnDestroy {
         this.getPackAndAccessories();
       }
     });
+  }
+  calledScreen(screen) {
+    this.mainScreen = screen;
   }
   updatePackage() {
     const { pk_productID } = this.selectedProduct;
@@ -320,71 +321,72 @@ export class PackageComponent implements OnInit, OnDestroy {
 
   getPackAndAccessories(): void {
     const { pk_productID } = this.selectedProduct;
-    this._inventoryService.getAllPackages(pk_productID, this.pageNo)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((packages) => {
-        this.pageData = packages;
-        const { list, selected } = packages["data"];
-        let letIdsToRemoveWhichAreSelected = [];
-        for (const item of selected) {
-          const { fk_packagingID } = item;
-          letIdsToRemoveWhichAreSelected.push(fk_packagingID)
-        };
+    let params = {
+      keyword: this.searchKeywordVal,
+      packaging: true,
+      product_id: pk_productID,
+      size: 20,
+      page: this.pageNo
+    }
+    this._inventoryService.getProductsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(packages => {
+      this.pageData = packages;
+      const { list, selected } = packages["data"];
+      let letIdsToRemoveWhichAreSelected = [];
+      for (const item of selected) {
+        const { fk_packagingID } = item;
+        letIdsToRemoveWhichAreSelected.push(fk_packagingID)
+      };
 
-        let tempArray = [];
-        let tempArray2 = [];
-        this.dataSource = list.filter(item => !letIdsToRemoveWhichAreSelected.includes(item.pk_packagingID));
-        this.dataSource1 = selected;
-        for (const packages of this.dataSource) {
-          packages.run = 0.0;
-          packages.setup = 0.0;
-          packages.unitsPerPackage = 0.0;
-          tempArray.push(packages)
-          const { blnDecoratorPO } = packages;
-          if (blnDecoratorPO) {
-            this.domain = "true"
-          } else {
-            this.domain = "false"
-          }
-          packages["isDecorator"] = this.domain;
-          tempArray.push(packages);
-        };
+      let tempArray = [];
+      let tempArray2 = [];
+      this.dataSource = list.filter(item => !letIdsToRemoveWhichAreSelected.includes(item.pk_packagingID));
+      this.dataSource1 = selected;
+      for (const packages of this.dataSource) {
+        packages.run = 0.0;
+        packages.setup = 0.0;
+        packages.unitsPerPackage = 0.0;
+        tempArray.push(packages)
+        const { blnDecoratorPO } = packages;
+        if (blnDecoratorPO) {
+          this.domain = "true"
+        } else {
+          this.domain = "false"
+        }
+        packages["isDecorator"] = this.domain;
+        tempArray.push(packages);
+      };
 
-        for (const packages of this.dataSource1) {
-          tempArray2.push(packages)
-          const { blnDecoratorPO } = packages;
-          if (blnDecoratorPO) {
-            this.domain = "true"
-          } else {
-            this.domain = "false"
-          }
-          packages["isDecorator"] = this.domain;
-          tempArray2.push(packages);
-        };
+      for (const packages of this.dataSource1) {
+        tempArray2.push(packages)
+        const { blnDecoratorPO } = packages;
+        if (blnDecoratorPO) {
+          this.domain = "true"
+        } else {
+          this.domain = "false"
+        }
+        packages["isDecorator"] = this.domain;
+        tempArray2.push(packages);
+      };
 
-        this.dataSourceLength = packages["totalRecords"];
-        this.isLoading = false;
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      }, err => {
-        this.getPackAndAccessories();
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      });
+      this.dataSourceLength = packages["totalRecords"];
+      this.isLoading = false;
+      this.searchLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isLoading = false;
+      this.searchLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
   };
 
-  addOnBlur = true;
-  readonly separatorKeysCodes = [ENTER, COMMA] as const;
-  fruits = [];
+
 
   add(event): void {
     const value = (event.value || '').trim();
 
     // Add our fruit
     if (value) {
-      this.fruits.push({ name: value });
+      this.packages.push({ name: value });
     }
 
     // Clear the input value
@@ -392,55 +394,24 @@ export class PackageComponent implements OnInit, OnDestroy {
   };
 
   searchKeyword(event): void {
+    this.pageNo = 1;
     const { value } = event.target;
-
+    this.searchKeywordVal = value;
     this.searchLoader = true;
-    this._inventoryService.getPackageByKeyword(value)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((packages) => {
-        const { list } = packages["data"];
-        let tempArray = [];
-        this.dataSource = list;
-        for (const packages of this.dataSource) {
-          tempArray.push(packages)
-          const { blnDecoratorPO } = packages;
-          if (blnDecoratorPO) {
-            this.domain = "true"
-          } else {
-            this.domain = "false"
-          }
-          packages["isDecorator"] = this.domain;
-          tempArray.push(packages);
-        };
-        this.dataSourceLength = packages["totalRecords"];
-        this.searchLoader = false;
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      }, err => {
-        this._snackBar.open("Some error occured", '', {
-          horizontalPosition: 'center',
-          verticalPosition: 'bottom',
-          duration: 3500
-        });
-        this.searchLoader = false;
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      });
+    this.getPackAndAccessories();
   };
 
   remove(fruit): void {
-    const index = this.fruits.indexOf(fruit);
+    const index = this.packages.indexOf(fruit);
 
     if (index >= 0) {
-      this.fruits.splice(index, 1);
+      this.packages.splice(index, 1);
     }
   }
 
   addPackage(): void {
     const list = [];
-    if (!this.fruits?.length) {
+    if (!this.packages?.length) {
       this.zeroLengthCheckMessage = true;
 
       setTimeout(() => {
@@ -448,7 +419,7 @@ export class PackageComponent implements OnInit, OnDestroy {
       }, 2000)
       return;
     }
-    for (const fruit of this.fruits) {
+    for (const fruit of this.packages) {
       list.push(fruit.name);
     };
 
@@ -464,7 +435,7 @@ export class PackageComponent implements OnInit, OnDestroy {
             'success' :
             'error'
         );
-        this.fruits = [];
+        this.packages = [];
         this.packageAddLoader = false;
       }, err => {
         this._snackBar.open("Some error occured", '', {
@@ -477,6 +448,8 @@ export class PackageComponent implements OnInit, OnDestroy {
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
+    this.pageNo = 1;
+    this.getPackAndAccessories();
   }
 
 

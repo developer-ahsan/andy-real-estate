@@ -14,42 +14,46 @@
                     <!-- Add Video -->
                     <div class="gap-y-4 mt-6">
                         <form [formGroup]="videoUploadForm">
-                            <div class="row p-2">
-                                <div class="col-12 text-secondary font-extrabold">
-                                    Total Videos: {{videosLength}}
+                            <div class="row p-2 space-y-2">
+                                <div class="col-12 text-red-500 font-bold">
+                                    There are a total of {{videosLength}} videos in our system.
+                                </div>
+                                <div class="col-12 ">
+                                    <div class="alert alert-warning p-3">NOTE: videos must be free from any vendor
+                                        branding.</div>
                                 </div>
                                 <div class="col-12 text-secondary">
-                                    <p>
-                                        - When the video service, such as Vimeo or Youtube, gives you the embed code,
-                                        you
-                                        will
-                                        only
-                                        want to enter the part of the code that is after the "src=" part that is in
-                                        quotes.
-                                        Entering
-                                        the entire code below will not work
+                                    <p>When the video service, such as Vimeo or Youtube, gives you the embed code, you
+                                        will only want to enter the part of the code that is after the "src=" part that
+                                        is in quotes. Entering the entire code below will not work
                                     </p>
+                                </div>
+                                <div class="col-12 text-red-500">
+                                    <p>DO NOT include any "http://" or "https://" in the URL. Remove these before
+                                        adding.</p>
+                                </div>
+                                <div class="col-12 text-red-500">
+                                    <p>Try to remove any "autorun" variables in the URL. Usually they look like
+                                        "&autorun=1"</p>
                                 </div>
                                 <div class="col-12 font-semibold">
                                     Usually the video service will give you options for embedding a video. Make sure
-                                    that
-                                    you select
-                                    any sort of "autorun" settting.
+                                    that you select any sort of "autorun" settting.
                                 </div>
                                 <div class="col-12">
-                                    <div class="font-semibold text-secondary">
-                                        Play Button Image: (355px W by 209px H, JPG ONLY)
-                                    </div>
-                                    <input type="file" accept=".jpg" (change)="upload($event)"
-                                        style="line-height: 2.5;" />
                                     <div class="font-semibold text-secondary mt-2">Video URL</div>
                                     <mat-form-field class="w-full">
                                         <input matInput [formControlName]="'video'">
                                         <mat-error>Please fill this field</mat-error>
                                     </mat-form-field>
+
+                                    <div class="font-semibold text-secondary">
+                                        Play Button Image: (355px W by 209px H, JPG ONLY)
+                                    </div>
+                                    <input type="file" accept=".jpg" (change)="upload($event)"
+                                        style="line-height: 2.5;" />
                                 </div>
-                                <div class="col-lg-2 col-12"></div>
-                                <div class="col-lg-8 col-12 mt-2" *ngIf="videoLength > 0" style="height: 350px;">
+                                <div class="col-12 mt-2" *ngIf="videoLength > 0" style="height: 350px;">
                                     <iframe [src]="url"
                                         style="width: -webkit-fill-available; height: -webkit-fill-available;"></iframe>
                                 </div>

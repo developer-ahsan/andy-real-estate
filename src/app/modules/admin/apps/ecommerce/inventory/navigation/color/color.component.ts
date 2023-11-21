@@ -298,6 +298,7 @@ export class ColorComponent implements OnInit, OnDestroy {
   changeColor(event) {
     const { value } = event.target;
     this.colorValue = value;
+    this._changeDetectorRef.markForCheck();
   };
 
   rowUpdate(colorObj, title, event) {
