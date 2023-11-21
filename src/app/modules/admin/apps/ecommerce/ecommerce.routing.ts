@@ -59,6 +59,7 @@ import { ProfitCalculatorComponent } from './product-store/navigation/profit-cal
 import { RemoveFromStoreComponent } from './product-store/navigation/remove-from-store/remove-from-store.component';
 import { RemoveProductComponent } from './inventory/navigation/delete-product/delete-product.component';
 import { StoreProductStatusComponent } from './product-store/navigation/store-product-status/store-product-status.component';
+import { ProductQuoteComponent } from './inventory/navigation/product-quote/product-quote.component';
 
 export const ecommerceRoutes: Route[] = [
     {
@@ -245,6 +246,14 @@ export const ecommerceRoutes: Route[] = [
                         data: {
                             title: 'Warehouse Options',
                             url: 'warehouse-options'
+                        }
+                    },
+                    {
+                        path: 'product-quote',
+                        component: ProductQuoteComponent,
+                        data: {
+                            title: 'Product Quote',
+                            url: 'product-quote'
                         }
                     },
                     {

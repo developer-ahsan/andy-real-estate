@@ -120,6 +120,7 @@ import { RemoveProductComponent } from './inventory/navigation/delete-product/de
 import { StoreProductStatusComponent } from './product-store/navigation/store-product-status/store-product-status.component';
 import { OptionsScrollDirective } from 'app/options-scroll.directive';
 import { ChunkPipe } from './inventory/navigation/products-status/chunk.pipe';
+import { ProductQuoteComponent } from './inventory/navigation/product-quote/product-quote.component';
 
 @NgModule({
     declarations: [
@@ -206,7 +207,8 @@ import { ChunkPipe } from './inventory/navigation/products-status/chunk.pipe';
         ProductLicensingTermsComponent,
         RemoveProductComponent,
         StoreProductStatusComponent,
-        ChunkPipe
+        ChunkPipe,
+        ProductQuoteComponent
     ],
     imports: [
         RouterModule.forChild(ecommerceRoutes),

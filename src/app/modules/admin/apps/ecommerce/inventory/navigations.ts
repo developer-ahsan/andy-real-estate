@@ -114,6 +114,12 @@ export const navigations = [
         route: 'warehouse-options',
     },
     {
+        id: 24,
+        title: 'Product Quote',
+        icon: 'mat_outline:house_siding',
+        route: 'product-quote',
+    },
+    {
         id: 1,
         title: 'Store Versions',
         icon: 'mat_outline:sd_storage',
