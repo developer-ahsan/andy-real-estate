@@ -3,12 +3,12 @@
         <!-- <button mat-stroked-button class="min-w-20" >
             <span class="text-sm">Email</span>
         </button> -->
-        <button (click) = "generatePdf()" mat-stroked-button class="min-w-20" >
-            <span class="test-sm">Pdf</span>
+        <button (click)="generatePdf()" mat-stroked-button class="min-w-20">
+            <span class="test-sm">PDF</span>
         </button>
-        <button (click) = "generatePdf()" mat-stroked-button class="min-w-20" >
+        <!-- <button (click) = "generatePdf()" mat-stroked-button class="min-w-20" >
             <span class="text-sm">HTML</span>
-        </button>
+        </button> -->
     </div>
     <div class="shadow bg-card p-5 px-8 flex space-x-6" #topScroll>
         <span *ngIf="!isUpdateStore" class="font-medium cursor-pointer hover:text-gray-900 text-secondary"
@@ -114,7 +114,7 @@
                 </tr>
             </table>
             <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                [length]="totalStores" [pageIndex]="0" [pageSize]="20" (page)="getNextFLPSQuickStore($event)"
+                [length]="totalStores" [pageIndex]="0" [pageSize]="65" (page)="getNextFLPSQuickStore($event)"
                 [hidePageSize]="true">
             </mat-paginator>
         </div>
@@ -162,7 +162,7 @@
                 </tr>
             </table>
             <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                [length]="totalManageStores" [pageIndex]="0" [pageSize]="20" (page)="getNextFLPSStore($event)"
+                [length]="totalManageStores" [pageIndex]="0" [pageSize]="65" (page)="getNextFLPSStore($event)"
                 [hidePageSize]="true">
             </mat-paginator>
         </div>

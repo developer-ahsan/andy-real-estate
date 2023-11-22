@@ -10,8 +10,8 @@
         <div class="mt-5" *ngIf="!isLoading && !isUpdateLicensing">
             <div class="shadow bg-card p-6">
                 <mat-form-field class="w-full">
-                    <mat-label>Add new licencing company</mat-label>
-                    <input matInput [(ngModel)]="ngAddCompanyName">
+                    <mat-label>Add new licensing company*</mat-label>
+                    <input maxlength="50" matInput [(ngModel)]="ngAddCompanyName">
                 </mat-form-field>
                 <div class="w-full text-right">
                     <button mat-button [disabled]="isAddNewCompanyLoader" mat-stroked-button class="min-w-30"
@@ -29,7 +29,7 @@
                             Name
                         </th>
                         <td mat-cell *matCellDef="let element">
-                            <input class="form-control text-sm" [(ngModel)]="element.name">
+                            <input class="form-control text-sm" maxlength="50" [(ngModel)]="element.name">
                         </td>
                     </ng-container>
                     <ng-container matColumnDef="action">
@@ -46,7 +46,7 @@
                                 <mat-icon (click)="toggleUpdateCompanyData(element, true)"
                                     svgIcon="heroicons_outline:pencil-alt"
                                     matTooltip="Edit Licensing Company"></mat-icon>
-                                <mat-icon (click)="deleteCompany(element)" svgIcon="heroicons_outline:trash"
+                                <mat-icon (click)="openDeleteModal(element,'main')" svgIcon="heroicons_outline:trash"
                                     *ngIf="!element.delLoader" matTooltip="Delete Licensing Company"></mat-icon>
                                 <mat-progress-spinner *ngIf="element.delLoader" [diameter]="24"
                                     [mode]="'indeterminate'">
@@ -94,7 +94,7 @@
                         <div class="text-2xl font-bold"> Licensing Terms </div>
                         <mat-form-field class="w-full">
                             <mat-label>Add new licencing term</mat-label>
-                            <input matInput [(ngModel)]="ngAddTermName" placeholder="Term Name">
+                            <input maxlength="300" matInput [(ngModel)]="ngAddTermName" placeholder="Term Name">
                         </mat-form-field>
                         <div class="w-full text-right">
                             <button mat-button [disabled]="isAddNewTermLoader" matTooltip="Add New Licensing Term"
@@ -118,12 +118,12 @@
                                             <div class="flex">
                                                 <div class="w-full mr-1">
                                                     <label for="code{{i}}" class="text-sm">Code</label>
-                                                    <input id="code{{i}}" class="form-control text-sm"
+                                                    <input maxlength="50" id="code{{i}}" class="form-control text-sm"
                                                         [(ngModel)]="item.code">
                                                 </div>
                                                 <div class="w-full ml-1">
                                                     <label for="name{{i}}" class="text-sm">Name</label>
-                                                    <input id="name{{i}}" class="form-control text-sm"
+                                                    <input maxlength="300" id="name{{i}}" class="form-control text-sm"
                                                         [(ngModel)]="item.term">
                                                 </div>
                                                 <div class="ml-1 mt-2 ">
@@ -139,7 +139,7 @@
                                                         <mat-icon class="cursor-pointer"
                                                             svgIcon="heroicons_outline:trash" *ngIf="!item.delLoader"
                                                             matTooltip="Delete Term"
-                                                            (click)="deleteTerm(item)"></mat-icon>
+                                                            (click)="openDeleteModal(item,'term')"></mat-icon>
                                                         <mat-progress-spinner *ngIf="item.delLoader" [diameter]="24"
                                                             [mode]="'indeterminate'">
                                                         </mat-progress-spinner>
@@ -151,7 +151,8 @@
                                             </div>
                                             <div class="flex">
                                                 <input id="new_cat{{i}}" [(ngModel)]="ngAddTermCatName"
-                                                    placeholder="Add New Subcategory" class="form-control text-sm mr-1">
+                                                    placeholder="Add New Subcategory" class="form-control text-sm mr-1"
+                                                    maxlength="200">
                                                 <mat-icon *ngIf="!item.addCatLoader" class="cursor-pointer"
                                                     (click)="addNewTermCat(item)" svgIcon="heroicons_outline:plus"
                                                     matTooltip="Add Subcategory"></mat-icon>
@@ -172,12 +173,12 @@
                                             </div>
                                             <div class="flex mb-2" *ngFor="let sub of item.subCategories;let j=index">
                                                 <div class="w-full mr-1">
-                                                    <input id="sub_code{{j}}" class="form-control text-sm"
-                                                        [(ngModel)]="sub.code">
+                                                    <input maxlength="200" id="sub_code{{j}}"
+                                                        class="form-control text-sm" [(ngModel)]="sub.code">
                                                 </div>
                                                 <div class="w-full ml-1">
-                                                    <input id="sub_name{{j}}" class="form-control text-sm"
-                                                        [(ngModel)]="sub.name">
+                                                    <input maxlength="200" id="sub_name{{j}}"
+                                                        class="form-control text-sm" [(ngModel)]="sub.name">
                                                 </div>
                                                 <div class="ml-1">
                                                     <mat-icon class="cursor-pointer" svgIcon="heroicons_outline:trash"
@@ -213,6 +214,30 @@
                         </mat-accordion>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" #removeTerm>
+    <div class="modal-dialog" role="document" *ngIf="removeModalData">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{removeModalData?.title}}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>{{removeModalData?.body}}</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn bg-gray-700 text-white rounded-md" color="primary"
+                    *ngIf="removeModalData.check == 'main'" (click)="deleteCompany(removeModalData)">OK</button>
+                <button type="button" class="btn bg-gray-700 text-white rounded-md" color="primary"
+                    *ngIf="removeModalData.check == 'term'" (click)="deleteTerm(removeModalData)">OK</button>
+                <button type="button" class="btn bg-red-500 text-white border-red-500 rounded-md"
+                    data-dismiss="modal">Cancel</button>
             </div>
         </div>
     </div>

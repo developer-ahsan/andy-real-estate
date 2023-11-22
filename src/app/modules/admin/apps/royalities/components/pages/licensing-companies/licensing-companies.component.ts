@@ -1,10 +1,12 @@
-import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { RoyaltyService } from '../../royalities.service';
 import { AddSmartArtUser, AddSubCategory, applyBlanketCustomerPercentage, createLicensingCompany, CreateLicensingTerm, deleteLicensingCompany, DeleteSubCategories, newFLPSUser, removeFLPSUser, RemoveLicensingTerm, RemoveSmartArtUser, updateFLPSUser, updateLicensingCompany, UpdateLicensingTerm, updateSmartArtUsers, UpdateSmartUser, UpdateSubCategories } from '../../royalities.types';
+declare var $: any;
+
 @Component({
   selector: 'app-licensing-companies',
   templateUrl: './licensing-companies.component.html',
@@ -67,6 +69,9 @@ export class LicensingCompaniesComponent implements OnInit, OnDestroy {
   ngAddTermName = '';
   ngAddTermCatName = '';
   isAddNewTermLoader: boolean = false;
+
+  @ViewChild('removeTerm') removeTerm: ElementRef;
+  removeModalData: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _RoyaltyService: RoyaltyService
@@ -129,12 +134,12 @@ export class LicensingCompaniesComponent implements OnInit, OnDestroy {
   }
 
   addNewLicense() {
-    if (this.ngAddCompanyName == '') {
+    if (!this.ngAddCompanyName) {
       this._RoyaltyService.snackBar('Please fill out the required fields');
       return;
     }
     let payload: createLicensingCompany = {
-      name: this.ngAddCompanyName,
+      name: this.ngAddCompanyName?.replace(/'/g, "''"),
       create_licensing_company: true
     }
     this.isAddNewCompanyLoader = true;
@@ -155,13 +160,13 @@ export class LicensingCompaniesComponent implements OnInit, OnDestroy {
     });
   }
   updateLicensingCompany(item) {
-    if (item.name == '') {
+    if (!item.name) {
       this._RoyaltyService.snackBar('Please fill out the required fields');
       return;
     }
     let payload: updateLicensingCompany = {
       licensing_id: item.pk_licensingCompanyID,
-      name: item.name,
+      name: item.name?.replace(/'/g, "''"),
       update_licensing_company: true
     }
     item.companyLoader = true;
@@ -174,7 +179,21 @@ export class LicensingCompaniesComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
+  openDeleteModal(item, check) {
+    this.removeModalData = item;
+    this.removeModalData.check = check;
+    if (check == 'main') {
+      this.removeModalData.title = 'Remove Licensing Company';
+      this.removeModalData.body = 'Are you sure you want to remove this licensing company?  This will remove all associated licensing terms and their subcategories.  This action cannot be undone.';
+    } else {
+      this.removeModalData.title = 'Remove Licensing Company Subcategories';
+      this.removeModalData.body = `Are you sure you want to delete this licensing term and all of it's subcategories?  This cannot be undone.`;
+    }
+    $(this.removeTerm.nativeElement).modal('show');
+
+  }
   deleteCompany(item) {
+    $(this.removeTerm.nativeElement).modal('hide');
     item.delLoader = true;
     this._changeDetectorRef.markForCheck();
     let payload: deleteLicensingCompany = {
@@ -245,12 +264,12 @@ export class LicensingCompaniesComponent implements OnInit, OnDestroy {
     this.getCompanyTerms(this.companyTermsPage, 'get');
   }
   addNewLicenseTerm() {
-    if (this.ngAddTermName == '') {
+    if (!this.ngAddTermName) {
       this._RoyaltyService.snackBar('Please fill out the required fields');
       return;
     }
     let payload: CreateLicensingTerm = {
-      term: this.ngAddTermName,
+      term: this.ngAddTermName?.replace(/'/g, "''"),
       company_id: this.updateCompanyData.pk_licensingCompanyID,
       create_term: true
     }
@@ -269,6 +288,7 @@ export class LicensingCompaniesComponent implements OnInit, OnDestroy {
     });
   }
   deleteTerm(item) {
+    $(this.removeTerm.nativeElement).modal('hide');
     item.delLoader = true;
     this._changeDetectorRef.markForCheck();
     let payload: RemoveLicensingTerm = {
@@ -287,12 +307,16 @@ export class LicensingCompaniesComponent implements OnInit, OnDestroy {
     });
   }
   updateTerm(item) {
+    if (!item.term) {
+      this._RoyaltyService.snackBar('Please fill out the the term name');
+      return;
+    }
     item.updateLoader = true;
     this._changeDetectorRef.markForCheck();
     let payload: UpdateLicensingTerm = {
       term_id: item.pk_licensingTermID,
-      term: item.term,
-      code: item.code,
+      term: item.term?.replace(/'/g, "''"),
+      code: item.code?.replace(/'/g, "''"),
       update_term: true
     }
     this._RoyaltyService.PutCallsData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
@@ -308,8 +332,12 @@ export class LicensingCompaniesComponent implements OnInit, OnDestroy {
   updateSubcategories(item) {
     let subCategories = [];
     item.subCategories.forEach(element => {
+      // if (!element.name || !element.code) {
+      //   this._RoyaltyService.snackBar('Please fill out the required fields');
+      //   return;
+      // }
       subCategories.push(
-        { sub_category_id: element.pk_licensingTermSubCategoryID, name: element.name, code: element.code }
+        { sub_category_id: element.pk_licensingTermSubCategoryID, name: element.name?.replace(/'/g, "''"), code: element.code?.replace(/'/g, "''") }
       )
     });
     item.updateCatLoader = true;
@@ -348,14 +376,14 @@ export class LicensingCompaniesComponent implements OnInit, OnDestroy {
     });
   }
   addNewTermCat(item) {
-    if (this.ngAddTermCatName == '') {
+    if (!this.ngAddTermCatName) {
       this._RoyaltyService.snackBar('Please fill out the required fields');
       return;
     }
     item.addCatLoader = true;
     let payload: AddSubCategory = {
       licensing_term_id: item.pk_licensingTermID,
-      name: this.ngAddTermCatName,
+      name: this.ngAddTermCatName?.replace(/'/g, "''"),
       add_subCategory: true
     }
     this._RoyaltyService.PostCallsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {

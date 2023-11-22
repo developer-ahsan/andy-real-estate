@@ -86,7 +86,7 @@ export class RoyaltyReportsComponent implements OnInit, OnDestroy {
 
   // Report
   WeekDate = new Date();
-  monthlyMonth = 1;
+  monthlyMonth = this.WeekDate.getMonth() + 1;
   monthlyYear = new Date().getFullYear();
   quarterMonth = 1;
   quarterYear = new Date().getFullYear();
@@ -173,11 +173,11 @@ export class RoyaltyReportsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.initForm();
     this.getStores();
+    this.setCurrentQuarter();
     this.isLoading = true;
   };
   getStores() {
     this._commonService.storesData$.pipe(takeUntil(this._unsubscribeAll)).subscribe(stores => {
-      console.log(stores);
       stores["data"].forEach(element => {
         if (element.blnActive) {
           this.storesList.push(element);
@@ -185,6 +185,17 @@ export class RoyaltyReportsComponent implements OnInit, OnDestroy {
       });
       this.selectedStore = this.storesList[0];
     });
+  }
+  setCurrentQuarter() {
+    if (this.monthlyMonth >= 1 && (this.monthlyMonth <= 3)) {
+      this.quarterMonth = 1
+    } else if (this.monthlyMonth >= 4 && (this.monthlyMonth <= 6)) {
+      this.quarterMonth = 2
+    } else if (this.monthlyMonth >= 7 && (this.monthlyMonth <= 9)) {
+      this.quarterMonth = 3
+    } else {
+      this.quarterMonth = 4
+    }
   }
   onSelected(ev) {
     this.selectedStore = ev.option.value;
@@ -197,70 +208,72 @@ export class RoyaltyReportsComponent implements OnInit, OnDestroy {
       this._RoyaltyService.snackBar('Please select any store');
       return;
     }
+
     this.downloadFile = false;
     this.generateReportLoader = true;
+
+    const dateRange = this.getDateRange();
     this.reportParams = {
       page: this.page,
-      start_date: '',
-      end_date: '',
+      start_date: dateRange.start.format('MM/DD/yyyy'),
+      end_date: dateRange.end.format('MM/DD/yyyy'),
       store_id: this.selectedStore.pk_storeID,
       options_report: true
     };
-    if (this.ngPlan == 'weekly') {
-      this.reportParams.start_date = moment(this.WeekDate).startOf('week').format('MM/DD/yyyy');
-      this.reportParams.end_date = moment(this.WeekDate).endOf('week').format('MM/DD/yyyy');
-      this.report_type = 'Weekly Sales';
-    } else if (this.ngPlan == 'monthly') {
-      let d = new Date(this.monthlyYear, this.monthlyMonth - 1, 1);
-      this.reportParams.start_date = moment(d).startOf('month').format('MM/DD/yyyy');
-      this.reportParams.end_date = moment(d).endOf('month').format('MM/DD/yyyy');
-      this.report_type = 'Monthly Sales';
-    } else if (this.ngPlan == 'quarterly') {
-      let s;
-      let e;
-      if (this.quarterMonth == 1) {
-        s = new Date(this.quarterYear, 0, 1);
-        e = new Date(this.quarterYear, 2, 1);
-      } else if (this.quarterMonth == 2) {
-        s = new Date(this.quarterYear, 3, 1);
-        e = new Date(this.quarterYear, 5, 1);
-      } else if (this.quarterMonth == 3) {
-        s = new Date(this.quarterYear, 6, 1);
-        e = new Date(this.quarterYear, 8, 1);
-      } else if (this.quarterMonth == 4) {
-        s = new Date(this.quarterYear, 9, 1);
-        e = new Date(this.quarterYear, 11, 1);
-      }
-      this.reportParams.start_date = moment(s).startOf('month').format('MM/DD/yyyy');
-      this.reportParams.end_date = moment(e).endOf('month').format('MM/DD/yyyy');
-      this.report_type = 'Quarterly Sales';
-    } else if (this.ngPlan == 'yearly') {
-      let d = new Date(this.yearlyYear, 0, 1);
-      this.reportParams.start_date = moment(d).startOf('year').format('MM/DD/yyyy');
-      this.reportParams.end_date = moment(d).endOf('year').format('MM/DD/yyyy');
-    } else if (this.ngPlan == 'range') {
-      this.reportParams.start_date = moment(this.ngRangeStart).format('MM/DD/yyyy');
-      this.reportParams.end_date = moment(this.ngRangeEnd).format('MM/DD/yyyy');
-      this.report_type = 'Range Sales';
+
+    this._RoyaltyService.getCallsData(this.reportParams)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(
+        res => {
+          if (res["data"].length === 0) {
+            this._RoyaltyService.snackBar('No data have been found in the specified range that match your criteria.');
+          } else {
+            this.downloadFile = true;
+          }
+
+          this.generateReportLoader = false;
+          this.isGenerateReport = true;
+          this.dataSource = res["data"];
+          this.totalUsers = res["totalRecords"];
+          this._changeDetectorRef.markForCheck();
+        },
+        err => {
+          this.generateReportLoader = false;
+          this._changeDetectorRef.markForCheck();
+        }
+      );
+  }
+  // Helper function to get date range based on ngPlan
+  getDateRange(): { start: moment.Moment, end: moment.Moment } {
+    let start = moment();
+    let end = moment();
+
+    switch (this.ngPlan) {
+      case 'weekly':
+        start.startOf('isoWeek');
+        end.endOf('isoWeek');
+        break;
+      case 'monthly':
+        start.startOf('month');
+        end.endOf('month');
+        break;
+      case 'quarterly':
+        const quarterMonthStart = (this.quarterMonth - 1) * 3;
+        const quarterMonthEnd = quarterMonthStart + 2;
+        start.set({ month: quarterMonthStart, date: 1 }).startOf('month');
+        end.set({ month: quarterMonthEnd, date: 1 }).endOf('month');
+        break;
+      case 'yearly':
+        start.startOf('year');
+        end.endOf('year');
+        break;
+      case 'range':
+        start = moment(this.ngRangeStart);
+        end = moment(this.ngRangeEnd);
+        break;
     }
-    this._RoyaltyService.getCallsData(this.reportParams).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      if (res["data"].length == 0) {
-        this.generateReportLoader = false;
-        this._RoyaltyService.snackBar('No data have been found in the specified range that match your criteria.');
-      } else {
-        this.downloadFile = true;
-        this.generateReportLoader = false;
-        this._changeDetectorRef.markForCheck();
-        // this.downloadExcelWorkSheet();
-      }
-      this.isGenerateReport = true;
-      this.dataSource = res["data"];
-      this.totalUsers = res["totalRecords"];
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this.generateReportLoader = false;
-      this._changeDetectorRef.markForCheck();
-    })
+
+    return { start, end };
   }
   downloadExcelWorkSheet() {
     const fileName = `${this.selectedStore.storeName}-${moment(new Date()).format('MM-DD-yy-hh-mm-ss')}`;
@@ -288,7 +301,12 @@ export class RoyaltyReportsComponent implements OnInit, OnDestroy {
       { header: "Invoice_Number", key: "Invoice_Number", width: 10 },
       { header: "UPI", key: "UPI", width: 10 },
     ];
+    let code = '';
     for (const obj of this.dataSource) {
+      if (obj.LTSCCode) {
+        code = obj.LTSCCode;
+      }
+      obj.Category_SubCategory_Code = obj.LTCode + '-' + code
       obj.Invoice_Date = moment(obj.Invoice_Date).format('yyyy-MM-DD')
       worksheet.addRow(obj);
     }

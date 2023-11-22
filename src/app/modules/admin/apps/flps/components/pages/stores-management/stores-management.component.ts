@@ -158,7 +158,7 @@ export class FLPSsStoresManagementComponent implements OnInit {
             params = {
                 view_stores: true,
                 bln_active: 1,
-                size: 20,
+                size: 65,
                 page: this.pageManageStores
             }
         } else {
@@ -166,11 +166,32 @@ export class FLPSsStoresManagementComponent implements OnInit {
                 keyword: this.keyword,
                 view_stores: true,
                 bln_active: 1,
-                size: 20,
+                size: 65,
                 page: this.storesPage
             }
         }
         this._flpsService.getFlpsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+
+
+            res["data"].forEach(element => {
+                element.users = [];
+                element.s_Commission = [];
+                element.d_Commission = [];
+                if (element.storeUsers) {
+                    let users = element.storeUsers.split(',');
+                    users.forEach(user => {
+                        let data = user.split(':');
+                        if (data[3] == 1) {
+                            element.users.push(data[0] + ' (primary)');
+                        } else {
+                            element.users.push(data[0]);
+                        }
+                        element.s_Commission.push(data[1]);
+                        element.d_Commission.push(data[2]);
+                    });
+                }
+            });
+
             if (type == 'types') {
                 this.tempmanageStoresList = res["data"];
                 this.manageStoresList = res["data"];
@@ -179,6 +200,8 @@ export class FLPSsStoresManagementComponent implements OnInit {
                 this.totalStores = res["totalRecords"];
                 this.isSearching = false;
             }
+
+
             this._changeDetectorRef.markForCheck();
         }, err => {
             this.isSearching = false;
@@ -450,36 +473,39 @@ export class FLPSsStoresManagementComponent implements OnInit {
 
     generatePdf() {
         const tableBody = [
-            [{ text: 'Stores', bold: true }, { text: 'Users', bold: true  }, { text: 'Default Commission', bold: true  }, { text: 'Management', bold: true  }, { text: 'Store Commission', bold: true  }],
+            [{ text: 'Stores', bold: true, margin: [0, 3, 0, 3] }, { text: 'Users', bold: true, margin: [0, 3, 0, 3] }, { text: 'Default Commission', bold: true, margin: [0, 3, 0, 3] }, { text: 'Management', bold: true, margin: [0, 3, 0, 3] }, { text: 'Store Commission', bold: true, margin: [0, 3, 0, 3] }],
         ];
 
         if (this.quickStoresList) {
             this.quickStoresList.forEach((item: any) => {
+                let commisions = [];
+                let d_Commission = [];
+                item.s_Commission.forEach(commission => {
+                    commisions.push(commission + '%');
+                });
+                item.d_Commission.forEach(commission => {
+                    d_Commission.push(commission + '%');
+                });
                 tableBody.push([
-                    item?.storeName || 'N/A',
-                    {
-                        stack: [
-                            item?.users && item?.users.length === 1
-                                ? item?.users[0]
-                                : item?.users && item?.users.length === 2
-                                    ? `${item?.users[0]}, ${item?.users[1]}`
-                                    : `${item?.users[0]}, ${item?.users[1]}, ${item?.users[2]}`
-                        ]
-                    },
-                    item?.s_Commission[0] || 'N/A',
-                    item?.d_Commission[0] || 'N/A',
-                    item?.flpsManagement || 'N/A'
+                    item?.storeName || '',
+                    item?.users,
+                    commisions || '',
+                    d_Commission || '',
+                    item?.flpsManagement || ''
                 ]);
             });
         }
 
         const dd = {
+            pageSize: 'A4',
+            pageMargins: [10, 10, 10, 10],
             content: [
                 {
                     style: 'tableExample',
                     table: {
                         body: tableBody
-                    }
+                    },
+                    fontSize: 10
                 },
             ],
             // Rest of your styles...
