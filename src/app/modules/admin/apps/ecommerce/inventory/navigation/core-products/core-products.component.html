@@ -27,9 +27,14 @@
                                     <td>{{item.categoryName}}</td>
                                     <td>{{item.subCategoryName}}</td>
                                     <td>
-                                        <mat-icon matTooltip="Remove" class="text-red-500 text-2xl font-bold"
+                                        <mat-icon matTooltip="Remove" (click)="removeCoreFromSubCategory(item)"
+                                            *ngIf="!item?.removeLoader"
+                                            class="cursor-pointer text-red-500 text-2xl font-bold"
                                             [svgIcon]="'heroicons_outline:x'">
                                         </mat-icon>
+                                        <mat-progress-spinner *ngIf="item?.removeLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
                                     </td>
                                 </tr>
                             </tbody>

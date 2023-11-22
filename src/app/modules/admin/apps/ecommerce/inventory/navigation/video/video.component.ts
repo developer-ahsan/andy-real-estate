@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ElementRef, ViewChild } from '@angular/core';
 import { Package } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -35,6 +35,7 @@ export class VideoComponent implements OnInit, OnDestroy {
   imgLogoExit: boolean = false;
   videoData: any;
   imgUrl = environment.assetsURL;
+  randomString = Math.random();
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
@@ -45,6 +46,8 @@ export class VideoComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    this.imgLogoExit = false;
+    this.randomString = Math.random();
     // Create the selected product form
     this.videoUploadForm = this._formBuilder.group({
       video: ['', Validators.required]
@@ -54,7 +57,7 @@ export class VideoComponent implements OnInit, OnDestroy {
   }
   checkImageButton() {
     const { pk_productID } = this.selectedProduct;
-    const url = `${environment.assetsURL}globalAssets/Products/Videos/${pk_productID}/${pk_productID}.jpg`
+    const url = `${environment.assetsURL}globalAssets/Products/Videos/${pk_productID}/${pk_productID}.jpg?${this.randomString}`
     const img = new Image();
     img.src = url;
 
@@ -72,9 +75,11 @@ export class VideoComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
         return;
       };
+      this._changeDetectorRef.markForCheck();
     };
   }
   getProductDetail() {
+    this.videoData = [];
     this.isLoading = true;
     this._inventoryService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe((details) => {
       if (details) {
@@ -159,7 +164,10 @@ export class VideoComponent implements OnInit, OnDestroy {
   }
 
   uploadImage(): void {
-    const button = this.images?.length ? this.images[0].name : '';
+    let button = '';
+    if (this.mainImageValue) {
+      button = 'play-button';
+    }
     const videoLink = this.videoUploadForm.getRawValue().video;
     const payload = {
       video: videoLink ? this.removeHttp(videoLink) : '',
@@ -176,8 +184,16 @@ export class VideoComponent implements OnInit, OnDestroy {
             'error'
         );
         this.videoUpdateLoader = false;
-
-        this.ngOnInit();
+        this._snackBar.open(response["message"], '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        if (this.mainImageValue) {
+          this.uploadImageButton();
+        } else {
+          this.ngOnInit();
+        }
         this._changeDetectorRef.markForCheck();
       }, err => {
         this._snackBar.open("Some error occured", '', {
@@ -192,6 +208,25 @@ export class VideoComponent implements OnInit, OnDestroy {
       });
   };
 
+
+  uploadImageButton() {
+    const { pk_productID } = this.selectedProduct;
+    const base64 = this.mainImageValue.imageUpload.split(",")[1];
+    const files = [{
+      image_file: base64,
+      image_path: `/globalAssets/Products/Videos/${pk_productID}/${pk_productID}.jpg`
+    }]
+    this._commonService.uploadMultipleMediaFiles(files)
+      .subscribe((response) => {
+        this.mainImageValue = null;
+        this.ngOnInit();
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      })
+  }
   /**
    * Show flash message
    */
@@ -212,6 +247,54 @@ export class VideoComponent implements OnInit, OnDestroy {
     }, 3000);
   };
 
+
+  removeVideo(blnVideo, blnButton) {
+    this.videoData.videoLoader = blnVideo ? true : false;
+    this.videoData.buttonLoader = blnButton ? true : false;
+
+    this._changeDetectorRef.markForCheck();
+
+    let params = {
+      isRemoveVideo: blnVideo,
+      isRemoveButton: blnButton,
+      productID: this.selectedProduct.pk_productID,
+      delete_product_video: true
+    };
+
+    this._inventoryService.putProductsData(params)
+      .pipe(
+        takeUntil(this._unsubscribeAll),
+        finalize(() => {
+          this.videoData.videoLoader = false;
+          this.videoData.buttonLoader = false;
+          this._changeDetectorRef.markForCheck();
+        })
+      )
+      .subscribe(res => {
+        if (res) {
+          this.deleteImage();
+          this._snackBar.open(res["message"], '', {
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+            duration: 3500
+          });
+        }
+      });
+  }
+  deleteImage() {
+    const { pk_productID } = this.selectedProduct;
+    let payload = {
+      files: [`globalAssets/Products/Videos/${pk_productID}/${pk_productID}.jpg`],
+      delete_multiple_files: true
+    }
+    this._commonService.removeMediaFiles(payload).pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((response) => {
+        this.ngOnInit();
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this._changeDetectorRef.markForCheck();
+      })
+  }
   /**
      * On destroy
      */

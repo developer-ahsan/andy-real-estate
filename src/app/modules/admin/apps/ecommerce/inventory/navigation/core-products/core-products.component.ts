@@ -2,7 +2,7 @@ import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDe
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { Colors, AvailableCores, SubCategories, Categories } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { environment } from 'environments/environment';
 
@@ -70,8 +70,17 @@ export class CoreProductsComponent implements OnInit, OnDestroy {
         this._inventoryService.getAvailableCoresProductId(pk_productID)
           .pipe(takeUntil(this._unsubscribeAll))
           .subscribe((available_core) => {
+            let coresData = []
+            if (cores["data"][0]?.currentCoreProducts) {
+              coresData = (cores["data"][0]?.currentCoreProducts || [])
+                .split(',,')
+                .map(core => {
+                  const [fk_productID, pk_subCategoryID, subCategoryName, pk_categoryID, categoryName, coreName, pk_coreID] = core.split('||');
+                  return { fk_productID, pk_subCategoryID, subCategoryName, pk_categoryID, categoryName, coreName, pk_coreID };
+                });
+            }
             this.available_cores = available_core["data"];
-            this.coreProducts = cores["data"];
+            this.coreProducts = coresData;
             this.isLoading = false;
             this.selectedCategory = null;
             this.selectedCore = null;
@@ -225,6 +234,28 @@ export class CoreProductsComponent implements OnInit, OnDestroy {
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
+  }
+  removeCoreFromSubCategory(item) {
+    item.removeLoader = true;
+    let payload = {
+      productIDs: [Number(item.fk_productID)],
+      subCategoryID: Number(item.pk_subCategoryID),
+      remove_subCategory_product: true
+    }
+    this._inventoryService.putProductsData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      item.removeLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      if (res) {
+        this.coreProducts = this.coreProducts.filter(core => core.pk_coreID != item.pk_coreID);
+        this._changeDetectorRef.markForCheck();
+        this._snackBar.open(res["message"], '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+      }
+    })
   }
 
   /**

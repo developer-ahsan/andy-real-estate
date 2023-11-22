@@ -205,7 +205,7 @@
         </div>
     </div>
 
-    <div class="row" *ngIf="selectedProduct && !selectedProduct.blnApparel">
+    <div class="row" *ngIf="selectedProduct">
         <div class="col-12">
             <ngx-skeleton-loader count="8" appearance="line" animation="pulse"
                 *ngIf="caseDimensionTabLoader || isLoading">

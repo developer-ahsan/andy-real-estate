@@ -43,13 +43,14 @@
                                 <div class="col-12">
                                     <div class="font-semibold text-secondary mt-2">Video URL</div>
                                     <mat-form-field class="w-full">
-                                        <input matInput [formControlName]="'video'">
+                                        <input maxlength="300" matInput [formControlName]="'video'">
                                         <mat-error>Please fill this field</mat-error>
                                     </mat-form-field>
-                                    <div *ngIf="videoData?.button?.length">
+                                    <div *ngIf="videoData?.button">
                                         <div *ngIf="imgLogoExit">
                                             Current Button Image: <img
-                                                src="{{imgUrl}}/globalAssets/Products/Videos/{{selectedProduct.pk_productID}}/{{selectedProduct.pk_productID}}.jpg"
+                                                src="{{imgUrl}}/globalAssets/Products/Videos/{{selectedProduct.pk_productID}}/{{selectedProduct.pk_productID}}.jpg?{{randomString}}"
+                                                onError="this.src='https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'"
                                                 style="width:10%; height:auto;" /><br /><br /></div>
                                         <div *ngIf="!imgLogoExit">
                                             Current Button Image: NONE
@@ -61,7 +62,7 @@
                                     <input type="file" accept=".jpg" #videoImg (change)="upload($event)"
                                         style="line-height: 2.5;" />
                                 </div>
-                                <div class="col-12 mt-2" *ngIf="videoLength > 0" style="height: 350px;">
+                                <div class="col-12 mt-2" *ngIf="videoData?.video" style="height: 350px;">
                                     <iframe [src]="url"
                                         style="width: -webkit-fill-available; height: -webkit-fill-available;"></iframe>
                                 </div>
@@ -70,43 +71,30 @@
                     </div>
                     <div class="flex items-center justify-end w-full">
                         <div class="flex items-center my-2">
-                            <div class="flex items-center mr-4" *ngIf="flashMessage">
-                                <ng-container *ngIf="flashMessage === 'success'">
-                                    <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
-                                    </mat-icon>
-                                    <span class="ml-2">Video updated successfully</span>
-                                </ng-container>
-                                <ng-container *ngIf="flashMessage === 'error'">
-                                    <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
-                                    <span class="ml-2">An error occurred, try again!</span>
-                                </ng-container>
-                            </div>
-
                             <button color="primary" class="w-full rounded-md mr-2" mat-button mat-flat-button
-                                [matTooltip]="'Videos must be free from any vendor branding'" (click)="uploadImage()"
-                                [disabled]="videoUpdateLoader">
+                                (click)="uploadImage()" [disabled]="videoUpdateLoader || !videoUploadForm.valid">
                                 <mat-progress-spinner *ngIf="videoUpdateLoader" [diameter]="24"
                                     [mode]="'indeterminate'">
                                 </mat-progress-spinner>
                                 <span *ngIf="!videoUpdateLoader" class="ml-1 mr-1">Update</span>
                             </button>
 
-                            <button color="danger" class="w-full rounded-md text-light bg-red-500 mr-1" mat-button
-                                mat-flat-button>
-                                <mat-progress-spinner *ngIf="videoUpdateLoader" [diameter]="24"
+                            <button *ngIf="videoData?.video" color="danger"
+                                class="w-full rounded-md text-light bg-red-500 mr-1" mat-button mat-flat-button
+                                (click)="removeVideo(true, false)" [disabled]="videoData?.videoLoader">
+                                <mat-progress-spinner *ngIf="videoData?.videoLoader" [diameter]="24"
                                     [mode]="'indeterminate'">
                                 </mat-progress-spinner>
-                                <span *ngIf="!videoUpdateLoader" class="ml-1 mr-1">Remove Video</span>
+                                <span *ngIf="!videoData?.videoLoader" class="ml-1 mr-1">Remove Video</span>
                             </button>
-
-                            <button color="danger" class="w-full min-w-50 text-light rounded-md bg-red-500 mr-1"
-                                mat-button mat-flat-button>
-                                <mat-progress-spinner *ngIf="videoUpdateLoader" [diameter]="24"
+                            <button *ngIf="imgLogoExit" color="danger"
+                                class="w-full min-w-50 text-light rounded-md bg-red-500 mr-1" mat-button mat-flat-button
+                                (click)="removeVideo(false, true)" [disabled]="videoData?.buttonLoader">
+                                <mat-progress-spinner *ngIf="videoData?.buttonLoader" [diameter]="24"
                                     [mode]="'indeterminate'">
                                 </mat-progress-spinner>
-                                <span *ngIf="!videoUpdateLoader" class="ml-1 mr-1">Remove play button image</span>
+                                <span *ngIf="!videoData?.buttonLoader" class="ml-1 mr-1">Remove play button image</span>
                             </button>
-
                         </div>
                     </div>
                 </div>
