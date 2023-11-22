@@ -192,7 +192,7 @@ export class GenerateReportComponent implements OnInit {
                 });
             }
             this.selectedEmployee = this.employeeAdmins[0];
-        })
+        });
     }
     generateReport() {
         if (!this.selectedEmployee) {

@@ -81,11 +81,11 @@
                             <div class="flex justify-center">
                                 <mat-icon (click)="toggleUpdateUserData(element, true)"
                                     svgIcon="heroicons_outline:pencil-alt"></mat-icon>
-                                <mat-icon (click)="deleteUser(element,1)" svgIcon="heroicons_outline:trash"
+                                <!-- <mat-icon (click)="deleteUser(element,1)" svgIcon="heroicons_outline:trash"
                                     *ngIf="!element.delLoader"></mat-icon>
                                 <mat-progress-spinner *ngIf="element.delLoader" [diameter]="24"
                                     [mode]="'indeterminate'">
-                                </mat-progress-spinner>
+                                </mat-progress-spinner> -->
                             </div>
                         </td>
                     </ng-container>
@@ -123,13 +123,13 @@
                     </div>
                     <div class="col-12 col-md-6">
                         <mat-form-field class="w-full">
-                            <mat-label>First Name (30) </mat-label>
+                            <mat-label>First Name (30)* </mat-label>
                             <input matInput type="text" maxlength="30" formControlName="firstName">
                         </mat-form-field>
                     </div>
                     <div class="col-12 col-md-6">
                         <mat-form-field class="w-full">
-                            <mat-label>Last Name (50) </mat-label>
+                            <mat-label>Last Name (50)* </mat-label>
                             <input matInput type="text" maxlength="50" formControlName="lastName">
                         </mat-form-field>
                     </div>
@@ -153,8 +153,9 @@
                     </div>
                     <div class="col-12 col-md-6">
                         <mat-form-field class="w-full">
-                            <mat-label>Default Commission (%) </mat-label>
-                            <input matInput type="number" formControlName="defaultCommission">
+                            <mat-label>Default Commission (%)* </mat-label>
+                            <input matInput (keyup)="_commonService.validateInput($event)" type="number"
+                                formControlName="defaultCommission">
                         </mat-form-field>
                     </div>
                     <div class="col-12 col-md-6">
@@ -300,13 +301,13 @@
                         </div>
                         <div class="col-12 col-md-6">
                             <mat-form-field class="w-full">
-                                <mat-label>First Name (30) </mat-label>
+                                <mat-label>First Name (30)* </mat-label>
                                 <input matInput type="text" maxlength="30" formControlName="firstName">
                             </mat-form-field>
                         </div>
                         <div class="col-12 col-md-6">
                             <mat-form-field class="w-full">
-                                <mat-label>Last Name (50) </mat-label>
+                                <mat-label>Last Name (50)* </mat-label>
                                 <input matInput type="text" maxlength="50" formControlName="lastName">
                             </mat-form-field>
                         </div>
@@ -330,8 +331,9 @@
                         </div>
                         <div class="col-12 col-md-6">
                             <mat-form-field class="w-full">
-                                <mat-label>Default Commission (%) </mat-label>
-                                <input matInput type="number" formControlName="defaultCommission">
+                                <mat-label>Default Commission (%)* </mat-label>
+                                <input matInput type="number" (input)="_commonService.validateInput($event)"
+                                    formControlName="defaultCommission">
                             </mat-form-field>
                         </div>
                         <div class="col-12 col-md-6">
@@ -393,7 +395,7 @@
                         </div>
                         <div class="justify-end flex col-12">
                             <button [disabled]="updateUserData.delLoader" class="min-w-40" mat-stroked-button
-                                [matTooltip]="'Remove User'" (click)="deleteUser(updateUserData, 'test')">
+                                [matTooltip]="'Remove User'" (click)="openDeleteModal(updateUserData, 'test')">
                                 <mat-icon svgIcon="heroicons_solid:trash" *ngIf="!updateUserData.delLoader"></mat-icon>
                                 <span class="ml-2" *ngIf="!updateUserData.delLoader"> Remove User </span>
                                 <mat-progress-spinner *ngIf="updateUserData.delLoader" [diameter]="24"
@@ -506,8 +508,8 @@
                                 Status
                             </th>
                             <td mat-cell *matCellDef="let element" class="text-sm">
-                                <span *ngIf="element.fk_statusID != 5" class="text-red-500">Processing</span>
-                                <span *ngIf="element.fk_statusID == 5" class="text-green-600">Shipped</span>
+                                <span
+                                    class="{{element.statusData.statusColor}}">{{element.statusData.statusValue}}</span>
                             </td>
                         </ng-container>
                         <tr mat-header-row *matHeaderRowDef="displayedOrdersColumns;" class="h-18 bg-light"></tr>
@@ -517,8 +519,9 @@
                     </table>
                     <mat-paginator #paginator
                         class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                        [ngClass]="{'pointer-events-none': ordersLoader}" [length]="totalOrders" [pageIndex]="0"
-                        [pageSize]="20" (page)="getNextOrderdData($event)" [hidePageSize]="true">
+                        [ngClass]="{'pointer-events-none': ordersLoader}" [length]="totalOrders"
+                        [pageIndex]="ordersPage-1" [pageSize]="20" (page)="getNextOrderdData($event)"
+                        [hidePageSize]="true">
                     </mat-paginator>
                 </div>
                 <!-- No color Found -->
@@ -547,34 +550,64 @@
                                 </mat-progress-spinner>
                             </button>
                         </div>
-                        <div class="row">
-                            <div class="col-12 col-md-6">
+                        <!-- Filter -->
+                        <div class="row border-b pb-5">
+                            <div class="col-12 col-md-5">
                                 <mat-form-field class="w-full">
                                     <mat-label>Select a store</mat-label>
-                                    <input matInput placeholder="Search Store Name" [matAutocomplete]="auto"
-                                        [formControl]="storeCtrl">
-                                    <mat-autocomplete class="w-full" #auto="matAutocomplete"
-                                        (optionSelected)="onSelected($event)" [displayWith]="displayWith">
-                                        <mat-option *ngIf="isSearchingCustomer"
-                                            class="is-loading">Loading...</mat-option>
-                                        <ng-container *ngIf="!isSearchingCustomer">
-                                            <mat-option *ngFor="let item of activeStores" [value]="item">
-                                                <span>{{item.storeName}}</span>
-                                            </mat-option>
-                                        </ng-container>
-                                    </mat-autocomplete>
+                                    <mat-select matInput [(ngModel)]="selectedStore">
+                                        <mat-option *ngFor="let item of activeStores" [value]="item">
+                                            <span>{{item.storeName}}</span></mat-option>
+                                    </mat-select>
                                 </mat-form-field>
                             </div>
-                            <div class="col-12 col-md-6">
+                            <div class="col-12 col-md-5">
                                 <mat-form-field class="w-full">
                                     <mat-label>Search Keyword</mat-label>
                                     <input matInput [(ngModel)]="searchKeyword">
                                 </mat-form-field>
                             </div>
-                            <div class="col-12 text-right">
-                                <button class="min-w-40" mat-stroked-button [disabled]="isFilterCustomerLoader"
-                                    (click)="filterCustomers()">
+                            <div class="col-12 col-md-2 text-right">
+                                <button class="w-full rounded-md mt-6" mat-button mat-flat-button color="primary"
+                                    [disabled]="isFilterCustomerLoader" (click)="filterCustomers()">
                                     <span *ngIf="!isFilterCustomerLoader">Filter</span>
+                                    <mat-progress-spinner *ngIf="isFilterCustomerLoader" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Bulk Customer Update -->
+                        <div class="row pt-5">
+                            <div class="col-12">
+                                <p class="text-lg font-semibold">Bulk customer update</p>
+                                <p>This tool will update all customers associated with this FLPS user to a new FLPS user
+                                    of your choice.</p>
+                            </div>
+                            <div class="col-12 col-md-5">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Select a new user:</mat-label>
+                                    <mat-select matInput [(ngModel)]="selectedEmployee">
+                                        <mat-option [value]="''">Select FLPS User</mat-option>
+                                        <mat-option *ngFor="let item of employeeAdmins" [value]="item.pk_userID">
+                                            <span>{{item.fullName}}</span></mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12 col-md-5">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Select a store</mat-label>
+                                    <mat-select matInput [(ngModel)]="selectedBulkStore">
+                                        <mat-option [value]="''">Select a store</mat-option>
+                                        <mat-option *ngFor="let item of bulkStoreList" [value]="item.pk_storeID">
+                                            <span>{{item.storeName}}</span></mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12 col-md-2 text-right">
+                                <button class="w-full rounded-md mt-6" mat-button mat-flat-button color="primary"
+                                    [disabled]="isFilterCustomerLoader" (click)="filterCustomers()">
+                                    <span *ngIf="!isFilterCustomerLoader">Update</span>
                                     <mat-progress-spinner *ngIf="isFilterCustomerLoader" [diameter]="24"
                                         [mode]="'indeterminate'">
                                     </mat-progress-spinner>
@@ -653,6 +686,31 @@
                         There are no customers associated with this FLPS user.
                     </div>
                 </ng-template>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal" tabindex="-1" role="dialog" #removeUser>
+    <div class="modal-dialog" role="document" *ngIf="removeModalData">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{removeModalData?.title}}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>{{removeModalData?.body}}</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn bg-gray-700 text-white rounded-md" color="primary"
+                    *ngIf="removeModalData.check == 'main'" (click)="deleteCompany(removeModalData)">OK</button>
+                <button type="button" class="btn bg-gray-700 text-white rounded-md" color="primary"
+                    *ngIf="removeModalData.check == 'term'" (click)="deleteTerm(removeModalData)">OK</button>
+                <button type="button" class="btn bg-red-500 text-white border-red-500 rounded-md"
+                    data-dismiss="modal">Cancel</button>
             </div>
         </div>
     </div>

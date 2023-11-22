@@ -20,7 +20,7 @@ export interface updateFLPSUser {
     email: string;
     admin_user_id: number;
     user_id: number;
-    update_flps_user: boolean;
+    update_flpsUser: boolean;
 };
 export interface removeFLPSUser {
     user_id: number;

@@ -281,4 +281,16 @@ export class DashboardsService {
             }
         });
     }
+    validateInput(event: any): void {
+        const inputValue = event.target.value;
+        if (inputValue == '-') {
+            event.target.value = 0;
+        }
+        if (inputValue < 0) {
+            // Reset the input value to 0 or show an error message
+            event.target.value = 0;
+        }
+        // You can add more logic if needed
+    }
+
 }

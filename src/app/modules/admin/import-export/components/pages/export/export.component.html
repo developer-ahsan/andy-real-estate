@@ -9,17 +9,9 @@
             </div>
             <mat-form-field class="min-w-100">
                 <mat-label>Select a store:</mat-label>
-                <input matInput placeholder="Search Stores" matTooltip="Search Stores by name" [matAutocomplete]="auto"
-                    [formControl]="searchStoreCtrl">
-                <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelected($event)"
-                    [displayWith]="displayWith">
-                    <mat-option *ngIf="isSearchingStore" class="is-loading">Loading...</mat-option>
-                    <ng-container *ngIf="!isSearchingStore">
-                        <mat-option *ngFor="let item of allStores" [value]="item">
-                            <span>{{item.storeName}}</span>
-                        </mat-option>
-                    </ng-container>
-                </mat-autocomplete>
+                <mat-select matInput [(ngModel)]="selectedStore">
+                    <mat-option *ngFor="let item of allStores" [value]="item">{{item.storeName}}</mat-option>
+                </mat-select>
             </mat-form-field>
             <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group m-0 w-full"
                 [(ngModel)]="ngType">

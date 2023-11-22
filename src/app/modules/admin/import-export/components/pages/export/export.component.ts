@@ -7,6 +7,7 @@ import { Subject } from 'rxjs';
 import { ImportExportService } from '../../import-export.service';
 import { FormControl } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-export-order',
@@ -28,45 +29,58 @@ export class OrderExportComponent implements OnInit, OnDestroy {
     private _changeDetectorRef: ChangeDetectorRef,
     private _authService: AuthService,
     private _exportService: ImportExportService,
+    private _commonService: DashboardsService,
     private router: Router,
     private _activeRoute: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
-    this._exportService.importExportStores$.pipe(takeUntil(this._unsubscribeAll)).subscribe(stores => {
-      this.allStores = stores['data'];
-    });
-    let params;
-    this.searchStoreCtrl.valueChanges.pipe(
-      filter((res: any) => {
-        params = {
-          stores: true,
-          bln_active: 1,
-          size: 10,
-          keyword: res
-        }
-        return res !== null && res.length >= 3
-      }),
-      distinctUntilChanged(),
-      debounceTime(300),
-      tap(() => {
-        this.allStores = [];
-        this.isSearchingStore = true;
-        this._changeDetectorRef.markForCheck();
-      }),
-      switchMap(value => this._exportService.getStoresSearch(params)
-        .pipe(
-          finalize(() => {
-            this.isSearchingStore = false
-            this._changeDetectorRef.markForCheck();
-          }),
-        )
-      )
-    ).subscribe((data: any) => {
-      this.allStores = [];
-      this.allStores = data['data'];
-    });
+    // this._exportService.importExportStores$.pipe(takeUntil(this._unsubscribeAll)).subscribe(stores => {
+    //   this.allStores = stores['data'];
+    // });
+    // let params;
+    // this.searchStoreCtrl.valueChanges.pipe(
+    //   filter((res: any) => {
+    //     params = {
+    //       stores: true,
+    //       bln_active: 1,
+    //       size: 10,
+    //       keyword: res
+    //     }
+    //     return res !== null && res.length >= 3
+    //   }),
+    //   distinctUntilChanged(),
+    //   debounceTime(300),
+    //   tap(() => {
+    //     this.allStores = [];
+    //     this.isSearchingStore = true;
+    //     this._changeDetectorRef.markForCheck();
+    //   }),
+    //   switchMap(value => this._exportService.getStoresSearch(params)
+    //     .pipe(
+    //       finalize(() => {
+    //         this.isSearchingStore = false
+    //         this._changeDetectorRef.markForCheck();
+    //       }),
+    //     )
+    //   )
+    // ).subscribe((data: any) => {
+    //   this.allStores = [];
+    //   this.allStores = data['data'];
+    // });
+    this.getAllStores();
   };
+  getAllStores() {
+    this._commonService.storesData$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(res => {
+        this.allStores = [
+          { storeName: 'All Stores', pk_storeID: '' },
+          ...res["data"].filter(element => element.blnActive)
+        ];
+      });
+    this.selectedStore = this.allStores[0]
+  }
   onSelected(ev) {
     this.selectedStore = ev.option.value;
   }

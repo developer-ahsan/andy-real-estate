@@ -90,8 +90,7 @@ export class FLPSService {
     getAllEmployees(): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.flps, {
             params: {
-                admin_users: true,
-                size: 500
+                admin_users: true
             }
         }).pipe(
             tap((response: any) => {
