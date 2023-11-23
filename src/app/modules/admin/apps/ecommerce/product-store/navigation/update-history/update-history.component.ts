@@ -43,7 +43,7 @@ export class StoreUpdateHistoryComponent implements OnInit, OnDestroy {
       store_product_id: this.selectedProduct.pk_storeProductID
     }
     this._storeService.commonGetCalls(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.updateData = res["data"];
+      this.updateData = res["data"][0]?.updateHistory;
       this.isLoading = false;
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();

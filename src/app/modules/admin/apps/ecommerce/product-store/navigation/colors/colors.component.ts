@@ -81,7 +81,9 @@ export class StoreColorsComponent implements OnInit, OnDestroy {
     }
     this._storeService.updateColors(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.isUpdateLoading = false;
-      this._storeService.snackBar('Shipping Options Updated Successfully');
+      if (res) {
+        this._storeService.snackBar(res["message"]);
+      }
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isUpdateLoading = false;

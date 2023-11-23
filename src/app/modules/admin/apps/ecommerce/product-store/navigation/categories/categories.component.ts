@@ -118,6 +118,10 @@ export class CategoriesComponent implements OnInit, OnDestroy {
   }
 
   addNewCategory(item) {
+    if (!item.newChild) {
+      this._storeService.snackBar('Subcategory name is required');
+      return;
+    }
     let payload: AddSubCategory = {
       category_id: item.pk_categoryID,
       subCategory_name: item.newChild,

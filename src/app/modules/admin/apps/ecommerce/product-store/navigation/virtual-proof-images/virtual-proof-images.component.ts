@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ElementRef, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
@@ -8,6 +8,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { StoreProductService } from '../../store.service';
 import { AddVirtualProofImage, DeleteVirtualProofImage } from '../../store.types';
 import { DomSanitizer } from '@angular/platform-browser';
+declare var $: any;
 
 @Component({
   selector: 'app-virtual-proof-images',
@@ -28,6 +29,8 @@ export class VirtualProofImagesComponent implements OnInit, OnDestroy {
   isUpload: boolean = false;
 
   ngStoreCheck: boolean = false;
+  @ViewChild('deleteImage') deleteImage: ElementRef;
+  deleteModalData: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _storeService: StoreProductService,
@@ -67,6 +70,10 @@ export class VirtualProofImagesComponent implements OnInit, OnDestroy {
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     })
+  }
+  deleImageModal(item) {
+    this.deleteModalData = item;
+    $(this.deleteImage.nativeElement).modal('show');
   }
   deleteVirtualImages(item) {
     item.delLoader = true;

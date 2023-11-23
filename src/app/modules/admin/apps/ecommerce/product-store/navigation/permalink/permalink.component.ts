@@ -2,6 +2,7 @@ import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDe
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { StoreProductService } from '../../store.service';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-permalink',
@@ -19,7 +20,8 @@ export class PermalinkComponent implements OnInit, OnDestroy {
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _storeService: StoreProductService
+    private _storeService: StoreProductService,
+    private _commonService: DashboardsService
   ) { }
 
   ngOnInit(): void {
@@ -35,16 +37,23 @@ export class PermalinkComponent implements OnInit, OnDestroy {
     });
   }
   UpdatePermaLink() {
+    let permalink = this.permalink;
+    if (!this.permalink) {
+      permalink = this._commonService.convertToSlug(this.selectedProduct.productName);
+    }
     this.isUpdateLoading = true;
     let payload = {
-      permalink: this.permalink,
+      permalink: permalink,
       storeProductID: Number(this.selectedProduct.pk_storeProductID),
       update_permalink: true
     }
     this._storeService.UpdatePermaLink(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.isUpdateLoading = false;
-      this._storeService.snackBar('Shipping Options Updated Successfully');
-      this.selectedProduct.permalink = this.permalink;
+      if (res) {
+        this._storeService.snackBar(res["message"]);
+      }
+      this.selectedProduct.permalink = permalink;
+      this.permalink = permalink;
       this._storeService._storeProduct.next(this.selectedProduct);
       this._changeDetectorRef.markForCheck();
     }, err => {

@@ -36,15 +36,9 @@
                         </div>
                     </mat-expansion-panel>
                 </div>
-                <div class="flex col-12 justify-center my-2" *ngIf="totalCategories > allCategories.length">
-                    <span class="text-gray-500 hover:text-gray-900 cursor-pointer" *ngIf="!isCategoryLoader"
-                        (click)="getNextCategoryData()"> Load More </span>
-                    <mat-progress-spinner *ngIf="isCategoryLoader" [diameter]="24" [mode]="'indeterminate'">
-                    </mat-progress-spinner>
-                </div>
                 <div class="col-12 my-2">
                     <button *ngIf="paramsData.type == 'categories'" [disabled]="isExportLoader"
-                        (click)="getCategoriesEcportData()" mat-flat-button class="min-w-40" [color]="'primary'">
+                        (click)="getCategoriesExportData()" mat-flat-button class="min-w-40" [color]="'primary'">
                         <span *ngIf="!isExportLoader">Export Categories</span>
                         <mat-progress-spinner *ngIf="isExportLoader" [diameter]="24" [mode]="'indeterminate'">
                         </mat-progress-spinner>

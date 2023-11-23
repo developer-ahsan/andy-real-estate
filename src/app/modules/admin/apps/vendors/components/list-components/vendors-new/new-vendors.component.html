@@ -43,10 +43,16 @@
                     </mat-form-field>
                 </div>
                 <div class="col-12 col-md-6">
-                    <mat-form-field class="w-full">
-                        <mat-label>Phone *</mat-label>
-                        <input matInput placeholder="Phone" maxlength="25" formControlName="phone">
-                    </mat-form-field>
+                    <div class="flex space-x-2">
+                        <mat-form-field class="w-1/2">
+                            <mat-label>Phone *</mat-label>
+                            <input matInput placeholder="Phone" maxlength="25" formControlName="phone">
+                        </mat-form-field>
+                        <mat-form-field class="w-1/3">
+                            <mat-label>PhoneEXT *</mat-label>
+                            <input matInput placeholder="PhoneEXT" maxlength="4" formControlName="phoneExt">
+                        </mat-form-field>
+                    </div>
                 </div>
                 <div class="col-12 col-md-6">
                     <mat-form-field class="w-full">

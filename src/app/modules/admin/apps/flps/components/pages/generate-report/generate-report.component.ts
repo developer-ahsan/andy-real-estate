@@ -385,7 +385,7 @@ export class GenerateReportComponent implements OnInit {
         this.reportSummaryData.forEach(element => {
             element.DetailsData.forEach(order => {
                 FlpsOrders.push({ order_id: order.id, amountPaid: order.amount });
-                if (order.paymentDate != 'NULL') {
+                if (order.checked) {
                     markPaidList.push({
                         orderID: order.id,
                         customer: order.customer,

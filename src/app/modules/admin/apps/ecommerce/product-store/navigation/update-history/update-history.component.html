@@ -8,10 +8,13 @@
                     <div class="text-2xl font-bold">
                         Update History
                     </div>
-                    <div *ngIf="updateData.length == 0" class="mt-3">
+                    <div *ngIf="!updateData" class="mt-3">
                         <fuse-alert [appearance]="'soft'" [name]="'alertBox4'" [showIcon]="false" [type]="'warning'">
                             THERE ARE CURRENTLY NO UPDATE RECORDS FOR THIS ITEM.
                         </fuse-alert>
+                    </div>
+                    <div *ngIf="updateData">
+                        <p [innerHTML]="updateData"></p>
                     </div>
                 </div>
             </fuse-card>

@@ -11,7 +11,7 @@ export const importExportRoutes: Route[] = [
         path: '',
         component: ImportExportComponent,
         resolve: {
-            ImportExportStoresResolver
+            // ImportExportStoresResolver
         },
         children: [
             {

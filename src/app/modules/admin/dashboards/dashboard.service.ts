@@ -292,5 +292,10 @@ export class DashboardsService {
         }
         // You can add more logic if needed
     }
-
+    convertToSlug = title => {
+        return title
+            .toLowerCase()
+            .replace(/[^\w ]+/g, "")
+            .replace(/ +/g, "-");
+    };
 }

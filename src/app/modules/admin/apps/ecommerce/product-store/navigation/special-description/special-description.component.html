@@ -8,6 +8,11 @@
                     <div class="text-2xl font-bold">
                         Special Description
                     </div>
+                    <div class="alert alert-info">
+                        Master product descriptions are defined at the master product level for this particular product.
+                        Any store product descriptions defined here will override the master product descriptions on
+                        this store.
+                    </div>
                     <div class="mt-5 row">
                         <div class="col-12 col-md-6">
                             <p class="text-lg font-bold">Master product description</p>
@@ -27,6 +32,12 @@
                                             product description
                                         </p>
                                         <mat-icon [svgIcon]="'heroicons_outline:clipboard-copy'"></mat-icon>
+                                    </div>
+                                    <div class="col-12 flex align-items-center my-2 font-bold text-lg">
+                                        <span>Copy to other stores</span>
+                                        <mat-icon svgIcon="heroicons_solid:question-mark-circle"
+                                            [matTooltip]="'This will copy the store description you define here to other stores.  Stores with an exclamation mark next to them already have special descriptions defined.'">
+                                        </mat-icon>
                                     </div>
                                     <div class="col-12 col-md-6" *ngFor="let item of stores">
                                         <mat-checkbox [(ngModel)]="item.checked">
@@ -61,7 +72,7 @@
                                 </fuse-alert>
                                 <p *ngIf="miniDescription">{{miniDescription}}</p>
 
-                                <div class="row" *ngIf="!miniDescription">
+                                <div class="row" *ngIf="miniDescription">
                                     <div class="col-12 flex cursor-pointer  mb-2 align-items-center"
                                         matTooltip="Copy Mini Description" (click)="assignDescriptions(2)">
                                         <p class="my-2 text-secondary font-bold text-lg">Copy to store
@@ -76,7 +87,8 @@
                         <div class="col-12 col-md-6 mt-20">
                             <p class="text-lg font-bold">Store product mini description</p>
                             <mat-form-field class="w-full">
-                                <textarea [(ngModel)]="miniDescriptionStore" matInput rows="10"></textarea>
+                                <textarea maxlength="150" [(ngModel)]="miniDescriptionStore" matInput
+                                    rows="10"></textarea>
                             </mat-form-field>
                         </div>
 
@@ -103,9 +115,10 @@
                         </div>
                         <!-- Store product meta description -->
                         <div class="col-12 col-md-6">
-                            <p class="text-lg font-bold">Store product meta description</p>
+                            <p class="text-lg font-bold">Store product meta description (160)</p>
                             <mat-form-field class="w-full">
-                                <textarea [(ngModel)]="metaDescriptionStore" matInput rows="10"></textarea>
+                                <textarea maxlength="160" [(ngModel)]="metaDescriptionStore" matInput
+                                    rows="10"></textarea>
                             </mat-form-field>
                         </div>
 

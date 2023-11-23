@@ -35,39 +35,6 @@ export class OrderExportComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    // this._exportService.importExportStores$.pipe(takeUntil(this._unsubscribeAll)).subscribe(stores => {
-    //   this.allStores = stores['data'];
-    // });
-    // let params;
-    // this.searchStoreCtrl.valueChanges.pipe(
-    //   filter((res: any) => {
-    //     params = {
-    //       stores: true,
-    //       bln_active: 1,
-    //       size: 10,
-    //       keyword: res
-    //     }
-    //     return res !== null && res.length >= 3
-    //   }),
-    //   distinctUntilChanged(),
-    //   debounceTime(300),
-    //   tap(() => {
-    //     this.allStores = [];
-    //     this.isSearchingStore = true;
-    //     this._changeDetectorRef.markForCheck();
-    //   }),
-    //   switchMap(value => this._exportService.getStoresSearch(params)
-    //     .pipe(
-    //       finalize(() => {
-    //         this.isSearchingStore = false
-    //         this._changeDetectorRef.markForCheck();
-    //       }),
-    //     )
-    //   )
-    // ).subscribe((data: any) => {
-    //   this.allStores = [];
-    //   this.allStores = data['data'];
-    // });
     this.getAllStores();
   };
   getAllStores() {
@@ -75,7 +42,6 @@ export class OrderExportComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
         this.allStores = [
-          { storeName: 'All Stores', pk_storeID: '' },
           ...res["data"].filter(element => element.blnActive)
         ];
       });

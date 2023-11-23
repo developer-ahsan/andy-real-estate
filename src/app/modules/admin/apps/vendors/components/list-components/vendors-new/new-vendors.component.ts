@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
@@ -44,6 +44,7 @@ export class NewVendorsComponent implements OnInit, OnDestroy {
       city: new FormControl(''),
       zipCode: new FormControl(''),
       phone: new FormControl(''),
+      phoneExt: new FormControl(''),
       fax: new FormControl(''),
       ASI: new FormControl(''),
       PPAI: new FormControl(''),
@@ -113,11 +114,8 @@ export class NewVendorsComponent implements OnInit, OnDestroy {
   }
   // Create New Company
   addNewCompany() {
-    const { companyName, address, city, zipCode, phone, fax, ASI, PPAI, artworkEmail, ordersEmail, websiteURL, outsideRep, insideRep, outsideRepPhone, outsideRepEmail, insideRepPhone, insideRepEmail, samplesContactEmail, customerAccountNumber } = this.addCompanyForm.getRawValue();
-    if (companyName == '' || address == '' || city == '' || phone == '' || zipCode == '') {
-      this._vendorService.snackBar('Please fill out the required fields');
-      return;
-    }
+    let errorMessage = '';
+    const { companyName, address, city, zipCode, phone, fax, ASI, PPAI, artworkEmail, ordersEmail, websiteURL, outsideRep, insideRep, outsideRepPhone, outsideRepEmail, insideRepPhone, insideRepEmail, samplesContactEmail, customerAccountNumber, phoneExt } = this.addCompanyForm.getRawValue();
     let companyType = [];
     if (this.ngSupplier) {
       companyType.push(1);
@@ -128,6 +126,46 @@ export class NewVendorsComponent implements OnInit, OnDestroy {
     if (this.ngDigitizer) {
       companyType.push(3);
     }
+
+    const trimAndLen = (value: string) => value.trim().length;
+
+    const validateEmail = (email: string) => !email.trim() || this.formVal_email(email);
+
+    const validatePhone = (phone: string, ext: string) => !phone.trim() || this.formVal_phone(phone + ext);
+
+    if (![companyName, address, city, zipCode, phone].every(trimAndLen)) {
+      errorMessage = 'Name, address, city, zip, and phone are required.';
+    } else if (!this.formVal_zipCode(zipCode)) {
+      errorMessage = 'Zip code appears invalid. Enter 5-digit U.S. zip codes only.';
+    } else if (!validatePhone(phone, phoneExt)) {
+      errorMessage = 'Phone number appears invalid. Enter 10-digit U.S. phone numbers only.';
+    } else if (!validatePhone(fax, '')) {
+      errorMessage = 'Fax number appears invalid. Enter 10-digit U.S. phone numbers only or leave blank.';
+    } else if (!validateEmail(artworkEmail)) {
+      errorMessage = 'Graphics email appears non-valid.';
+    } else if (!validateEmail(ordersEmail)) {
+      errorMessage = 'Orders email appears non-valid.';
+    } else if (!validateEmail(outsideRepEmail)) {
+      errorMessage = 'The outside rep email you entered does not appear to be valid.';
+    } else if (!validateEmail(insideRepEmail)) {
+      errorMessage = 'The inside rep email you entered does not appear to be valid.';
+    }
+    let formattedPhone = '';
+    let formattedFax = '';
+    if (!errorMessage) {
+      formattedPhone = this.format_phone(phone, phoneExt);
+      formattedFax = fax.trim() ? this.format_phone(fax, '') : '';
+    }
+    if (!errorMessage && (!Array.isArray(companyType) || companyType.length === 0 || !companyType.some(type => [1, 2, 3].includes(type)))) {
+      errorMessage = 'Please select at least one company type.';
+    }
+
+
+    if (errorMessage) {
+      this._vendorService.snackBar(errorMessage);
+      return;
+    }
+
     let payload: AddCompany = {
       companyName: companyName.replace(/'/g, "''"), address: address.replace(/'/g, "''"), city: city.replace(/'/g, "''"), zipCode, phone, fax, ASI, PPAI, artworkEmail, ordersEmail, websiteURL, outsideRep, insideRep, outsideRepPhone, outsideRepEmail, insideRepPhone, insideRepEmail, samplesContactEmail, companyType, state: this.selectedState.state, customerAccountNumber, create_company: true
     }
@@ -151,6 +189,36 @@ export class NewVendorsComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     })
   }
+  formVal_email(email: string): boolean {
+    // Regular expression for basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email.trim());
+  }
+  formVal_phone(phone: string): boolean {
+    // Regular expression for basic 10-digit U.S. phone number validation
+    const phoneRegex = /^\d{10}$/;
+    return phoneRegex.test(phone.trim());
+  }
+
+  formVal_zipCode(zipCode: string): boolean {
+    // Regular expression for basic 5-digit U.S. zip code validation
+    const zipCodeRegex = /^\d{5}$/;
+    return zipCodeRegex.test(zipCode.trim());
+  }
+  format_phone(phone: string, extension: string): string {
+    // Regular expression for extracting digits from a string
+    const digitRegex = /\d/g;
+
+    // Extract only digits from the phone number
+    const digits = phone.trim().match(digitRegex)?.join('') || '';
+
+    // Format the phone number as (XXX) XXX-XXXX
+    const formattedPhone = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
+
+    // Append the extension if provided
+    return extension.trim() ? `${formattedPhone} ext. ${extension.trim()}` : formattedPhone;
+  }
+
   /**
      * On destroy
      */
