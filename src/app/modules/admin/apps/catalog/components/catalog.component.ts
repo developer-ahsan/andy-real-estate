@@ -11,6 +11,7 @@ import Swal from 'sweetalert2'
 import { CatalogService } from './catalog.service';
 import { FormControl } from '@angular/forms';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
+import { K } from '@angular/cdk/keycodes';
 @Component({
   selector: 'catalog',
   templateUrl: './catalog.component.html',
@@ -60,21 +61,65 @@ export class CatalogComponent {
   // Colors Searchable
   allColors = [];
   searchColorCtrl = new FormControl();
-  selectedColor: any;
+  selectedColor: any = [];
   isSearchingColor = false;
   selectedColors: any = [];
   searchTerm: any = '';
   dropdownSettings: any;
+  singleSelectDropdownSettings: any;
   // Sizes Searchable
   allSizes = [];
   searchSizeCtrl = new FormControl();
-  selectedSize: any;
+  selectedSize: any = [];
   isSearchingSize = false;
   // Methods Searchable
   allMethods = [];
   searchMethodCtrl = new FormControl();
-  selectedMethod: any;
+  selectedMethod: any = [];
   isSearchingMethod = false;
+
+  // Vendor Searchable
+  SelectedVendor: any = [];
+  selectedVendorRelation: any;
+  selectedColorString: any;
+  selectedDecorationString: any;
+  selectedSizeString: any
+
+
+  filterIds: any = {}
+  minQuantity: any = 0;
+  minPrice: any = 0;
+  maxPrice: any = 0;
+  keyWord: any = ''
+
+  filterPayload: any = {
+    pageNumber: 1,
+    pageSize: 10,
+    sortBy: '',
+    sortOrder: '',
+    blnActive: 1,
+    keyword: '',
+    companySearch: '',
+    methodSearch: '',
+    colorSearch: '',
+    sizeSearch: '',
+    minPrice: 0,
+    maxPrice: 0,
+    minQuantity: 0,
+    vendorRelation: 0,
+    catalog_filter_products: true
+  };
+
+  vendorRelations: any = [
+    'Any Relation',
+    'Normal',
+    'Preffered',
+    'Partner',
+    'Preffered & Partner',
+  ]
+
+
+
   /**
    * Constructor
    */
@@ -95,6 +140,12 @@ export class CatalogComponent {
       unSelectAllText: 'UnSelect All',
       allowSearchFilter: true,
     };
+    this.singleSelectDropdownSettings = {
+      singleSelection: true,
+      idField: 'pk_companyID',
+      textField: 'companyName',
+      allowSearchFilter: true,
+    }
   }
 
   // -----------------------------------------------------------------------------------------------------
@@ -298,18 +349,53 @@ export class CatalogComponent {
     return value?.colorName;
   }
   // Methods
-  onSelectedMethod(ev) {
-    this.selectedMethod = ev.option.value;
-    this.getCatalogs(1);
+  // onSelectedMethod(ev) {
+  //   this.selectedMethod = ev.option.value;
+  //   this.getCatalogs(1);
+  // }
+
+  onSelectedMethod(selectedItems: any | any[]) {
+    // Ensure selectedItems is always an array
+    const itemsArray = Array.isArray(selectedItems) ? selectedItems : [selectedItems];
+
+    // Combine newly selected items with previously selected items
+    this.selectedMethod = [...this.selectedMethod, ...itemsArray];
+
+    // Remove duplicates (optional, depending on your use case)
+    this.selectedMethod = this.removeDuplicates(this.selectedMethod, 'id');
   }
+
   displayWithMethod(value: any) {
     return value?.methodName;
   }
   // Sizes
-  onSelectedSize(ev) {
-    this.selectedSize = ev.option.value;
-    this.getCatalogs(1);
+  // onSelectedSize(ev) {
+  //   this.selectedSize = ev.option.value;
+  //   this.getCatalogs(1);
+  // }
+
+  onSelectedSize(selectedItems: any | any[]) {
+    // Ensure selectedItems is always an array
+    const itemsArray = Array.isArray(selectedItems) ? selectedItems : [selectedItems];
+
+    // Combine newly selected items with previously selected items
+    this.selectedSize = [...this.selectedSize, ...itemsArray];
+
+    // Remove duplicates (optional, depending on your use case)
+    this.selectedSize = this.removeDuplicates(this.selectedSize, 'id');
   }
+
+  onSelectedVendor(selectedItems: any | any[]) {
+    // Ensure selectedItems is always an array
+    const itemsArray = Array.isArray(selectedItems) ? selectedItems : [selectedItems];
+
+    // Combine newly selected items with previously selected items
+    this.SelectedVendor = [...this.SelectedVendor, ...itemsArray];
+
+    // Remove duplicates (optional, depending on your use case)
+    this.SelectedVendor = this.removeDuplicates(this.SelectedVendor, 'id');
+  }
+
   displayWithSize(value: any) {
     return value?.sizeName;
   }
@@ -336,28 +422,31 @@ export class CatalogComponent {
       this.catalogFilter.method_search = '';
     }
     this.isFilterLoader = true;
-    let params = {
-      catalog_products: true,
-      page: page,
-      sort_by: this.catalogFilter.sort_by,
-      sort_order: this.catalogFilter.sort_order,
-      keyword: this.catalogFilter.keyword,
-      size: this.catalogFilter.perPage,
-      company_search: this.catalogFilter.company_search,
-      method_search: this.catalogFilter.method_search,
-      color_search: this.catalogFilter.color_search,
-      bln_active: this.catalogFilter.bln_active,
-      vendor_relation: this.catalogFilter.vendor_relation
+    this.selectedColorString = this.selectedColor.map(item => item.name).join(',');
+    this.selectedDecorationString = this.selectedMethod.map(item => item.name).join(',');
+    this.selectedSizeString = this.selectedSize.map(item => item.name).join(',')
+    this.filterPayload = {
+      pageNumber: this.page || 1,
+      pageSize: this.catalogFilter.perPage || 10,
+      sortBy: this.catalogFilter.sort_by || `pk_productID`,
+      sortOrder: this.catalogFilter.sort_order || "DESC",
+      blnActive: this.catalogFilter.bln_active || 1,
+      keyword: this.keyWord || '',
+      companySearch: this.SelectedVendor.length > 0 ? this.SelectedVendor.map(item => item.pk_companyID)[0] : '',
+      methodSearch: this.selectedMethod !== undefined ? this.selectedMethod.map(item => item.id).join(',') : '',
+      colorSearch: this.selectedColor !== undefined ? this.selectedColor.map(item => item.id).join(',') : '',
+      sizeSearch: this.selectedSize !== undefined ? this.selectedSize.map(item => item.id).join(',') : '',
+      minPrice: this.minPrice || 0,
+      maxPrice: this.maxPrice || 0,
+      minQuantity: this.minQuantity || 0,
+      vendorRelation: this.catalogFilter.vendor_relation || 0,
+      catalog_filter_products: true
     }
-    this._catalogService.getCatalogData(params).pipe(
+    this._catalogService.getCatalogData(this.filterPayload).pipe(
       takeUntil(this._unsubscribeAll),
       distinctUntilChanged())
       .subscribe(res => {
         this.total = res["totalRecords"];
-        // res["data"].forEach((element, index) => {
-        //   element.Cost = JSON.parse(element.Cost);
-        //   element.Imprint = JSON.parse(element.Imprint);
-        // });
         this.dataSource = res["data"];
         this.isLoading = false;
         this.isFilterLoader = false;
@@ -374,24 +463,46 @@ export class CatalogComponent {
     this.catalogFilter.perPage = ev.value;
     this.itemsPerPage = ev.value;
     this.page = 1;
-    this.getCatalogs(1);
+    // this.getCatalogs(1);
   }
-  clearFilter(type) {
-    this.page = 1;
-    if (type == 1) {
-      this.selectedSupplier = null;
-      this.page = 1;
-      this.searchSupplierCtrl.setValue(null);
-    } else if (type == 2) {
-      this.selectedColor = null;
-      this.searchColorCtrl.setValue(null);
-    } else if (type == 3) {
-      this.selectedSize = null;
-      this.searchSizeCtrl.setValue(null);
-    } else if (type == 4) {
-      this.selectedMethod = null;
-      this.searchMethodCtrl.setValue(null);
+  clearFilter(key: any,) {
+    this.filterPayload = {
+      // pageNumber: this.page || 1,
+      // pageSize: this.catalogFilter.perPage || 10,
+      // sortBy: this.catalogFilter.sort_by || `pk_productID`,
+      // sortOrder: this.catalogFilter.sort_order || "DESC",
+      // blnActive: this.catalogFilter.bln_active || 1,
+      keyword: this.keyWord || '',
+      companySearch: this.SelectedVendor.length > 0 ? this.SelectedVendor.map(item => item.pk_companyID)[0] : '',
+      methodSearch: this.selectedMethod !== undefined ? this.selectedMethod.map(item => item.id).join(',') : '',
+      colorSearch: this.selectedColor !== undefined ? this.selectedColor.map(item => item.id).join(',') : '',
+      sizeSearch: this.selectedSize !== undefined ? this.selectedSize.map(item => item.id).join(',') : '',
+      minPrice: this.minPrice || 0,
+      maxPrice: this.maxPrice || 0,
+      minQuantity: this.minQuantity || 0,
+      vendorRelation: this.catalogFilter.vendor_relation || 0,
+      // catalog_filter_products: true
     }
+    if (key === 'keyword') {
+      this.keyWord = ''
+    } else if (key === 'companySearch') {
+      this.SelectedVendor = [];
+    } else if (key === 'methodSearch') {
+      this.selectedMethod = [];
+    } else if (key === 'colorSearch') {
+      this.selectedColor = []
+    } else if (key === 'sizeSearch') {
+      this.selectedSize = [];
+    } else if (key === 'minPrice') {
+      this.minPrice = 0;
+    } else if (key === 'maxPrice') {
+      this.maxPrice = 0;
+    } else if (key === 'minQuantity') {
+      this.minQuantity = 0;
+    } else if (key === 'vendorRelation') {
+      this.catalogFilter.vendor_relation = 0;
+    }
+
     this.getCatalogs(1);
   }
   searchByKeyword(ev) {
@@ -405,24 +516,24 @@ export class CatalogComponent {
       this.catalogFilter.sort_order = '';
       this.catalogFilter.sort_by = '';
     } else if (val == 2) {
-      this.catalogFilter.sort_by = 'minPrice';
+      this.catalogFilter.sort_by = 'priceAsc';
       this.catalogFilter.sort_order = 'ASC';
     } else if (val == 3) {
-      this.catalogFilter.sort_by = 'maxPrice';
+      this.catalogFilter.sort_by = 'priceDesc';
       this.catalogFilter.sort_order = 'DESC';
     } else if (val == 4) {
-      this.catalogFilter.sort_by = 'productName';
+      this.catalogFilter.sort_by = 'nameAsc';
       this.catalogFilter.sort_order = 'ASC';
     } else if (val == 5) {
-      this.catalogFilter.sort_by = 'productName';
+      this.catalogFilter.sort_by = 'nameDesc';
       this.catalogFilter.sort_order = 'DESC';
     }
-    this.page = 1;
-    this.getCatalogs(1);
+    // this.page = 1;
+    // this.getCatalogs(1);
   }
   vendorFilter(ev) {
     this.page = 1;
-    this.getCatalogs(1);
+    this.selectedVendorRelation = this.vendorRelations[this.catalogFilter.vendor_relation];
   }
   /**
    * On destroy

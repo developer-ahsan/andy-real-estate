@@ -42,20 +42,18 @@
                 <div class="col-12">
                     <mat-form-field class="w-full">
                         <mat-label>Keyword (PID, SPID, product name):</mat-label>
-                        <input matInput matTooltip="Enter to search" (keyup.enter)="searchByKeyword($event)">
+                        <input [(ngModel)]="keyWord" matInput matTooltip="Enter to search"
+                            (keyup.enter)="searchByKeyword($event)">
                     </mat-form-field>
                 </div>
-                <div class="col-12">
-                    <mat-form-field class="w-full">
-                        <input type="text" placeholder="Vendors" matInput [matAutocomplete]="auto"
-                            [formControl]="searchSupplierCtrl">
-                        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn"
-                            (optionSelected)="onSelected($event)">
-                            <mat-option *ngFor="let item of filteredOptions"
-                                [value]="item.companyName">{{item.companyName}}</mat-option>
-                        </mat-autocomplete>
-                    </mat-form-field>
+
+                <div class="col-12 mb-3">
+                    <mat-label>Vendor:</mat-label>
+                    <ng-multiselect-dropdown [placeholder]="'Select Vendor'" [settings]="singleSelectDropdownSettings"
+                        [data]="allSuppliers" [(ngModel)]="SelectedVendor" (onSelect)="onSelectedVendor($event)">
+                    </ng-multiselect-dropdown>
                 </div>
+
                 <div class="col-12">
                     <mat-form-field class="w-full">
                         <mat-label>Vendor Relation:</mat-label>
@@ -72,58 +70,41 @@
                 <div class="col-12">
                     <mat-form-field class="w-full">
                         <mat-label>Min. quantity:</mat-label>
-                        <input matInput type="number" (mousewheel)="$event.preventDefault()">
+                        <input min="0" [(ngModel)]="minQuantity" matInput type="number"
+                            (mousewheel)="$event.preventDefault()">
                     </mat-form-field>
                 </div>
                 <div class="col-12 col-md-6">
                     <mat-form-field class="w-full">
                         <mat-label>Min. price:</mat-label>
-                        <input matInput type="number" (mousewheel)="$event.preventDefault()">
+                        <input min="0" [(ngModel)]="minPrice" matInput type="number"
+                            (mousewheel)="$event.preventDefault()">
                     </mat-form-field>
                 </div>
                 <div class="col-12 col-md-6">
                     <mat-form-field class="w-full">
                         <mat-label>Max. price:</mat-label>
-                        <input matInput type="number" (mousewheel)="$event.preventDefault()">
+                        <input min="0" [(ngModel)]="maxPrice" matInput type="number"
+                            (mousewheel)="$event.preventDefault()">
                     </mat-form-field>
                 </div>
-                <div class="col-12">
+                <div class="col-12 my-3">
                     <mat-label>Colors:</mat-label>
                     <ng-multiselect-dropdown [placeholder]="'Select Colors'" [settings]="dropdownSettings"
                         [data]="allColors" [(ngModel)]="selectedColor" (onSelect)="onSelectedColor($event)">
                     </ng-multiselect-dropdown>
                 </div>
-                <div class="col-12">
-                    <mat-form-field class="w-full">
-                        <mat-label>Decoration:</mat-label>
-                        <input matInput placeholder="Search Decoration" matTooltip="Search Decoration by name"
-                            [matAutocomplete]="auto2" [formControl]="searchMethodCtrl">
-                        <mat-autocomplete class="w-full" #auto2="matAutocomplete"
-                            (optionSelected)="onSelectedMethod($event)" [displayWith]="displayWithMethod">
-                            <mat-option *ngIf="isSearchingMethod" class="is-loading">Loading...</mat-option>
-                            <ng-container *ngIf="!isSearchingMethod">
-                                <mat-option *ngFor="let item of allMethods" [value]="item">
-                                    <span>{{item.methodName}}</span>
-                                </mat-option>
-                            </ng-container>
-                        </mat-autocomplete>
-                    </mat-form-field>
+                <div class="col-12 my-3">
+                    <mat-label>Decoration:</mat-label>
+                    <ng-multiselect-dropdown [placeholder]="'Select Decoration'" [settings]="dropdownSettings"
+                        [data]="allMethods" [(ngModel)]="selectedMethod" (onSelect)="onSelectedMethod($event)">
+                    </ng-multiselect-dropdown>
                 </div>
-                <div class="col-12">
-                    <mat-form-field class="w-full">
-                        <mat-label>Size:</mat-label>
-                        <input matInput placeholder="Search Size" matTooltip="Search Size by name"
-                            [matAutocomplete]="auto3" [formControl]="searchSizeCtrl">
-                        <mat-autocomplete class="w-full" #auto3="matAutocomplete"
-                            (optionSelected)="onSelectedSize($event)" [displayWith]="displayWithSize">
-                            <mat-option *ngIf="isSearchingSize" class="is-loading">Loading...</mat-option>
-                            <ng-container *ngIf="!isSearchingSize">
-                                <mat-option *ngFor="let size of allSizes" [value]="size">
-                                    <span>{{size.sizeName}}</span>
-                                </mat-option>
-                            </ng-container>
-                        </mat-autocomplete>
-                    </mat-form-field>
+                <div class="col-12 my-3">
+                    <mat-label>Size:</mat-label>
+                    <ng-multiselect-dropdown [placeholder]="'Select Size'" [settings]="dropdownSettings"
+                        [data]="allSizes" [(ngModel)]="selectedSize" (onSelect)="onSelectedSize($event)">
+                    </ng-multiselect-dropdown>
                 </div>
                 <div class="col-12">
                     <mat-form-field class="w-full">
@@ -153,25 +134,53 @@
                         </ngx-skeleton-loader>
                     </div>
                     <div class="col-12" *ngIf="!isPageLoading && !isFilterLoader">
-                        <div class="flex mb-2 overflow-x-auto">
-                            <button *ngIf="selectedSupplier" mat-button mat-stroked-button class="mr-1">
-                                <span class="text-md">{{selectedSupplier.companyName}}</span>
+                        <div class="flex flex-wrap mb-2 gap-2">
+                            <button *ngIf="filterPayload.keyword !== ''" mat-button mat-stroked-button class="mr-1">
+                                <span class="text-sm">Keyword: {{filterPayload.keyword}}</span>
                                 <mat-icon svgIcon="heroicons_outline:x" class="icon-size-4 cursor-pointer"
-                                    (click)="clearFilter(1)"></mat-icon>
+                                    (click)="clearFilter('keyword')"></mat-icon>
                             </button>
-                            <button *ngIf="selectedColor" mat-button mat-stroked-button class="mr-1">
-                                <span class="text-md">{{selectedColor.colorName}}</span>
-                                <mat-icon svgIcon="heroicons_outline:x" (click)="clearFilter(2)"
+                            <button *ngIf="filterPayload.companySearch !== ''" mat-button mat-stroked-button
+                                class="mr-1">
+                                <span class="text-sm">Vendor: {{SelectedVendor[0].companyName}}</span>
+                                <mat-icon svgIcon="heroicons_outline:x" (click)="clearFilter('companySearch')"
                                     class="icon-size-4 cursor-pointer"></mat-icon>
                             </button>
-                            <button *ngIf="selectedSize" mat-button mat-stroked-button class="mr-1">
-                                <span class="text-md">{{selectedSize.sizeName}}</span>
-                                <mat-icon svgIcon="heroicons_outline:x" (click)="clearFilter(3)"
+                            <button *ngIf="filterPayload.vendorRelation !== 0" mat-button mat-stroked-button
+                                class="mr-1">
+                                <span class="text-sm">Vendor Relation: {{this.selectedVendorRelation}}</span>
+                                <mat-icon svgIcon="heroicons_outline:x" (click)="clearFilter('vendorRelation')"
                                     class="icon-size-4 cursor-pointer"></mat-icon>
                             </button>
-                            <button *ngIf="selectedMethod" mat-button mat-stroked-button class="mr-1">
-                                <span class="text-md">{{selectedMethod.methodName}}</span>
-                                <mat-icon svgIcon="heroicons_outline:x" (click)="clearFilter(4)"
+                            <button *ngIf="filterPayload.minPrice !== 0" mat-button mat-stroked-button class="mr-1">
+                                <span class="text-sm">Min. Price: {{filterPayload.minPrice | currency}}</span>
+                                <mat-icon svgIcon="heroicons_outline:x" (click)="clearFilter('minPrice')"
+                                    class="icon-size-4 cursor-pointer"></mat-icon>
+                            </button>
+                            <button *ngIf="filterPayload.maxPrice !== 0" mat-button mat-stroked-button class="mr-1">
+                                <span class="text-sm">Max. Price: {{filterPayload.maxPrice | currency}}</span>
+                                <mat-icon svgIcon="heroicons_outline:x" (click)="clearFilter('maxPrice')"
+                                    class="icon-size-4 cursor-pointer"></mat-icon>
+                            </button>
+                            <button *ngIf="filterPayload.colorSearch !== ''" mat-button mat-stroked-button class="mr-1">
+                                <span class="text-sm">Colors: {{selectedColorString}}</span>
+                                <mat-icon svgIcon="heroicons_outline:x" (click)="clearFilter('colorSearch')"
+                                    class="icon-size-4 cursor-pointer"></mat-icon>
+                            </button>
+                            <button *ngIf="filterPayload.methodSearch !== ''" methodSearch mat-button mat-stroked-button
+                                class="mr-1">
+                                <span class="text-sm">Decoration: {{selectedDecorationString}}</span>
+                                <mat-icon svgIcon="heroicons_outline:x" (click)="clearFilter('methodSearch')"
+                                    class="icon-size-4 cursor-pointer"></mat-icon>
+                            </button>
+                            <button *ngIf="filterPayload.sizeSearch !== ''" mat-button mat-stroked-button class="mr-1">
+                                <span class="text-sm">Sizes: {{this.selectedSizeString}}</span>
+                                <mat-icon svgIcon="heroicons_outline:x" (click)="clearFilter('sizeSearch')"
+                                    class="icon-size-4 cursor-pointer"></mat-icon>
+                            </button>
+                            <button *ngIf="filterPayload.minQuantity !== 0" mat-button mat-stroked-button class="mr-1">
+                                <span class="text-sm">Min. Quantity: {{filterPayload.minQuantity}}</span>
+                                <mat-icon svgIcon="heroicons_outline:x" (click)="clearFilter('minQuantity')"
                                     class="icon-size-4 cursor-pointer"></mat-icon>
                             </button>
                         </div>
@@ -204,7 +213,7 @@
                                     <div class="col-12">
                                         <span
                                             class="inline-flex bg-default rounded py-1 text-secondary font-bold">Description</span>
-                                        <div [innerHTML]="item.description" class="text-justify"></div>
+                                        <div [innerHTML]="item.miniDesc" class="text-justify"></div>
                                     </div>
                                     <div class="row">
                                         <div *ngIf="item.Cost" class="col-12 col-md-6 m-0 overflow-x-auto">
