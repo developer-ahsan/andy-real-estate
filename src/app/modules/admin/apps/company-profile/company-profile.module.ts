@@ -41,11 +41,18 @@ import { companyRoutes } from './company-profile.routing';
 import { CompaniesDetailsComponent } from './components/companies.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { CompanyProfileComponent } from './components/pages/company-profile/company-profile.component';
+import { CompanyProfileFormComponent } from './components/pages/company-profile-form/company-profile-form.component';
+import { CompanyProfileLocationComponent } from './components/pages/locations/locations.component';
+import { ProfileLogoBankComponent } from './components/pages/logo-bank/logo-bank.component';
+
 
 @NgModule({
     declarations: [
         CompaniesDetailsComponent,
-        CompanyProfileComponent
+        CompanyProfileComponent,
+        CompanyProfileFormComponent,
+        CompanyProfileLocationComponent,
+        ProfileLogoBankComponent
     ],
     imports: [
         RouterModule.forChild(companyRoutes),
@@ -87,7 +94,8 @@ import { CompanyProfileComponent } from './components/pages/company-profile/comp
         FuseAlertModule,
         MatDialogModule,
         MatDatepickerModule,
-        MatNativeDateModule
+        MatNativeDateModule,
+        
     ],
     entryComponents: []
 })

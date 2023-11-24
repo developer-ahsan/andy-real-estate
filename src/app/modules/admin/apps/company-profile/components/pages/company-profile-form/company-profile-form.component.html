@@ -1,0 +1,295 @@
+<div class="flex flex-col w-full">
+  <div class="flex flex-row gap-x-5 mt-4 ml-4">
+    <button color="primary" class="min-w-40 cursor-pointer" mat-button mat-flat-button (click)="createTicket()">
+      <span >View Locations</span>
+    </button>
+
+    <button color="primary" class="min-w-40 cursor-pointer" mat-button mat-flat-button (click)="createTicket()">
+      <span >Logo Bank</span>
+    </button>
+  </div>
+  <div class="rounded-2xl shadow-lg border border-gray-300 bg-card pb-5 m-4">
+    <div class="px-4 sm:px-4 lg:px-8 pt-4 w-full">
+      <h2 class="text-xl sm:text-xl font-extrabold mb-3">
+        Edit Company Profile
+      </h2>
+      <div [formGroup]="ticketForm">
+        <div class="grid sm:grid-cols-4 grid-cols-1 gap-4 w-full">
+          <div>
+            <mat-form-field class="w-full">
+              <mat-label>Company Name *</mat-label>
+              <input matInput formControlName="companyName">
+            </mat-form-field>
+            <div *ngIf="ticketForm.get('companyName').invalid && ticketForm.get('companyName').touched"
+              class="text-red-600 text-sm">
+              Company Name is required.
+            </div>
+          </div>
+
+          <div>
+            <mat-form-field class="w-full">
+              <mat-label>Store *</mat-label>
+              <input matInput formControlName="store">
+            </mat-form-field>
+            <div *ngIf="ticketForm.get('store').invalid && ticketForm.get('store').touched"
+              class="text-red-600 text-sm">
+              Store is required.
+            </div>
+          </div>
+
+          <div>
+            <mat-form-field class="w-full">
+              <mat-label>Company Website *</mat-label>
+              <input matInput formControlName="companyWebsite">
+            </mat-form-field>
+            <div *ngIf="ticketForm.get('companyWebsite').invalid && ticketForm.get('companyWebsite').touched"
+              class="text-red-600 text-sm">
+              Company Website is required.
+            </div>
+          </div>
+
+          <div>
+            <mat-form-field class="w-full">
+              <mat-label>Credit Limit</mat-label>
+              <input matInput formControlName="creditLimit">
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 w-full">
+          <mat-form-field class="w-full">
+            <mat-label>Address *</mat-label>
+            <input matInput formControlName="address">
+          </mat-form-field>
+          <div *ngIf="ticketForm.get('address').invalid && ticketForm.get('address').touched"
+            class="text-red-600 text-sm">
+            Address is required.
+          </div>
+        </div>
+
+        <div class="grid sm:grid-cols-3 grid-cols-1 gap-x-4 w-full">
+          <div>
+            <mat-form-field class="w-full">
+              <mat-label>City *</mat-label>
+              <input matInput formControlName="city">
+            </mat-form-field>
+            <div *ngIf="ticketForm.get('city').invalid && ticketForm.get('city').touched" class="text-red-600 text-sm">
+              City is required.
+            </div>
+          </div>
+
+          <div>
+            <mat-form-field class="w-full">
+              <mat-label>State *</mat-label>
+              <input matInput formControlName="state">
+            </mat-form-field>
+            <div *ngIf="ticketForm.get('state').invalid && ticketForm.get('state').touched"
+              class="text-red-600 text-sm">
+              State is required.
+            </div>
+          </div>
+
+          <div>
+            <mat-form-field class="w-full">
+              <mat-label>Zip *</mat-label>
+              <input matInput formControlName="zip" type="number" min="1" oninput="this.value = Math.abs(this.value)">
+            </mat-form-field>
+            <div *ngIf="ticketForm.get('zip').invalid && ticketForm.get('zip').touched" class="text-red-600 text-sm">
+              zip is required.
+            </div>
+          </div>
+        </div>
+
+
+        <div class=" mt-4">
+          <h2 class="text-xl sm:text-xl font-extrabold mb-3">
+            Accounts payable information
+          </h2>
+
+          <div class="grid sm:grid-cols-4 grid-cols-1 gap-4 w-full">
+            <div>
+              <mat-form-field class="w-full">
+                <mat-label>Contact Name *</mat-label>
+                <input matInput formControlName="contactName">
+              </mat-form-field>
+              <div *ngIf="ticketForm.get('contactName').invalid && ticketForm.get('contactName').touched"
+                class="text-red-600 text-sm">
+                Contact Name is required.
+              </div>
+            </div>
+
+            <div>
+              <mat-form-field class="w-full">
+                <mat-label>AP Email *</mat-label>
+                <input matInput formControlName="apEmail">
+              </mat-form-field>
+              <div *ngIf="ticketForm.get('apEmail').invalid && ticketForm.get('apEmail').touched"
+                class="text-red-600 text-sm">
+                APEmail is required.
+              </div>
+            </div>
+
+            <div>
+              <mat-form-field class="w-full">
+                <mat-label>Remit Email *</mat-label>
+                <input matInput formControlName="remitEmail">
+              </mat-form-field>
+              <div *ngIf="ticketForm.get('remitEmail').invalid && ticketForm.get('remitEmail').touched"
+                class="text-red-600 text-sm">
+                Remit Email is required.
+              </div>
+            </div>
+
+            <div>
+              <mat-form-field class="w-full">
+                <mat-label>Additional Email</mat-label>
+                <input matInput formControlName="additionalEmail">
+              </mat-form-field>
+            </div>
+
+            <div>
+              <mat-form-field class="w-full">
+                <mat-label>Phone</mat-label>
+                <input matInput formControlName="phone">
+              </mat-form-field>
+            </div>
+
+            <div>
+              <mat-form-field appearance="fill" class="w-full">
+                <mat-label>
+                  <span>Net Terms</span>
+                </mat-label>
+                <mat-select formControlName="netTerms" disableRipple>
+                  <!-- (click)="setParams(status.key,'status_id')" -->
+                  <mat-option [value]="option" *ngFor="let option of netTermsOptions">
+                    {{option}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+
+
+            <div>
+              <mat-form-field appearance="fill" class="w-full">
+                <mat-label>Payment Methods</mat-label>
+                <mat-select formControlName="paymentMethod" disableRipple>
+                  <!-- (click)="setParams(status.key,'status_id')" -->
+                  <mat-option [value]="option" *ngFor="let option of paymentMethodOptions">
+                    {{option}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div>
+              <mat-form-field appearance="fill" class="w-full">
+                <mat-label>Sales Tax Exampt</mat-label>
+                <mat-select formControlName="salesTaxExampt" disableRipple>
+                  <!-- (click)="setParams(status.key,'status_id')" -->
+                  <mat-option [value]="option" *ngFor="let option of taxExamptOptions">
+                    {{option}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+
+
+        </div>
+
+        <div class="flex flex-col gap-y-3 sm:flex-row sm:gap-x-10">
+          <mat-checkbox formControlName="chargeCode">PO or Charge Code Required</mat-checkbox>
+          <mat-checkbox formControlName="mvmt">GovMVMT Co-op</mat-checkbox>
+        </div>
+
+
+        <div class=" mt-4">
+          <h2 class="text-xl sm:text-xl font-extrabold mb-3">
+            Notes
+          </h2>
+
+          <div class="grid grid-cols-1  w-full">
+            <div>
+              <mat-form-field class="w-full">
+                <textarea matInput formControlName="notes"></textarea>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+
+
+
+
+        <div class="flex width full justify-between">
+          <button color="primary" class="sm:min-w-40 min-w-24 sm:text-md text-sm cursor-pointer" mat-button mat-flat-button (click)="createTicket()"
+            [disabled]="ticketForm.invalid || isCreateTicketLoader">
+            <span *ngIf="!isCreateTicketLoader">Update Company Profile</span>
+            <mat-progress-spinner *ngIf="isCreateTicketLoader" [diameter]="24" [mode]="'indeterminate'">
+            </mat-progress-spinner>
+          </button>
+
+          <button class="sm:min-w-40 min-w-24 sm:text-md text-sm bg-red-500 text-white cursor-pointer" mat-button mat-flat-button
+            (click)="createTicket()" [disabled]="ticketForm.invalid || isCreateTicketLoader">
+            <span *ngIf="!isCreateTicketLoader" class="text-white">Remove</span>
+            <mat-progress-spinner *ngIf="isCreateTicketLoader" [diameter]="24" [mode]="'indeterminate'">
+            </mat-progress-spinner>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="rounded-2xl shadow-lg border border-gray-300 bg-card m-4 px-5 py-5">
+    <h2 class="text-xl sm:text-xl font-extrabold mb-3">
+      Current users assigned to this company profile
+    </h2>
+
+    <div class="alert alert-warning no-bottom-margin">
+      <span class="fa fa-exclamation-circle"></span> There are no users assigned to this company profile.
+    </div>
+  </div>
+
+  <div class="rounded-2xl shadow-lg border border-gray-300 bg-card m-4 px-5 py-5">
+    <h2 class="text-xl sm:text-xl font-extrabold mb-3">
+      Attachments
+    </h2>
+
+    <div class="alert alert-warning no-bottom-margin">
+      <span class="fa fa-exclamation-circle"></span> There are no attachments for this company profile.
+    </div>
+
+    <div class="">
+
+      <div>
+        <mat-form-field class="w-full">
+          <mat-label>Name</mat-label>
+          <input matInput [(ngModel)]="attachmentName">
+        </mat-form-field>
+      </div>
+
+      <ngx-dropzone [multiple]="false" accept="image/jpeg,image/jpg,image/png,application/pdf,application/msword"
+        (change)="onSelectMain($event)">
+        <ngx-dropzone-label>Choose File</ngx-dropzone-label>
+        <ngx-dropzone-image-preview *ngFor="let file of files;let i=index" [file]="file" [removable]="true"
+          (removed)="onRemoveMain(i)">
+          <!-- <img [src]="file?.preview" alt="Preview Image" class="preview-image"> -->
+        </ngx-dropzone-image-preview>
+      </ngx-dropzone>
+      <div class="text-red-500">
+        JPG, PNG, DOC, PDF only
+      </div>
+
+      <button color="primary" class="min-w-40 cursor-pointer mt-2" mat-button mat-flat-button [disabled]="false">
+        <span class="text-white">Add Attachment</span>
+        <mat-progress-spinner *ngIf="isCreateTicketLoader" [diameter]="24" [mode]="'indeterminate'">
+        </mat-progress-spinner>
+      </button>
+
+    </div>
+  </div>
+
+
+
+</div>
