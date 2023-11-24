@@ -84,7 +84,7 @@ export class VendorBlanketComponent implements OnInit, OnDestroy {
     this._vendorService.getVendorsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.allLocations = res["data"];
       this.selectedLocation = this.allLocations[0];
-      this.searchLocationCtrl.setValue({ FOBLocationName: this.selectedLocation.FOBLocationName }, { emitEvent: false });
+      this.searchLocationCtrl.setValue({ FOBLocationName: this.selectedLocation?.FOBLocationName }, { emitEvent: false });
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
@@ -100,9 +100,14 @@ export class VendorBlanketComponent implements OnInit, OnDestroy {
     return value?.FOBLocationName;
   }
   onBlur() {
-    this.searchLocationCtrl.setValue({ FOBLocationName: this.selectedLocation.FOBLocationName }, { emitEvent: false });
+    this.searchLocationCtrl.setValue({ FOBLocationName: this.selectedLocation?.FOBLocationName }, { emitEvent: false });
   }
   updateLocations() {
+    if (!this.selectedLocation) {
+      this._vendorService.snackBar('Please choose any F.O.B Location');
+      $(this.apply.nativeElement).modal('hide');
+      return;
+    }
     let payload: ApplyBlanketFOBlocation = {
       supplier_id: this.supplierData.pk_companyID,
       location_id: this.selectedLocation.pk_FOBLocationID,
@@ -113,6 +118,7 @@ export class VendorBlanketComponent implements OnInit, OnDestroy {
     this._vendorService.putVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this._vendorService.snackBar(res["message"]);
       this.isUpdateLoader = false;
+      $(this.apply.nativeElement).modal('hide');
       this._changeDetectorRef.markForCheck();
     }, err => {
       this._vendorService.snackBar('Something went wrong');

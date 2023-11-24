@@ -1,5 +1,5 @@
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatPaginator } from '@angular/material/paginator';
@@ -7,6 +7,7 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { VendorsService } from '../../vendors.service';
 import { ApplyBlanketCollection, ApplyBlanketFOBlocation, updateCompanySettings } from '../../vendors.types';
+declare var $: any;
 
 @Component({
   selector: 'app-vendor-blanket-imprint-colors',
@@ -27,7 +28,8 @@ export class VendorBlanketColorsComponent implements OnInit, OnDestroy {
   isSearchingColor = false;
 
   allCollections = [];
-
+  @ViewChild('updateColors') updateColors: ElementRef;
+  updateModalData: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _vendorService: VendorsService
@@ -101,7 +103,14 @@ export class VendorBlanketColorsComponent implements OnInit, OnDestroy {
   onBlur() {
     this.searchColorCtrl.setValue({ collectionName: this.seletedCollection.collectionName }, { emitEvent: false });
   }
+  updateCollectionModal() {
+    $(this.updateColors.nativeElement).modal('show');
+  }
   updateCollection() {
+    if (!this.seletedCollection) {
+      this._vendorService.snackBar('Please select a color collection from the list.');
+      return;
+    }
     let payload: ApplyBlanketCollection = {
       supplier_id: this.supplierData.pk_companyID,
       collection_id: this.seletedCollection.pk_collectionID,

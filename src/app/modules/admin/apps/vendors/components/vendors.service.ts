@@ -233,7 +233,7 @@ export class VendorsService {
     getVendorsData(params): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.vendors, {
             params: params
-        });
+        }).pipe(retry(3));
     };
     // Post Calls
     postVendorsData(payload) {

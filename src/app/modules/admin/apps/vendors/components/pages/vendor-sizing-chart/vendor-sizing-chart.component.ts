@@ -1,10 +1,11 @@
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { VendorsService } from '../../vendors.service';
 import { FormControl, FormGroup } from '@angular/forms';
 import { AddSizeChart, RemoveSizeChart, UpdateSizeChart } from '../../vendors.types';
+declare var $: any;
 
 @Component({
   selector: 'app-vendor-sizing-chart',
@@ -49,6 +50,8 @@ export class VendorSizingChartComponent implements OnInit, OnDestroy {
   // Image
   file: File;
   imageValue: any;
+  @ViewChild('removeChart') removeChart: ElementRef;
+  removeModalData: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _vendorService: VendorsService
@@ -131,12 +134,12 @@ export class VendorSizingChartComponent implements OnInit, OnDestroy {
     this.getSizingCharts(1, 'get');
   }
   resetSearch() {
-    this.keyword = '';
-    this.dataSource = this.tempDataSource;
-    this.totalUsers = this.tempTotalUsers;
     if (this.dataSource.length > 0) {
       this.paginator.firstPage();
     }
+    this.keyword = '';
+    this.dataSource = this.tempDataSource;
+    this.totalUsers = this.tempTotalUsers;
     this._changeDetectorRef.markForCheck();
   }
   // Add New Chart
@@ -155,7 +158,7 @@ export class VendorSizingChartComponent implements OnInit, OnDestroy {
       return;
     }
     let payload: AddSizeChart = {
-      name: name.replace(/'/g, "''"), description: description.replace(/'/g, "''"), company_id: this.supplierData.pk_companyID, extension: extension, add_size: true
+      name: name?.replace(/'/g, "''"), description: description?.replace(/'/g, "''"), company_id: this.supplierData.pk_companyID, extension: extension, add_size: true
     }
     this.isAddLoader = true;
     this._vendorService.postVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -189,7 +192,12 @@ export class VendorSizingChartComponent implements OnInit, OnDestroy {
       })
   }
   // Remove Chart
+  deleteChartModal(item) {
+    this.removeModalData = item;
+    $(this.removeChart.nativeElement).modal('show');
+  }
   deleteChart(chart) {
+    $(this.removeChart.nativeElement).modal('hide');
     chart.delLoader = true;
     let payload: RemoveSizeChart = {
       remove_size_chart: true,
@@ -202,11 +210,9 @@ export class VendorSizingChartComponent implements OnInit, OnDestroy {
       if (res["success"]) {
         this.dataSource = this.dataSource.filter(item => item.pk_chartID != chart.pk_chartID);
         this.totalUsers--;
-        this.tempDataSource = this.tempDataSource.filter(item => item.pk_chartID != chart.pk_chartID);
-        this.tempTotalUsers--;
+        this.tempDataSource = this.dataSource;
+        this.tempTotalUsers == this.totalUsers;
         this.page = 1;
-        this.dataSource = this.tempDataSource;
-        this.totalUsers = this.tempTotalUsers;
         this._changeDetectorRef.markForCheck();
       }
       this._vendorService.snackBar(res["message"]);

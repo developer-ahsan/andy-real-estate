@@ -298,4 +298,20 @@ export class DashboardsService {
             .replace(/[^\w ]+/g, "")
             .replace(/ +/g, "-");
     };
+    replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
+        for (const key in obj) {
+            if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+                obj[key] = obj[key]?.replace(/'/g, "''");
+            }
+        }
+        return obj;
+    }
+    replaceNullSpaces(obj: { [key: string]: any }): any {
+        for (const key in obj) {
+            if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+                obj[key] = obj[key]?.replace(/(^|\s)(\s|$)/g, '');
+            }
+        }
+        return obj;
+    }
 }

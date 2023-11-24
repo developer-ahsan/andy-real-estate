@@ -3,6 +3,7 @@ import { Subject } from 'rxjs';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import { takeUntil } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-cost-center-code',
@@ -31,7 +32,8 @@ export class CostCenterCodeComponent implements OnInit, OnDestroy {
   constructor(
     private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+    private _commonService: DashboardsService
   ) { }
 
   ngOnInit() {
@@ -125,13 +127,22 @@ export class CostCenterCodeComponent implements OnInit, OnDestroy {
     })
   }
   updateCostCode(item) {
+    if (!item.code) {
+      this._storeManagerService.snackBar('Code is required');
+      return;
+    }
     if (item.code) {
-      item.updateLoader = true;
       let payload = {
         code: item.code,
         pk_costCenterCodeID: item.pk_costCenterCodeID,
         update_center_code: true
       }
+      payload = this._commonService.replaceNullSpaces(payload);
+      if (!payload.code) {
+        this._storeManagerService.snackBar('Code is required');
+        return;
+      }
+      item.updateLoader = true;
       this._storeManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         if (res["success"]) {
           item.updateLoader = false;

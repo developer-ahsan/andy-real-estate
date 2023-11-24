@@ -557,3 +557,10 @@ export interface UpdateAccountingProfile {
     fk_companyID: string;
     update_vendor_profile: boolean;
 };
+
+export interface updateVendorStatus {
+    companyID: number;
+    blnActiveVendor: boolean;
+    disabledReason: string;
+    update_vendor_status: boolean;
+};

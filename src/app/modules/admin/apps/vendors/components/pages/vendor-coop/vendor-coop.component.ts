@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
@@ -7,6 +7,8 @@ import * as Excel from 'exceljs/dist/exceljs.min.js';
 import { FormControl, FormGroup } from '@angular/forms';
 import { AddCoops, AddFOBLocation, DeleteCoops, RemoveFOBLocation, UpdateCoops } from '../../vendors.types';
 import moment from 'moment';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
+declare var $: any;
 
 @Component({
   selector: 'app-vendor-coop',
@@ -69,9 +71,14 @@ export class VendorCoopComponent implements OnInit, OnDestroy {
   imageValue: any = [];
 
   isFileLoader: boolean = false;
+  // Remove Modal
+  removeModalData: any;
+  @ViewChild('removeCoop') removeCoop: ElementRef;
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _vendorService: VendorsService
+    private _vendorService: VendorsService,
+    private _commonService: DashboardsService
   ) {
   }
 
@@ -210,14 +217,6 @@ export class VendorCoopComponent implements OnInit, OnDestroy {
     this._changeDetectorRef.markForCheck();
   }
 
-  replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
-    for (const key in obj) {
-      if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
-        obj[key] = obj[key].replace(/'/g, "''");
-      }
-    }
-    return obj;
-  }
 
   // Add New Coop 
   addNewCoop() {
@@ -226,8 +225,8 @@ export class VendorCoopComponent implements OnInit, OnDestroy {
       this._vendorService.snackBar('Please fill out the required fields');
       return;
     }
-    let payload: AddCoops = { coopName: coopName.replace(/'/g, "''"), company_id: this.supplierData.pk_companyID, coopExpDay, pricing: pricing.replace(/'/g, "''"), ltm: ltm.replace(/'/g, "''"), setups: setups.replace(/'/g, "''"), productionTime: productionTime.replace(/'/g, "''"), add_coop }
-    payload = this.replaceSingleQuotesWithDoubleSingleQuotes(payload);
+    let payload: AddCoops = { coopName: coopName, company_id: this.supplierData.pk_companyID, coopExpDay, pricing: pricing, ltm: ltm, setups: setups, productionTime: productionTime, add_coop }
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
     this.isAddLoader = true;
     this._vendorService.postVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
@@ -265,8 +264,13 @@ export class VendorCoopComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
       })
   }
-  // RemoveLocation
+  // RemoveCoop
+  deleteCoopModal(item) {
+    this.removeModalData = item;
+    $(this.removeCoop.nativeElement).modal('show');
+  }
   deleteCoop(coop) {
+    $(this.removeCoop.nativeElement).modal('hide');
     coop.delLoader = true;
     let payload: DeleteCoops = {
       remove_coops: true,

@@ -5,7 +5,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { VendorsService } from '../../vendors.service';
-import { updateCompanySettings } from '../../vendors.types';
+import { updateCompanySettings, updateVendorStatus } from '../../vendors.types';
 
 @Component({
   selector: 'app-vendor-status',
@@ -37,23 +37,25 @@ export class VendorStatusComponent implements OnInit, OnDestroy {
   }
   updateSettings() {
     this.supplierData.blnActiveVendor = this.blnActive;
-
-    // let payload: updateCompanySettings = {
-    //   company_id: this.supplierData.pk_companyID,
-    //   blnFreeShipping: this.blnActive,
-    //   update_company_settings: true
-    // }
-    // this.isUpdateLoader = true;
-    // this._vendorService.putVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-    //   this.supplierData.blnActiveVendor = this.blnActive;
-    //   this._vendorService.snackBar(res["message"]);
-    //   this.isUpdateLoader = false;
-    //   this._changeDetectorRef.markForCheck();
-    // }, err => {
-    //   this._vendorService.snackBar('Something went wrong');
-    //   this.isUpdateLoader = false;
-    //   this._changeDetectorRef.markForCheck();
-    // });
+    let payload: updateVendorStatus = {
+      companyID: this.supplierData.pk_companyID,
+      blnActiveVendor: this.blnActive,
+      disabledReason: '',
+      update_vendor_status: true
+    }
+    this.isUpdateLoader = true;
+    this._vendorService.putVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.supplierData.blnActiveVendor = this.blnActive;
+      if (res) {
+        this._vendorService.snackBar(res["message"]);
+      }
+      this.isUpdateLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this._vendorService.snackBar('Something went wrong');
+      this.isUpdateLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
   }
   /**
      * On destroy

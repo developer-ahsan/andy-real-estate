@@ -75,7 +75,7 @@
                         <div class="flex justify-center">
                             <mat-icon svgIcon="heroicons_outline:pencil-alt" matTooltip="Edit F.O.B Location"
                                 class="mr-1 cursor-pointer " (click)="toggleUpdate(element)"></mat-icon>
-                            <mat-icon (click)="deleteLocation(element)" *ngIf="!element.delLoader"
+                            <mat-icon (click)="deleteLocationModal(element)" *ngIf="!element.delLoader"
                                 matTooltip="Delete F.O.B Location" svgIcon="heroicons_outline:trash"
                                 class="cursor-pointer "></mat-icon>
                             <mat-progress-spinner *ngIf="element.delLoader" [diameter]="24" [mode]="'indeterminate'">
@@ -105,19 +105,20 @@
                 <div class="col-12 col-md-6">
                     <mat-form-field class="w-full">
                         <mat-label>Location Name</mat-label>
-                        <input matInput placeholder="Location Name" [(ngModel)]="locationData.FOBLocationName">
+                        <input maxlength="75" matInput placeholder="Location Name"
+                            [(ngModel)]="locationData.FOBLocationName">
                     </mat-form-field>
                 </div>
                 <div class="col-12 col-md-6">
                     <mat-form-field class="w-full">
                         <mat-label>Address</mat-label>
-                        <input matInput placeholder="Address" [(ngModel)]="locationData.address">
+                        <input maxlength="120" matInput placeholder="Address" [(ngModel)]="locationData.address">
                     </mat-form-field>
                 </div>
                 <div class="col-12 col-md-6">
                     <mat-form-field class="w-full">
                         <mat-label>City</mat-label>
-                        <input matInput placeholder="City" [(ngModel)]="locationData.city">
+                        <input maxlength="30" matInput placeholder="City" [(ngModel)]="locationData.city">
                     </mat-form-field>
                 </div>
                 <div class="col-12 col-md-6">
@@ -139,7 +140,7 @@
                 <div class="col-12 col-md-6">
                     <mat-form-field class="w-full">
                         <mat-label>ZipCode</mat-label>
-                        <input matInput placeholder="ZipCode" [(ngModel)]="locationData.zipCode">
+                        <input matInput maxlength="5" placeholder="ZipCode" [(ngModel)]="locationData.zipCode">
                     </mat-form-field>
                 </div>
             </div>
@@ -160,19 +161,19 @@
             <div class="col-12 col-md-6">
                 <mat-form-field class="w-full">
                     <mat-label>Location Name</mat-label>
-                    <input matInput placeholder="Location Name" formControlName="location_name">
+                    <input matInput maxlength="75" placeholder="Location Name" formControlName="location_name">
                 </mat-form-field>
             </div>
             <div class="col-12 col-md-6">
                 <mat-form-field class="w-full">
                     <mat-label>City</mat-label>
-                    <input matInput placeholder="City" formControlName="city">
+                    <input matInput maxlength="30" placeholder="City" formControlName="city">
                 </mat-form-field>
             </div>
             <div class="col-12">
                 <mat-form-field class="w-full">
                     <mat-label>Address</mat-label>
-                    <input matInput placeholder="Address" formControlName="address">
+                    <input maxlength="120" matInput placeholder="Address" formControlName="address">
                 </mat-form-field>
             </div>
             <div class="col-12 col-md-6">
@@ -194,7 +195,7 @@
             <div class="col-12 col-md-6">
                 <mat-form-field class="w-full">
                     <mat-label>ZipCode</mat-label>
-                    <input matInput placeholder="ZipCode" formControlName="zip" maxlength="5">
+                    <input matInput maxlength="5" placeholder="ZipCode" formControlName="zip" maxlength="5">
                 </mat-form-field>
             </div>
             <div class="col-12 text-right">
@@ -205,6 +206,28 @@
                     <mat-progress-spinner *ngIf="isAddLoader" [diameter]="24" [mode]="'indeterminate'">
                     </mat-progress-spinner>
                 </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" #removeLocation>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmation</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to remove this FOB Location?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn bg-gray-700 text-white rounded-md" color="primary"
+                    (click)="deleteLocation(removeModalData)">Yes</button>
+                <button type="button" class="btn bg-red-500 text-white rounded-md border-red-500"
+                    data-dismiss="modal">Cancel</button>
             </div>
         </div>
     </div>

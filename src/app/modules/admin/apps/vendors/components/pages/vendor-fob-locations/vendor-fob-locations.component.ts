@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
@@ -6,6 +6,8 @@ import { VendorsService } from '../../vendors.service';
 import * as Excel from 'exceljs/dist/exceljs.min.js';
 import { FormControl, FormGroup } from '@angular/forms';
 import { AddFOBLocation, RemoveFOBLocation } from '../../vendors.types';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
+declare var $: any;
 
 @Component({
   selector: 'app-vendor-fob-locations',
@@ -50,9 +52,14 @@ export class VendorFOBLocationComponent implements OnInit, OnDestroy {
   // Search By Keyword
   isSearching: boolean = false;
   keyword = '';
+  // Modal
+  removeModalData: any;
+  @ViewChild('removeLocation') removeLocation: ElementRef;
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _vendorService: VendorsService
+    private _vendorService: VendorsService,
+    private _comonService: DashboardsService
   ) { }
 
   initForm() {
@@ -191,6 +198,7 @@ export class VendorFOBLocationComponent implements OnInit, OnDestroy {
       return;
     }
     let payload: AddFOBLocation = { location_name, supplier_id: this.supplierData.pk_companyID, address, city, state: this.selectedState, zip, add_fob_location }
+    payload = this._comonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
     this.isAddLoader = true;
     this._vendorService.postVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
@@ -207,7 +215,12 @@ export class VendorFOBLocationComponent implements OnInit, OnDestroy {
     })
   }
   // RemoveLocation
+  deleteLocationModal(item) {
+    this.removeModalData = item;
+    $(this.removeLocation.nativeElement).modal('show');
+  }
   deleteLocation(location) {
+    $(this.removeLocation.nativeElement).modal('hide');
     location.delLoader = true;
     let payload: RemoveFOBLocation = {
       remove_fob_location: true,

@@ -59,7 +59,7 @@
                         <div class="flex justify-center">
                             <mat-icon svgIcon="heroicons_outline:pencil-alt" matTooltip="Edit Sizing Chart"
                                 class="mr-1 cursor-pointer " (click)="toggleUpdate(element)"></mat-icon>
-                            <mat-icon (click)="deleteChart(element)" *ngIf="!element.delLoader"
+                            <mat-icon (click)="deleteChartModal(element)" *ngIf="!element.delLoader"
                                 matTooltip="Delete Sizing Chart" svgIcon="heroicons_outline:trash"
                                 class="cursor-pointer "></mat-icon>
                             <mat-progress-spinner *ngIf="element.delLoader" [diameter]="24" [mode]="'indeterminate'">
@@ -138,13 +138,13 @@
         <div class="row" [formGroup]="addSizingForm">
             <div class="col-12">
                 <mat-form-field class="w-full">
-                    <mat-label>Name *</mat-label>
+                    <mat-label>Chart Name (50)*</mat-label>
                     <input matInput placeholder="Name" maxlength="50" formControlName="name">
                 </mat-form-field>
             </div>
             <div class="col-12">
                 <mat-form-field class="w-full">
-                    <mat-label>Description </mat-label>
+                    <mat-label>Description(optional, 200 characters max) </mat-label>
                     <textarea matInput placeholder="Description" maxlength="200"
                         formControlName="description"></textarea>
                 </mat-form-field>
@@ -167,6 +167,29 @@
                     <mat-progress-spinner *ngIf="isAddLoader" [diameter]="24" [mode]="'indeterminate'">
                     </mat-progress-spinner>
                 </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal" tabindex="-1" role="dialog" #removeChart>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmation</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to remove this sizing chart? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn bg-gray-700 text-white rounded-md" color="primary"
+                    (click)="deleteChart(removeModalData)">Yes</button>
+                <button type="button" class="btn bg-red-500 text-white rounded-md border-red-500"
+                    data-dismiss="modal">Cancel</button>
             </div>
         </div>
     </div>
