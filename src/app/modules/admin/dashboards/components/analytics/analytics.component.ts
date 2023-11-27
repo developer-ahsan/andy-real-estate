@@ -689,9 +689,9 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
                                 this.yourPerformanceData.q3SeriesLabel.push(store.storeName);
                                 this.yourPerformanceData.q3Colors.push('#' + element.data.reportColor);
                             } else if (element.quarter == 4) {
-                                this.yourPerformanceData.q3SeriesData.push(element.data.earnings);
-                                this.yourPerformanceData.q3SeriesLabel.push(store.storeName);
-                                this.yourPerformanceData.q3Colors.push('#' + element.data.reportColor);
+                                this.yourPerformanceData.q4SeriesData.push(element.data.earnings);
+                                this.yourPerformanceData.q4SeriesLabel.push(store.storeName);
+                                this.yourPerformanceData.q4Colors.push('#' + element.data.reportColor);
                             }
                         }
                     });

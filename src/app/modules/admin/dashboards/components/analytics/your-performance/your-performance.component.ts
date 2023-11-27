@@ -214,7 +214,7 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
             stroke: {
                 show: true,
                 width: 2,
-                colors: ["transparent"]
+                colors: ["#transparent"]
             },
             xaxis: {
                 categories: [
@@ -376,7 +376,6 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
             const startDate = moment(`${this.currentYear}-01-01`);
             const currentDate = moment();
             const daysSinceStartOfYear = (currentDate.diff(startDate, 'days') + 1) / 7;
-            console.log(earning)
             this.yourPerformanceData.yearlyAverage = earning / daysSinceStartOfYear;
         } else {
             const startOfQuarter = moment(`${this.currentYear}-01-01`).add((quarter - 1) * 3, 'months');
@@ -493,14 +492,14 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
         }
         barChartData.flpsUserStores.forEach((store: any) => {
             this.ytdChart.series.push(
-                { name: `${store.storeName} - ${this.currentYear - 1}`, data: store.PY }
+                { name: `${store.storeName} - ${this.currentYear - 1}`, data: store.PY, color: this.hexToRgba(store.reportColor, 0.5) }
             );
             this.ytdChart.series.push(
-                { name: `${store.storeName} - ${this.currentYear}`, data: store.SALES }
+                { name: `${store.storeName} - ${this.currentYear}`, data: store.SALES, color: this.hexToRgba(store.reportColor, 1) }
             );
             this.yourPerformanceData.allColors.push(`#` + store.reportColor);
-            this.ytdChart.colors.push(`transparent`); // Adding the color again for the second series
-            this.ytdChart.colors.push(`#` + store.reportColor);
+            // this.ytdChart.colors.push(`#` + store.reportColor); // Adding the color again for the second series
+            // this.ytdChart.colors.push(`#` + store.reportColor);
             this.ytdChart.labels.push(`${store.storeName}`);
         });
         this.yourPerformanceData.barChartTotal = barChartData.total;
@@ -508,7 +507,15 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
             this.yourPerformanceData.barChartLoader = false;
             this._changeDetectorRef.markForCheck();
         }, 100);
-        // this.ytdChart
+    }
+    hexToRgba(hex, opacity) {
+        hex = hex.replace(/^#/, '');
+
+        let r = parseInt(hex.substring(0, 2), 16);
+        let g = parseInt(hex.substring(2, 4), 16);
+        let b = parseInt(hex.substring(4, 6), 16);
+
+        return `rgba(${r}, ${g}, ${b}, ${opacity})`;
     }
     // Store Remove From BarChart
     checkIfStoreIsRemovedForBarChart(store) {
