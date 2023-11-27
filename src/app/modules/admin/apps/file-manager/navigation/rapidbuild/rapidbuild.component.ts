@@ -232,7 +232,7 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
     };
     this.searchPayload = {
       dashboard: true,
-      store_id: pk_storeID,
+      store_id: 0,
       keyword: keyword,
       page: 1,
       size: 20,

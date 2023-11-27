@@ -64,7 +64,7 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
     yourPerformanceData: any = {
         barChartLoader: false,
         allStoresGraphLoader: false,
-        userYTDMonthQuarter: '5',
+        userYTDMonthQuarter: moment().quarter(),
         allSeriesData: [],
         allSeriesLabel: [],
         allColors: [],
@@ -73,6 +73,11 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
         q2Earnings: 0,
         q3Earnings: 0,
         q4Earnings: 0,
+        q1Average: 0,
+        q2Average: 0,
+        q3Average: 0,
+        q4Average: 0,
+        yearlyAverage: 0,
         q1SeriesData: [],
         q1SeriesLabel: [],
         q1Colors: [],
@@ -350,12 +355,40 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
             });
             this.yourPerformanceData.q4Earnings = fourthQuarterPiChart?.totalSales;
 
+            for (let quarter = 1; quarter <= 4; quarter++) {
+                const value = `q${quarter}Earnings`;
+                const valueAverage = `q${quarter}Average`;
+                let earning = this.yourPerformanceData[value];
+                this.calculateAverage(earning, quarter, valueAverage);
+            }
+            this.calculateAverage(this.ytDDataMain?.YTD, '', 'yearly');
+
             // Bar Chart Data
             this.barChartData();
 
             this.isPerformanceLoader = false;
             this._changeDetectorRef.markForCheck();
         })
+        this._changeDetectorRef.markForCheck();
+    }
+    calculateAverage(earning, quarter, key) {
+        if (key == 'yearly') {
+            const startDate = moment(`${this.currentYear}-01-01`);
+            const currentDate = moment();
+            const daysSinceStartOfYear = (currentDate.diff(startDate, 'days') + 1) / 7;
+            console.log(earning)
+            this.yourPerformanceData.yearlyAverage = earning / daysSinceStartOfYear;
+        } else {
+            const startOfQuarter = moment(`${this.currentYear}-01-01`).add((quarter - 1) * 3, 'months');
+            const endOfQuarter = startOfQuarter.clone().endOf('quarter');
+            const currentDate = moment();
+            const daysInQuarter = [];
+            for (let currentDay = startOfQuarter.clone(); currentDay.isSameOrBefore(endOfQuarter) && currentDay.isSameOrBefore(currentDate); currentDay.add(1, 'day')) {
+                daysInQuarter.push(currentDay.format('YYYY-MM-DD'));
+            }
+            const days = daysInQuarter.length / 7;
+            this.yourPerformanceData[key] = earning / days;
+        }
         this._changeDetectorRef.markForCheck();
     }
 
@@ -437,23 +470,24 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
     barChartData() {
         this.ytdChart.series = [];
         this.ytdChart.colors = [];
+        this.ytdChart.labels = [];
         this.ytdChart.xaxis.categories = [];
         this.yourPerformanceData.barChartLoader = true;
         this._changeDetectorRef.markForCheck();
         let barChartData: any = [];
-        if (this.yourPerformanceData.userYTDMonthQuarter == '5') {
+        if (this.yourPerformanceData.userYTDMonthQuarter == 5) {
             barChartData = this.getRefactoredDataForBarCharts(this.ytDDataMain.monthlyData, this.ytDDataMain.flpsUserStores);
             this.ytdChart.xaxis.categories = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        } else if (this.yourPerformanceData.userYTDMonthQuarter == '1') {
+        } else if (this.yourPerformanceData.userYTDMonthQuarter == 1) {
             barChartData = this.getRefactoredDataForBarCharts(this.ytDDataMain.monthlyData.slice(0, 3), this.ytDDataMain.flpsUserStores);
             this.ytdChart.xaxis.categories = ['Jan', 'Feb', 'Mar'];
-        } else if (this.yourPerformanceData.userYTDMonthQuarter == '2') {
+        } else if (this.yourPerformanceData.userYTDMonthQuarter == 2) {
             barChartData = this.getRefactoredDataForBarCharts(this.ytDDataMain.monthlyData.slice(3, 6), this.ytDDataMain.flpsUserStores);
             this.ytdChart.xaxis.categories = ['Apr', 'May', 'Jun'];
-        } else if (this.yourPerformanceData.userYTDMonthQuarter == '3') {
+        } else if (this.yourPerformanceData.userYTDMonthQuarter == 3) {
             barChartData = this.getRefactoredDataForBarCharts(this.ytDDataMain.monthlyData.slice(6, 9), this.ytDDataMain.flpsUserStores);
             this.ytdChart.xaxis.categories = ['Jul', 'Aug', 'Sep'];
-        } else if (this.yourPerformanceData.userYTDMonthQuarter == '4') {
+        } else if (this.yourPerformanceData.userYTDMonthQuarter == 4) {
             barChartData = this.getRefactoredDataForBarCharts(this.ytDDataMain.monthlyData.slice(9, 12), this.ytDDataMain.flpsUserStores);
             this.ytdChart.xaxis.categories = ['Oct', 'Nov', 'Dec'];
         }

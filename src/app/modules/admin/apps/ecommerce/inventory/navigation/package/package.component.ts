@@ -20,8 +20,8 @@ export class PackageComponent implements OnInit, OnDestroy {
   mainScreen = 'packages';
 
   displayedColumns: string[] = ['select', 'packaging', 'run', 'setup', 'packagingUnit', 'po'];
-  dataSource: Package[] = [];
-  dataSource1: Package[] = [];
+  dataSource: any = [];
+  dataSource1: any = [];
   dataSourceLength: number = 0;
   pageSize: number = 10;
   pageNo: number = 1;
@@ -341,10 +341,10 @@ export class PackageComponent implements OnInit, OnDestroy {
       let tempArray2 = [];
       this.dataSource = list.filter(item => !letIdsToRemoveWhichAreSelected.includes(item.pk_packagingID));
       this.dataSource1 = selected;
-      for (const packages of this.dataSource) {
-        packages.run = 0.0;
-        packages.setup = 0.0;
-        packages.unitsPerPackage = 0.0;
+      for (let packages of this.dataSource) {
+        packages.run = '0.00';
+        packages.setup = '0.00';
+        packages.unitsPerPackage = '0.00';
         tempArray.push(packages)
         const { blnDecoratorPO } = packages;
         if (blnDecoratorPO) {
@@ -357,6 +357,15 @@ export class PackageComponent implements OnInit, OnDestroy {
       };
 
       for (const packages of this.dataSource1) {
+        if (packages.run == 0) {
+          packages.run = '0.00';
+        }
+        if (packages.setup == 0) {
+          packages.setup = '0.00';
+        }
+        if (packages.unitsPerPackage == 0) {
+          packages.unitsPerPackage = '0.00';
+        }
         tempArray2.push(packages)
         const { blnDecoratorPO } = packages;
         if (blnDecoratorPO) {
@@ -367,7 +376,6 @@ export class PackageComponent implements OnInit, OnDestroy {
         packages["isDecorator"] = this.domain;
         tempArray2.push(packages);
       };
-
       this.dataSourceLength = packages["totalRecords"];
       this.isLoading = false;
       this.searchLoader = false;
