@@ -1,0 +1,65 @@
+<div class="flex flex-col w-full">
+  <div class="rounded-2xl shadow-lg border border-gray-300 bg-card pb-5 m-4">
+    <div class="px-4 sm:px-4 lg:px-8 pt-4 w-full">
+      <h2 class="text-xl sm:text-xl font-extrabold mb-3">
+        Edit Company Profile
+      </h2>
+      <div [formGroup]="ticketForm">
+        <div class="grid grid-cols-1 gap-4 w-full">
+
+          <ngx-dropzone [multiple]="false" accept="image/jpeg,image/jpg,image/png,application/pdf,application/msword"
+            (change)="onSelectMain($event)">
+            <ngx-dropzone-label>Choose File</ngx-dropzone-label>
+            <ngx-dropzone-image-preview *ngFor="let file of files;let i=index" [file]="file" [removable]="true"
+              (removed)="onRemoveMain(i)">
+              <!-- <img [src]="file?.preview" alt="Preview Image" class="preview-image"> -->
+            </ngx-dropzone-image-preview>
+          </ngx-dropzone>
+
+
+          <div>
+            <mat-form-field class="w-full">
+              <mat-label>Name</mat-label>
+              <input matInput formControlName="name">
+            </mat-form-field>
+
+          </div>
+          <div>
+            <mat-form-field class="w-full">
+              <mat-label>Description</mat-label>
+              <textarea matInput formControlName="description"></textarea>
+            </mat-form-field>
+          </div>
+          <div>
+            <mat-form-field class="w-full">
+              <mat-label><span class="font-bold">Imprint colors </span> : <span>(optional, comma-separated list of color names or PMS colors)</span></mat-label>
+              <textarea matInput formControlName="imprint"></textarea>
+            </mat-form-field>
+          </div>
+
+
+        </div>
+        <div class="flex width full justify-between">
+          <button color="primary" class="sm:min-w-40 min-w-24 sm:text-md text-sm cursor-pointer" mat-button
+            mat-flat-button (click)="createTicket()" [disabled]="ticketForm.invalid || isCreateTicketLoader">
+            <span *ngIf="!isCreateTicketLoader">Add Logo</span>
+            <mat-progress-spinner *ngIf="isCreateTicketLoader" [diameter]="24" [mode]="'indeterminate'">
+            </mat-progress-spinner>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="rounded-2xl shadow-lg border border-gray-300 bg-card m-4 px-5 py-5">
+    <h2 class="text-xl sm:text-xl font-extrabold mb-3">
+      Logo bank
+    </h2>
+
+    <div class="alert alert-warning no-bottom-margin">
+      <span class="fa fa-exclamation-circle"></span> There are currently no logos uploaded to this location's logo bank
+      or your search did not return any results.
+    </div>
+  </div>
+</div>
