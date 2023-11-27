@@ -75,6 +75,7 @@ export class ApparelDecoratorComponent implements OnInit, OnDestroy {
         res["data"].forEach(element => {
           this.dropdownList.push(element);
         });
+        this.selectedItems = this.dropdownList[0].pk_companyID;
         // this.dropdownList = res["data"];
         this._changeDetectorRef.markForCheck();
       })
@@ -86,11 +87,10 @@ export class ApparelDecoratorComponent implements OnInit, OnDestroy {
 
   saveChanges(): void {
     const { pk_storeID } = this.selectedStore;
-    const { pk_companyID } = this.selectedItems;
     // blnInitiatorPays
     const payload: updateStoreApparelDecorator = {
       storeID: pk_storeID,
-      decoratorID: pk_companyID,
+      decoratorID: this.selectedItems,
       update_store_apparel_decorator: true
     };
 

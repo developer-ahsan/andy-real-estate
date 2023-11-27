@@ -23,9 +23,16 @@
               <form>
                 <div class="row">
                   <div class="col-12 pb-5">
-                    <ng-multiselect-dropdown [placeholder]="'Select Supplier'" [settings]="dropdownSettings"
+                    <mat-form-field class="w-full">
+                      <mat-label>Select Decorator</mat-label>
+                      <mat-select matInput [(ngModel)]="selectedItems">
+                        <mat-option *ngFor="let decorato of dropdownList"
+                          [value]="decorato.pk_companyID">{{decorato.companyName}}</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                    <!-- <ng-multiselect-dropdown [placeholder]="'Select Supplier'" [settings]="dropdownSettings"
                       [data]="dropdownList" (onSelect)="onItemSelect($event)">
-                    </ng-multiselect-dropdown>
+                    </ng-multiselect-dropdown> -->
                   </div>
                   <div class="col-12 col-md-12 flex justify-end">
                     <button class="min-w-40" mat-stroked-button (click)="saveChanges()" [disabled]="isUpdateLoader">

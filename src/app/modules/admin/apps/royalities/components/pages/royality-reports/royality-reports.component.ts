@@ -215,8 +215,8 @@ export class RoyaltyReportsComponent implements OnInit, OnDestroy {
     const dateRange = this.getDateRange();
     this.reportParams = {
       page: this.page,
-      start_date: dateRange.start.format('MM/DD/yyyy'),
-      end_date: dateRange.end.format('MM/DD/yyyy'),
+      start_date: dateRange.start,
+      end_date: dateRange.end,
       store_id: this.selectedStore.pk_storeID,
       options_report: true
     };
@@ -245,31 +245,46 @@ export class RoyaltyReportsComponent implements OnInit, OnDestroy {
   }
   // Helper function to get date range based on ngPlan
   getDateRange(): { start: moment.Moment, end: moment.Moment } {
-    let start = moment();
-    let end = moment();
+    let start
+    let end;
 
     switch (this.ngPlan) {
       case 'weekly':
-        start.startOf('isoWeek');
-        end.endOf('isoWeek');
+        start = moment(this.WeekDate).startOf('isoWeek').format('MM/DD/yyyy');
+        end = moment(this.WeekDate).endOf('isoWeek').format('MM/DD/yyyy');
         break;
       case 'monthly':
-        start.startOf('month');
-        end.endOf('month');
+        let date: any = new Date(this.monthlyYear, this.monthlyMonth - 1, 1);
+        start = moment(date).startOf('month').format('MM/DD/yyyy');
+        end = moment(date).endOf('month').format('MM/DD/yyyy');
         break;
       case 'quarterly':
-        const quarterMonthStart = (this.quarterMonth - 1) * 3;
-        const quarterMonthEnd = quarterMonthStart + 2;
-        start.set({ month: quarterMonthStart, date: 1 }).startOf('month');
-        end.set({ month: quarterMonthEnd, date: 1 }).endOf('month');
+        let s;
+        let e;
+        if (this.quarterMonth == 1) {
+          s = new Date(this.quarterYear, 0, 1);
+          e = new Date(this.quarterYear, 2, 1);
+        } else if (this.quarterMonth == 2) {
+          s = new Date(this.quarterYear, 3, 1);
+          e = new Date(this.quarterYear, 5, 1);
+        } else if (this.quarterMonth == 3) {
+          s = new Date(this.quarterYear, 6, 1);
+          e = new Date(this.quarterYear, 8, 1);
+        } else if (this.quarterMonth == 4) {
+          s = new Date(this.quarterYear, 9, 1);
+          e = new Date(this.quarterYear, 11, 1);
+        }
+        start = moment(s).startOf('month').format('MM/DD/yyyy');
+        end = moment(e).endOf('month').format('MM/DD/yyyy');
         break;
       case 'yearly':
-        start.startOf('year');
-        end.endOf('year');
+        let d = new Date(this.yearlyYear, 0, 1);
+        start = moment(d).startOf('year').format('MM/DD/yyyy');
+        end = moment(d).endOf('year').format('MM/DD/yyyy');
         break;
       case 'range':
-        start = moment(this.ngRangeStart);
-        end = moment(this.ngRangeEnd);
+        start = moment(this.ngRangeStart).format('MM/DD/yyyy');
+        end = moment(this.ngRangeEnd).format('MM/DD/yyyy');
         break;
     }
 
