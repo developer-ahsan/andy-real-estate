@@ -4,6 +4,7 @@ import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-ma
 import { takeUntil } from 'rxjs/operators';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { UpdateGroupOrderSettings } from '../../stores.types';
 
 @Component({
   selector: 'app-group-order-settings',
@@ -31,7 +32,8 @@ export class GroupOrderSettingsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.groupOrdersSettingsForm = this._formBuilder.group({
       blnGroupOrderActive: [''],
-      blnChooseFromExistingCustomers: ['']
+      blnChooseFromExistingCustomers: [''],
+      blnInitiatorPays: ['']
     });
     this.getStoreDetails();
   };
@@ -102,15 +104,16 @@ export class GroupOrderSettingsComponent implements OnInit, OnDestroy {
     const { pk_storeID } = this.selectedStore;
     const formValues = this.groupOrdersSettingsForm.getRawValue();
 
-    const payload = {
-      group_buy: true,
-      store_id: pk_storeID,
+    // blnInitiatorPays
+    const payload: UpdateGroupOrderSettings = {
+      bln_choose_existing_customers: formValues.blnChooseFromExistingCustomers,
       bln_groud_order_active: formValues.blnGroupOrderActive,
-      bln_choose_existing_customers: formValues.blnChooseFromExistingCustomers
+      store_id: pk_storeID,
+      update_group_order_settings: true
     };
 
     this.isGroupOrderUpdate = true;
-    this._storeManagerService.updateGroupOrderSettings(payload)
+    this._storeManagerService.putStoresData(payload)
       .subscribe((response) => {
         this.showFlashMessage(
           response["success"] === true ?

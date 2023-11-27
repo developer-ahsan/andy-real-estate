@@ -6,6 +6,7 @@ import { takeUntil } from 'rxjs/operators';
 import { InventoryService } from '../../../ecommerce/inventory/inventory.service';
 import { FileManagerService } from '../../store-manager.service';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
+import { updateStoreApparelDecorator } from '../../stores.types';
 @Component({
   selector: 'app-apparel-decorator',
   templateUrl: './apparel-decorator.component.html'
@@ -20,7 +21,7 @@ export class ApparelDecoratorComponent implements OnInit, OnDestroy {
   dropdownList = [];
   dropdownSettings: IDropdownSettings = {
     // singleSelection: true,
-    idField: 'companyName',
+    idField: 'pk_companyID',
     textField: 'companyName',
     enableCheckAll: false,
     selectAllText: 'Select All',
@@ -36,10 +37,11 @@ export class ApparelDecoratorComponent implements OnInit, OnDestroy {
     showSelectedItemsAtTop: false,
     defaultOpen: false,
   };
-  selectedItems = [];
+  selectedItems: any;
 
   totalSuppliers = 0;
   isPageLoading: boolean = false;
+  isUpdateLoader: boolean = false;
   constructor(
     private _storeManagerService: FileManagerService,
     private _commonService: DashboardsService,
@@ -60,7 +62,7 @@ export class ApparelDecoratorComponent implements OnInit, OnDestroy {
       });
   }
   getSuppliers() {
-    this.dropdownList.push({ companyName: 'NONE - Use master product level imprint settings' })
+    this.dropdownList.push({ companyName: 'NONE - Use master product level imprint settings', pk_companyID: 0 })
     this._commonService.suppliersData$
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
@@ -78,8 +80,38 @@ export class ApparelDecoratorComponent implements OnInit, OnDestroy {
       })
   }
   onItemSelect(item: any) {
-    const { pk_companyID, companyName } = item;
+    console.log(item);
+    this.selectedItems = item;
   };
+
+  saveChanges(): void {
+    const { pk_storeID } = this.selectedStore;
+    const { pk_companyID } = this.selectedItems;
+    // blnInitiatorPays
+    const payload: updateStoreApparelDecorator = {
+      storeID: pk_storeID,
+      decoratorID: pk_companyID,
+      update_store_apparel_decorator: true
+    };
+
+    this.isUpdateLoader = true;
+    this._storeManagerService.putStoresData(payload)
+      .subscribe((response) => {
+        this._storeManagerService.snackBar(response["message"]);
+        this.isUpdateLoader = false;
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this._snackBar.open("Some error occured", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        this.isUpdateLoader = false;
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
+      });
+  }
 
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions

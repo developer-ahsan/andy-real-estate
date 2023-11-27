@@ -10,8 +10,12 @@
         </div>
         <div class="row my-3">
           <div class="col-12">
+            <div class="flex">
+              <mat-label> Allow group orders on this store </mat-label>
+              <mat-icon matTooltip="This determines whether group order functionality is avialable on the store or not."
+                svgIcon="heroicons_solid:question-mark-circle" class="icon-size-4"></mat-icon>
+            </div>
             <mat-form-field appearance="fill" class="w-full">
-              <mat-label> Allow group orders on this store</mat-label>
               <mat-select [formControlName]="'blnGroupOrderActive'">
                 <mat-option [value]="true">Yes</mat-option>
                 <mat-option [value]="false">No</mat-option>
@@ -19,15 +23,35 @@
             </mat-form-field>
           </div>
           <div class="col-12">
+            <div class="flex">
+              <mat-label> Allow initiator to invite existing customers/users </mat-label>
+              <mat-icon
+                matTooltip="This determines whether or not the initiator of a group order can select from a list of existing customers/users.  Turning this off ensures that the initiator can only enter email addresses to invite participants."
+                svgIcon="heroicons_solid:question-mark-circle" class="icon-size-4"></mat-icon>
+            </div>
             <mat-form-field appearance="fill" class="w-full">
-              <mat-label>
-                Allow initiator to invite existing customers/users</mat-label>
               <mat-select [formControlName]="'blnChooseFromExistingCustomers'">
                 <mat-option [value]="true">Yes</mat-option>
                 <mat-option [value]="false">No</mat-option>
               </mat-select>
             </mat-form-field>
           </div>
+          <!-- Pays -->
+          <div class="col-12">
+            <div class="flex">
+              <mat-label> Allow initiator to pay for the entire group order </mat-label>
+              <mat-icon
+                matTooltip="This determines whether or not the initiator of a group order can select to pay for the entire group order.  Turning this off will ensure that each indivdiual participant, including the initiator, will be paying for their own portion."
+                svgIcon="heroicons_solid:question-mark-circle" class="icon-size-4"></mat-icon>
+            </div>
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-select [formControlName]="'blnInitiatorPays'">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
 
           <div class="col-12 flex justify-end">
             <div class="items-center">

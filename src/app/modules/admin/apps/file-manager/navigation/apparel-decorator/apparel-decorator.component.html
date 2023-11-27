@@ -28,8 +28,11 @@
                     </ng-multiselect-dropdown>
                   </div>
                   <div class="col-12 col-md-12 flex justify-end">
-                    <button class="order-first sm:order-last w-30 bg-accent-100 border" mat-flat-button>
-                      Update
+                    <button class="min-w-40" mat-stroked-button (click)="saveChanges()" [disabled]="isUpdateLoader">
+                      <mat-progress-spinner *ngIf="isUpdateLoader" [diameter]="24" [mode]="'indeterminate'">
+                      </mat-progress-spinner>
+                      <mat-icon *ngIf="!isUpdateLoader" svgIcon="mode_edit_outline"></mat-icon>
+                      <span *ngIf="!isUpdateLoader" class="ml-1 mr-1">Save Changes</span>
                     </button>
                   </div>
                 </div>

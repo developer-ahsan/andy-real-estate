@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { DashboardsService } from '../../../dashboard.service';
-import { finalize, takeUntil } from 'rxjs/operators';
-import { Subject } from 'rxjs';
+import { finalize, map, takeUntil } from 'rxjs/operators';
+import { Subject, forkJoin } from 'rxjs';
 import { environment } from 'environments/environment';
 import CryptoJS from 'crypto-js';
 declare var $: any;
@@ -95,30 +95,54 @@ export class GeneratorsComponent implements OnInit {
     }
     this.isLoading = true;
     this.getOrdersStatus();
+    this.getOtherOrderStatus();
   }
   getOrdersStatus() {
+    const userDetails = JSON.parse(localStorage.getItem('userDetails'));
     this.pendingQuotes = [];
     this.tempPendingQuotes = [];
     this.pendingStores = [];
     this.sampleStatus = [];
     this.tempSampleStatus = [];
     this.sampleStores = [];
-    this.ordersThisYear = [];
-    this.tempOrdersThisYear = [];
-    this.orderStores = [];
+
     this.keywordsData = [];
-    this.activityData = [];
-    this.tempActivityData = [];
-    this.activityStores = [];
+
     let params = {
       generator_reports: true,
-      email: this.userData.email,
+      user_id: userDetails.pk_userID,
+      flpsUserID: userDetails.FLPSUserID
     }
     this._dashboardService.getDashboardData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
-      this.ordersThisYear = res["data"][2];
+      this.processQuotes(res);
+      this.processSampleOrders(res);
+      this.processKeywords(res);
+      this._changeDetectorRef.markForCheck();
+    })
+  }
+  getOtherOrderStatus() {
+    this.ordersThisYear = [];
+    this.tempOrdersThisYear = [];
+    this.orderStores = [];
+
+    this.activityData = [];
+    this.tempActivityData = [];
+    this.activityStores = [];
+
+    const userDetails = JSON.parse(localStorage.getItem('userDetails'));
+    let params = {
+      generator_other_reports: true,
+      user_id: userDetails.pk_userID,
+      flpsUserID: userDetails.FLPSUserID
+    }
+    this._dashboardService.getDashboardData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      this.ordersThisYear = res["data"][0];
       this.ordersThisYear.forEach(element => {
         if (element.customerLastYearPriority > 0) {
           element.priorityChecked = true;
@@ -139,7 +163,7 @@ export class GeneratorsComponent implements OnInit {
         }
       });
       this.tempOrdersThisYear = this.ordersThisYear;
-      this.activityData = res["data"][4];
+      this.activityData = res["data"][1];
       this.activityData.forEach(element => {
         if (element.followUpPriority > 0) {
           element.priorityChecked = true;
@@ -160,11 +184,7 @@ export class GeneratorsComponent implements OnInit {
         }
       });
       this.tempActivityData = this.activityData;
-      this.processQuotes(res);
-      this.processSampleOrders(res);
-      this.processKeywords(res);
-      this._changeDetectorRef.markForCheck();
-    })
+    });
   }
   private processQuotes(res: any): void {
     const getQuotes = res?.data?.[0]?.[0]?.getQuotes || '';
@@ -309,13 +329,7 @@ export class GeneratorsComponent implements OnInit {
   }
 
   private processKeywords(res: any): void {
-    this.keywordsData = res?.data?.[3];
-    // const getKeywords = res?.data?.[3]?.[0]?.keywords || '';
-    // const samples = getKeywords.split(',,');
-    // this.keywordsData = samples.map(sample => {
-    //   const [storeCode, storeName, protocol, keyword, frequency, result, days] = sample.split('::');
-    //   return { storeCode, storeName, protocol, keyword, frequency, result, days };
-    // });
+    this.keywordsData = res?.data?.[2];
   }
   // Update Priority
   updateQuotePriority(quote, type) {
@@ -477,46 +491,66 @@ export class GeneratorsComponent implements OnInit {
     this.getOrderArtworkDetails();
     $(this.quoteDetailsModal.nativeElement).modal('show');
   }
+  getImprintFiles(url: string) {
+    let payload = {
+      files_fetch: true,
+      path: url
+    };
+    return this._dashboardService.getFiles(payload);
+  }
   getOrderArtworkDetails() {
+    this.orderDetailsModalContent.artworkData = [];
     let params = {
       quote_artwork_details: true,
       cart_id: this.orderDetailsModalContent.cartID
     }
     this._dashboardService.getDashboardData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-      this.orderDetailsModalContent.loader = false;
-      this._changeDetectorRef.markForCheck();
+
     })).subscribe(res => {
-      res["data"].forEach(element => {
-        element.imprints = [];
-        if (element.imprintDetails) {
-          const imprints = element.imprintDetails?.split('##');
-          imprints.forEach(imprint => {
-            const [impritID, location, method, status, statusID, contactName] = imprint.split('||');
-            element.imprints.push({ impritID, location, method, status, statusID, contactName });
-          });
-          const url = `/artwork/Proof/Quotes/${element.storeUserID}/${element.pk_cartID}/${element.pk_cartLineID}`;
-          let payload = {
-            files_fetch: true,
-            path: url
-          };
-          this._dashboardService.getFiles(payload).subscribe(res => {
-            if (res) {
-              if (res["data"].length) {
-                element.proofUrl = `${environment.assetsURL}artwork/Proof/Quotes/${element.storeUserID}/${element.pk_cartID}/${element.pk_cartLineID}/${res["data"][0].FILENAME}`;
-                this._changeDetectorRef.markForCheck();
-              }
+      if (res["data"].length == 0) {
+        this.orderDetailsModalContent.artworkData = [];
+        this.orderDetailsModalContent.loader = false;
+        this._changeDetectorRef.markForCheck();
+      } else {
+        forkJoin(
+          res["data"].map(element => {
+            if (element.imprintDetails) {
+              const url = `/artwork/Proof/Quotes/${element.storeUserID}/${element.pk_cartID}/${element.pk_cartLineID}`;
+              return this.getImprintFiles(url).pipe(
+                map((files: any) => {
+                  const imprints = element.imprintDetails?.split('##');
+
+                  element.imprints = (imprints || []).map(imprint => {
+                    const [imprintID, location, method, status, statusID, contactName] = imprint.split('||');
+
+                    const matchingFile = files["data"].find(file => file.FILENAME.split('.')[0] == imprintID);
+
+                    const proofUrl = matchingFile
+                      ? `${environment.assetsURL}artwork/Proof/Quotes/${element.storeUserID}/${element.pk_cartID}/${element.pk_cartLineID}/${matchingFile.FILENAME}`
+                      : '';
+
+                    return { imprintID, location, method, status, statusID, contactName, proofUrl };
+                  });
+                })
+              );
             }
-          });
-        }
-      });
-      this.orderDetailsModalContent.artworkData = res["data"];
+          })
+        ).subscribe(() => {
+          this.orderDetailsModalContent.loader = false;
+          this._changeDetectorRef.markForCheck();
+          this.orderDetailsModalContent.artworkData = res["data"];
+        }, err => {
+          this.orderDetailsModalContent.loader = false;
+          this._changeDetectorRef.markForCheck();
+        });
+      }
+
     });
   }
   trackByCartId(index: number, item: any): any {
     return index;
   }
   openEmailDetailsModal(data, type) {
-    console.log(data)
     this.emailModalContent = null;
     this.emailModalContent = {
       ...data,
@@ -539,7 +573,7 @@ export class GeneratorsComponent implements OnInit {
         break;
       case 'survey':
         this.emailModalContent.modalTitle = `CUSTOMER SURVEY FOR ORDER ${data.pk_orderID}`;
-        this.emailModalContent.subject = '';
+        this.emailModalContent.subject = 'How was your experience using the Rutgers Swag Portal?';
         break;
       case 'quotes':
         this.emailModalContent.modalTitle = `QUOTE FOLLOW UP EMAIL FOR QUOTE ${data.cartID}`;

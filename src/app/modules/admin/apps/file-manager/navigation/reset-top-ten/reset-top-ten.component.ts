@@ -1,7 +1,8 @@
 import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
-import { takeUntil } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-reset-top-ten',
@@ -12,10 +13,11 @@ export class ResetTopTenComponent implements OnInit, OnDestroy {
   isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
-
+  updateLoader: boolean = false;
   constructor(
     private _storeManagerService: FileManagerService,
-    private _changeDetectorRef: ChangeDetectorRef
+    private _changeDetectorRef: ChangeDetectorRef,
+    private _commonService: DashboardsService
   ) { }
 
   ngOnInit(): void {
@@ -29,6 +31,22 @@ export class ResetTopTenComponent implements OnInit, OnDestroy {
       });
   }
   reset(): void {
+    this.updateLoader = true;
+    let payload = {
+      files: [`/SmartSiteCom/productClickCounts/${this.selectedStore.pk_storeID}.xml`],
+      delete_multiple_files: true
+    }
+    this._commonService.removeMediaFiles(payload).
+      pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+        this.updateLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }))
+      .subscribe((response) => {
+        this._storeManagerService.snackBar('The top ten list has been reset successfully.');
+      }, err => {
+        this._storeManagerService.snackBar(`Can't reset the top ten list - the file does not exist or there was an error.`);
+        this._changeDetectorRef.markForCheck();
+      })
   };
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions

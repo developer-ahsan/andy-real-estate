@@ -670,3 +670,16 @@ export interface AddSubCategoriesRapidBuildStoreProduct {
     storeProductID: number;
     add_subcategory_rapidBuild_storeProduct: boolean;
 };
+
+export interface UpdateGroupOrderSettings {
+    bln_choose_existing_customers: boolean;
+    bln_groud_order_active: boolean;
+    store_id: number;
+    update_group_order_settings: boolean;
+};
+
+export interface updateStoreApparelDecorator {
+    storeID: number;
+    decoratorID: number;
+    update_store_apparel_decorator: boolean;
+};

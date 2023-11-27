@@ -46,7 +46,10 @@
                                         *matHeaderCellDef>
                                         SPID
                                     </th>
-                                    <td mat-cell *matCellDef="let element">{{ element.pk_storeProductID }}</td>
+                                    <td mat-cell *matCellDef="let element">
+                                        <a [routerLink]="['/apps/ecommerce/inventory/storeProduct', element.pk_storeProductID]"
+                                            target="_blank">{{ element.pk_storeProductID }}</a>
+                                    </td>
                                 </ng-container>
 
                                 <!-- Name Column -->

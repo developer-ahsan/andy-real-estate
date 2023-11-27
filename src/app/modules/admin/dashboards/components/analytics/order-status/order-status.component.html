@@ -488,9 +488,9 @@
                                         </td>
                                         <td>{{imprint.status}}</td>
                                         <td>
-                                            <a target="_blank"
-                                                href="{{mediaURL}}artwork/Proof/{{item.fk_storeUserID}}/{{item.orderID}}/{{item.orderLineID}}/{{imprint.id}}.jpg"
-                                                target="_blank">VIEW</a>
+                                            <span *ngIf="!imprint.proofUrl">---</span>
+                                            <a target="_blank" *ngIf="imprint.proofUrl"
+                                                href="{{imprint.proofUrl}}">VIEW</a>
                                         </td>
                                     </tr>
                                 </ng-container>

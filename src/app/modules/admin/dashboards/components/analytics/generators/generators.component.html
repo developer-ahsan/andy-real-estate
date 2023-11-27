@@ -641,8 +641,9 @@
                                             <span *ngIf="!imprint.contactName">---</span>
                                         </td>
                                         <td>
-                                            <span *ngIf="!item.proofUrl">---</span>
-                                            <a target="_blank" *ngIf="item.proofUrl" href="{{item.proofUrl}}">VIEW</a>
+                                            <span *ngIf="!imprint.proofUrl">---</span>
+                                            <a target="_blank" *ngIf="imprint.proofUrl"
+                                                href="{{imprint.proofUrl}}">VIEW</a>
                                         </td>
                                     </tr>
                                 </ng-container>

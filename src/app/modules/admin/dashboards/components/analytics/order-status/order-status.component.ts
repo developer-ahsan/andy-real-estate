@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { DashboardsService } from '../../../dashboard.service';
-import { finalize, takeUntil } from 'rxjs/operators';
-import { Subject, pipe } from 'rxjs';
+import { finalize, map, takeUntil } from 'rxjs/operators';
+import { Subject, forkJoin, pipe } from 'rxjs';
 import moment from 'moment';
 import { environment } from 'environments/environment';
 import * as CryptoJS from 'crypto-js';
@@ -280,26 +280,56 @@ export class OrderStatusComponent implements OnInit {
     this.getOrderArtworkDetails();
     $(this.orderDetailsModal.nativeElement).modal('show');
   }
+  getImprintFiles(url: string) {
+    let payload = {
+      files_fetch: true,
+      path: url
+    };
+    return this._dashboardService.getFiles(payload);
+  }
   getOrderArtworkDetails() {
     let params = {
       order_artwork_details: true,
       order_id: this.orderDetailsModalContent.orderID
     }
-    this._dashboardService.getDashboardData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-      this.orderDetailsModalContent.loader = false;
-      this._changeDetectorRef.markForCheck();
-    })).subscribe(res => {
-      res["data"].forEach(element => {
-        element.imprints = []
-        if (element.imprintDetails) {
-          let imprints = element.imprintDetails.split(',,');
-          imprints.forEach(imprint => {
-            const [location, method, id, status] = imprint.split('||');
-            element.imprints.push({ location, method, id, status })
-          });
-        }
-      });
-      this.orderDetailsModalContent.artworkData = res["data"];
+    this._dashboardService.getDashboardData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["data"].length == 0) {
+        this.orderDetailsModalContent.artworkData = [];
+        this.orderDetailsModalContent.loader = false;
+        this._changeDetectorRef.markForCheck();
+      } else {
+        forkJoin(
+          res["data"].map(element => {
+            if (element.imprintDetails) {
+              const url = `/artwork/Proof/${element.fk_storeUserID}/${element.orderID}/${element.orderLineID}`;
+              return this.getImprintFiles(url).pipe(
+                map((files: any) => {
+                  const imprints = element.imprintDetails?.split('#_');
+
+                  element.imprints = (imprints || []).map(imprint => {
+                    const [location, method, id, status] = imprint.split('||');
+
+                    const matchingFile = files["data"].find(file => file.FILENAME.split('.')[0] == id);
+
+                    const proofUrl = matchingFile
+                      ? `${environment.assetsURL}artwork/Proof/${element.fk_storeUserID}/${element.orderID}/${element.orderLineID}/${matchingFile.FILENAME}`
+                      : '';
+
+                    return { location, method, id, status, proofUrl };
+                  });
+                })
+              );
+            }
+          })
+        ).subscribe(() => {
+          this.orderDetailsModalContent.loader = false;
+          this._changeDetectorRef.markForCheck();
+          this.orderDetailsModalContent.artworkData = res["data"];
+        }, err => {
+          this.orderDetailsModalContent.loader = false;
+          this._changeDetectorRef.markForCheck();
+        });
+      }
     });
   }
   checkIfImageExists(url) {
@@ -436,7 +466,6 @@ export class OrderStatusComponent implements OnInit {
       this.emailModalContent.footer = footer;
       this.emailModalContent.loader = false;
       this._changeDetectorRef.markForCheck();
-      console.log(this.emailModalContent);
     }, err => {
       this.emailModalContent.loader = false;
       this._changeDetectorRef.markForCheck();

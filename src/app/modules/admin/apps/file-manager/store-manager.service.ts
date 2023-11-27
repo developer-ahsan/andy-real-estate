@@ -208,7 +208,7 @@ export class FileManagerService {
   getOfflineProducts(storeID, pageNo): Observable<any[]> {
     return this._httpClient.get<any[]>(environment.storeNewUrl, {
       params: {
-        offline_product: true,
+        store_products_offline_products: true,
         store_id: storeID,
         size: 20,
         page: pageNo,

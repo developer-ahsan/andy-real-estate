@@ -48,7 +48,7 @@
                             class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 lg:pl-8">
                             {{data.companyName}}</td>
                           <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{data.productCount}}</td>
-                          <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{calculatePercentage(data, i)}}
+                          <td class="whitespace-nowrap px-3 py-4 text-sm text-red-500">{{calculatePercentage(data, i)}}%
                           </td>
                         </tr>
 
@@ -56,7 +56,8 @@
                           <td
                             class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-bold font-medium text-gray-900 sm:pl-6 lg:pl-8">
                             Total</td>
-                          <td class="whitespace-nowrap font-bold px-3 py-4 text-sm text-gray-500">{{this.totalProductsCount}}</td>
+                          <td class="whitespace-nowrap font-bold px-3 py-4 text-sm text-gray-500">
+                            {{this.totalProductsCount}}</td>
                           <td class="whitespace-nowrap font-bold px-3 py-4 text-sm text-gray-500">100.00 %
                           </td>
                         </tr>
