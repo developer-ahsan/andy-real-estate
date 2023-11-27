@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { DashboardsService } from '../../../dashboard.service';
 import { finalize, map, takeUntil } from 'rxjs/operators';
-import { Subject, forkJoin } from 'rxjs';
+import { Subject, forkJoin, of } from 'rxjs';
 import { environment } from 'environments/environment';
 import CryptoJS from 'crypto-js';
 declare var $: any;
@@ -522,17 +522,17 @@ export class GeneratorsComponent implements OnInit {
 
                   element.imprints = (imprints || []).map(imprint => {
                     const [imprintID, location, method, status, statusID, contactName] = imprint.split('||');
-
                     const matchingFile = files["data"].find(file => file.FILENAME.split('.')[0] == imprintID);
 
                     const proofUrl = matchingFile
                       ? `${environment.assetsURL}artwork/Proof/Quotes/${element.storeUserID}/${element.pk_cartID}/${element.pk_cartLineID}/${matchingFile.FILENAME}`
                       : '';
-
                     return { imprintID, location, method, status, statusID, contactName, proofUrl };
                   });
                 })
               );
+            } else {
+              return of([]);
             }
           })
         ).subscribe(() => {

@@ -95,7 +95,7 @@ export class CostCenterCodeComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
       })
     } else {
-      this._snackBar.open("Please Check Input Fields", '', {
+      this._snackBar.open("Please provide a cost center code.", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
         duration: 3000

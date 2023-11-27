@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { DashboardsService } from '../../../dashboard.service';
 import { finalize, map, takeUntil } from 'rxjs/operators';
-import { Subject, forkJoin, pipe } from 'rxjs';
+import { Subject, forkJoin, of, pipe } from 'rxjs';
 import moment from 'moment';
 import { environment } from 'environments/environment';
 import * as CryptoJS from 'crypto-js';
@@ -288,6 +288,7 @@ export class OrderStatusComponent implements OnInit {
     return this._dashboardService.getFiles(payload);
   }
   getOrderArtworkDetails() {
+    this.orderDetailsModalContent.artworkData = [];
     let params = {
       order_artwork_details: true,
       order_id: this.orderDetailsModalContent.orderID
@@ -319,6 +320,8 @@ export class OrderStatusComponent implements OnInit {
                   });
                 })
               );
+            } else {
+              return of([]);
             }
           })
         ).subscribe(() => {

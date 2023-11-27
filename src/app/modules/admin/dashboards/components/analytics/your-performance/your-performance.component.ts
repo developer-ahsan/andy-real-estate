@@ -499,7 +499,7 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
                 { name: `${store.storeName} - ${this.currentYear}`, data: store.SALES }
             );
             this.yourPerformanceData.allColors.push(`#` + store.reportColor);
-            this.ytdChart.colors.push(`#` + store.reportColor); // Adding the color again for the second series
+            this.ytdChart.colors.push(`transparent`); // Adding the color again for the second series
             this.ytdChart.colors.push(`#` + store.reportColor);
             this.ytdChart.labels.push(`${store.storeName}`);
         });
