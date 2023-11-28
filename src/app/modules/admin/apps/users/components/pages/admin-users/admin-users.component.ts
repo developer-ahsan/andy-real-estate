@@ -1,10 +1,11 @@
 import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { UsersService } from '../../users.service';
 import { AddAdminUser, applyBlanketCustomerPercentage, newFLPSUser, removeFLPSUser, RootPermissions, UpdateAdminUser, updateFLPSUser } from '../../users.types';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 @Component({
   selector: 'app-admin-users',
   templateUrl: './admin-users.component.html',
@@ -49,15 +50,10 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
   isSearching: boolean = false;
   // Emplyees Dropdown
   companies = [];
-  searchCompanyCtrl = new FormControl();
   selectedCompany: any;
-  isSearchingCompany = false;
-  minLengthTerm = 3;
 
   addCompanies = [];
-  addSearchCompanyCtrl = new FormControl();
   addSelectedCompany: any;
-  addIsSearchingCompany = false;
 
   permissionGroup = [];
   permissionGrpCtrl = new FormControl();
@@ -88,31 +84,33 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
 
   isUpdateAdminPermissions: boolean = false;
 
+  sessionUser: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _UsersService: UsersService
+    private _UsersService: UsersService,
+    private _commonService: DashboardsService
   ) { }
 
   initForm() {
     this.addNewUserForm = new FormGroup({
-      userName: new FormControl(''),
-      password: new FormControl(''),
-      email: new FormControl(''),
-      firstName: new FormControl(''),
-      lastName: new FormControl(''),
+      userName: new FormControl('', Validators.required),
+      password: new FormControl('', Validators.required),
+      email: new FormControl('', Validators.required),
+      firstName: new FormControl('', Validators.required),
+      lastName: new FormControl('', Validators.required),
       ip_address: new FormControl(''),
-      supplier_id: new FormControl(''),
+      supplier_id: new FormControl(101, Validators.required),
       blnMasterAccount: new FormControl(false),
       blnSupplier: new FormControl(true),
       blnManager: new FormControl(false),
       add_admin_user: new FormControl(true)
     });
     this.updateUserForm = new FormGroup({
-      userName: new FormControl(''),
-      password: new FormControl(''),
-      email: new FormControl(''),
-      firstName: new FormControl(''),
-      lastName: new FormControl(''),
+      userName: new FormControl('', Validators.required),
+      password: new FormControl('', Validators.required),
+      email: new FormControl('', Validators.required),
+      firstName: new FormControl('', Validators.required),
+      lastName: new FormControl('', Validators.required),
       blnActive: new FormControl(false),
       blnMaster: new FormControl(false),
       blnManager: new FormControl(false),
@@ -122,78 +120,23 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
     if (this.ipAddress) {
       this.addNewUserForm.patchValue({ ip_address: this.ipAddress });
     }
-    if (this.addCompanies.length > 0) {
-      this.addNewUserForm.patchValue({ supplier_id: this.addCompanies[0].pk_companyID });
+    if (this.sessionUser.blnMasterAccount) {
+      this.addNewUserForm.patchValue({ supplier_id: 101 });
+    } else {
+      this.addNewUserForm.patchValue({ supplier_id: 0 });
     }
   }
   ngOnInit(): void {
-    this.initForm();
     this._UsersService.getIPAddress().subscribe(res => {
       this.ipAddress = res["ip"];
     });
     this.isLoading = true;
+    this.sessionUser = this._commonService.getSessionUserDetails();
     this.getAdminCompanies();
     this.getAdminUsers(1, 'get');
-    let params;
-    this.searchCompanyCtrl.setValue({ companyName: 'All', pk_companyID: 101 });
-    this.searchCompanyCtrl.valueChanges.pipe(
-      filter((res: any) => {
-        params = {
-          companies: true,
-          keyword: res
-        }
-        return res !== null && res.length >= this.minLengthTerm
-      }),
-      distinctUntilChanged(),
-      debounceTime(500),
-      tap(() => {
-        this.companies = [];
-        this.isSearchingCompany = true;
-        this._changeDetectorRef.markForCheck();
-      }),
-      switchMap(value => this._UsersService.getAdminsData(params)
-        .pipe(
-          finalize(() => {
-            this.isSearchingCompany = false
-            this._changeDetectorRef.markForCheck();
-          }),
-        )
-      )
-    ).subscribe((data: any) => {
-      this.companies.push({ companyName: 'All', pk_companyID: 101 });
-      this.companies = this.companies.concat(data['data']);
-    });
-
-    this.addSearchCompanyCtrl.valueChanges.pipe(
-      filter((res: any) => {
-        params = {
-          companies: true,
-          keyword: res
-        }
-        return res !== null && res.length >= this.minLengthTerm
-      }),
-      distinctUntilChanged(),
-      debounceTime(500),
-      tap(() => {
-        this.addCompanies = [];
-        this.addIsSearchingCompany = true;
-        this._changeDetectorRef.markForCheck();
-      }),
-      switchMap(value => this._UsersService.getAdminsData(params)
-        .pipe(
-          finalize(() => {
-            this.addIsSearchingCompany = false
-            this._changeDetectorRef.markForCheck();
-          }),
-        )
-      )
-    )
-      .subscribe((data: any) => {
-        this.addCompanies = data['data'];
-      });
   };
-  onSelected(ev) {
-    this.selectedCompany = ev.option.value;
+
+  onSelected() {
     if (this.selectedCompany.companyName == 'All') {
       this.dataSource = this.tempDataSource;
       this.page = 1;
@@ -205,19 +148,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
     }
   }
 
-  displayWith(value: any) {
-    return value?.companyName;
-  }
-  addOnSelected(ev) {
-    this.addSelectedCompany = ev.option.value;
-    this.addNewUserForm.setValue({ supplier_id: this.addCompanies[0].pk_companyID });
-  }
-
-  addDisplayWith(value: any) {
-    return value?.companyName;
-  }
   calledScreen(value) {
-    this.initForm();
     this.mainScreen = value;
     if (this.mainScreen == 'Current Users') {
       this.dataSource = this.tempDataSource;
@@ -279,7 +210,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
       admin_users: true,
       user_status: 1,
       page: page,
-      company_id: this.selectedCompany.pk_companyID,
+      company_id: this.selectedCompany.pk_companyID || 0,
       size: 20
     }
     this._UsersService.getAdminsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -328,13 +259,13 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
     });
   }
   getAdminCompanies() {
-    this._UsersService.companyAdmins$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.companies.push({ companyName: 'All', pk_companyID: 101 });
-      this.companies = this.companies.concat(res['data']);
+    this._commonService.suppliersData$.pipe(takeUntil(this._unsubscribeAll)).subscribe(companies => {
+      this.companies.push({ companyName: 'All', pk_companyID: 0 });
+      const activeSuppliers = companies["data"].filter(element => element.blnActiveVendor);
+      this.companies.push(...activeSuppliers);
       this.selectedCompany = this.companies[0];
-      this.addSelectedCompany = this.companies[0];
-      this.addCompanies = res['data'];
-      this.addSearchCompanyCtrl.setValue({ companyName: this.addCompanies[0].companyName, pk_companyID: this.addCompanies[0].pk_companyID });
+      this.addCompanies = activeSuppliers;
+      this.initForm();
     });
   }
   getNextData(event) {
@@ -395,13 +326,26 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
 
   addNewUser() {
     const { userName, password, email, firstName, lastName, blnManager, blnSupplier, blnMasterAccount, supplier_id, ip_address, add_admin_user } = this.addNewUserForm.getRawValue();
-    if (userName == '' || password == '' || email == '') {
-      this._UsersService.snackBar('Please fill out the required fields');
+
+    if (this._commonService.isValidEmail(email)) {
+      this._UsersService.snackBar('Please enter a valid email');
       return;
     }
     let payload: AddAdminUser = {
       userName, password, email, firstName, lastName, blnManager, blnSupplier, blnMasterAccount, supplier_id, ip_address, add_admin_user
+    };
+
+    // Use utility functions for replacing single quotes and null spaces
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
+    payload = this._commonService.replaceNullSpaces(payload);
+
+    // Check if any of the required fields are empty
+    const requiredFields = ['userName', 'password', 'email', 'firstName', 'lastName'];
+    if (requiredFields.some(field => payload[field] === '')) {
+      this._UsersService.snackBar('Please fill out the required fields.');
+      return;
     }
+
     this.isAddNewUserLoader = true;
     this._UsersService.AddAdminsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
@@ -419,13 +363,24 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
   }
   updateUser() {
     const { userName, password, email, firstName, lastName, blnManager, blnMaster, blnActive, pk_userID, update_admin_user } = this.updateUserForm.getRawValue();
-    if (userName == '' || password == '' || email == '') {
-      this._UsersService.snackBar('Please fill out the required fields');
+    if (this._commonService.isValidEmail(email)) {
+      this._UsersService.snackBar('Please enter a valid email');
       return;
     }
     let payload: UpdateAdminUser = {
       userName, password, email, firstName, lastName, blnActive, blnMaster, blnManager, update_admin_user, user_id: pk_userID
     }
+    // Use utility functions for replacing single quotes and null spaces
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
+    payload = this._commonService.replaceNullSpaces(payload);
+
+    // Check if any of the required fields are empty
+    const requiredFields = ['userName', 'password', 'email', 'firstName', 'lastName'];
+    if (requiredFields.some(field => payload[field] === '')) {
+      this._UsersService.snackBar('Please fill out the required fields.');
+      return;
+    }
+
     this.isUpdateUserLoader = true;
     this._UsersService.UpdateAdminsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {

@@ -3,7 +3,7 @@
         <!-- <button mat-stroked-button class="min-w-20" >
             <span class="text-sm">Email</span>
         </button> -->
-        <button (click)="generatePdf()" mat-stroked-button class="min-w-20">
+        <button (click)="generatePdf()" mat-stroked-button class="min-w-20" *ngIf="mainScreen == 'Quick Reference'">
             <span class="test-sm">PDF</span>
         </button>
         <!-- <button (click) = "generatePdf()" mat-stroked-button class="min-w-20" >

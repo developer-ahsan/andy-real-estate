@@ -18,7 +18,7 @@
                             <div class="row">
                                 <div class="col-12">
                                     <input type="file" accept=".jpg" [formControlName]="'image'"
-                                        (change)="upload($event)" style="line-height: 2.5;" />
+                                        (change)="upload($event)" style="line-height: 2.5;" #fileInputImage />
                                 </div>
                                 <div class="col-12 flex justify-end">
                                     <button class="min-w-40" mat-stroked-button
@@ -55,14 +55,12 @@
             <div class="row p-2" *ngIf="imagesArray.length">
                 <div class="col-lg-4 col-12" *ngFor="let image of imagesArray">
                     <fuse-card class="flex flex-col my-1 w-full filter-shopping hover:cursor-pointer">
-                        <div class="relative">
-                            <div (click) = deleteImage(image) class="absolute flex flex-col top-0 right-0 p-1">
-                                <button mat-icon-button>
-                                    <mat-icon class="icon-size-5 text-red-500 text-opacity-50"
-                                        [svgIcon]="'heroicons_solid:trash'"></mat-icon>
-                                </button>
-                            </div>
-                            <img class="object-cover rounded-2xl shadow-sm" [src]="'https://assets.consolidus.com/globalAssets/Products/defaultImage/' + selectedProduct?.pk_productID + '/' + image?.FILENAME">
+                        <img class="object-cover rounded-2xl shadow-sm"
+                            [src]="'https://assets.consolidus.com/globalAssets/Products/defaultImage/' + selectedProduct?.pk_productID + '/' + image?.FILENAME +'?'+temp">
+                        <div (click)=deleteImage(image) class="text-center mt-2">
+                            <button mat-button class="bg-red-500 rounded-md text-light">
+                                Remove
+                            </button>
                         </div>
                     </fuse-card>
                 </div>

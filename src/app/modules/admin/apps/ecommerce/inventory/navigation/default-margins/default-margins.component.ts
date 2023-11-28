@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { Colors } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -23,6 +24,7 @@ export class DefaultMarginsComponent implements OnInit, OnDestroy {
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
+    public _commonService: DashboardsService,
     private _formBuilder: FormBuilder,
     private _snackBar: MatSnackBar
   ) { }
@@ -56,7 +58,7 @@ export class DefaultMarginsComponent implements OnInit, OnDestroy {
         const margin = {};
         if (margins["totalRecords"] !== 0) {
           for (let i = 0; i < this.defaultMargins.length; i++) {
-            margin[i + 1] = this.defaultMargins[i].margin
+            margin[i + 1] = this.defaultMargins[i].margin * 100
           }
         }
         this.defaultMarginForm.patchValue(margin);
@@ -91,6 +93,20 @@ export class DefaultMarginsComponent implements OnInit, OnDestroy {
       this.defaultMarginForm.getRawValue()["6"] || null,
     ];
     const realMargins = this.removeNull(margins);
+
+    const hasInvalidValue = margins.some(value => value === null);
+    if (hasInvalidValue) {
+      this._commonService.snackBar('If you are supplying default margins for this product, please supply all six margins.');
+      return;
+    }
+
+    // Check if there is any negative value
+    const hasNegativeValue = margins.some(value => value !== null && value < 0);
+
+    if (hasNegativeValue) {
+      this._commonService.snackBar('An error occured trying to update the product default margins.');
+      return;
+    }
     const payload = {
       product_id: pk_productID,
       margins: realMargins,

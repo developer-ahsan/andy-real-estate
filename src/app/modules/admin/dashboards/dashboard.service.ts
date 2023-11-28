@@ -314,4 +314,14 @@ export class DashboardsService {
         }
         return obj;
     }
+    getSessionUserDetails() {
+        const user = JSON.parse(localStorage.getItem('userDetails'));
+        return user;
+    }
+    isValidEmail(email: string): boolean {
+        // Regular expression for a basic email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        return emailRegex.test(email);
+    }
 }

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
@@ -35,7 +35,9 @@ export class DefaultImageComponent implements OnInit, OnDestroy {
   config: any = {
     maxFiles: 5,
   };
+  @ViewChild('fileInputImage') fileInputImage: ElementRef;
 
+  temp = Math.random();
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _inventoryService: InventoryService,
@@ -90,6 +92,7 @@ export class DefaultImageComponent implements OnInit, OnDestroy {
   };
 
   upload(event) {
+    this.temp = Math.random();
     const file = event.target.files[0];
     this.fileName = !this.imagesArray.length ? "1" : `${this.imagesArray.length + 1}`;
     let fileType = file["type"];
@@ -134,6 +137,7 @@ export class DefaultImageComponent implements OnInit, OnDestroy {
           verticalPosition: 'bottom',
           duration: 3500
         });
+        this.fileInputImage.nativeElement.value = '';
         return;
       };
 
@@ -143,6 +147,7 @@ export class DefaultImageComponent implements OnInit, OnDestroy {
           verticalPosition: 'bottom',
           duration: 3500
         });
+        this.fileInputImage.nativeElement.value = '';
         return;
       };
 
@@ -164,6 +169,7 @@ export class DefaultImageComponent implements OnInit, OnDestroy {
           });
           this.imageUploadLoader = false;
           this.imagesArray.push({ FILENAME: `${pk_productID}-${this.fileName}.jpg` })
+          this.fileInputImage.nativeElement.value = '';
 
           // Mark for check
           this._changeDetectorRef.markForCheck();
@@ -174,6 +180,7 @@ export class DefaultImageComponent implements OnInit, OnDestroy {
             verticalPosition: 'bottom',
             duration: 3500
           });
+          this.fileInputImage.nativeElement.value = '';
 
           // Mark for check
           this._changeDetectorRef.markForCheck();

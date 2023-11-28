@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { environment } from 'environments/environment';
@@ -25,7 +25,8 @@ export class DietaryInfoComponent implements OnInit, OnDestroy {
   imageUploadLoader: boolean = false;
   pdfDeleteLoader: boolean = false;
   pdfLoader: boolean = false;
-
+  @ViewChild('fileInputImage') fileInputImage: ElementRef;
+  temp: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _formBuilder: FormBuilder,
@@ -61,6 +62,7 @@ export class DietaryInfoComponent implements OnInit, OnDestroy {
     });
   }
   upload(event) {
+    this.temp = Math.random();
     const file = event.target.files[0];
     if (file) {
       let fileExtension = file["name"].split('.').pop();  //return the extension
@@ -83,6 +85,7 @@ export class DietaryInfoComponent implements OnInit, OnDestroy {
         verticalPosition: 'bottom',
         duration: 3500
       });
+      this.fileInputImage.nativeElement.value = '';
       return;
     };
 
@@ -107,6 +110,7 @@ export class DietaryInfoComponent implements OnInit, OnDestroy {
             verticalPosition: 'bottom',
             duration: 3500
           });
+          this.fileInputImage.nativeElement.value = '';
           this.imageUploadLoader = false;
 
           // Mark for check
@@ -118,6 +122,7 @@ export class DietaryInfoComponent implements OnInit, OnDestroy {
             verticalPosition: 'bottom',
             duration: 3500
           });
+          this.fileInputImage.nativeElement.value = '';
 
           // Mark for check
           this._changeDetectorRef.markForCheck();
@@ -128,12 +133,13 @@ export class DietaryInfoComponent implements OnInit, OnDestroy {
         verticalPosition: 'bottom',
         duration: 3500
       });
+      this.fileInputImage.nativeElement.value = '';
       return;
     };
   };
 
   openPdf() {
-    window.open(this.pdf);
+    window.open(this.pdf + '?' + this.temp);
   };
 
   deletePdf() {

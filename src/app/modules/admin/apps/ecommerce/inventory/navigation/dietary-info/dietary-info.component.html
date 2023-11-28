@@ -16,10 +16,11 @@
                             <div class="row">
                                 <div class="col-12 my-1">
                                     <input type="file" accept=".pdf" [formControlName]="'image'"
-                                        (change)="upload($event)" style="line-height: 2.5;" />
+                                        (change)="upload($event)" style="line-height: 2.5;" #fileInputImage />
                                 </div>
                                 <div class="col-12 flex justify-end gap-x-2">
-                                    <button *ngIf="this.pdf" (click)="deletePdf()" class="min-w-40 bg-red-500 border-red-500 text-white" mat-stroked-button
+                                    <button *ngIf="this.pdf" (click)="deletePdf()"
+                                        class="min-w-40 bg-red-500 border-red-500 text-white" mat-stroked-button
                                         [disabled]="pdfDeleteLoader">
                                         <mat-progress-spinner *ngIf="pdfDeleteLoader" [diameter]="24"
                                             [mode]="'indeterminate'"></mat-progress-spinner>

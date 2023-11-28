@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
@@ -31,6 +31,7 @@ export class SwatchesComponent implements OnInit, OnDestroy {
   imageError = "";
   isImageSaved: boolean;
   cardImageBase64 = "";
+  @ViewChild('fileInputImage') fileInputImage: ElementRef;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -67,8 +68,9 @@ export class SwatchesComponent implements OnInit, OnDestroy {
     });
   }
   checkIfImageExists(url) {
+    const temp = Math.random();
     const img = new Image();
-    img.src = url;
+    img.src = url + '?' + temp;
 
     if (img.complete) {
       this.imagesArray.push(url);
@@ -105,6 +107,7 @@ export class SwatchesComponent implements OnInit, OnDestroy {
         verticalPosition: 'bottom',
         duration: 3500
       });
+      this.fileInputImage.nativeElement.value = '';
       return;
     };
 
@@ -118,6 +121,7 @@ export class SwatchesComponent implements OnInit, OnDestroy {
           verticalPosition: 'bottom',
           duration: 3500
         });
+        this.fileInputImage.nativeElement.value = '';
         return;
       };
 
@@ -127,6 +131,7 @@ export class SwatchesComponent implements OnInit, OnDestroy {
           verticalPosition: 'bottom',
           duration: 3500
         });
+        this.fileInputImage.nativeElement.value = '';
         return;
       };
 
@@ -148,8 +153,10 @@ export class SwatchesComponent implements OnInit, OnDestroy {
           });
           this.imageUploadLoader = false;
           this.imagesArray.pop();
-          this.imagesArray.push(`${environment.productMedia}/Swatch/${pk_productID}/${pk_productID}.jpg`);
+          const temp = Math.random();
+          this.imagesArray.push(`${environment.productMedia}/Swatch/${pk_productID}/${pk_productID}.jpg?${temp}`);
 
+          this.fileInputImage.nativeElement.value = '';
           // Mark for check
           this._changeDetectorRef.markForCheck();
         }, err => {
@@ -160,6 +167,7 @@ export class SwatchesComponent implements OnInit, OnDestroy {
             duration: 3500
           });
 
+          this.fileInputImage.nativeElement.value = '';
           // Mark for check
           this._changeDetectorRef.markForCheck();
         })

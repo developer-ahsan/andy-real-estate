@@ -21,17 +21,10 @@
             <div class="bg-card p-5">
                 <mat-form-field class="w-full">
                     <mat-label>Filter By Company</mat-label>
-                    <input matInput placeholder="Search Employee Name" [matAutocomplete]="auto"
-                        [formControl]="searchCompanyCtrl" placeholder="Min 3 Characters">
-                    <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelected($event)"
-                        [displayWith]="displayWith">
-                        <mat-option *ngIf="isSearchingCompany" class="is-loading">Loading...</mat-option>
-                        <ng-container *ngIf="!isSearchingCompany">
-                            <mat-option *ngFor="let item of companies" [value]="item">
-                                <span>{{item.companyName}}</span>
-                            </mat-option>
-                        </ng-container>
-                    </mat-autocomplete>
+                    <mat-select matInput [(ngModel)]="selectedCompany" (selectionChange)="onSelected()">
+                        <mat-option *ngFor="let company of companies"
+                            [value]="company">{{company.companyName}}</mat-option>
+                    </mat-select>
                 </mat-form-field>
             </div>
             <div *ngIf="dataSource.length > 0;else other_content" class="w-full">
@@ -120,10 +113,10 @@
                     (page)="getNextData($event)" [hidePageSize]="true">
                 </mat-paginator>
             </div>
-            <!-- No color Found -->
+            <!-- No User Found -->
             <ng-template #other_content>
-                <div class="text-secondary font-semibold p-5 text-center">
-                    There are currently no Admin users.
+                <div class="text-secondary font-semibold p-5 text-center alert alert-warning">
+                    No admin users were found for this company.
                 </div>
             </ng-template>
         </div>
@@ -132,29 +125,22 @@
                 <div class="row" [formGroup]="addNewUserForm">
                     <div class="col-12 col-md-6">
                         <mat-form-field class="w-full">
-                            <mat-label>Company</mat-label>
-                            <input matInput placeholder="Search Company" [matAutocomplete]="auto"
-                                [formControl]="addSearchCompanyCtrl">
-                            <mat-autocomplete class="w-full" #auto="matAutocomplete"
-                                (optionSelected)="addOnSelected($event)" [displayWith]="addDisplayWith">
-                                <mat-option *ngIf="addIsSearchingCompany" class="is-loading">Loading...</mat-option>
-                                <ng-container *ngIf="!addIsSearchingCompany">
-                                    <mat-option *ngFor="let item of addCompanies" [value]="item">
-                                        <span>{{item.companyName}}</span>
-                                    </mat-option>
-                                </ng-container>
-                            </mat-autocomplete>
+                            <mat-label> Company</mat-label>
+                            <mat-select matInput formControlName="supplier_id">
+                                <mat-option *ngFor="let company of addCompanies"
+                                    [value]="company.pk_companyID">{{company.companyName}}</mat-option>
+                            </mat-select>
                         </mat-form-field>
                     </div>
                     <div class="col-12 col-md-6">
                         <mat-form-field class="w-full">
-                            <mat-label>First Name (30) </mat-label>
+                            <mat-label>First Name (30)* </mat-label>
                             <input matInput type="text" maxlength="30" formControlName="firstName">
                         </mat-form-field>
                     </div>
                     <div class="col-12 col-md-6">
                         <mat-form-field class="w-full">
-                            <mat-label>Last Name (50) </mat-label>
+                            <mat-label>Last Name (50)* </mat-label>
                             <input matInput type="text" maxlength="50" formControlName="lastName">
                         </mat-form-field>
                     </div>
@@ -331,13 +317,13 @@
                         </div>
                         <div class="col-12 col-md-6">
                             <mat-form-field class="w-full">
-                                <mat-label>First Name (30) </mat-label>
+                                <mat-label>First Name (30)* </mat-label>
                                 <input matInput type="text" maxlength="30" formControlName="firstName">
                             </mat-form-field>
                         </div>
                         <div class="col-12 col-md-6">
                             <mat-form-field class="w-full">
-                                <mat-label>Last Name (50) </mat-label>
+                                <mat-label>Last Name (50)* </mat-label>
                                 <input matInput type="text" maxlength="50" formControlName="lastName">
                             </mat-form-field>
                         </div>

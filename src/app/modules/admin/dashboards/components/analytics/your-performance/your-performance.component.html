@@ -3,6 +3,15 @@
     <div class="flex items-start justify-between m-6 mb-0">
         <div class="text-lg font-medium tracking-tight leading-6 truncate">Your Performance</div>
     </div>
+    <!-- Loader -->
+    <div class="flex items-start mt-3 mx-6 " *ngIf="isPerformanceLoader">
+        <div class="w-full">
+            <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
+                'background-color': '#dedede'
+              }">
+            </ngx-skeleton-loader>
+        </div>
+    </div>
     <!-- Performance -->
     <div class="flex items-start mt-6 mx-6" *ngIf="!isPerformanceLoader">
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-12">
@@ -72,7 +81,7 @@
         </div>
     </div>
     <!-- Charts -->
-    <div class="flex flex-col flex-auto min-h-80 m-6">
+    <div class="flex flex-col flex-auto min-h-80 m-6" *ngIf="!isPerformanceLoader">
         <div class="row">
             <!-- Year To Date Sales,By Store -->
             <div class="col-12 col-md-4">
@@ -82,7 +91,6 @@
                 </div>
                 <div class="text-center mt-2" *ngIf="isPerformanceLoader">
                     <img src="assets/loader2.gif" class="w-40" />
-
                 </div>
                 <div id="myChart" *ngIf="!isPerformanceLoader">
                     <div *ngIf="!performanceChartOptions.series.length">
