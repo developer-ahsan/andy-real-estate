@@ -6,6 +6,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatRadioChange } from '@angular/material/radio';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { StoreProductService } from '../../store.service';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-profit-calculator',
@@ -28,13 +29,15 @@ export class ProfitCalculatorComponent implements OnInit, OnDestroy {
   ngAverageCost = 0;
   ngAverageMargin = 33.33
   ngUnitGross = 0;
+  ngUnitProfit = 0;
   ngGrossProfit = 0;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _storeService: StoreProductService,
     private _formBuilder: FormBuilder,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+    private _commonService: DashboardsService
   ) { }
 
   ngOnInit(): void {
@@ -55,11 +58,13 @@ export class ProfitCalculatorComponent implements OnInit, OnDestroy {
     this._storeService.getStoreProducts(params).pipe(takeUntil(this._unsubscribeAll)).subscribe((res: any) => {
       this.pricingData = res["data"];
       if (this.pricingData.length > 2) {
-        this.ngAverageQty = this.pricingData[0].quantity + ((this.pricingData[1].quantity - this.pricingData[0].quantity) / 2);
-        this.ngAveragePrice = this.pricingData[0].cost / (1 - (this.ngAverageMargin / 100));
+        this.ngAverageQty = Math.ceil(this.pricingData[0].quantity + ((this.pricingData[1].quantity - this.pricingData[0].quantity) / 2));
         this.ngAverageCost = this.pricingData[0].cost;
-        this.ngUnitGross = this.ngAveragePrice - this.ngAverageCost;
-        this.ngGrossProfit = (this.ngAveragePrice - this.ngAverageCost) * this.ngAverageQty;
+        this.ngAveragePrice = this.ngAverageCost / (1 - (this.ngAverageMargin / 100));
+        this.ngAveragePrice = Math.ceil(this.ngAveragePrice * 100 - 0.000001) / 100;
+        this.ngUnitProfit = this.ngAveragePrice - this.ngAverageCost;
+        this.ngUnitGross = Math.ceil((this.ngAveragePrice * 100 - 0.000001) / 100);
+        this.ngGrossProfit = this.ngUnitProfit * this.ngAverageQty;
       }
       res["data"].forEach((element, index) => {
         this.quantityData.push(element.quantity);
@@ -76,14 +81,25 @@ export class ProfitCalculatorComponent implements OnInit, OnDestroy {
     })
   }
   calculateProfit() {
+    let paylaod = {
+      margin: this.ngAverageMargin,
+      quantity: this.ngAverageQty
+    }
+    paylaod = this._commonService.replaceNullSpaces(paylaod);
+    if (!paylaod.margin || !paylaod.quantity) {
+      this._commonService.snackBar('Please specify store margins before using the profit calculator.');
+      return;
+    }
     if (!this.ngAverageMargin || !this.ngAverageQty) {
       this._storeService.snackBar('Please check input fields');
       return;
     }
-    this.ngAveragePrice = this.pricingData[0].cost / (1 - (this.ngAverageMargin / 100));
     this.ngAverageCost = this.pricingData[0].cost;
-    this.ngUnitGross = this.ngAveragePrice - this.ngAverageCost;
-    this.ngGrossProfit = (this.ngAveragePrice - this.ngAverageCost) * this.ngAverageQty;
+    this.ngAveragePrice = this.ngAverageCost / (1 - (this.ngAverageMargin / 100));
+    this.ngAveragePrice = Math.ceil(this.ngAveragePrice * 100 - 0.000001) / 100;
+    this.ngUnitProfit = this.ngAveragePrice - this.ngAverageCost;
+    this.ngUnitGross = Math.ceil((this.ngAveragePrice * 100 - 0.000001) / 100);
+    this.ngGrossProfit = this.ngUnitProfit * this.ngAverageQty;
   }
 
 

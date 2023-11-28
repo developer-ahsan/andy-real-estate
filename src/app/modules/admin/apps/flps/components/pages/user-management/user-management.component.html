@@ -482,7 +482,8 @@
                                 Total
                             </th>
                             <td mat-cell *matCellDef="let element" class="text-sm">
-                                {{element.Total | currency}}
+                                <span *ngIf="element.Total < 0">{{'(' + (element.Total * -1 | currency )+')'}}</span>
+                                <span *ngIf="element.Total >= 0">{{element.Total | currency}}</span>
                             </td>
                         </ng-container>
                         <ng-container matColumnDef="paid">

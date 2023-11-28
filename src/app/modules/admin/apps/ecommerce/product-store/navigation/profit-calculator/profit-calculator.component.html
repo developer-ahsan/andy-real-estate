@@ -72,17 +72,19 @@
                         </div>
                         <div class="col-12 col-md-4 text-md text-right ">
                             <div class="flex justify-center ">
-                                <input class="form-control w-30 text-center text-md" [(ngModel)]="ngAverageQty">
+                                <input type="number" min="0" class="form-control w-30 text-center text-md"
+                                    [(ngModel)]="ngAverageQty" (input)="_commonService.validateInput($event)">
                             </div>
                             <div class="text-center font-bold">
                                 <p>{{ngAveragePrice | currency}}</p>
                                 <p>{{ngAverageCost | currency}}</p>
                             </div>
                             <div class="flex justify-center ">
-                                <input class="form-control w-30 text-center text-md" [(ngModel)]="ngAverageMargin">
+                                <input type="number" class="form-control w-30 text-center text-md"
+                                    [(ngModel)]="ngAverageMargin">
                             </div>
                             <div class="text-center font-bold">
-                                <p>{{ngUnitGross | currency}}/item</p>
+                                <p>{{ngUnitProfit | currency}}/item</p>
                                 <p class="text-green-500">{{ngGrossProfit | currency}}</p>
                                 <button mat-button mat-stroked-button class="w-30"
                                     (click)="calculateProfit()">Calculate</button>

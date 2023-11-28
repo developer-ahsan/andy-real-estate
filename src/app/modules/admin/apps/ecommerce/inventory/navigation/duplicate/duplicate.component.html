@@ -6,11 +6,9 @@
             <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
                 <div class="p-6 sm:p-8 lg:p-10 w-full">
                     <div class="text-2xl font-bold">
-                        <button [matTooltip]="'*Enter the necessary information below to duplicate the product'">
-                            <i class="fa fa-info-circle"></i>
-                        </button>
                         Duplicate Product
                     </div>
+                    <p>Enter the necessary information below to duplicate the product</p>
                     <!-- Core product -->
                     <div class="gap-y-4 mt-6">
                         <form [formGroup]="firstFormGroup">
@@ -19,8 +17,8 @@
                                     <mat-form-field class="w-full">
                                         <mat-label>New Manufacturer Number</mat-label>
                                         <input matInput formControlName="number">
-                                        <mat-error>This field is required</mat-error>
-                                        
+                                        <mat-error>Manufacturer Number is required</mat-error>
+
                                     </mat-form-field>
                                     <div class="text-red-500 -mt-4 mb-2">
                                         Different than : {{this.selectedProduct.productNumber}}
@@ -30,7 +28,7 @@
                                     <mat-form-field class="w-full">
                                         <mat-label>New Name</mat-label>
                                         <input matInput formControlName="name">
-                                        <mat-error>This field is required</mat-error>
+                                        <mat-error>New Name is required</mat-error>
                                     </mat-form-field>
                                 </div>
                             </div>
@@ -48,7 +46,9 @@
                                     <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
                                     <span class="ml-2" *ngIf="!emptyValidationCheck">An error occurred, try
                                         again!</span>
-                                    <span class="ml-2" *ngIf="emptyValidationCheck">Please fill out above fields!</span>
+                                    <span class="ml-2" *ngIf="emptyValidationCheck">Both name and number are required
+                                        for duplication
+                                    </span>
                                 </ng-container>
                             </div>
                             <button class="min-w-40" mat-stroked-button [matTooltip]="'Add New Feature'"

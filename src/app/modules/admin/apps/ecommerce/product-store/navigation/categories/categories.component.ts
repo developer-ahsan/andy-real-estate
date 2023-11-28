@@ -3,6 +3,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { StoreProductService } from '../../store.service';
 import { AddSubCategory, update_subcategories } from '../../store.types';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-categories',
@@ -30,7 +31,8 @@ export class CategoriesComponent implements OnInit, OnDestroy {
   isUpdateCategories: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _storeService: StoreProductService
+    private _storeService: StoreProductService,
+    private _commonService: DashboardsService
   ) { }
 
   ngOnInit(): void {
@@ -127,6 +129,11 @@ export class CategoriesComponent implements OnInit, OnDestroy {
       subCategory_name: item.newChild,
       perma_link: this.convertToSlug(item.newChild),
       add_subcategory: true
+    }
+    payload = this._commonService.replaceNullSpaces(payload);
+    if (!payload.subCategory_name) {
+      this._storeService.snackBar('Subcategory name is required');
+      return;
     }
     item.addLoader = true;
     this._storeService.postStoresProductsData(payload).subscribe(res => {

@@ -112,13 +112,17 @@ export class QuoteArtworkDetailsComponent implements OnInit, OnDestroy {
 
     } else {
       img.onload = () => {
-        imprint.proofImg = true;
+        if (imprint) {
+          imprint.proofImg = true;
+        }
         this._changeDetectorRef.markForCheck();
         // return true;
       };
 
       img.onerror = () => {
-        imprint.proofImg = false;
+        if (imprint) {
+          imprint.proofImg = false;
+        }
         this._changeDetectorRef.markForCheck();
         return;
       };

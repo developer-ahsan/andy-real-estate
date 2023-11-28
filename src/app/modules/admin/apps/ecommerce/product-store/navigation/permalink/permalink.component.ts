@@ -41,12 +41,17 @@ export class PermalinkComponent implements OnInit, OnDestroy {
     if (!this.permalink) {
       permalink = this._commonService.convertToSlug(this.selectedProduct.productName);
     }
-    this.isUpdateLoading = true;
     let payload = {
       permalink: permalink,
       storeProductID: Number(this.selectedProduct.pk_storeProductID),
       update_permalink: true
     }
+    payload = this._commonService.replaceNullSpaces(payload);
+    if (!payload.permalink) {
+      this._commonService.snackBar('Permalink should be empty or any value');
+      return;
+    }
+    this.isUpdateLoading = true;
     this._storeService.UpdatePermaLink(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.isUpdateLoading = false;
       if (res) {
