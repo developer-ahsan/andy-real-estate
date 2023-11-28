@@ -73,6 +73,8 @@ export class GeneratorsComponent implements OnInit {
   };
   emailModalContent: any;
   assetURL = environment.assetsURL;
+
+  isOtherGeneratorLoader: boolean = false;
   constructor(private _changeDetectorRef: ChangeDetectorRef,
     private _dashboardService: DashboardsService,
   ) { }
@@ -94,8 +96,8 @@ export class GeneratorsComponent implements OnInit {
       order: [[3, 'desc']],
     }
     this.isLoading = true;
+    this.isOtherGeneratorLoader = true;
     this.getOrdersStatus();
-    this.getOtherOrderStatus();
   }
   getOrdersStatus() {
     const userDetails = JSON.parse(localStorage.getItem('userDetails'));
@@ -120,6 +122,8 @@ export class GeneratorsComponent implements OnInit {
       this.processQuotes(res);
       this.processSampleOrders(res);
       this.processKeywords(res);
+      // Other Generators
+      this.getOtherOrderStatus();
       this._changeDetectorRef.markForCheck();
     })
   }
@@ -139,7 +143,7 @@ export class GeneratorsComponent implements OnInit {
       flpsUserID: userDetails.FLPSUserID
     }
     this._dashboardService.getDashboardData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-      this.isLoading = false;
+      this.isOtherGeneratorLoader = false;
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       this.ordersThisYear = res["data"][0];
@@ -619,6 +623,15 @@ export class GeneratorsComponent implements OnInit {
           get_quote_email_data: true
         };
         break;
+      case 'survey':
+        payload = {
+          orderID: this.emailModalContent.pk_orderID,
+          storeID: this.emailModalContent.fk_storeID,
+          storeUserID: this.emailModalContent.fk_storeUserID,
+          get_order_email_data: true
+        };
+        this.emailModalContent.surveys = [];
+        break;
     }
     this._dashboardService.postDashboardData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.emailModalContent.response = res;
@@ -711,6 +724,33 @@ export class GeneratorsComponent implements OnInit {
               </div>
             </div>`
         }
+      } else if (type == 'survey') {
+        if (res["qryStoreDefaultEmails"][0].surveyEmailSubject) {
+          this.emailModalContent.subject = res["qryStoreDefaultEmails"][0].surveyEmailSubject
+        }
+        greeting = 'Hi';
+        // Body 
+        if (res["qryStoreDefaultEmails"][0].surveyEmail) {
+          message = `<br /> ${res["qryStoreDefaultEmails"][0].surveyEmail}`;
+        } else {
+          message = `You are receiving this this invite because you recently placed an order on ${res["orderData"][0].storeName}. We actively use feedback to improve your experience and provide you with the best possible service.<br /><br />This survey should take less than 5 minutes.<br /><b><u><a href="${res["orderData"][0].protocol}${res["orderData"][0].storeURL}/survey?s=">Click here to take the survey.</a></u></b><br /><br />`;
+        }
+        // Footer
+        if (res["data"].localPmID) {
+          footer = `<br /><br />
+          If you have any questions, please contact ${res["data"].localProgramManager} at ${res["data"].localPhone} or <a href="mailto:service@${res["orderData"][0].storeURL}">service@${res["orderData"][0].storeName}</a> 
+          
+          <div class="row">
+          <div class="col-12 p-5">
+                <h2 class="font-weight-bold text-xl" style="font-size: 16px; font-weight: bold; color: ##333333; font-family: Arial, Helvetica, sans-serif; margin: 0 0 0 0; padding: 0; text-decoration: none; border: none;">${res["data"].localProgramManager}</h2>
+                <h3 class="font-weight-bold text-xl text-secondary" style="font-size: 14px; color: ##999999; font-family: Arial, Helvetica, sans-serif; margin: 0 0 10px 0; padding: 0;">${res["data"].localRole}</h2>
+                526 S. Main Street, ##804 Akron, Ohio 44311<br />
+                (d) ${res["data"].localPhone} | (p) 866.PromoHelp<br />
+                (e) <a href="mailto:${res["data"].localEmail}">${res["data"].localEmail}</a><br /><br />
+                <img class="w-50" src="${environment.assetsURL}globalAssets/Stores/mastheads/${this.emailModalContent.fk_storeID}.gif" />
+              </div>
+            </div>`
+        }
       }
       if (type != 'quotes' && type != 'survey') {
         if (res["qryOrderLines"].length) {
@@ -749,7 +789,7 @@ export class GeneratorsComponent implements OnInit {
         this.emailModalContent.body = `${greeting} ${res["orderData"][0].storeUserFirstName},<br /><br />${message}`;
         this.emailModalContent.qryOrderLines = res["qryOrderLines"];
         this.emailModalContent.footer = footer;
-      } else {
+      } else if (type == 'quotes') {
         this.emailModalContent.totalPrice = 0;
         res["cartData"].forEach(carts => {
           carts.artworkFiles = [];
@@ -770,6 +810,25 @@ export class GeneratorsComponent implements OnInit {
           this.emailModalContent.totalPrice += carts.subTotal;
         });
         this.emailModalContent.cartData = res["cartData"];
+      } else if (type == 'survey') {
+        this.emailModalContent.surveyID = 0;
+        this.emailModalContent.surveys = [];
+        if (res["orderData"].length) {
+          if (res["orderData"][0].surveys) {
+            let surveys = res["orderData"][0].surveys.split(',,');
+            surveys.forEach(survey => {
+              const [id, name] = survey.split('::');
+              this.emailModalContent.surveys.push({ id, name });
+              this._changeDetectorRef.markForCheck();
+            });
+            this.emailModalContent.body = `${greeting} ${res["orderData"][0].storeUserFirstName},<br /><br />${message}`;
+            this.emailModalContent.footer = footer;
+          } else {
+            this.emailModalContent.surveys = [];
+          }
+        } else {
+          this.emailModalContent.surveys = [];
+        }
       }
       this.emailModalContent.loader = false;
       this._changeDetectorRef.markForCheck();
@@ -902,24 +961,16 @@ export class GeneratorsComponent implements OnInit {
         send_quote_email: true
       }
     } else if (this.emailModalContent.type == 'survey') {
-      //   orderID: number;
-      // storeUserEmail: string;
-      // storeUserFirstName: string;
-      // copy: string;
-      // subject: string;
-      // htmlContent: string;
-      // storeName: string;
-      // storeID: number;
-      // protocol: string;
-      // storeURL: string;
-      // surveyID: number;
-
-      // localPmID: string;
-      // localProgramManager: string;
-      // localEmail: string;
-      // localPhone: string;
-      // localRole: string;
-      // send_survey_email: boolean;
+      const { storeName, pk_orderID, subject, blnImages, blnContent, surveyID, fk_storeID, body } = this.emailModalContent;
+      const { storeUserEmail, storeUserFirstName, protocol, storeURL } = this.emailModalContent.response["orderData"][0];
+      payload = {
+        orderID: pk_orderID, localPmID, localProgramManager, localPhone, localEmail, localRole,
+        storeUserEmail, storeUserFirstName,
+        copy: body,
+        subject,
+        storeName, storeID: fk_storeID, protocol, storeURL, surveyID,
+        send_survey_email: true
+      }
     }
     this._dashboardService.postDashboardData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this.emailModalContent.sendEmailLoader = false;
@@ -945,6 +996,12 @@ export class GeneratorsComponent implements OnInit {
               order.dashboardFollowUpLastTouch = res["currentDate"];
             }
           });
+        } else if (this.emailModalContent.type == 'survey') {
+          this.activityData.forEach(order => {
+            if (order.pk_orderID === payload.orderID) {
+              order.dashboardFollowUpLastTouch = res["currentDate"];
+            }
+          });
         }
       }
       $(this.quoteEmailModal.nativeElement).modal('hide');
@@ -953,7 +1010,7 @@ export class GeneratorsComponent implements OnInit {
   }
   generateEmailTable(): string {
     let tableHTML = '';
-    if (this.emailModalContent.type !== 'quotes' && this.emailModalContent.qryOrderLines.length > 0) {
+    if (this.emailModalContent.type !== 'quotes' && this.emailModalContent.type !== 'survey' && this.emailModalContent.qryOrderLines.length > 0) {
       tableHTML += `<table width="100%" cellspacing="0" cellpadding="0" border="0">
         <tbody>`;
 

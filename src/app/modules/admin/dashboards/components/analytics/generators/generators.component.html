@@ -22,29 +22,31 @@
         </div>
     </div>
     <!-- Loader -->
-    <div class="p-6 bg-card shadow rounded-2xl" *ngIf="isLoading">
-        <div class="my-5">
+    <!-- <div class="p-6 bg-card shadow rounded-2xl" *ngIf="isLoading">
+        
+    </div> -->
+    <!-- Pending Quotes -->
+    <div class="p-6 bg-card shadow rounded-2xl">
+        <div class="flex justify-between">
+            <div class="text-xl font-bold tracking-tight leading-6 truncate">Pending Quotes
+            </div>
+            <div>
+                <div class="flex align-items-center">
+                    <span>What is this</span>
+                    <mat-icon class="icon-size-4 ml-1"
+                        matTooltip="This is a list of all outstanding quotes in your customer\'s accounts."
+                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                </div>
+            </div>
+        </div>
+        <!-- Loader -->
+        <div class="my-5" *ngIf="isLoading">
             <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
             'background-color': '#dedede'
           }">
             </ngx-skeleton-loader>
         </div>
-    </div>
-    <!-- Pending Quotes -->
-    <div class="p-6 bg-card shadow rounded-2xl" *ngIf="!isLoading">
-        <div>
-            <div class="flex justify-between">
-                <div class="text-xl font-bold tracking-tight leading-6 truncate">Pending Quotes
-                </div>
-                <div>
-                    <div class="flex align-items-center">
-                        <span>What is this</span>
-                        <mat-icon class="icon-size-4 ml-1"
-                            matTooltip="This is a list of all outstanding quotes in your customer\'s accounts."
-                            [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                    </div>
-                </div>
-            </div>
+        <div *ngIf="!isLoading">
             <div class="mt-2" *ngIf="!pendingQuotes.length">
                 <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
                     <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
@@ -156,20 +158,28 @@
         </div>
     </div>
     <!-- Samples -->
-    <div class="p-6 bg-card shadow rounded-2xl" *ngIf="!isLoading">
-        <div *ngIf="!isLoading">
-            <div class="flex justify-between">
-                <div class="text-xl font-bold tracking-tight leading-6 truncate">Sample Status
-                </div>
-                <div>
-                    <div class="flex align-items-center">
-                        <span>What is this</span>
-                        <mat-icon class="icon-size-4 ml-1"
-                            matTooltip="In this area, you see sample orders that were delivered within the past 3 months.  This will help you monitor the success of your sample orders."
-                            [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                    </div>
+    <div class="p-6 bg-card shadow rounded-2xl">
+        <div class="flex justify-between">
+            <div class="text-xl font-bold tracking-tight leading-6 truncate">Sample Status
+            </div>
+            <div>
+                <div class="flex align-items-center">
+                    <span>What is this</span>
+                    <mat-icon class="icon-size-4 ml-1"
+                        matTooltip="In this area, you see sample orders that were delivered within the past 3 months.  This will help you monitor the success of your sample orders."
+                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
                 </div>
             </div>
+        </div>
+
+        <!-- Loader -->
+        <div class="my-5" *ngIf="isLoading">
+            <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
+            'background-color': '#dedede'
+          }">
+            </ngx-skeleton-loader>
+        </div>
+        <div *ngIf="!isLoading">
             <div class="mt-2" *ngIf="!sampleStatus.length">
                 <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
                     <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
@@ -272,20 +282,27 @@
         </div>
     </div>
     <!-- Around This year -->
-    <div class="p-6 bg-card shadow rounded-2xl" *ngIf="!isLoading">
-        <div>
-            <div class="flex justify-between">
-                <div class="text-xl font-bold tracking-tight leading-6 truncate">Around This Time Last Year
-                </div>
-                <div>
-                    <div class="flex align-items-center">
-                        <span>What is this</span>
-                        <mat-icon class="icon-size-4 ml-1"
-                            matTooltip="In this area, you see orders that were placed about 11 months ago.  Here is an opportunity to remind your customers about annual events."
-                            [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                    </div>
+    <div class="p-6 bg-card shadow rounded-2xl">
+        <div class="flex justify-between">
+            <div class="text-xl font-bold tracking-tight leading-6 truncate">Around This Time Last Year
+            </div>
+            <div>
+                <div class="flex align-items-center">
+                    <span>What is this</span>
+                    <mat-icon class="icon-size-4 ml-1"
+                        matTooltip="In this area, you see orders that were placed about 11 months ago.  Here is an opportunity to remind your customers about annual events."
+                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
                 </div>
             </div>
+        </div>
+
+        <div class="my-5" *ngIf="isOtherGeneratorLoader">
+            <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
+            'background-color': '#dedede'
+          }">
+            </ngx-skeleton-loader>
+        </div>
+        <div *ngIf="!isOtherGeneratorLoader">
             <div class="mt-2" *ngIf="!ordersThisYear.length">
                 <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
                     <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
@@ -404,20 +421,28 @@
         </div>
     </div>
     <!-- Keywords -->
-    <div class="p-6 bg-card shadow rounded-2xl" *ngIf="!isLoading">
-        <div>
-            <div class="flex justify-between">
-                <div class="text-xl font-bold tracking-tight leading-6 truncate">Keyword Searches
-                </div>
-                <div>
-                    <div class="flex align-items-center">
-                        <span>What is this</span>
-                        <mat-icon class="icon-size-4 ml-1"
-                            matTooltip="In this area, you can see searches that were conducted on your stores within the last 30 days.  Are your customers getting good search results?  Are you offering what they are looking for?  If you would like more detailed numbers, visit the Keyword Search link at the Store level in admin."
-                            [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                    </div>
+    <div class="p-6 bg-card shadow rounded-2xl">
+        <div class="flex justify-between">
+            <div class="text-xl font-bold tracking-tight leading-6 truncate">Keyword Searches
+            </div>
+            <div>
+                <div class="flex align-items-center">
+                    <span>What is this</span>
+                    <mat-icon class="icon-size-4 ml-1"
+                        matTooltip="In this area, you can see searches that were conducted on your stores within the last 30 days.  Are your customers getting good search results?  Are you offering what they are looking for?  If you would like more detailed numbers, visit the Keyword Search link at the Store level in admin."
+                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
                 </div>
             </div>
+        </div>
+
+        <!-- Loader -->
+        <div class="my-5" *ngIf="isLoading">
+            <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
+            'background-color': '#dedede'
+          }">
+            </ngx-skeleton-loader>
+        </div>
+        <div *ngIf="!isLoading">
             <div class="mt-2" *ngIf="!keywordsData.length">
                 <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
                     <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
@@ -455,22 +480,30 @@
         </div>
     </div>
     <!-- Post Actvivty -->
-    <div class="p-6 bg-card shadow rounded-2xl" *ngIf="!isLoading">
-        <div>
-            <div class="flex justify-between">
-                <div class="text-xl font-bold tracking-tight leading-6 truncate">Post-Sale Activity (<a
-                        href="https://admin.consolidus.com/ssadm/controller/view/system/images/keys-to-success.pdf"
-                        target="_blank">The 5 Keys to a Successful Follow-Up Call</a>)
-                </div>
-                <div>
-                    <div class="flex align-items-center">
-                        <span>What is this</span>
-                        <mat-icon class="icon-size-4 ml-1"
-                            matTooltip="This area is an opportunity to follow up with customers for product/service reviews, or to get referrals from customers.  Orders show up here after clients have received an email asking them for a review of an order that was shipped two weeks ago."
-                            [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                    </div>
+    <div class="p-6 bg-card shadow rounded-2xl">
+        <div class="flex justify-between">
+            <div class="text-xl font-bold tracking-tight leading-6 truncate">Post-Sale Activity (<a
+                    href="https://admin.consolidus.com/ssadm/controller/view/system/images/keys-to-success.pdf"
+                    target="_blank">The 5 Keys to a Successful Follow-Up Call</a>)
+            </div>
+            <div>
+                <div class="flex align-items-center">
+                    <span>What is this</span>
+                    <mat-icon class="icon-size-4 ml-1"
+                        matTooltip="This area is an opportunity to follow up with customers for product/service reviews, or to get referrals from customers.  Orders show up here after clients have received an email asking them for a review of an order that was shipped two weeks ago."
+                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
                 </div>
             </div>
+        </div>
+
+        <!-- Loader -->
+        <div class="my-5" *ngIf="isOtherGeneratorLoader">
+            <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
+            'background-color': '#dedede'
+          }">
+            </ngx-skeleton-loader>
+        </div>
+        <div *ngIf="!isOtherGeneratorLoader">
             <div class="mt-2" *ngIf="!activityData.length">
                 <fuse-alert class="mt-2" [appearance]="'soft'" [type]="'warning'">
                     <mat-icon class="icon-size-5" fuseAlertIcon [svgIcon]="'heroicons_solid:lock-open'">
@@ -669,6 +702,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
+            <!-- Emails -->
             <ng-container *ngIf="emailModalContent && emailModalContent.type != 'survey'">
                 <div class="modal-body" *ngIf="emailModalContent">
                     <div class="my-5" *ngIf="emailModalContent.loader">
@@ -923,28 +957,61 @@
                     </button>
                 </div>
             </ng-container>
+            <!-- Survey -->
             <ng-container *ngIf="emailModalContent &&  emailModalContent.type == 'survey'">
                 <div class="modal-body" *ngIf="emailModalContent">
-                    <!-- <div class="my-5" *ngIf="emailModalContent.loader">
-                    <ngx-skeleton-loader count="5" appearance="line" animation="pulse" [theme]="{ 
+                    <div class="my-5" *ngIf="emailModalContent.loader">
+                        <ngx-skeleton-loader count="5" appearance="line" animation="pulse" [theme]="{ 
                     'background-color': '#dedede'
                   }">
-                    </ngx-skeleton-loader>
-                </div> -->
-                    <div class="alert alert-warning p-3">
-                        This store does not have any surveys defined. <a
-                            [routerLink]="['/apps/stores',emailModalContent.storeID,'surveys']" target="_blank">Click
-                            here</a> to create a survey for this store.
+                        </ngx-skeleton-loader>
                     </div>
+                    <ng-container *ngIf="!emailModalContent.loader">
+                        <div class="alert alert-warning p-3" *ngIf="!emailModalContent?.surveys.length">
+                            This store does not have any surveys defined. <a
+                                [routerLink]="['/apps/stores',emailModalContent.fk_storeID,'surveys']"
+                                target="_blank">Click
+                                here</a> to create a survey for this store.
+                        </div>
+                        <div *ngIf="emailModalContent?.surveys.length">
+                            <div class="row">
+                                <div class="col-12">
+                                    <mat-form-field class="w-full">
+                                        <mat-label>Select a survey</mat-label>
+                                        <mat-select matInput [(ngModel)]="emailModalContent.surveyID">
+                                            <mat-option *ngFor="let survey of emailModalContent.surveys"
+                                                [value]="survey.id">{{survey.name}}</mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-12">
+                                    <mat-label>Subject:</mat-label>
+                                    <mat-form-field class="w-full">
+                                        <input matInput [(ngModel)]="emailModalContent.subject">
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-12">
+                                    <mat-label>Body:</mat-label>
+                                    <ckeditor [config]="editorConfig" [(ngModel)]="emailModalContent.body"></ckeditor>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Footer -->
+                        <div class="col-12" [innerHTML]="emailModalContent.footer"></div>
+                    </ng-container>
+
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer" *ngIf="emailModalContent">
                     <button type="button" data-dismiss="modal"
                         class="mr-2 inline-flex items-center gap-x-1.5 rounded-md bg-red-400 px-2.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-400">
                         <span>Close</span>
                     </button>
-                    <button type="button" data-dismiss="modal" disabled (click)="sendEmailsOrders()"
+                    <button *ngIf="emailModalContent.surveys.length" type="button" (click)="sendEmailsOrders()"
                         class="mr-2 inline-flex items-center gap-x-1.5 rounded-md bg-green-400 px-2.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-400">
-                        <span>Send Survey</span>
+                        <span *ngIf="!emailModalContent?.sendEmailLoader">Send Survey</span>
+                        <mat-progress-spinner *ngIf="emailModalContent?.sendEmailLoader" [diameter]="24"
+                            [mode]="'indeterminate'">
+                        </mat-progress-spinner>
                     </button>
                 </div>
             </ng-container>

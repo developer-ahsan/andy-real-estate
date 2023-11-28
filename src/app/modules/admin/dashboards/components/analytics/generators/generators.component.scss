@@ -13,3 +13,13 @@
 .background-color-feee84 {
     background-color: #feee84 !important;
 }
+
+::ng-deep .mat-select-panel {
+    z-index: 1500;
+    /* Adjust the value based on your modal's z-index */
+}
+
+::ng-deep .cdk-overlay-container {
+    z-index: 1500 !important;
+    /* Adjust the value based on your modal's z-index */
+}

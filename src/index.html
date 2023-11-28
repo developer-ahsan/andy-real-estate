@@ -70,7 +70,12 @@
 
     <script>
         $(document).on('show.bs.modal', '.modal', function () {
-            $(this).appendTo('body');
+            $(this).appendTo('body').css({
+                'z-index': 1050, // Adjust the value as needed
+            });
+            $('.modal-backdrop').appendTo('body').css({
+                'z-index': 1040, // Adjust the value to be less than the modal's z-index
+            });
         });
     </script>
 </body>

@@ -213,7 +213,7 @@
             <div class="col-12">
                 <div class="text-lg font-medium tracking-tight leading-6 truncate border-b">Year To Date
                     Sales
-                    By Quarter, By Store ({{yourPerformanceData.barChartTotal | currency}})</div>
+                    By Quarter, By Store ({{ytDDataMain?.YTD | currency}})</div>
                 <mat-form-field class="w-full mt-2">
                     <mat-select matInput [(ngModel)]="yourPerformanceData.userYTDMonthQuarter"
                         (selectionChange)="barChartData()">

@@ -83,7 +83,7 @@ export class VendorTopOrderComponent implements OnInit, OnDestroy {
       const worksheet = workbook.addWorksheet("Products");
       // Columns
       worksheet.columns = [
-        { header: "Count", key: "CoreCount", width: 10 },
+        { header: "Count", key: "timesOrdered", width: 10 },
         { header: "ID", key: "pk_productID", width: 10 },
         { header: "Name", key: "productName", width: 40 },
         { header: "Number", key: "productNumber", width: 20 }
