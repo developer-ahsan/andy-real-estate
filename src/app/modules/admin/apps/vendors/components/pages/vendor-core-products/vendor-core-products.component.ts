@@ -7,6 +7,7 @@ import { finalize, takeUntil } from 'rxjs/operators';
 import { VendorsService } from '../../vendors.service';
 import { AddColor, AddImprintColor, AddImprintMethod, DeleteColor, DeleteImprintColor, UpdateColor, UpdateImprintColor, UpdateImprintMethod, UpdateLocation } from '../../vendors.types';
 import * as pdfMake from "pdfmake/build/pdfmake";
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-vendor-core-products',
@@ -28,7 +29,8 @@ export class VendorCoreProductsComponent implements OnInit, OnDestroy {
   isLoadMore: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _vendorService: VendorsService
+    private _vendorService: VendorsService,
+    private _router: Router
   ) { }
 
   ngOnInit(): void {
@@ -62,7 +64,7 @@ export class VendorCoreProductsComponent implements OnInit, OnDestroy {
         });
       });
       this.dataSource = this.dataSource.concat(res["data"]);
-      
+
       this.dataSource.forEach((item) => {
         this.products = this.products.concat(item.products);
       });
@@ -112,6 +114,12 @@ export class VendorCoreProductsComponent implements OnInit, OnDestroy {
 
     pdfMake.createPdf(dd).download(`product-list.pdf`);
   }
+
+  navigate() {
+    this._router.navigateByUrl(`/apps/system/core-products`);
+
+  }
+
   /**
      * On destroy
      */
