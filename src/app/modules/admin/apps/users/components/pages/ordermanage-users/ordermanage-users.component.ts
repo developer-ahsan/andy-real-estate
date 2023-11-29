@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
@@ -50,21 +50,21 @@ export class OrderManageUsersComponent implements OnInit, OnDestroy {
 
   initForm() {
     this.addNewUserForm = new FormGroup({
-      userName: new FormControl(''),
-      password: new FormControl(''),
-      email: new FormControl(''),
+      userName: new FormControl('', Validators.required),
+      password: new FormControl('', Validators.required),
+      email: new FormControl('', [Validators.required, Validators.email]),
       firstName: new FormControl(''),
       lastName: new FormControl(''),
       blnFulfillment: new FormControl(false),
       create_order_manage_user: new FormControl(true)
     });
     this.updateUserForm = new FormGroup({
-      userName: new FormControl(''),
-      password: new FormControl(''),
+      userName: new FormControl('', Validators.required),
+      password: new FormControl('', Validators.required),
       firstName: new FormControl(''),
       lastName: new FormControl(''),
       blnFulfillment: new FormControl(false),
-      email: new FormControl(''),
+      email: new FormControl('', [Validators.required, Validators.email]),
       pk_userID: new FormControl(0),
       update_order_manage_user: new FormControl(true)
     });
@@ -144,13 +144,19 @@ export class OrderManageUsersComponent implements OnInit, OnDestroy {
 
   addNewUser() {
     const { userName, password, email, firstName, lastName, blnFulfillment, create_order_manage_user } = this.addNewUserForm.getRawValue();
-    if (userName == '' || password == '' || email == '') {
+    if (userName.trim() == '' || password.trim() == '' || email.trim() == '') {
       this._UsersService.snackBar('Please fill out the required fields');
       return;
     }
     let payload: newOrderManageUser = {
-      userName, password, email, firstName, lastName, blnFulfillment, create_order_manage_user
-    }
+      userName: userName.trim(),
+      password: password.trim(),
+      email: email.trim(),
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      blnFulfillment,
+      create_order_manage_user
+    };
     this.isAddNewUserLoader = true;
     this._UsersService.AddAdminsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
@@ -170,13 +176,20 @@ export class OrderManageUsersComponent implements OnInit, OnDestroy {
   }
   updateUser() {
     const { userName, password, email, firstName, lastName, pk_userID, blnFulfillment, update_order_manage_user } = this.updateUserForm.getRawValue();
-    if (userName == '' || password == '' || email == '') {
+    if (userName.trim() == '' || password.trim() == '' || email.trim() == '') {
       this._UsersService.snackBar('Please fill out the required fields');
       return;
     }
     let payload: updateOrderManageUser = {
-      userName, password, email, firstName, lastName, blnFulfillment, update_order_manage_user, pk_userID
-    }
+      userName: userName.trim(),
+      password: password.trim(),
+      email: email.trim(),
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      blnFulfillment,
+      update_order_manage_user,
+      pk_userID
+    };
     this.isUpdateUserLoader = true;
     this._UsersService.UpdateAdminsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {

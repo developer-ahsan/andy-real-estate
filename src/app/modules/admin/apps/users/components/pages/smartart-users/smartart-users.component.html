@@ -111,18 +111,30 @@
                         <mat-form-field class="w-full">
                             <mat-label>Email (50)* </mat-label>
                             <input matInput type="text" maxlength="50" formControlName="email">
+                            <mat-error *ngIf="addNewUserForm.get('email').hasError('required')">
+                                Email is required
+                            </mat-error>
+                            <mat-error *ngIf="addNewUserForm.get('email').hasError('email')">
+                                Invalid email format
+                            </mat-error>
                         </mat-form-field>
                     </div>
                     <div class="col-12 col-md-6">
                         <mat-form-field class="w-full">
                             <mat-label>UserName (15)* </mat-label>
                             <input matInput type="text" maxlength="15" formControlName="username">
+                            <mat-error *ngIf="addNewUserForm.get('username').hasError('required')">
+                                Username is required
+                            </mat-error>
                         </mat-form-field>
                     </div>
                     <div class="col-12 col-md-6">
                         <mat-form-field class="w-full">
                             <mat-label>Password(15)* </mat-label>
                             <input matInput type="text" maxlength="15" formControlName="password">
+                            <mat-error *ngIf="addNewUserForm.get('password').hasError('required')">
+                                Password is required
+                            </mat-error>
                         </mat-form-field>
                     </div>
                     <div class="col-12 col-md-6">
@@ -249,18 +261,30 @@
                             <mat-form-field class="w-full">
                                 <mat-label>Email (50)* </mat-label>
                                 <input matInput type="text" maxlength="50" formControlName="email">
+                                <mat-error *ngIf="updateUserForm.get('email').hasError('required')">
+                                    Email is required
+                                </mat-error>
+                                <mat-error *ngIf="updateUserForm.get('email').hasError('email')">
+                                    Invalid email format
+                                </mat-error>
                             </mat-form-field>
                         </div>
                         <div class="col-12 col-md-6">
                             <mat-form-field class="w-full">
                                 <mat-label>UserName (15)* </mat-label>
                                 <input matInput type="text" maxlength="15" formControlName="userName">
+                                <mat-error *ngIf="updateUserForm.get('userName').hasError('required')">
+                                    User Name is required
+                                </mat-error>
                             </mat-form-field>
                         </div>
                         <div class="col-12 col-md-6">
                             <mat-form-field class="w-full">
                                 <mat-label>Password(15)* </mat-label>
                                 <input matInput type="text" maxlength="15" formControlName="password">
+                                <mat-error *ngIf="updateUserForm.get('password').hasError('required')">
+                                    Password is required
+                                </mat-error>
                             </mat-form-field>
                         </div>
                         <div class="col-12 col-md-6">
@@ -283,7 +307,7 @@
                         </div>
 
                         <div class="justify-end flex col-12">
-                            <button [disabled]="isUpdateUserLoader" class="min-w-40" mat-stroked-button
+                            <button [disabled]="isUpdateUserLoader || !updateUserForm.valid" class="min-w-40" mat-stroked-button
                                 [matTooltip]="'Update User'" (click)="updateUser()">
                                 <mat-icon svgIcon="heroicons_solid:pencil" *ngIf="!isUpdateUserLoader"></mat-icon>
                                 <span class="ml-2" *ngIf="!isUpdateUserLoader"> Update User </span>

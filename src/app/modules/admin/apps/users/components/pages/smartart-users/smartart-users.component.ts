@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
@@ -65,22 +65,22 @@ export class SmartArtUsersComponent implements OnInit, OnDestroy {
 
   initForm() {
     this.addNewUserForm = new FormGroup({
-      username: new FormControl(''),
-      password: new FormControl(''),
-      email: new FormControl(''),
+      username: new FormControl('', Validators.required),
+      password: new FormControl('', Validators.required),
+      email: new FormControl('', [Validators.required, Validators.email]),
       firstName: new FormControl(''),
       lastName: new FormControl(''),
       bln_master: new FormControl(false),
       add_smartuser: new FormControl(true)
     });
     this.updateUserForm = new FormGroup({
-      userName: new FormControl(''),
-      password: new FormControl(''),
+      userName: new FormControl('', Validators.required),
+      password: new FormControl('', Validators.required),
       firstName: new FormControl(''),
       lastName: new FormControl(''),
       blnMaster: new FormControl(false),
       blnActive: new FormControl(false),
-      email: new FormControl(''),
+      email: new FormControl('', [Validators.required, Validators.email]),
       pk_userID: new FormControl(0),
       update_smartuser: new FormControl(true)
     });
@@ -225,12 +225,18 @@ export class SmartArtUsersComponent implements OnInit, OnDestroy {
 
   addNewUser() {
     const { username, password, email, firstName, lastName, bln_master, add_smartuser } = this.addNewUserForm.getRawValue();
-    if (username == '' || password == '' || email == '') {
+    if (username.trim() == '' || password.trim() == '' || email.trim() == '') {
       this._UsersService.snackBar('Please fill out the required fields');
       return;
     }
     let payload: AddSmartArtUser = {
-      username, password, email, firstName, lastName, bln_master, add_smartuser
+      username: username.trim(),
+      password: password.trim(),
+      email: email.trim(),
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      bln_master,
+      add_smartuser
     }
     this.isAddNewUserLoader = true;
     this._UsersService.AddAdminsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -249,13 +255,21 @@ export class SmartArtUsersComponent implements OnInit, OnDestroy {
   }
   updateUser() {
     const { userName, password, email, firstName, lastName, blnActive, pk_userID, blnMaster, update_smartuser } = this.updateUserForm.getRawValue();
-    if (userName == '' || password == '' || email == '') {
+    if (userName.trim() == '' || password.trim() == '' || email.trim() == '') {
       this._UsersService.snackBar('Please fill out the required fields');
       return;
     }
     let payload: UpdateSmartUser = {
-      userName, password, email, firstName, lastName, update_smartuser, blnActive, pk_userID, blnMaster
-    }
+      userName: userName.trim(),
+      password: password.trim(),
+      email: email.trim(),
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      update_smartuser,
+      blnActive,
+      pk_userID,
+      blnMaster
+    };
     this.isUpdateUserLoader = true;
     this._UsersService.UpdateAdminsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       let arr = [];
