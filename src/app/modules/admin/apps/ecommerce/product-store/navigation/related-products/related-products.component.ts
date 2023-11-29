@@ -92,44 +92,53 @@ export class RelatedProdcutsComponent implements OnInit, OnDestroy {
   selectItem(item: any): void {
     this.selectedProducts = item;
   }
-  addRelatedProducts(item) {
-    // item.addLoader = true;
-    // let payload: AddRelatedProduct = {
-    //   store_product_id: Number(item.pk_storeProductID),
-    // relatedProductID: Number(item.pk_productID),
-    // product_number: string;
-    // product_name: string;
-    // relation_type_id: this.selectedRelation,
-    // storeName: string;
-    // add_related_product: true
-    // }
-    // this._storeService.postStoresProductsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-    //   item.addLoader = false;
-    //   this._storeService.snackBar(res["message"]);
-    //   this._changeDetectorRef.markForCheck();
-    // }, err => {
-    //   item.addLoader = false;
-    //   this._changeDetectorRef.markForCheck();
-    // });
+  addRelatedProducts() {
+    if (!this.selectedProducts) {
+      this._storeService.snackBar('Please select any product.');
+      return;
+    }
+    this.isAddLoader = true;
+    let payload: AddRelatedProduct = {
+      store_product_id: Number(this.selectedProducts.pk_storeProductID),
+      relatedProductID: Number(this.selectedProducts.pk_productID),
+      product_number: this.selectedProducts.productNumber,
+      product_name: this.selectedProducts.productName,
+      relation_type_id: this.selectedRelation,
+      storeName: this.selectedProduct.storeName,
+      add_related_product: true
+    }
+    this._storeService.postStoresProductsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.relatedProduct = this.relatedProduct.filter((item) => item.pk_productID != this.selectedProducts.pk_productID);
+      this.selectedProducts = null;
+      this.isAddLoader = false;
+      this._storeService.snackBar(res["message"]);
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isAddLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
   }
-  deleteRelations(item) {
+  deleteRelations() {
     this.isDelLoader = true;
     let productIDs = [];
     this.currentRelatedProduct.forEach(product => {
-      productIDs.push(Number(product.pk_productID))
+      if (product.selected) {
+        productIDs.push(Number(product.pk_productID));
+      }
     });
     if (productIDs.length == 0) {
       this._storeService.snackBar('Please select any product.');
       return;
     }
     let payload: DeleteRelatedProduct = {
-      storeProductID: Number(item.pk_storeProductID),
+      storeProductID: this.selectedProduct.pk_storeProductID,
       product_id_list: productIDs,
       product_id: this.selectedProduct.fk_productID,
       storeName: this.selectedProduct.storeName,
       delete_related_product: true
     }
     this._storeService.putStoresProductData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.currentRelatedProduct = this.currentRelatedProduct.filter(item => !productIDs.includes(Number(item.pk_productID)));
       this.isDelLoader = false;
       this._storeService.snackBar(res["message"]);
       this._changeDetectorRef.markForCheck();

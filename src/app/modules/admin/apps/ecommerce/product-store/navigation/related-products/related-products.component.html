@@ -13,10 +13,10 @@
                     <div *ngIf="mainScreen == 'Related Products'" class="p-6">
                         <div class="h-60 p-4 border overflow-y-auto mb-2">
                             <ng-container *ngFor="let product of relatedProduct">
-                                <mat-checkbox [checked]="isSelected(product)" (change)="selectItem(product)">
-                                    ({{product.pk_storeProductID}})
+                                <mat-radio-button (change)="selectItem(product)">
+                                    ({{product.pk_storeProductID}}) {{product.productNumber}} -
                                     <span [innerHTML]="product.productName"></span>
-                                </mat-checkbox>
+                                </mat-radio-button>
                                 <br>
                             </ng-container>
                         </div>
@@ -30,8 +30,11 @@
                             </mat-form-field>
                         </div>
                         <!-- Add Relation -->
-                        <button class="min-w-40 rounded-md" mat-flat-button color="primary">
-                            <span>Add Relation</span>
+                        <button class="min-w-40 rounded-md" mat-flat-button color="primary" [disabled]="isAddLoader"
+                            (click)="addRelatedProducts()">
+                            <span *ngIf="!isAddLoader">Add Relation</span>
+                            <mat-progress-spinner *ngIf="isAddLoader" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
                         </button>
                     </div>
                 </div>
@@ -44,6 +47,9 @@
                         </div>
                     </div>
                     <div *ngIf="mainScreen == 'Related Products'" class="p-6">
+                        <div class="alert alert-warning p-3" *ngIf="!currentRelatedProduct.length">
+                            No related products were found
+                        </div>
                         <ng-container *ngFor="let product of currentRelatedProduct">
                             <mat-checkbox [(ngModel)]="product.selected">{{product.productName}}
                                 ({{product.relationTypeName}})</mat-checkbox>
@@ -51,8 +57,9 @@
                         </ng-container>
                         <!-- relations -->
                         <!-- Delete Relation -->
-                        <button class="min-w-40 rounded-md" mat-flat-button color="primary">
-                            <span *ngIf="isDelLoader">Delete Relations</span>
+                        <button class="min-w-40 rounded-md" mat-flat-button color="primary"
+                            [disabled]="isDelLoader || !currentRelatedProduct.length" (click)="deleteRelations()">
+                            <span *ngIf="!isDelLoader">Delete Relations</span>
                             <mat-progress-spinner *ngIf="isDelLoader" [diameter]="24" [mode]="'indeterminate'">
                             </mat-progress-spinner>
                         </button>

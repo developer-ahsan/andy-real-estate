@@ -327,7 +327,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
   addNewUser() {
     const { userName, password, email, firstName, lastName, blnManager, blnSupplier, blnMasterAccount, supplier_id, ip_address, add_admin_user } = this.addNewUserForm.getRawValue();
 
-    if (this._commonService.isValidEmail(email)) {
+    if (!this._commonService.isValidEmail(email)) {
       this._UsersService.snackBar('Please enter a valid email');
       return;
     }
@@ -363,7 +363,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
   }
   updateUser() {
     const { userName, password, email, firstName, lastName, blnManager, blnMaster, blnActive, pk_userID, update_admin_user } = this.updateUserForm.getRawValue();
-    if (this._commonService.isValidEmail(email)) {
+    if (!this._commonService.isValidEmail(email)) {
       this._UsersService.snackBar('Please enter a valid email');
       return;
     }

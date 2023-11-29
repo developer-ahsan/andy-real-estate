@@ -427,6 +427,10 @@ export class GenerateReportComponent implements OnInit {
             if (res["success"]) {
                 this._flpsService.snackBar(res["message"]);
             }
+            this.isGenerateReport = false;
+            setTimeout(() => {
+                this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
             this.isUpdateCommissionLoader = false;
             this._changeDetectorRef.markForCheck();
         }, err => {
