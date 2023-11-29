@@ -225,7 +225,7 @@ export class SmartArtUsersComponent implements OnInit, OnDestroy {
 
   addNewUser() {
     const { username, password, email, firstName, lastName, bln_master, add_smartuser } = this.addNewUserForm.getRawValue();
-    if (username.trim() == '' || password.trim() == '' || email.trim() == '') {
+    if (username.trim() == '' || password.trim() == '' || email.trim() == '' || firstName.trim() == '' || lastName.trim() == '') {
       this._UsersService.snackBar('Please fill out the required fields');
       return;
     }
@@ -255,7 +255,7 @@ export class SmartArtUsersComponent implements OnInit, OnDestroy {
   }
   updateUser() {
     const { userName, password, email, firstName, lastName, blnActive, pk_userID, blnMaster, update_smartuser } = this.updateUserForm.getRawValue();
-    if (userName.trim() == '' || password.trim() == '' || email.trim() == '') {
+    if (userName.trim() == '' || password.trim() == '' || email.trim() == '' || firstName.trim() == '' || lastName.trim() == '') {
       this._UsersService.snackBar('Please fill out the required fields');
       return;
     }

@@ -192,7 +192,7 @@ export class RapidBuildUsersComponent implements OnInit, OnDestroy {
 
   addNewUser() {
     const { userName, password, email, firstName, lastName, blnFullColor, blnMaster, create_rapidbuild_user } = this.addNewUserForm.getRawValue();
-    if (userName.trim() == '' || password.trim() == '' || email.trim() == '') {
+    if (userName.trim() == '' || password.trim() == '' || email.trim() == '' || firstName.trim() == '' || lastName.trim() == '') {
       this._UsersService.snackBar('Please fill out the required fields');
       return;
     }
@@ -225,7 +225,7 @@ export class RapidBuildUsersComponent implements OnInit, OnDestroy {
   }
   updateUser() {
     const { userName, password, email, firstName, lastName, pk_userID, blnFullColor, blnMaster, update_rapidbuild_user } = this.updateUserForm.getRawValue();
-    if (userName.trim() == '' || password.trim() == '' || email.trim() == '') {
+    if (userName.trim() == '' || password.trim() == '' || email.trim() == '' || firstName.trim() == '' || lastName.trim() == '') {
       this._UsersService.snackBar('Please fill out the required fields');
       return;
     }

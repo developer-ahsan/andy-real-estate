@@ -99,8 +99,8 @@ export class RelatedProdcutsComponent implements OnInit, OnDestroy {
     }
     this.isAddLoader = true;
     let payload: AddRelatedProduct = {
-      store_product_id: Number(this.selectedProducts.pk_storeProductID),
-      relatedProductID: Number(this.selectedProducts.pk_productID),
+      store_product_id: Number(this.selectedProduct.pk_storeProductID),
+      relatedProductID: Number(this.selectedProducts.pk_storeProductID),
       product_number: this.selectedProducts.productNumber,
       product_name: this.selectedProducts.productName,
       relation_type_id: this.selectedRelation,
@@ -108,7 +108,9 @@ export class RelatedProdcutsComponent implements OnInit, OnDestroy {
       add_related_product: true
     }
     this._storeService.postStoresProductsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      let relation = this.relationTypes.filter(item => item.pk_relationTypeID == this.selectedRelation);
       this.relatedProduct = this.relatedProduct.filter((item) => item.pk_productID != this.selectedProducts.pk_productID);
+      this.currentRelatedProduct.push({ pk_storeProductID: this.selectedProducts.pk_storeProductID, pk_productID: this.selectedProducts.pk_productID, productName: this.selectedProducts.productName, pk_relationTypeID: this.selectedRelation, relationTypeName: String(relation[0].relationTypeName) });
       this.selectedProducts = null;
       this.isAddLoader = false;
       this._storeService.snackBar(res["message"]);
@@ -121,9 +123,11 @@ export class RelatedProdcutsComponent implements OnInit, OnDestroy {
   deleteRelations() {
     this.isDelLoader = true;
     let productIDs = [];
+    let sProductIDs = [];
     this.currentRelatedProduct.forEach(product => {
       if (product.selected) {
-        productIDs.push(Number(product.pk_productID));
+        productIDs.push(Number(product.pk_storeProductID));
+        sProductIDs.push(Number(product.pk_storeProductID));
       }
     });
     if (productIDs.length == 0) {
@@ -132,13 +136,13 @@ export class RelatedProdcutsComponent implements OnInit, OnDestroy {
     }
     let payload: DeleteRelatedProduct = {
       storeProductID: this.selectedProduct.pk_storeProductID,
-      product_id_list: productIDs,
+      product_id_list: sProductIDs.toString(),
       product_id: this.selectedProduct.fk_productID,
       storeName: this.selectedProduct.storeName,
       delete_related_product: true
     }
     this._storeService.putStoresProductData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.currentRelatedProduct = this.currentRelatedProduct.filter(item => !productIDs.includes(Number(item.pk_productID)));
+      this.currentRelatedProduct = this.currentRelatedProduct.filter(item => !productIDs.includes(Number(item.pk_storeProductID)));
       this.isDelLoader = false;
       this._storeService.snackBar(res["message"]);
       this._changeDetectorRef.markForCheck();

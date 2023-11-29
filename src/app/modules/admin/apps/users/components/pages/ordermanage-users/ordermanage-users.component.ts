@@ -144,7 +144,7 @@ export class OrderManageUsersComponent implements OnInit, OnDestroy {
 
   addNewUser() {
     const { userName, password, email, firstName, lastName, blnFulfillment, create_order_manage_user } = this.addNewUserForm.getRawValue();
-    if (userName.trim() == '' || password.trim() == '' || email.trim() == '') {
+    if (userName.trim() == '' || password.trim() == '' || email.trim() == '' || firstName.trim() == '' || lastName.trim() == '') {
       this._UsersService.snackBar('Please fill out the required fields');
       return;
     }
@@ -176,7 +176,7 @@ export class OrderManageUsersComponent implements OnInit, OnDestroy {
   }
   updateUser() {
     const { userName, password, email, firstName, lastName, pk_userID, blnFulfillment, update_order_manage_user } = this.updateUserForm.getRawValue();
-    if (userName.trim() == '' || password.trim() == '' || email.trim() == '') {
+    if (userName.trim() == '' || password.trim() == '' || email.trim() == '' || firstName.trim() == '' || lastName.trim() == '') {
       this._UsersService.snackBar('Please fill out the required fields');
       return;
     }

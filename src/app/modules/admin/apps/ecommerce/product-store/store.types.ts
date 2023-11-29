@@ -144,7 +144,7 @@ export interface AddRelatedProduct {
 };
 export interface DeleteRelatedProduct {
     storeProductID: number;
-    product_id_list: number[];
+    product_id_list: string;
     storeName: string;
     product_id: number;
     delete_related_product: boolean;

@@ -4,7 +4,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { FLPSService } from '../../flps.service';
-import { applyBlanketCustomerPercentage, newFLPSUser, removeFLPSUser, updateFLPSUser } from '../../flps.types';
+import { applyBlanketCustomerPercentage, bulkCustomerUpdate, newFLPSUser, removeFLPSUser, updateFLPSUser } from '../../flps.types';
 import * as Excel from 'exceljs/dist/exceljs.min.js';
 import moment from 'moment';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
@@ -17,6 +17,7 @@ declare var $: any;
 })
 export class FLPSUserManagementComponent implements OnInit, OnDestroy {
   @ViewChild('removeTerm') removeTerm: ElementRef;
+  @ViewChild('updateBulkModal') updateBulkModal: ElementRef;
 
   @ViewChild('paginator') paginator: MatPaginator;
   @Input() isLoading: boolean;
@@ -601,6 +602,34 @@ export class FLPSUserManagementComponent implements OnInit, OnDestroy {
     this.removeModalData.title = 'Remove FLPS User';
     this.removeModalData.body = 'Are you sure you want to remove this FLPS user?';
     $(this.removeTerm.nativeElement).modal('show');
+  }
+
+  openUpdateBulkCustomerModal() {
+    $(this.updateBulkModal.nativeElement).modal('show');
+  }
+  updateBulkCustomer() {
+    $(this.updateBulkModal.nativeElement).modal('hide');
+    if (Number(this.selectedEmployee) == 0 || !this.selectedBulkStore) {
+      this._flpsService.snackBar('User and store is required');
+      return;
+    }
+    this.updateUserData.bulkLoader = true;
+    let payload: bulkCustomerUpdate = {
+      userID: this.updateUserData.pk_userID,
+      newFLPSUser: Number(this.selectedEmployee),
+      storeID: this.selectedBulkStore,
+      flps_users_bulk_customer_update: true,
+    }
+    this._flpsService.UpdateFlpsData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.updateUserData.bulkLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      this.selectedEmployee = '';
+      this.selectedBulkStore = null;
+      if (res["success"]) {
+        this._flpsService.snackBar(res["message"]);
+      }
+    });
   }
   /**
      * On destroy

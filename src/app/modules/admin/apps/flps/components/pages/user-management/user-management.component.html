@@ -607,9 +607,9 @@
                             </div>
                             <div class="col-12 col-md-2 text-right">
                                 <button class="w-full rounded-md mt-6" mat-button mat-flat-button color="primary"
-                                    [disabled]="isFilterCustomerLoader" (click)="filterCustomers()">
-                                    <span *ngIf="!isFilterCustomerLoader">Update</span>
-                                    <mat-progress-spinner *ngIf="isFilterCustomerLoader" [diameter]="24"
+                                    [disabled]="updateUserData.bulkLoader" (click)="openUpdateBulkCustomerModal()">
+                                    <span *ngIf="!updateUserData.bulkLoader">Update</span>
+                                    <mat-progress-spinner *ngIf="updateUserData.bulkLoader" [diameter]="24"
                                         [mode]="'indeterminate'">
                                     </mat-progress-spinner>
                                 </button>
@@ -710,6 +710,29 @@
                     *ngIf="removeModalData.check == 'main'" (click)="deleteCompany(removeModalData)">OK</button>
                 <button type="button" class="btn bg-gray-700 text-white rounded-md" color="primary"
                     *ngIf="removeModalData.check == 'term'" (click)="deleteTerm(removeModalData)">OK</button>
+                <button type="button" class="btn bg-red-500 text-white border-red-500 rounded-md"
+                    data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" #updateBulkModal>
+    <div class="modal-dialog" role="document" *ngIf="updateUserData">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Bulk Customer Update</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to update all of these customers to this new FLPS user? This cannot be undone.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn bg-gray-700 text-white rounded-md" color="primary"
+                    (click)="updateBulkCustomer()">OK</button>
                 <button type="button" class="btn bg-red-500 text-white border-red-500 rounded-md"
                     data-dismiss="modal">Cancel</button>
             </div>

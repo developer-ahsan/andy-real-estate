@@ -31,6 +31,10 @@ export class ProductOptionsComponent implements OnInit, OnDestroy {
 
   isUpdateLoading: boolean = false;
 
+
+  totalSelectedProds = 0;
+  selectedProdsIDs = [];
+  guideLinesDesc = '';
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _storeService: StoreProductService
@@ -43,7 +47,6 @@ export class ProductOptionsComponent implements OnInit, OnDestroy {
   getStoreProductDetail() {
     this._storeService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.selectedProduct = res["data"][0];
-      this.getProductList(1);
       this.getProductsOptionsData();
     });
   }
@@ -58,129 +61,81 @@ export class ProductOptionsComponent implements OnInit, OnDestroy {
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
-      console.log(res);
+      let list = [];
       if (res["qryProducts"][0].qryProducts) {
         let products = res["qryProducts"][0].qryProducts.split(',,');
-        products.forEach(product => {
-          const [pk_storeProductID, pk_companyID, companyName, productName, isSelected] = product.split('::');
-          if (isSelected == 1) {
-            this.productOptionTotal = Number(this.productOptionTotal) + 1;
-          }
-          this.productsList.push({ pk_storeProductID, pk_companyID, companyName, productName, isSelected })
+        const parsedData = products.map(item => {
+          const details = item.split("::");
+          return {
+            pid: Number(details[0]),
+            id: Number(details[1]),
+            code: details[2],
+            vendor: details[3],
+            productNumber: details[4],
+            productName: details[5],
+            isSelected: Number(details[6])
+          };
         });
+        list = this.reformatDataByCode(parsedData);
       }
-      console.log(this.productOptionList)
-      // this.relationTypes = extractData(res["qryProductRelationTypes"], ',,', 'qryProductRelationTypes');
-      // this.selectedRelation = this.relationTypes.length > 0 ? this.relationTypes[0].pk_relationTypeID : null;
-
-      // this.relatedProduct = extractData(res["qryProducts"], ',,', 'qryProducts');
-
-      // this.currentRelatedProduct = extractData(res["qryRelatedProducts"], ',,', 'qryRelatedProducts');
+      this.productOptionList = list;
+      this.guideLinesDesc = res["qryMasterDescription"][0].optionsGuidelines;
       this._changeDetectorRef.markForCheck();
     });
   }
-  searchKeyword(ev) {
-    const keyword = ev.target.value;
-    this.searchTerm = keyword;
-    if (keyword.length > 0) {
-      this.productListPage = 1;
-      this.getProductList(1);
-    } else {
-      this.productListPage = 1;
-      this.productsList = this.tempProductsList;
-      this.productListTotal = this.tempProductListTotal;
-    }
-  }
-  getProductOptions() {
-    let params = {
-      product_options: true,
-      store_product_id: Number(this.selectedProduct.pk_storeProductID)
-    }
-    this._storeService.commonGetCalls(params).subscribe(res => {
-      this.productOptionTotal = res["totalRecords"];
-      this.productOptionList = res["data"];
-      this.productOptionList.forEach(element => {
-        this.productListTotal = Number(this.productListTotal) - 1;
-        this.tempProductListTotal = Number(this.tempProductListTotal) - 1;
-        element.fk_productID = element.pk_productID;
-        element.selected = true;
-        const index = this.productsList.findIndex(elem => elem.fk_productID == element.pk_productID);
-        this.productsList.splice(index, 1);
-        this.checkedListItems(element);
-      });
-      // this.checkedProductsList = this.productOptionList;
-      this.isLoadingChange.emit(false);
-      this.isLoading = false;
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this.isLoadingChange.emit(false);
-      this.isLoading = false;
-      this._changeDetectorRef.markForCheck();
-    })
-  }
-  getProductList(page) {
-    let params = {
-      product_options_supplier_products: true,
-      page: page,
-      keyword: this.searchTerm,
-      store_id: Number(this.selectedProduct.fk_storeID)
-    }
-    this._storeService.commonGetCalls(params).subscribe(res => {
-      this.productListTotal = res["totalRecords"];
-      this.productsList = res["data"];
-      if (this.searchTerm == '') {
-        this.tempProductListTotal = res["totalRecords"];
-        this.tempProductsList = res["data"];
+  reformatDataByCode(data) {
+    this.totalSelectedProds = 0;
+    const formattedData = {};
+
+    data.forEach(item => {
+      const { code, vendor, ...productDetails } = item;
+      if (!formattedData[code]) {
+        formattedData[code] = { companyID: Number(code), companyName: vendor, products: [] };
       }
-      this.getProductOptions();
-    }, err => {
-      this.isLoadingChange.emit(false);
-      this.isLoading = false;
-      this._changeDetectorRef.markForCheck();
-    })
+      if (productDetails.isSelected == 1) {
+        this.totalSelectedProds++;
+        this.selectedProdsIDs.push(productDetails.pid);
+      }
+      formattedData[code].products.push(productDetails);
+    });
+
+    // Sort the data by vendor in ascending order
+    const sortedData = Object.values(formattedData).sort((a: any, b: any) => {
+      const vendorA = a.companyName.toUpperCase();
+      const vendorB = b.companyName.toUpperCase();
+
+      if (vendorA < vendorB) {
+        return -1;
+      }
+      if (vendorA > vendorB) {
+        return 1;
+      }
+      return 0;
+    });
+
+    return sortedData;
   }
-  getNextData(event) {
-    const { previousPageIndex, pageIndex } = event;
 
-    if (pageIndex > previousPageIndex) {
-      this.productListPage++;
+  selectItem(product) {
+    if (product.isSelected) {
+      this.selectedProdsIDs.push(product.pid);
     } else {
-      this.productListPage--;
-    };
-    this.getProductList(this.productListPage);
-  };
-
-  checkedListItems(item) {
-    let check = this.checkedProductsList.findIndex(element => element.fk_productID == item.fk_productID);
-    if (check < 0) {
-      item.selected = true;
-      this.checkedProductsList.push(item);
-    } else {
-      item.selected = false;
-      this.checkedProductsList.splice(check, 1);
+      this.selectedProdsIDs = this.selectedProdsIDs.filter(id => id !== product.pid);
     }
   }
-
-  updateProductotpions() {
+  updateProductOptions() {
     this.isUpdateLoading = true;
-    let productIDs: number[] = [];
-    this.checkedProductsList.forEach(element => {
-      productIDs.push(element.fk_productID);
-    });
     let payload = {
-      optionalGuidelines: '',
-      product_id: Number(this.selectedProduct.fk_productID),
+      optionalGuidelines: this.guideLinesDesc,
+      productIDs: this.selectedProdsIDs,
+      product_id: this.selectedProduct.fk_productID,
       storeName: this.selectedProduct.storeName,
-      productIDs: productIDs,
-      storeProductID: Number(this.selectedProduct.pk_storeProductID),
+      storeProductID: this.selectedProduct.pk_storeProductID,
       update_product_options: true
     }
     this._storeService.UpdateProductOptions(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.checkedProductsList = [];
       this.isUpdateLoading = false;
-      this._storeService.snackBar('Store product options updated successfully');
-      this.isLoading = true;
-      this.getProductList(1);
+      this._storeService.snackBar(res["message"]);
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isUpdateLoading = false;

@@ -121,10 +121,10 @@
                           User
                         </th>
                         <td mat-cell *matCellDef="let element;let i=index">
-                          <mat-form-field class="min-w-84 mt-2">
-                            <mat-select matInput [(value)]="element.fk_userID" [ngModelOptions]="{standalone: true}"
-                              [(ngModel)]="element.fk_userID">
-                              <mat-option [value]="item.pk_userID" *ngFor="let item of usersData">
+                          <mat-form-field class="w-full mt-2 text-sm">
+                            <mat-select class="text-sm" matInput [(value)]="element.fk_userID"
+                              [ngModelOptions]="{standalone: true}" [(ngModel)]="element.fk_userID">
+                              <mat-option class="text-sm" [value]="item.pk_userID" *ngFor="let item of usersData">
                                 ({{item.pk_userID}}) -
                                 {{item.firstName + ' ' + item.lastName + ' ' + item.email}}</mat-option>
                             </mat-select>
@@ -139,11 +139,12 @@
                           Location
                         </th>
                         <td mat-cell *matCellDef="let element;let i=index">
-                          <mat-form-field class="min-w-44 mt-2">
+                          <mat-form-field class="w-full mt-2 text-sm">
                             <mat-select matInput [ngModelOptions]="{standalone: true}"
                               [(ngModel)]="element.fk_attributeID">
-                              <mat-option [value]="0">No Location</mat-option>
-                              <mat-option [value]="item.pk_attributeID" *ngFor="let item of locationsData">
+                              <mat-option [value]="0" class="text-sm">No Location</mat-option>
+                              <mat-option [value]="item.pk_attributeID" class="text-sm"
+                                *ngFor="let item of locationsData">
                                 {{item.attributeName}}</mat-option>
                             </mat-select>
                           </mat-form-field>

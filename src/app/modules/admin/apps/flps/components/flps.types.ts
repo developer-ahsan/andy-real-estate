@@ -104,6 +104,13 @@ interface markPaidList {
     commissionPercent: number;
 };
 
+export interface bulkCustomerUpdate {
+    userID: number;
+    newFLPSUser: number;
+    storeID: string;
+    flps_users_bulk_customer_update: boolean;
+};
+
 // export interface updateReport {
 //     flps_userID: number;
 //     flpsOrders: FlpsOrders[];
