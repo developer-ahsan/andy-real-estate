@@ -6,6 +6,7 @@ import { VendorsService } from '../../vendors.service';
 import * as Excel from 'exceljs/dist/exceljs.min.js';
 import { FormControl, FormGroup } from '@angular/forms';
 import { AddAdminUser, AddFOBLocation, DeleteAdminUser, RemoveFOBLocation, updateAdminUser } from '../../vendors.types';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-vendor-users',
@@ -66,7 +67,8 @@ export class VendorUsersComponent implements OnInit, OnDestroy {
   ipAddress: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _vendorService: VendorsService
+    private _vendorService: VendorsService,
+    private _commonService: DashboardsService
   ) { }
 
   initForm() {
@@ -171,6 +173,10 @@ export class VendorUsersComponent implements OnInit, OnDestroy {
       this._vendorService.snackBar('Please fill out the required fields');
       return;
     }
+    if (!this._commonService.isValidEmail(email)) {
+      this._vendorService.snackBar('Please enter a valid email');
+      return;
+    }
     let payload: AddAdminUser = {
       firstName, lastName, userName, password, email,
       registerIP: this.ipAddress,
@@ -179,6 +185,13 @@ export class VendorUsersComponent implements OnInit, OnDestroy {
       blnManager: false,
       create_vendor_user: true
     }
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
+    payload = this._commonService.replaceNullSpaces(payload);
+    if (payload.firstName == '' || payload.lastName == '' || payload.userName == '' || payload.password == '' || payload.email == '') {
+      this._vendorService.snackBar('Please fill out the required fields');
+      return;
+    }
+
     this.isAddLoader = true;
     this._vendorService.postVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
@@ -243,7 +256,19 @@ export class VendorUsersComponent implements OnInit, OnDestroy {
       this._vendorService.snackBar('Please fill out the required fields');
       return;
     }
+
     let payload: updateAdminUser = { userID, userName, firstName, lastName, email, password, blnActive, blnManager, blnMasterAccount, update_vendor_user };
+    if (!this._commonService.isValidEmail(email)) {
+      this._vendorService.snackBar('Please enter a valid email');
+      return;
+    }
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
+    payload = this._commonService.replaceNullSpaces(payload);
+    if (payload.firstName == '' || payload.lastName == '' || payload.userName == '' || payload.password == '' || payload.email == '') {
+      this._vendorService.snackBar('Please fill out the required fields');
+      return;
+    }
+
     this.isUpdateLoader = true;
     this._vendorService.putVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {

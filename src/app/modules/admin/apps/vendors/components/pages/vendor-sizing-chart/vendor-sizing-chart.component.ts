@@ -5,6 +5,7 @@ import { finalize, takeUntil } from 'rxjs/operators';
 import { VendorsService } from '../../vendors.service';
 import { FormControl, FormGroup } from '@angular/forms';
 import { AddSizeChart, RemoveSizeChart, UpdateSizeChart } from '../../vendors.types';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 declare var $: any;
 
 @Component({
@@ -54,7 +55,8 @@ export class VendorSizingChartComponent implements OnInit, OnDestroy {
   removeModalData: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _vendorService: VendorsService
+    private _vendorService: VendorsService,
+    private _commonService: DashboardsService
   ) { }
 
   initForm() {
@@ -158,7 +160,13 @@ export class VendorSizingChartComponent implements OnInit, OnDestroy {
       return;
     }
     let payload: AddSizeChart = {
-      name: name?.replace(/'/g, "''"), description: description?.replace(/'/g, "''"), company_id: this.supplierData.pk_companyID, extension: extension, add_size: true
+      name: name, description: description, company_id: this.supplierData.pk_companyID, extension: extension, add_size: true
+    }
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
+    payload = this._commonService.replaceNullSpaces(payload);
+    if (payload.name == '') {
+      this._vendorService.snackBar('Size chart name is required');
+      return;
     }
     this.isAddLoader = true;
     this._vendorService.postVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -241,6 +249,12 @@ export class VendorSizingChartComponent implements OnInit, OnDestroy {
       update_size: true,
       extension: extension,
       chart_id: pk_chartID
+    }
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
+    payload = this._commonService.replaceNullSpaces(payload);
+    if (payload.name == '') {
+      this._vendorService.snackBar('Size chart name is required');
+      return;
     }
     this.isUpdateLoader = true;
     this._vendorService.putVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {

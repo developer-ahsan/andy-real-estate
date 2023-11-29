@@ -72,8 +72,8 @@ export class VendorProductsSummaryComponent implements OnInit, OnDestroy {
     this.getTopOrderProducts(this.page);
   };
 
-  navigate() {
-    this.router.navigateByUrl('/apps/ecommerce/inventory');
+  navigate(item) {
+    this.router.navigateByUrl('/apps/ecommerce/inventory/' + item.pk_productID);
 
   }
 

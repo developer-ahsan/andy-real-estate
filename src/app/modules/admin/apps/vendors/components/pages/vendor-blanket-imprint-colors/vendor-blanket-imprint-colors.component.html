@@ -12,8 +12,8 @@
             <br>
             <span class="text-red-500 mt-1">WARNING: THIS ACTION CANNOT BE UNDONE</span></fuse-alert>
         <mat-form-field class="w-full mt-2">
-            <input matInput [matAutocomplete]="auto" [formControl]="searchColorCtrl" placeholder="Search By Collection"
-                (blur)="onBlur()">
+            <input matInput [matAutocomplete]="auto" [formControl]="searchColorCtrl"
+                placeholder="Select an imprint collection" (blur)="onBlur()">
             <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelected($event)"
                 [displayWith]="displayWith">
                 <mat-option *ngIf="isSearchingColor" class="is-loading">Loading...</mat-option>

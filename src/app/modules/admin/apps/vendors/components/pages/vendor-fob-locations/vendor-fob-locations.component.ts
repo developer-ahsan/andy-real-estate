@@ -199,6 +199,11 @@ export class VendorFOBLocationComponent implements OnInit, OnDestroy {
     }
     let payload: AddFOBLocation = { location_name, supplier_id: this.supplierData.pk_companyID, address, city, state: this.selectedState, zip, add_fob_location }
     payload = this._comonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
+    payload = this._comonService.replaceNullSpaces(payload);
+    if (payload.location_name == '' || payload.address == '' || payload.city == '' || payload.zip == '') {
+      this._vendorService.snackBar('Please fill out the required fields');
+      return;
+    }
     this.isAddLoader = true;
     this._vendorService.postVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
