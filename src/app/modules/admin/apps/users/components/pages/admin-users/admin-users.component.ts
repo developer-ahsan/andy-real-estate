@@ -50,7 +50,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
   isSearching: boolean = false;
   // Emplyees Dropdown
   companies = [];
-  selectedCompany: any;
+  selectedCompany: any = 0;
 
   addCompanies = [];
   addSelectedCompany: any;
@@ -122,8 +122,10 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
     }
     if (this.sessionUser.blnMasterAccount) {
       this.addNewUserForm.patchValue({ supplier_id: 101 });
+      this.selectedCompany = 101;
     } else {
       this.addNewUserForm.patchValue({ supplier_id: 0 });
+      this.selectedCompany = 0;
     }
   }
   ngOnInit(): void {
@@ -137,7 +139,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
   };
 
   onSelected() {
-    if (this.selectedCompany.companyName == 'All') {
+    if (this.selectedCompany == 0) {
       this.dataSource = this.tempDataSource;
       this.page = 1;
       this.totalUsers = this.tempRecords;
@@ -210,7 +212,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
       admin_users: true,
       user_status: 1,
       page: page,
-      company_id: this.selectedCompany.pk_companyID || 0,
+      company_id: this.selectedCompany || 0,
       size: 20
     }
     this._UsersService.getAdminsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -263,7 +265,6 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
       this.companies.push({ companyName: 'All', pk_companyID: 0 });
       const activeSuppliers = companies["data"].filter(element => element.blnActiveVendor);
       this.companies.push(...activeSuppliers);
-      this.selectedCompany = this.companies[0];
       this.addCompanies = activeSuppliers;
       this.initForm();
     });
