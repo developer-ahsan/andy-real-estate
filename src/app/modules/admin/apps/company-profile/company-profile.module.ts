@@ -46,6 +46,7 @@ import { CompanyProfileLocationComponent } from './components/pages/locations/lo
 import { ProfileLogoBankComponent } from './components/pages/logo-bank/logo-bank.component';
 
 
+
 @NgModule({
     declarations: [
         CompaniesDetailsComponent,

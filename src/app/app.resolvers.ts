@@ -149,5 +149,44 @@ export class UserRoleResolver implements Resolve<any>
         let user = this._authService.parseJwt(this._authService.accessToken);
         return this._dashboardService.getUserRole(user.email);
     }
+
+}
+
+
+@Injectable({
+    providedIn: 'root'
+})
+export class StoreStateSupplierResolver implements Resolve<any>
+{
+    /**
+     * Constructor
+     */
+    constructor(
+        private _dashboardService: DashboardsService,
+        private _authService: AuthService,
+    ) {
+    }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Public methods
+    // -----------------------------------------------------------------------------------------------------
+
+    /**
+     * Resolver
+     *
+     * @param route
+     * @param state
+     */
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any> {
+        const storeStateSupplierData = sessionStorage.getItem('storeStateSupplierData');
+        if (storeStateSupplierData) {
+            const parsedData = JSON.parse(storeStateSupplierData);
+            this._dashboardService._allStates.next(parsedData);
+            return of(parsedData);
+        } else {
+            return this._dashboardService.storeStateSupplierData();
+        }
+    }
+
 }
 

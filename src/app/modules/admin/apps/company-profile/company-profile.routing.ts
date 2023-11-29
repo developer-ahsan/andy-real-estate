@@ -24,11 +24,12 @@ export const companyRoutes: Route[] = [
                 }
             },
             {
-                path: 'company-profile',
+                path: 'company-profile-update/:companyId/:storeId',
                 component: CompanyProfileFormComponent,
                 data: {
                     title: 'Comapny Profile Form',
-                    url: 'company-profile'
+                    url: 'company-profile',
+                    update: true
                 }
             },
             {

@@ -1,16 +1,18 @@
-<div class="flex flex-col w-full">
-  <div class="flex flex-row gap-x-5 mt-4 ml-4">
+<ngx-skeleton-loader class="w-full h-full" count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+</ngx-skeleton-loader>
+<div class="flex flex-col w-full" *ngIf="!isLoading">
+  <div *ngIf="isUpdate === true" class="flex flex-row gap-x-5 mt-4 ml-4">
     <button color="primary" class="min-w-40 cursor-pointer" mat-button mat-flat-button (click)="createTicket()">
-      <span >View Locations</span>
+      <span>View Locations</span>
     </button>
 
     <button color="primary" class="min-w-40 cursor-pointer" mat-button mat-flat-button (click)="createTicket()">
-      <span >Logo Bank</span>
+      <span>Logo Bank</span>
     </button>
   </div>
   <div class="rounded-2xl shadow-lg border border-gray-300 bg-card pb-5 m-4">
     <div class="px-4 sm:px-4 lg:px-8 pt-4 w-full">
-      <h2 class="text-xl sm:text-xl font-extrabold mb-3">
+      <h2 *ngIf="this.isUpdate === true" class="text-xl sm:text-xl font-extrabold mb-3">
         Edit Company Profile
       </h2>
       <div [formGroup]="ticketForm">
@@ -27,11 +29,16 @@
           </div>
 
           <div>
-            <mat-form-field class="w-full">
+            <mat-form-field appearance="fill" class="w-full">
               <mat-label>Store *</mat-label>
-              <input matInput formControlName="store">
+              <mat-select formControlName="storeID" disableRipple>
+                <mat-option (click)="setStoreId(option.pk_storeID)" [value]="option.pk_storeID"
+                  *ngFor="let option of storeOptions">
+                  {{option.storeName}}
+                </mat-option>
+              </mat-select>
             </mat-form-field>
-            <div *ngIf="ticketForm.get('store').invalid && ticketForm.get('store').touched"
+            <div *ngIf="ticketForm.get('storeID').invalid && ticketForm.get('storeID').touched"
               class="text-red-600 text-sm">
               Store is required.
             </div>
@@ -51,7 +58,7 @@
           <div>
             <mat-form-field class="w-full">
               <mat-label>Credit Limit</mat-label>
-              <input matInput formControlName="creditLimit">
+              <input min="0" type="number" matInput formControlName="creditLimit">
             </mat-form-field>
           </div>
         </div>
@@ -79,15 +86,24 @@
           </div>
 
           <div>
-            <mat-form-field class="w-full">
+            <mat-form-field appearance="fill" class="w-full">
               <mat-label>State *</mat-label>
-              <input matInput formControlName="state">
+              <mat-select formControlName="state" disableRipple>
+                <!-- (click)="setParams(status.key,'status_id')" -->
+                <mat-option [value]="option.state" *ngFor="let option of stateOptions">
+                  {{option.state}}
+                </mat-option>
+              </mat-select>
             </mat-form-field>
             <div *ngIf="ticketForm.get('state').invalid && ticketForm.get('state').touched"
               class="text-red-600 text-sm">
               State is required.
             </div>
           </div>
+
+
+
+
 
           <div>
             <mat-form-field class="w-full">
@@ -110,9 +126,9 @@
             <div>
               <mat-form-field class="w-full">
                 <mat-label>Contact Name *</mat-label>
-                <input matInput formControlName="contactName">
+                <input matInput formControlName="APContactName">
               </mat-form-field>
-              <div *ngIf="ticketForm.get('contactName').invalid && ticketForm.get('contactName').touched"
+              <div *ngIf="ticketForm.get('APContactName').invalid && ticketForm.get('APContactName').touched"
                 class="text-red-600 text-sm">
                 Contact Name is required.
               </div>
@@ -121,9 +137,9 @@
             <div>
               <mat-form-field class="w-full">
                 <mat-label>AP Email *</mat-label>
-                <input matInput formControlName="apEmail">
+                <input matInput formControlName="APEmail">
               </mat-form-field>
-              <div *ngIf="ticketForm.get('apEmail').invalid && ticketForm.get('apEmail').touched"
+              <div *ngIf="ticketForm.get('APEmail')?.invalid && ticketForm.get('APEmail')?.touched"
                 class="text-red-600 text-sm">
                 APEmail is required.
               </div>
@@ -145,6 +161,10 @@
                 <mat-label>Additional Email</mat-label>
                 <input matInput formControlName="additionalEmail">
               </mat-form-field>
+              <div *ngIf="ticketForm.get('additionalEmail').invalid && ticketForm.get('additionalEmail').touched"
+                class="text-red-600 text-sm">
+                Remit Email is required.
+              </div>
             </div>
 
             <div>
@@ -185,7 +205,7 @@
             <div>
               <mat-form-field appearance="fill" class="w-full">
                 <mat-label>Sales Tax Exampt</mat-label>
-                <mat-select formControlName="salesTaxExampt" disableRipple>
+                <mat-select formControlName="blnSalesTaxExempt" disableRipple>
                   <!-- (click)="setParams(status.key,'status_id')" -->
                   <mat-option [value]="option" *ngFor="let option of taxExamptOptions">
                     {{option}}
@@ -199,8 +219,8 @@
         </div>
 
         <div class="flex flex-col gap-y-3 sm:flex-row sm:gap-x-10">
-          <mat-checkbox formControlName="chargeCode">PO or Charge Code Required</mat-checkbox>
-          <mat-checkbox formControlName="mvmt">GovMVMT Co-op</mat-checkbox>
+          <mat-checkbox formControlName="blnPORequired">PO or Charge Code Required</mat-checkbox>
+          <mat-checkbox formControlName="blnGovMVMTCoop">GovMVMT Co-op</mat-checkbox>
         </div>
 
 
@@ -222,18 +242,20 @@
 
 
         <div class="flex width full justify-between">
-          <button color="primary" class="sm:min-w-40 min-w-24 sm:text-md text-sm cursor-pointer" mat-button mat-flat-button (click)="createTicket()"
-            [disabled]="ticketForm.invalid || isCreateTicketLoader">
-            <span *ngIf="!isCreateTicketLoader">Update Company Profile</span>
+          <button color="primary" class="sm:min-w-40 min-w-24 sm:text-md text-sm cursor-pointer" mat-button
+            mat-flat-button (click)="updateCompanyProfile()" [disabled]="ticketForm.invalid || isCreateTicketLoader">
+            <span *ngIf="!isCreateTicketLoader">
+              <span *ngIf="isUpdate">Update Company Profile</span>
+              <span *ngIf="!isUpdate">Create Company Profile</span>
+            </span>
             <mat-progress-spinner *ngIf="isCreateTicketLoader" [diameter]="24" [mode]="'indeterminate'">
             </mat-progress-spinner>
           </button>
 
-          <button class="sm:min-w-40 min-w-24 sm:text-md text-sm bg-red-500 text-white cursor-pointer" mat-button mat-flat-button
-            (click)="createTicket()" [disabled]="ticketForm.invalid || isCreateTicketLoader">
-            <span *ngIf="!isCreateTicketLoader" class="text-white">Remove</span>
-            <mat-progress-spinner *ngIf="isCreateTicketLoader" [diameter]="24" [mode]="'indeterminate'">
-            </mat-progress-spinner>
+          <button *ngIf="isUpdate === true"
+            class="sm:min-w-40 min-w-24 sm:text-md text-sm bg-red-500 text-white cursor-pointer" mat-button
+            mat-flat-button (click)="openRemoveModal()">
+            <span class="text-white">Remove</span>
           </button>
         </div>
 
@@ -281,9 +303,10 @@
         JPG, PNG, DOC, PDF only
       </div>
 
-      <button color="primary" class="min-w-40 cursor-pointer mt-2" mat-button mat-flat-button [disabled]="false">
+      <button (click)="addAttachment()" color="primary" class="min-w-40 cursor-pointer mt-2" mat-flat-button 
+      [disabled]="attachmentName?.length == 0 || files?.length == 0">
         <span class="text-white">Add Attachment</span>
-        <mat-progress-spinner *ngIf="isCreateTicketLoader" [diameter]="24" [mode]="'indeterminate'">
+        <mat-progress-spinner *ngIf="imageUploadLoader" [diameter]="24" [mode]="'indeterminate'">
         </mat-progress-spinner>
       </button>
 
@@ -292,4 +315,25 @@
 
 
 
+</div>
+
+
+<div class="modal" tabindex="-1" role="dialog" #removeCompanyProfile>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Remove Company Profile</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to remove this Company Profile? This cannot be undone.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="deleteCompanyProfile()">Yes</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
 </div>
