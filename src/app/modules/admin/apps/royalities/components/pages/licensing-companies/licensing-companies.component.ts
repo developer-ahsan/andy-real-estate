@@ -354,15 +354,20 @@ export class LicensingCompaniesComponent implements OnInit, OnDestroy {
   }
   updateSubcategories(item) {
     let subCategories = [];
-    item.subCategories.forEach(element => {
-      // if (!element.name || !element.code) {
-      //   this._RoyaltyService.snackBar('Please fill out the required fields');
-      //   return;
-      // }
-      subCategories.push(
-        { sub_category_id: element.pk_licensingTermSubCategoryID, name: element.name?.replace(/'/g, "''"), code: element.code?.replace(/'/g, "''") }
-      )
-    });
+    for (const element of item.subCategories) {
+      element.code = element.code.trim();
+
+      if (!element.name.trim()) {
+        this._RoyaltyService.snackBar('Please fill out the name field');
+        return;
+      }
+
+      subCategories.push({
+        sub_category_id: element.pk_licensingTermSubCategoryID,
+        name: element.name?.replace(/'/g, "''"),
+        code: element.code?.replace(/'/g, "''")
+      });
+    }
     let payload: UpdateSubCategories = {
       licensing_term_id: item.pk_licensingTermID,
       sub_categories: subCategories,
