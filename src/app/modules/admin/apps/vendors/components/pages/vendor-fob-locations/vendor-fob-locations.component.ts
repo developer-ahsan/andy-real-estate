@@ -193,11 +193,19 @@ export class VendorFOBLocationComponent implements OnInit, OnDestroy {
   // Add New Location
   addNewLocation() {
     const { location_name, address, city, zip, add_fob_location } = this.addLocationForm.getRawValue();
-    if (location_name == '' || address == '' || city == '' || zip == '') {
+    if (location_name.trim() == '' || address.trim() == '' || city.trim() == '' || zip.trim() == '') {
       this._vendorService.snackBar('Please fill out the required fields');
       return;
     }
-    let payload: AddFOBLocation = { location_name, supplier_id: this.supplierData.pk_companyID, address, city, state: this.selectedState, zip, add_fob_location }
+    let payload: AddFOBLocation = {
+      location_name: location_name.trim(),
+      supplier_id: this.supplierData.pk_companyID,
+      address: address.trim(),
+      city: city.trim(),
+      state: this.selectedState,
+      zip: zip.trim(),
+      add_fob_location
+    };
     payload = this._comonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
     payload = this._comonService.replaceNullSpaces(payload);
     if (payload.location_name == '' || payload.address == '' || payload.city == '' || payload.zip == '') {
