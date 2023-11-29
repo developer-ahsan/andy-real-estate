@@ -323,6 +323,8 @@ export class RapidBuildUsersComponent implements OnInit, OnDestroy {
           } else {
             element.checked = false;
           }
+        } else {
+          element.checked = false;
         }
         this.allStores.push(element);
       });
