@@ -18,7 +18,7 @@
         </mat-form-field>
         <mat-form-field class="w-full" *ngIf="!blnActive">
             <mat-label>Reason for disabling</mat-label>
-            <input matInput placeholder="Reason for disabling" [(ngModel)]="disabledReason">
+            <input matInput placeholder="Reason for disabling" [(ngModel)]="supplierData.disabledReason">
         </mat-form-field>
         <div class="text-right">
             <button mat-stroked-button class="min-w-40" (click)="updateSettings()" [disabled]="isUpdateLoader">

@@ -43,7 +43,7 @@ export class VendorStatusComponent implements OnInit, OnDestroy {
     let payload: updateVendorStatus = {
       companyID: this.supplierData.pk_companyID,
       blnActiveVendor: this.blnActive,
-      disabledReason: this.disabledReason,
+      disabledReason: this.supplierData.disabledReason,
       update_vendor_status: true
     }
     payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
