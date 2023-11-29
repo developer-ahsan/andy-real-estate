@@ -7,6 +7,7 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { CompaniesService } from '../../companies.service';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
+import { ActivatedRoute, Router } from '@angular/router';
 @Component({
   selector: 'app-company-profile',
   templateUrl: './company-profile.component.html',
@@ -41,7 +42,8 @@ export class CompanyProfileComponent implements OnInit, OnDestroy {
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _coampnyService: CompaniesService,
-    private _commonService: DashboardsService
+    private _commonService: DashboardsService,
+    private router: Router,
   ) { }
 
   ngOnInit(): void {
@@ -51,6 +53,9 @@ export class CompanyProfileComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.getCompanies(1, 'get');
   };
+
+  
+  
   initialize() {
     this.addCompanyForm = new FormGroup({
       companyName: new FormControl('', Validators.required),
@@ -89,7 +94,6 @@ export class CompanyProfileComponent implements OnInit, OnDestroy {
     this._coampnyService.States$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.allStates = res["data"];
     });
-
   }
   getCompanies(page, type) {
     if (page == 1) {
@@ -148,6 +152,10 @@ export class CompanyProfileComponent implements OnInit, OnDestroy {
   }
   displayWithStores(value: any) {
     return value?.storeName;
+  }
+
+  navigateToUpdate(data:any) {
+    this.router.navigateByUrl(`/apps/companies/company-profile-update/${data.pk_companyProfileID}/${data.fk_storeID}`);
   }
 
   /**

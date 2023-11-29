@@ -61,6 +61,7 @@ export const environment = {
     storeNewUrl: "https://consolidusapi.azure-api.net/stores-api/stores",
     storeNewUrlRapidBuild: "https://consolidusapi.azure-api.net/stores-api/rapid_build",
     products: "https://consolidusapi.azure-api.net/products",
+    companies: "https://consolidusapi.azure-api.net/companies",
     dashboard: "https://consolidusapi.azure-api.net/main_dashboard",
     royalties: "https://consolidusapi.azure-api.net/royalties",
     storeProducts: "https://consolidusapi.azure-api.net/stores-api/store_products",
