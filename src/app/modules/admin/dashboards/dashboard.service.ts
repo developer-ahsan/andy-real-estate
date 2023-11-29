@@ -17,6 +17,8 @@ export class DashboardsService {
     public _allStores: BehaviorSubject<any> = new BehaviorSubject(null);
     public _allSuppliers: BehaviorSubject<any> = new BehaviorSubject(null);
     public _userRole: BehaviorSubject<any> = new BehaviorSubject(null);
+    public _allStates: BehaviorSubject<any> = new BehaviorSubject(null);
+
 
     /**
      * Constructor
@@ -60,6 +62,10 @@ export class DashboardsService {
     }
     get userRole$(): Observable<any> {
         return this._userRole.asObservable();
+    }
+
+    get userStates$(): Observable<any> {
+        return this._allStates.asObservable();
     }
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
@@ -139,6 +145,21 @@ export class DashboardsService {
             })
         );
     }
+
+    storeStateSupplierData(): Observable<any> {
+        sessionStorage.removeItem('storeStateSupplierData');
+        let params = {
+            stores_suppliers_states:true
+        }
+        return this._httpClient.get(environment.dashboard, { params: params }).pipe(
+            retry(3),
+            tap((response: any) => {
+                sessionStorage.setItem('storeStateSupplierData', JSON.stringify(response));
+                this._allStates.next(response);
+            })
+        );
+    }
+
     getSuppliersData(): Observable<any> {
         sessionStorage.removeItem('suppliersdata');
         let params = {

@@ -154,11 +154,19 @@ export class CompaniesService {
             }
         })
     };
-    getProductsData(params): Observable<any[]> {
-        return this._httpClient.get<any[]>(environment.products, {
+    getCompaniesData(params): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.companies, {
             params: params
         });
     };
+
+     // Common put Call
+    UpdateCompaniesData(payload) {
+        const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+        return this._httpClient.put(
+            environment.companies, payload, { headers });
+    };
+
     getMultiColorValue(two, three, four, five): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.products, {
             params: {
@@ -287,16 +295,16 @@ export class CompaniesService {
         });
     };
     // Post Calls
-    postVendorsData(payload) {
+    postCompaniesData(payload) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.post(
-            environment.vendors, payload, { headers });
+            environment.companies, payload, { headers });
     };
     // Put Calls
-    putVendorsData(payload) {
+    putCompaniesData(payload) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(
-            environment.vendors, payload, { headers });
+            environment.companies, payload, { headers });
     };
     // All Vendors Suppliers
     getAllvendorsSuppliers(): Observable<any[]> {
