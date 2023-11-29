@@ -2,23 +2,30 @@
     <div class="w-full">
         <div>
             <div class="bg-card shadow p-5">
-                <div class="row">
-                    <div class="col-12">
+
+                <form [formGroup]="emailForm" (ngSubmit)="addNewUser()">
+                    <div class="row">
+                      <div class="col-12">
                         <mat-form-field class="w-full">
-                            <mat-label>Email *</mat-label>
-                            <input matInput placeholder="Add an Email" [(ngModel)]="ngEmail">
+                          <mat-label>Email *</mat-label>
+                          <input matInput placeholder="Add an Email" formControlName="email">
+                          <mat-error *ngIf="emailForm.get('email').hasError('required')">
+                            Email is required
+                          </mat-error>
+                          <mat-error *ngIf="emailForm.get('email').hasError('email')">
+                            Invalid email format
+                          </mat-error>
                         </mat-form-field>
                         <div class="text-right">
-                            <button mat-stroked-button class="min-w-40" [disabled]="isAddNewCommentors"
-                                (click)="addNewUser()">
-                                <span *ngIf="!isAddNewCommentors">Add Email</span>
-                                <mat-progress-spinner *ngIf="isAddNewCommentors" [diameter]="24"
-                                    [mode]="'indeterminate'">
-                                </mat-progress-spinner>
-                            </button>
+                          <button mat-stroked-button class="min-w-40" [disabled]="!emailForm.valid">
+                            <span>Add Email</span>
+                          </button>
                         </div>
+                      </div>
                     </div>
-                </div>
+                  </form>
+
+
                 <div class="p-5" *ngIf="isLoading">
                     <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
                         'background-color': '#dedede'
