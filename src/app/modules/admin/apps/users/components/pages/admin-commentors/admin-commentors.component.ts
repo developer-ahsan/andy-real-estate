@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
@@ -23,17 +23,23 @@ export class AdminCommentorsComponent implements OnInit, OnDestroy {
   tempRecords = 0;
   page = 1;
 
+  emailForm: FormGroup;
+
   ngEmail = '';
   isAddNewCommentors: boolean = false;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _UsersService: UsersService
+    private _UsersService: UsersService,
+    private formBuilder: FormBuilder
   ) { }
 
   ngOnInit(): void {
     this.isLoading = true;
     this.getAdminCommentors(1, 'get');
+    this.emailForm = this.formBuilder.group({
+      email: ['', [Validators.required, Validators.email]]
+    });
   };
   getAdminCommentors(page, type) {
     let params = {
@@ -73,7 +79,12 @@ export class AdminCommentorsComponent implements OnInit, OnDestroy {
   };
 
   addNewUser() {
-    if (!this.ngEmail) {
+
+    if (!this.emailForm.valid) {
+      return;
+    }
+    const email = this.emailForm.get('email').value;
+    if (email.trim().length === 0) {
       this._UsersService.snackBar('Email field is required');
       return;
     }
@@ -90,6 +101,8 @@ export class AdminCommentorsComponent implements OnInit, OnDestroy {
         this._UsersService.snackBar(res["message"]);
         this.isAddNewCommentors = false;
         this._changeDetectorRef.markForCheck();
+        this.emailForm.reset();
+        this.emailForm.get('email').setErrors(null);
       }
     }, err => {
       this.isAddNewCommentors = false;
