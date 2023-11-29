@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
@@ -34,6 +34,7 @@ export class ProductQuoteComponent implements OnInit, OnDestroy {
   isImageSaved: boolean;
   cardImageBase64 = "";
   extData: any;
+  @ViewChild('fileInputImage') fileInputImage: ElementRef;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -109,6 +110,7 @@ export class ProductQuoteComponent implements OnInit, OnDestroy {
         duration: 3500
       });
       this.images = null;
+      this.fileInputImage.nativeElement.value = '';
       return;
     };
 
@@ -206,6 +208,8 @@ export class ProductQuoteComponent implements OnInit, OnDestroy {
         this.imagesArray.pop();
         this.imageDeleteLoader = false;
         this._systemService.snackBar('Image Removed Successfully');
+        this.images = null;
+
         this.updateExtension(this.extData, 'delete')
         this._changeDetectorRef.markForCheck();
       }, err => {

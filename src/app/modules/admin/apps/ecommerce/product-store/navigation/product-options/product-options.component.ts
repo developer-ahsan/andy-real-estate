@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { StoreProductService } from '../../store.service';
 
 @Component({
@@ -44,6 +44,39 @@ export class ProductOptionsComponent implements OnInit, OnDestroy {
     this._storeService.product$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.selectedProduct = res["data"][0];
       this.getProductList(1);
+      this.getProductsOptionsData();
+    });
+  }
+  getProductsOptionsData() {
+    let params = {
+      product_options_all_calls: true,
+      store_id: this.selectedProduct.fk_storeID,
+      store_product_id: this.selectedProduct.pk_storeProductID,
+      product_id: this.selectedProduct.fk_productID
+    }
+    this._storeService.commonGetCalls(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      console.log(res);
+      if (res["qryProducts"][0].qryProducts) {
+        let products = res["qryProducts"][0].qryProducts.split(',,');
+        products.forEach(product => {
+          const [pk_storeProductID, pk_companyID, companyName, productName, isSelected] = product.split('::');
+          if (isSelected == 1) {
+            this.productOptionTotal = Number(this.productOptionTotal) + 1;
+          }
+          this.productsList.push({ pk_storeProductID, pk_companyID, companyName, productName, isSelected })
+        });
+      }
+      console.log(this.productOptionList)
+      // this.relationTypes = extractData(res["qryProductRelationTypes"], ',,', 'qryProductRelationTypes');
+      // this.selectedRelation = this.relationTypes.length > 0 ? this.relationTypes[0].pk_relationTypeID : null;
+
+      // this.relatedProduct = extractData(res["qryProducts"], ',,', 'qryProducts');
+
+      // this.currentRelatedProduct = extractData(res["qryRelatedProducts"], ',,', 'qryRelatedProducts');
+      this._changeDetectorRef.markForCheck();
     });
   }
   searchKeyword(ev) {

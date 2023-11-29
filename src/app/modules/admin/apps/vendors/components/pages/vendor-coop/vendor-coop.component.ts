@@ -227,6 +227,11 @@ export class VendorCoopComponent implements OnInit, OnDestroy {
     }
     let payload: AddCoops = { coopName: coopName, company_id: this.supplierData.pk_companyID, coopExpDay, pricing: pricing, ltm: ltm, setups: setups, productionTime: productionTime, add_coop }
     payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
+    payload = this._commonService.replaceNullSpaces(payload);
+    if (payload.coopName == '') {
+      this._vendorService.snackBar('Coop name is required');
+      return;
+    }
     this.isAddLoader = true;
     this._vendorService.postVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
@@ -344,6 +349,13 @@ export class VendorCoopComponent implements OnInit, OnDestroy {
       return;
     }
     let payload: UpdateCoops = { coOp_id: Number(coOp_id), coopName, coopExpDay, pricing, ltm, setups, productionTime, update_coop };
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
+    payload = this._commonService.replaceNullSpaces(payload);
+    if (payload.coopName == '') {
+      this._vendorService.snackBar('Coop name is required');
+      return;
+    }
+
     this.isUpdateLoader = true;
     this._vendorService.putVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {

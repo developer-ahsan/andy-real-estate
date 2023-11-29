@@ -6,6 +6,7 @@ import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { VendorsService } from '../../vendors.service';
 import { updateCompanySettings, updateVendorStatus } from '../../vendors.types';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-vendor-status',
@@ -20,9 +21,11 @@ export class VendorStatusComponent implements OnInit, OnDestroy {
   blnActive: boolean = false;
   isUpdateLoader: boolean = false;
   supplierData: any;
+  disabledReason: '';
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _vendorService: VendorsService
+    private _vendorService: VendorsService,
+    private _commonService: DashboardsService
   ) { }
 
   ngOnInit(): void {
@@ -40,12 +43,14 @@ export class VendorStatusComponent implements OnInit, OnDestroy {
     let payload: updateVendorStatus = {
       companyID: this.supplierData.pk_companyID,
       blnActiveVendor: this.blnActive,
-      disabledReason: '',
+      disabledReason: this.disabledReason,
       update_vendor_status: true
     }
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
     this.isUpdateLoader = true;
     this._vendorService.putVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.supplierData.blnActiveVendor = this.blnActive;
+      this.disabledReason = '';
       if (res) {
         this._vendorService.snackBar(res["message"]);
       }

@@ -135,13 +135,21 @@ export interface AddVirtualProofImage { store_product_id: number; blnStore: bool
 
 export interface AddRelatedProduct {
     store_product_id: number;
-    product_id: number;
+    relatedProductID: number;
     product_number: string;
     product_name: string;
     relation_type_id: string;
     storeName: string;
     add_related_product: boolean;
 };
+export interface DeleteRelatedProduct {
+    storeProductID: number;
+    product_id_list: number[];
+    storeName: string;
+    product_id: number;
+    delete_related_product: boolean;
+};
+
 export interface removeStoreProduct {
     storeProductID: number;
     payload: any; // email, password, secretKey = 'remove_from_store'

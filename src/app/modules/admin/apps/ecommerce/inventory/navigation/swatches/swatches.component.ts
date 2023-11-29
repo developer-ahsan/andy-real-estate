@@ -121,6 +121,7 @@ export class SwatchesComponent implements OnInit, OnDestroy {
           verticalPosition: 'bottom',
           duration: 3500
         });
+        this.images = null;
         this.fileInputImage.nativeElement.value = '';
         return;
       };
@@ -132,6 +133,7 @@ export class SwatchesComponent implements OnInit, OnDestroy {
           duration: 3500
         });
         this.fileInputImage.nativeElement.value = '';
+        this.images = null;
         return;
       };
 
@@ -156,6 +158,7 @@ export class SwatchesComponent implements OnInit, OnDestroy {
           const temp = Math.random();
           this.imagesArray.push(`${environment.productMedia}/Swatch/${pk_productID}/${pk_productID}.jpg?${temp}`);
 
+          this.images = null;
           this.fileInputImage.nativeElement.value = '';
           // Mark for check
           this._changeDetectorRef.markForCheck();
@@ -185,6 +188,7 @@ export class SwatchesComponent implements OnInit, OnDestroy {
       .subscribe((response) => {
         this.imagesArray.pop();
         this.imageDeleteLoader = false;
+        this.images = null;
         this._systemService.snackBar('Image Removed Successfully');
         this._changeDetectorRef.markForCheck();
       }, err => {
