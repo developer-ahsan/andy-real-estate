@@ -127,12 +127,27 @@ export class ProductReviewsComponent implements OnInit, OnDestroy {
       });
   }
   updateProductReview() {
-    this.isUpdateLoader = true;
     const { name, date, rating, comment, response, blnActive, pk_reviewID } = this.updateProductReviewForm.getRawValue();
+
+    if (name.trim() === '' || date.trim() === '') {
+      this._storeService.snackBar('Please fill all required fields');
+      return;
+    }
+
     let payload: UpdateReview = {
-      name, date, rating, comment, response, blnActive, pk_reviewID, storeProductId: this.editData.fk_storeProductID, update_review: true
+      name:name.trim(),
+      date,
+      rating,
+      comment:comment.trim(),
+      response:response.trim(),
+      blnActive,
+      pk_reviewID,
+      storeProductId:
+        this.editData.fk_storeProductID,
+      update_review: true
     };
-    this._storeService.putStoresData(payload)
+    this.isUpdateLoader = true;
+    this._storeService.putStoresData(this.replaceSingleQuotesWithDoubleSingleQuotes(payload))
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         if (response["success"] === true) {
@@ -152,12 +167,24 @@ export class ProductReviewsComponent implements OnInit, OnDestroy {
       })
   }
   addProductReview() {
-    this.isAddLoader = true;
     const { name, date, rating, comment, company } = this.productAddReviewForm.getRawValue();
+
+    if (name.trim() === '' || company.trim() === '') {
+      this._storeService.snackBar('Please fill all required fields');
+      return;
+    }
+
     let payload: AddReview = {
-      name, date, rating, comment, storeProductId: this.selectedProduct.pk_storeProductID, add_review: true
+      name: name.trim(),
+      date,
+      rating,
+      comment: comment.trim(),
+      storeProductId:
+        this.selectedProduct.pk_storeProductID,
+      add_review: true
     };
-    this._storeService.postStoresData(payload)
+    this.isAddLoader = true;
+    this._storeService.postStoresData(this.replaceSingleQuotesWithDoubleSingleQuotes(payload))
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         if (response["success"] === true) {
@@ -171,6 +198,15 @@ export class ProductReviewsComponent implements OnInit, OnDestroy {
         this.isAddLoader = false;
         this._changeDetectorRef.markForCheck();
       })
+  }
+
+  replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+        obj[key] = obj[key].replace(/'/g, "''");
+      }
+    }
+    return obj;
   }
   /**
      * On destroy
