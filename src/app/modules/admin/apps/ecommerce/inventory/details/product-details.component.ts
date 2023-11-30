@@ -19,6 +19,7 @@ import moment from "moment";
 import { MatSlideToggleChange } from "@angular/material/slide-toggle";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { StoreProductService } from "../../product-store/store.service";
+import { environment } from "environments/environment";
 
 @Component({
   selector: "app-product-details",
@@ -40,6 +41,8 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   selectedIndex: string = "Name & Description";
   not_available: string = "N/A";
   last_updated = "";
+
+  isImageExists: boolean = false;
 
   // Sidebar stuff
   drawerMode: "over" | "side" = "side";
@@ -120,7 +123,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
         const productId = res.id;
         this._inventoryService.product$
           .pipe(takeUntil(this._unsubscribeAll))
-          .subscribe((details) => {
+          .subscribe((details:any) => {
             if (details) {
               this.last_updated = details["data"][0]?.lastUpdatedDate
                 ? moment.utc(details["data"][0]?.lastUpdatedDate).format("lll")
@@ -128,6 +131,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
               this.isProductFetched = false;
 
               this.selectedProduct = details["data"][0];
+              this.checkImageExist()
               const { fk_supplierID } = this.selectedProduct;
 
               this.routes = this._inventoryService.navigationLabels;
@@ -289,6 +293,21 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   backToProductsScreen(): void {
     this.isLoading = true;
     this._router.navigate(["/apps/ecommerce/inventory"]);
+  }
+
+  checkImageExist() {
+    const {pk_storeProductID} =this.selectedProduct;
+    const url = `https://assets.consolidus.com/globalAssets/Products/HiRes/${pk_storeProductID}.jpg`
+    const img = new Image();
+    img.src = url;
+    img.onload = () => {
+      this.isImageExists = true;
+      this._changeDetectorRef.markForCheck();
+    };
+    img.onerror = () => {
+      this.isImageExists = false;
+      this._changeDetectorRef.markForCheck();
+    };
   }
 
   /**
