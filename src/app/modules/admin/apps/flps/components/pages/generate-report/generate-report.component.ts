@@ -6,6 +6,7 @@ import { debounceTime, distinctUntilChanged, filter, finalize, map, switchMap, t
 import { FLPSService } from '../../flps.service';
 import * as Excel from 'exceljs/dist/exceljs.min.js';
 import { updateReport } from '../../flps.types';
+declare var $: any;
 
 @Component({
     selector: 'app-generate-report',
@@ -14,6 +15,7 @@ import { updateReport } from '../../flps.types';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GenerateReportComponent implements OnInit {
+    @ViewChild('updateCommissionAlert') updateCommissionAlert: ElementRef;
     planBillingForm: FormGroup;
     plans: any[];
     @Input() isLoading: boolean;
@@ -376,6 +378,9 @@ export class GenerateReportComponent implements OnInit {
             });
 
         });
+    }
+    openUpdateCommissionAlert() {
+        $(this.updateCommissionAlert.nativeElement).modal('show');
     }
     updateFlPSCommission() {
         this.isUpdateCommissionLoader = true;
