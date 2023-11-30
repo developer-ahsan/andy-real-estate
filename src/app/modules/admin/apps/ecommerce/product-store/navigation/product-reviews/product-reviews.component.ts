@@ -305,7 +305,7 @@ export class ProductReviewsComponent implements OnInit, OnDestroy {
     };
     this.productViewLoader = true;
 
-    this._storeService.postStoresData(this.replaceSingleQuotesWithDoubleSingleQuotes(payload))
+    this._storeService.postStoresProductsData(this.replaceSingleQuotesWithDoubleSingleQuotes(payload))
     .pipe(takeUntil(this._unsubscribeAll))
     .subscribe((response: any) => {
       if (response["success"] === true) {

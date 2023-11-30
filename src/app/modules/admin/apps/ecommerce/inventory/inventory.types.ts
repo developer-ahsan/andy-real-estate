@@ -71,6 +71,7 @@ export interface ProductsDetails {
     fk_supplierID?: number;
     RowNumber: number;
     TotalRequests: number;
+    pk_storeProductID:number;
 }
 
 export interface Colors {
