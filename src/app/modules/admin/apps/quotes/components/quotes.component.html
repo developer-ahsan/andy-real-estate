@@ -103,10 +103,14 @@
                         </th>
                         <td mat-cell *matCellDef="let element">
                             <b>{{element?.firstName + ' ' + element?.lastName}}</b>
-                            <p>{{element?.storeName}} <span *ngIf="element?.locationName">-
-                                    {{element?.locationName}}</span><span *ngIf="element?.storeCode"> -
-                                    {{element?.storeCode}}</span></p>
-                            <span><b>{{element?.pk_cartID}}</b> - {{element?.companyName}}</span>
+                            <p>
+                                <ng-container *ngIf="element.companyProfileName; else companyNameBlock">{{
+                                    element.companyProfileName }}</ng-container>
+                                <ng-template #companyNameBlock>{{ element.companyName }}</ng-template>
+                                <ng-container *ngIf="element.attributeName"> - {{ element.locationName }} - {{
+                                    element.attributeName }}</ng-container>
+                            </p>
+                            <span><b>{{element?.pk_cartID}}</b> - {{element?.storeName}}</span>
                         </td>
                     </ng-container>
                     <ng-container matColumnDef="price">
