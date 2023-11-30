@@ -1,10 +1,12 @@
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import moment from 'moment';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { StoreProductService } from '../../store.service';
 import { AddReview, DeleteReview, UpdateReview } from '../../store.types';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { environment } from 'environments/environment';
 
 @Component({
   selector: 'app-product-reviews',
@@ -16,6 +18,8 @@ export class ProductReviewsComponent implements OnInit, OnDestroy {
   isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
+  @ViewChild('fileInputImage') fileInputImage: ElementRef;
+
 
   reviewColumns: string[] = ['name', 'date', 'rating', 'status', 'action'];
   reviewData = [];
@@ -31,9 +35,34 @@ export class ProductReviewsComponent implements OnInit, OnDestroy {
   editData: any;
   isUpdateLoader: boolean = false;
   isAddLoader: boolean = false;
+  imageUploadLoader: boolean = false;
+
+
+  productViewLoader: boolean = false;
+  fileName: string = "";
+  imagesArray = [];
+  images: any;
+  imageError = "";
+  isImageExists: boolean = false;
+
+  productReviewForm: FormGroup;
+
+  quillModules: any = {
+    toolbar: [
+      ['bold', 'italic', 'underline', 'strike'],
+      ['blockquote', 'code-block'],
+      [{ 'color': [] }, { 'background': [] }],
+      [{ 'font': [] }],
+      [{ 'align': [] }],
+      ['clean']
+    ]
+  };
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _storeService: StoreProductService
+    private _storeService: StoreProductService,
+    private _snackBar: MatSnackBar,
+
   ) { }
 
   ngOnInit(): void {
@@ -54,6 +83,14 @@ export class ProductReviewsComponent implements OnInit, OnDestroy {
       comment: new FormControl(''),
       response: new FormControl('')
     })
+
+    this.productReviewForm = new FormGroup({
+      name: new FormControl('', Validators.required),
+      subject: new FormControl('', Validators.required),
+      recipients: new FormControl('', Validators.required),
+      message: new FormControl(''),
+    })
+
     // Create the selected product form
     this.getStoreProductDetail();
   }
@@ -127,12 +164,27 @@ export class ProductReviewsComponent implements OnInit, OnDestroy {
       });
   }
   updateProductReview() {
-    this.isUpdateLoader = true;
     const { name, date, rating, comment, response, blnActive, pk_reviewID } = this.updateProductReviewForm.getRawValue();
+
+    if (name.trim() === '' || date.trim() === '') {
+      this._storeService.snackBar('Please fill all required fields');
+      return;
+    }
+
     let payload: UpdateReview = {
-      name, date, rating, comment, response, blnActive, pk_reviewID, storeProductId: this.editData.fk_storeProductID, update_review: true
+      name: name.trim(),
+      date,
+      rating,
+      comment: comment.trim(),
+      response: response.trim(),
+      blnActive,
+      pk_reviewID,
+      storeProductId:
+        this.editData.fk_storeProductID,
+      update_review: true
     };
-    this._storeService.putStoresData(payload)
+    this.isUpdateLoader = true;
+    this._storeService.putStoresData(this.replaceSingleQuotesWithDoubleSingleQuotes(payload))
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         if (response["success"] === true) {
@@ -152,12 +204,24 @@ export class ProductReviewsComponent implements OnInit, OnDestroy {
       })
   }
   addProductReview() {
-    this.isAddLoader = true;
     const { name, date, rating, comment, company } = this.productAddReviewForm.getRawValue();
+
+    if (name.trim() === '' || company.trim() === '') {
+      this._storeService.snackBar('Please fill all required fields');
+      return;
+    }
+
     let payload: AddReview = {
-      name, date, rating, comment, storeProductId: this.selectedProduct.pk_storeProductID, add_review: true
+      name: name.trim(),
+      date,
+      rating,
+      comment: comment.trim(),
+      storeProductId:
+        this.selectedProduct.pk_storeProductID,
+      add_review: true
     };
-    this._storeService.postStoresData(payload)
+    this.isAddLoader = true;
+    this._storeService.postStoresData(this.replaceSingleQuotesWithDoubleSingleQuotes(payload))
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         if (response["success"] === true) {
@@ -172,6 +236,172 @@ export class ProductReviewsComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
       })
   }
+
+  replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+        obj[key] = obj[key].replace(/'/g, "''");
+      }
+    }
+    return obj;
+  }
+
+  upload(event) {
+    const file = event.target.files[0];
+    this.fileName = !this.imagesArray.length ? "1" : `${this.imagesArray.length + 1}`;
+    let fileType = file["type"];
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      this.images = {
+        imageUpload: reader.result,
+        fileType: fileType
+      };
+    };
+  };
+
+  checkImageExist() {
+    const { pk_storeProductID } = this.selectedProduct;
+    const url = `${environment.assetsURL}/globalAssets/Products/HiRes/${pk_storeProductID}.jpg`
+    const img = new Image();
+    img.src = url;
+    img.onload = () => {
+      this.isImageExists = true;
+      this._changeDetectorRef.markForCheck();
+    };
+    img.onerror = () => {
+      this.isImageExists = false;
+      this._changeDetectorRef.markForCheck();
+    };
+  }
+
+
+  sendProductReview() {
+    const { name, subject, recipients, message } = this.productReviewForm.getRawValue();
+
+    if (name.trim() === '' || subject.trim() === '' || recipients.trim() === '') {
+      this._storeService.snackBar('Please fill all required fields');
+      return;
+    }
+    this.checkImageExist();
+
+    const { pk_storeProductID } = this.selectedProduct;
+    let payload = {
+      name: name.trim(),
+      subject: subject.trim(),
+      recipients: recipients.trim().split(','),
+      message: message.trim(),
+      storeProductID: this.selectedProduct.pk_storeProductID,
+      storeID: this.selectedProduct.fk_storeID,
+      storeName: this.selectedProduct.storeName,
+      imagePath: this.isImageExists ? `${environment.assetsURL}/globalAssets/Products/HiRes/${pk_storeProductID}.jpg` : 'https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg',
+      primaryHighlight: this.selectedProduct.primaryHighlight,
+      protocol: this.selectedProduct.protocol,
+      storeURL: this.selectedProduct.storeURL,
+      storeCode: this.selectedProduct.storeCode,
+      pk_storeProductID: this.selectedProduct.pk_storeProductID,
+      productName: this.selectedProduct.productName,
+      send_product_review: true
+    };
+    this.productViewLoader = true;
+
+    this._storeService.postStoresData(this.replaceSingleQuotesWithDoubleSingleQuotes(payload))
+    .pipe(takeUntil(this._unsubscribeAll))
+    .subscribe((response: any) => {
+      if (response["success"] === true) {
+        this._storeService.snackBar('Review Send Successfully');
+      }
+      this.productViewLoader = false;
+      this.productAddReviewForm.reset();
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.productViewLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
+
+  }
+
+  // uploadImage(): void {
+  //   this.imageError = null;
+
+  //   //to be moved into upper function
+
+  //   // if (!this.images) {
+  //   //   this._snackBar.open("Please attach an image", '', {
+  //   //     horizontalPosition: 'center',
+  //   //     verticalPosition: 'bottom',
+  //   //     duration: 3500
+  //   //   });
+  //   //   this.fileInputImage.nativeElement.value = '';
+  //   //   return;
+  //   // };
+
+  //   let image = new Image;
+  //   const { imageUpload, fileType } = this.images;
+  //   image.src = imageUpload;
+  //   image.onload = () => {
+  //     if (fileType != "image/jpeg") {
+  //       this._snackBar.open("Image extensions are allowed in JPG", '', {
+  //         horizontalPosition: 'center',
+  //         verticalPosition: 'bottom',
+  //         duration: 3500
+  //       });
+  //       this.images = null;
+  //       this.fileInputImage.nativeElement.value = '';
+  //       return;
+  //     };
+
+  //     if (image.width != 600 || image.height != 600) {
+  //       this._snackBar.open("Dimentions allowed are 600px x 600px", '', {
+  //         horizontalPosition: 'center',
+  //         verticalPosition: 'bottom',
+  //         duration: 3500
+  //       });
+  //       this.fileInputImage.nativeElement.value = '';
+  //       this.images = null;
+  //       return;
+  //     };
+
+  //     const { pk_productID } = this.selectedProduct;
+  //     const base64 = imageUpload.split(",")[1];
+  //     const payload = {
+  //       file_upload: true,
+  //       image_file: base64,
+  //       image_path: `/globalAssets/Products/Swatch/${pk_productID}/${pk_productID}.jpg`
+  //     };
+
+  //     this.imageUploadLoader = true;
+  //     this._inventoryService.addSwatchImage(payload)
+  //       .subscribe((response) => {
+  //         this._snackBar.open(response["message"], '', {
+  //           horizontalPosition: 'center',
+  //           verticalPosition: 'bottom',
+  //           duration: 3500
+  //         });
+  //         this.imageUploadLoader = false;
+  //         this.imagesArray.pop();
+  //         const temp = Math.random();
+  //         this.imagesArray.push(`${environment.productMedia}/Swatch/${pk_productID}/${pk_productID}.jpg?${temp}`);
+
+  //         this.images = null;
+  //         this.fileInputImage.nativeElement.value = '';
+  //         // Mark for check
+  //         this._changeDetectorRef.markForCheck();
+  //       }, err => {
+  //         this.imageUploadLoader = false;
+  //         this._snackBar.open("Some error occured", '', {
+  //           horizontalPosition: 'center',
+  //           verticalPosition: 'bottom',
+  //           duration: 3500
+  //         });
+
+  //         this.fileInputImage.nativeElement.value = '';
+  //         // Mark for check
+  //         this._changeDetectorRef.markForCheck();
+  //       })
+  //   };
+  // };
+
   /**
      * On destroy
      */

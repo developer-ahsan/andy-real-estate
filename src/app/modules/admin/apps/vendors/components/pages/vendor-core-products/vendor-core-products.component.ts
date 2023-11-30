@@ -27,6 +27,9 @@ export class VendorCoreProductsComponent implements OnInit, OnDestroy {
   not_available = 'N/A';
   supplierData: any;
   isLoadMore: boolean = false;
+
+  sortColumn=''
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _vendorService: VendorsService,
@@ -117,7 +120,34 @@ export class VendorCoreProductsComponent implements OnInit, OnDestroy {
 
   navigate() {
     this._router.navigateByUrl(`/apps/system/core-products`);
+  }
 
+
+  sortData(column: string) {
+    this.sortColumn = column;
+    this.dataSource.forEach(item => {
+      if (column === 'id') {
+        item.products.sort((a, b) => {
+          const valueA = Number(a[column]);
+          const valueB = Number(b[column]);
+          return valueA - valueB;
+        });
+      } else {
+        item.products.sort((a, b) => {
+          const valueA = a[column];
+          const valueB = b[column];
+
+          if (valueA < valueB) {
+            return -1;
+          } else if (valueA > valueB) {
+            return 1;
+          } else {
+            return 0;
+          }
+        });
+      }
+    })
+    this._changeDetectorRef.markForCheck();
   }
 
   /**
