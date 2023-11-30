@@ -164,60 +164,60 @@ export class VendorsDetailsComponent implements OnInit, OnDestroy {
         ]
       }
     ];
-    if (this.supplierData.blnActiveVendor) {
-      this.routes.push(
-        {
-          title: 'Products',
-          icon: 'heroicons_outline:cube',
-          children: [
-            {
-              title: 'Products',
-              icon: 'mat_outline:production_quantity_limits',
-              route: 'vendor-products'
-            },
-            // {
-            //     title: 'Export Product List',
-            //     icon: 'mat_outline:import_export',
-            // },
-            {
-              title: 'Products/Store',
-              icon: 'mat_outline:store',
-              route: 'vendor-products-store'
-            },
-            {
-              title: 'Core Products',
-              icon: 'heroicons_outline:document-report',
-              route: 'vendor-core-products'
-            },
-            {
-              title: 'Products/Updates',
-              icon: 'mat_outline:system_update_alt',
-              route: 'vendor-products-summary'
-            },
-            {
-              title: 'F.O.B Locations',
-              icon: 'mat_outline:edit_location_alt',
-              route: 'vendor-fob-locations'
-            },
-            {
-              title: 'Blanket F.O.B',
-              icon: 'mat_outline:location_on',
-              route: 'vendor-blnaket-fob'
-            },
-            {
-              title: 'Sizing Charts',
-              icon: 'mat_outline:format_size',
-              route: 'vendor-sizing-charts'
-            },
-            {
-              title: 'Product Videos',
-              icon: 'mat_outline:ondemand_video',
-              route: 'vendor-videos'
-            }
-          ]
-        }
-      )
-    }
+    // if (this.supplierData.blnActiveVendor) {
+    this.routes.push(
+      {
+        title: 'Products',
+        icon: 'heroicons_outline:cube',
+        children: [
+          {
+            title: 'Products',
+            icon: 'mat_outline:production_quantity_limits',
+            route: 'vendor-products'
+          },
+          // {
+          //     title: 'Export Product List',
+          //     icon: 'mat_outline:import_export',
+          // },
+          {
+            title: 'Products/Store',
+            icon: 'mat_outline:store',
+            route: 'vendor-products-store'
+          },
+          {
+            title: 'Core Products',
+            icon: 'heroicons_outline:document-report',
+            route: 'vendor-core-products'
+          },
+          {
+            title: 'Products/Updates',
+            icon: 'mat_outline:system_update_alt',
+            route: 'vendor-products-summary'
+          },
+          {
+            title: 'F.O.B Locations',
+            icon: 'mat_outline:edit_location_alt',
+            route: 'vendor-fob-locations'
+          },
+          {
+            title: 'Blanket F.O.B',
+            icon: 'mat_outline:location_on',
+            route: 'vendor-blnaket-fob'
+          },
+          {
+            title: 'Sizing Charts',
+            icon: 'mat_outline:format_size',
+            route: 'vendor-sizing-charts'
+          },
+          {
+            title: 'Product Videos',
+            icon: 'mat_outline:ondemand_video',
+            route: 'vendor-videos'
+          }
+        ]
+      }
+    )
+    // }
     this.routes.push(
       {
         title: 'Orders',

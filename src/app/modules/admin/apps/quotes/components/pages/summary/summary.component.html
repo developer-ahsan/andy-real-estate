@@ -139,8 +139,7 @@
                                 <tr *ngFor="let item of currentComment; let i=index">
                                     <td width="95%">
                                         <b>{{item.firstName + ' ' + item.lastName}}</b> said on
-                                        {{item.dateCreated |
-                                        date: 'medium'}} <span *ngIf="item.recipients"
+                                        {{item.dateCreated}} <span *ngIf="item.recipients"
                                             class="fa fa-exclamation-circle clickable"
                                             title="Recipients: {{item.recipients}}"></span><br><span
                                             [innerHTML]="item.comment"></span>

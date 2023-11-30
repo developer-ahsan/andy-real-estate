@@ -22,7 +22,7 @@
                     <tbody>
                         <tr>
                             <td width="30%">
-                                <b>({{imprint.id}}) {{imprint.locationName}} / {{imprint.methodName}}</b>
+                                <b>{{imprint.locationName}} / {{imprint.methodName}}</b>
                             </td>
                             <td width="10%">
                                 <a class="text-decoration-none" *ngIf="imprint.proofImg"
@@ -31,8 +31,7 @@
                                 <span *ngIf="!imprint.proofImg">---</span>
                             </td>
                             <td width="40%">
-                                <span *ngIf="!quoteDetail.mainStatus">{{imprint?.statusName || not_available}}</span>
-                                <span *ngIf="quoteDetail.mainStatus">{{quoteDetail?.statusName || not_available}}</span>
+                                <span>{{imprint?.statusName || not_available}}</span>
                                 <button type="button" (click)="updateMarkRevisionNeeded(imprint)"
                                     class="ml-2 inline-flex items-center gap-x-1.5 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 min-w-40"
                                     [disabled]="imprint.revisionLoader">
@@ -46,17 +45,46 @@
 
                             <td width="1%" align="center" valign="top">
                                 <span class="fa fa-comments fa-lg clickable cursor-pointer" data-toggle="modal"
-                                    title="View artwork comments" (click)="openCommentModal(imprint)"></span>
+                                    matTooltip="View artwork comments" (click)="openCommentModal(imprint)"></span>
                             </td>
                         </tr>
-                        <tr *ngFor="let artwork of imprint.artworkFiles; let i=index" #artworkFiles>
+                        <tr *ngFor="let artwork of imprint.artworkFiles; let i=index">
                             <td width="30%"></td>
                             <td width="10%"></td>
                             <td width="40%">
-                                <a class="text-blue-500" *ngIf="imprint.artworkFiles.length > 0"
-                                    href="https://assets.consolidus.com/artwork/quotes/{{quoteDetail.storeID}}/{{this.quoteDetail.storeUserID}}/{{quoteDetail.pk_cartID}}/{{imprint.pk_cartLineID}}/{{artwork?.ID}}.{{artwork?.EXTENSION}}?{{tempDate}}"
-                                    target="_blank">Artwork File #{{i+1}}</a>
-                                <span *ngIf="imprint.artworkFiles.length == 0">---</span>
+                                <ng-container *ngIf="imprint.logoBankID !== 0; else customerLogoBlock">
+                                    <a
+                                        href="https://assets.consolidus.com/globalAssets/Stores/logoBank2/{{quoteDetail.storeID}}/Thumbs/{{imprint.logoBankID}}.jpg">
+                                        Artwork File #{{i+1}}
+                                    </a>
+                                </ng-container>
+
+                                <ng-template #customerLogoBlock>
+                                    <ng-container *ngIf="imprint.customerLogoBankID !== 0; else locationLogoBlock">
+                                        <a target="_blank"
+                                            href="https://assets.consolidus.com/globalAssets/StoreUser/LogoBank/{{quoteDetail.storeUserID}}/{{quoteDetail.storeID}}/Thumbs/{{imprint.customerLogoBankID}}.jpg">
+                                            Artwork File #{{i+1}}
+                                        </a>
+                                    </ng-container>
+
+                                    <ng-template #locationLogoBlock>
+                                        <ng-container *ngIf="imprint.locationLogoBankID !== 0; else artworkFilesBlock">
+                                            <a target="_blank"
+                                                href="https://assets.consolidus.com/globalAssets/Stores/locationLogoBank/{{quoteDetail.pk_locationID}}/Thumbs/{{imprint.locationLogoBankID}}.jpg">
+                                                Artwork File #{{i+1}}
+                                            </a>
+                                        </ng-container>
+
+                                        <ng-template #artworkFilesBlock>
+                                            <a target="_blank" class="text-blue-500"
+                                                *ngIf="imprint.artworkFiles.length > 0"
+                                                href="https://assets.consolidus.com/artwork/quotes/{{quoteDetail.storeID}}/{{quoteDetail.storeUserID}}/{{quoteDetail.pk_cartID}}/{{imprint.pk_cartLineID}}/{{artwork?.ID}}.{{artwork?.EXTENSION}}?{{tempDate}}"
+                                                target="_blank">
+                                                Artwork File #{{i+1}}
+                                            </a>
+                                        </ng-template>
+                                    </ng-template>
+                                </ng-template>
                             </td>
                             <td width="1%" align="center" valign="top" *ngIf="imprint.artworkFiles.length > 0">
                                 <mat-icon svgIcon="heroicons_outline:trash"
@@ -68,26 +96,8 @@
                                 </mat-progress-spinner>
                             </td>
                         </tr>
-                        <tr
-                            *ngIf="imprint.customerLogoBankID != 0 || imprint.locationLogoBankID != 0 || imprint.logoBankID != 0;else artworkFiles">
-                            <td width="30%"></td>
-                            <td width="10%"></td>
-                            <td width="40%">
-                                <a *ngIf="imprint.logoBankID != 0"
-                                    href="https://assets.consolidus.com/globalAssets/Stores/logoBank2/{{quoteDetail.storeUserID}}/{{quoteDetail.storeID}}/Thumbs/{{imprint.logoBankID}}.jpg">Artwork
-                                    File #1</a>
-                                <a *ngIf="imprint.customerLogoBankID != 0"
-                                    href="https://assets.consolidus.com/globalAssets/StoreUser/LogoBank/{{quoteDetail.storeUserID}}/{{quoteDetail.storeID}}/Thumbs/{{imprint.customerLogoBankID}}.jpg">Artwork
-                                    File #1</a>
-                                <a *ngIf="imprint.locationLogoBankID != 0"
-                                    href="https://assets.consolidus.com/globalAssets/Stores/locationLogoBank/{{quoteDetail.pk_locationID}}/Thumbs/{{imprint.locationLogoBankID}}.jpg">Artwork
-                                    File #1</a>
-                            </td>
-                            <td width="1%" align="center" valign="top">
-                            </td>
-                        </tr>
-
-                        <tr>
+                        <!-- Upload Artwork File -->
+                        <tr *ngIf="imprint.artworkFiles.length < 10">
                             <td width="30%"></td>
                             <td width="10%"></td>
                             <td colspan="2" valign="top">

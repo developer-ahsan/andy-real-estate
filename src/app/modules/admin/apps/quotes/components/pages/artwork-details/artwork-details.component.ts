@@ -7,6 +7,7 @@ import { takeUntil } from 'rxjs/operators';
 import { AddCartArtworkComment, updateCartArtworkStatus } from '../../quotes.types';
 import moment from 'moment';
 import { AuthService } from 'app/core/auth/auth.service';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 declare var $: any;
 @Component({
   selector: 'app-artwork-details',
@@ -44,6 +45,7 @@ export class QuoteArtworkDetailsComponent implements OnInit, OnDestroy {
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _quoteService: QuotesService,
+    private _commonService: DashboardsService,
     private _authService: AuthService,
   ) { }
 
@@ -81,6 +83,7 @@ export class QuoteArtworkDetailsComponent implements OnInit, OnDestroy {
         element.imprints = [];
         if (element.imprintDetails) {
           let imprints = element.imprintDetails.split('#_');
+          console.log(imprints);
           imprints.forEach((imprint, index) => {
             let splitImprint = imprint.split('||');
             let find = element.imprints.find(elem => elem.id == splitImprint[0]);
@@ -89,14 +92,16 @@ export class QuoteArtworkDetailsComponent implements OnInit, OnDestroy {
               this.checkIfImageExists(element.imprints[index], `https://assets.consolidus.com/artwork/Proof/Quotes/${this.quoteDetail.storeUserID}/${this.quoteDetail.pk_cartID}/${element.pk_cartLineID}/${splitImprint[0]}.jpg`);
             }
             if (imprints.length == index + 1) {
-              if (splitImprint[3] == 0 && splitImprint[4] == 0 && splitImprint[8] == 0) {
-                this.getArworkFilesNew(element);
-              }
+              console.log('here');
+              // if (splitImprint[3] == 0 && splitImprint[4] == 0 && splitImprint[8] == 0) {
+              this.getArworkFilesNew(element);
             }
+            // }
           });
         }
       });
       this.artworkData = res["data"];
+      console.log(this.artworkData);
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
@@ -216,10 +221,10 @@ export class QuoteArtworkDetailsComponent implements OnInit, OnDestroy {
     this.removeContent.artworkFiles[this.artworkIndex].delLoader = true;
     this._changeDetectorRef.markForCheck();
     let payload = {
-      image_path: `/artwork/quotes/${this.quoteDetail.storeID}/${this.quoteDetail.storeUserID}/${this.quoteDetail.pk_cartID}/${this.removeContent.pk_cartLineID}/${this.removeFileName}`,
-      delete_image: true
+      files: [`/artwork/quotes/${this.quoteDetail.storeID}/${this.quoteDetail.storeUserID}/${this.quoteDetail.pk_cartID}/${this.removeContent.pk_cartLineID}/${this.removeFileName}`],
+      delete_multiple_files: true
     }
-    this._quoteService.removeMedia(payload)
+    this._commonService.removeMediaFiles(payload)
       .subscribe((response) => {
         this._quoteService.snackBar('Artwork File Removed Successfully');
         this.removeContent.artworkFiles[this.artworkIndex].delLoader = false;

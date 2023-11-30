@@ -78,9 +78,9 @@ export class SearchQuotesComponents implements OnInit, OnDestroy {
     }
     getQuotesData(page) {
         let params = {
-            cart_id: this.searchKeyword,
+            keyword: this.searchKeyword,
             page: page,
-            list: true,
+            search_quotes: true,
             size: 20
         }
         this._searchService.getQuoteSearchData(params).pipe(takeUntil(this._unsubscribeAll),

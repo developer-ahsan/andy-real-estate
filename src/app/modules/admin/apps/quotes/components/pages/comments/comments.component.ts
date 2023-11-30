@@ -9,6 +9,7 @@ import { AuthService } from 'app/core/auth/auth.service';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { AddCartComment, RemoveCartComment } from '../../quotes.types';
 import moment from 'moment';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-comments',
@@ -42,6 +43,7 @@ export class QuoteComments implements OnInit, OnDestroy {
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _quoteService: QuotesService,
+    private _commonService: DashboardsService,
     private _authService: AuthService,
   ) { }
 
@@ -66,7 +68,6 @@ export class QuoteComments implements OnInit, OnDestroy {
       let comments = this.selectedQuote.comments;
       if (comments) {
         let split_comment = comments.split(',,');
-
       }
       this.currentComments = res["data"][0].internalComments;
       this.isLoading = false;
@@ -103,7 +104,7 @@ export class QuoteComments implements OnInit, OnDestroy {
 
   add(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
-    if (value) {
+    if (value && !this.emails.includes(value)) {
       this.emails.push(value);
     }
     event.chipInput!.clear();
@@ -125,7 +126,9 @@ export class QuoteComments implements OnInit, OnDestroy {
     }
     this.commentators.forEach(element => {
       if (element.checked) {
-        emailArr.push(element.email);
+        if (this._commonService.isValidEmail(element.email)) {
+          emailArr.push(element.email);
+        }
       }
     });
     if (emailArr.length == 0) {
@@ -143,6 +146,12 @@ export class QuoteComments implements OnInit, OnDestroy {
       storeName: this.selectedQuote.storeName,
       add_cart_comment: true
     }
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
+    payload = this._commonService.replaceNullSpaces(payload);
+    if (!payload.comment || payload.emails.length == 0) {
+      this._quoteService.snackBar('Please fill out the required fields');
+    }
+
     this._quoteService.AddQuoteData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.getQuoteCommentsData();
     }, err => {

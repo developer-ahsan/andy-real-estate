@@ -21,7 +21,7 @@
             <div class="p-4 w-full alert alert-warning" *ngIf="productOptionList.length == 0">
                 NO PRODUCTS WERE FOUND
             </div>
-            <div class="p-5 w-full" *ngIf="productOptionList.length >0">
+            <div class="p-5 w-full" *ngIf="productOptionList.length > 0">
                 <div class="p-4 border overflow-y-auto h-60 mb-2">
                     <ng-container *ngFor="let companies of productOptionList">
                         <span class="font-bold">------------------{{companies.companyName}}------------------</span><br>
@@ -46,7 +46,7 @@
                     </mat-progress-spinner>
                 </button>
                 <br>
-                <button class="min-w-40 rounded-md" mat-flat-button color="primary" [disabled]="totalSelectedProds < 2">
+                <button class="min-w-40 rounded-md" mat-flat-button color="primary" [disabled]="true">
                     <span>Defined Exclusion</span>
                     <!-- <mat-progress-spinner *ngIf="isUpdateLoading" [diameter]="24" [mode]="'indeterminate'">
                     </mat-progress-spinner> -->

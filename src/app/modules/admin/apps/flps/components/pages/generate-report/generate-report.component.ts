@@ -250,6 +250,7 @@ export class GenerateReportComponent implements OnInit {
             let d = new Date(this.yearlyYear, 0, 1);
             this.reportParams.start_date = moment(d).startOf('year').format('yyyy-MM-DD');
             this.reportParams.end_date = moment(d).endOf('year').format('yyyy-MM-DD');
+            this.report_type = 'Yearly Sales';
         } else if (this.ngPlan == 'range') {
             this.reportParams.start_date = moment(this.ngRangeStart).format('yyyy-MM-DD');
             this.reportParams.end_date = moment(this.ngRangeEnd).format('yyyy-MM-DD');

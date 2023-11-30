@@ -94,7 +94,7 @@ export class ProductOptionsComponent implements OnInit, OnDestroy {
       }
       if (productDetails.isSelected == 1) {
         this.totalSelectedProds++;
-        this.selectedProdsIDs.push(productDetails.pid);
+        this.selectedProdsIDs.push(productDetails.id);
       }
       formattedData[code].products.push(productDetails);
     });
@@ -118,9 +118,9 @@ export class ProductOptionsComponent implements OnInit, OnDestroy {
 
   selectItem(product) {
     if (product.isSelected) {
-      this.selectedProdsIDs.push(product.pid);
+      this.selectedProdsIDs.push(product.id);
     } else {
-      this.selectedProdsIDs = this.selectedProdsIDs.filter(id => id !== product.pid);
+      this.selectedProdsIDs = this.selectedProdsIDs.filter(id => id !== product.id);
     }
   }
   updateProductOptions() {
@@ -135,6 +135,7 @@ export class ProductOptionsComponent implements OnInit, OnDestroy {
     }
     this._storeService.UpdateProductOptions(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.isUpdateLoading = false;
+      this.totalSelectedProds = this.selectedProdsIDs.length;
       this._storeService.snackBar(res["message"]);
       this._changeDetectorRef.markForCheck();
     }, err => {

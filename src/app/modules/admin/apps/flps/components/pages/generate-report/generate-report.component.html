@@ -125,8 +125,15 @@
 <div class="w-full" *ngIf="isGenerateReport">
     <div class="w-full bg-card p-5">
         <div class="flex justify-between mb-1">
-            <p class="text-xl font-semibold">{{selectedEmployee.fullName}} - <span
-                    class="text-secondary">{{report_type}}</span></p>
+            <div>
+                <p class="text-xl font-semibold">{{selectedEmployee.fullName}} - <span
+                        class="text-secondary">{{report_type}}</span></p>
+                <p [ngSwitch]="ngReportType">
+                    <span *ngSwitchCase="1">Orders pending FLPS payment</span>
+                    <span *ngSwitchCase="2">Orders marked FLPS paid</span>
+                </p>
+                <p class="font-bold">Range: {{reportParams.start_date}} - {{reportParams.end_date}}</p>
+            </div>
             <button matTooltip="Back to filters" class="min-w-30" mat-stroked-button
                 (click)="backToFilters()">Back</button>
         </div>
