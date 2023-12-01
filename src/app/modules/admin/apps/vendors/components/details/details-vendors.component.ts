@@ -160,6 +160,11 @@ export class VendorsDetailsComponent implements OnInit, OnDestroy {
             title: 'Vendor Settings',
             icon: 'mat_outline:settings',
             route: 'vendor-settings'
+          },
+          {
+            title: 'Designer Notes',
+            icon: 'mat_outline:settings',
+            route: 'designer-notes'
           }
         ]
       }
@@ -242,6 +247,11 @@ export class VendorsDetailsComponent implements OnInit, OnDestroy {
             title: 'Vendor Orders',
             icon: 'mat_outline:reorder',
             route: 'vendor-orders'
+          },
+          {
+            title: 'Open POs',
+            icon: 'mat_outline:reorder',
+            route: 'purchase-orders'
           },
           {
             title: 'Supplier Application',

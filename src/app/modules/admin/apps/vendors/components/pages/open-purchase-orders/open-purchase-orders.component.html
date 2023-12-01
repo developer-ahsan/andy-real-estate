@@ -1,0 +1,149 @@
+<div class="w-full">
+  <div class="w-full rounded-2xl shadow bg-card mb-15">
+    <div class="px-4 pb-3 sm:px-4 lg:px-8 pt-4 w-full">
+      <div class="grid grid-cols-3 gap-4 m-2">
+
+        <div>
+          <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full">
+            <mat-label>Search order/PO:</mat-label>
+            <input class="h-6" [(ngModel)]="searchOrder" matInput [matTooltip]="'Press enter key after typing'"
+              (keyup.enter)="setParams('', 'keyword')" (mousewheel)="$event.preventDefault()" [autocomplete]="'off'"
+              [placeholder]="'Search order/PO:'">
+          </mat-form-field>
+        </div>
+
+        <div>
+          <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full">
+            <mat-label>Search customer:</mat-label>
+            <input class="h-6" [(ngModel)]="searchCustomer" matInput [matTooltip]="'Press enter key after typing'"
+              (keyup.enter)="setParams('', 'keyword')" (mousewheel)="$event.preventDefault()" [autocomplete]="'off'"
+              [placeholder]="'Search customer:'">
+          </mat-form-field>
+        </div>
+
+        <div>
+          <mat-form-field appearance="fill" class="w-full">
+              <mat-label>
+                <span>Store:</span>
+              </mat-label>
+              <mat-select [(ngModel)]="selectedStore" disableRipple>
+                <mat-option (click)="setParams(0,'status_id')" value="All">All </mat-option>
+                <mat-option (click)="setParams(status.key,'status_id')" [value]="store.pk_storeID"
+                  *ngFor="let store of allStores">
+                  {{store.storeName}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+        </div>
+
+        <!-- <div>
+          <mat-form-field appearance="fill" class="w-full">
+              <mat-label>
+                <span>Timeframe:</span>
+              </mat-label>
+              <mat-select [(ngModel)]="selectedTimeFrame" disableRipple>
+                <mat-option (click)="setParams('all','time_frame')" value="All">All Time</mat-option>
+                <mat-option (click)="setParams(timeFrame.key, 'time_frame')" [value]="timeFrame.value"
+                  *ngFor="let timeFrame of timeFrames">
+                  {{timeFrame.value}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+        </div> -->
+
+        <!-- <div>
+          <mat-form-field appearance="fill" class="w-full">
+              <mat-label>
+                <span>Submitted by:</span>
+                <span class="ml-3" *ngIf="!isSubmittedRecieved"> (Fetching Users... )</span>
+              </mat-label>
+              <mat-select [(ngModel)]="selectedUser" disableRipple [disabled]="submittedByUsers?.length === 0">
+                <mat-option (click)="setParams(0,'admin_user_id')" value="Anyone">Anyone</mat-option>
+                <mat-option (click)="setParams(user.pk_userID, 'admin_user_id')" [value]="user.fullName"
+                  *ngFor="let user of submittedByUsers">
+                  {{user.fullName}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+        </div> -->
+
+        
+      </div>
+
+      <div class="col-12 flex justify-end">
+        <span (click)="resetParams()" class="font-semibold hover:underline text-gray-500 cursor-pointer">
+          Reset Search
+        </span>
+      </div>
+
+
+      <div *ngIf="isLoading" class="py-4 w-full">
+        <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{'background-color': '#dedede' }">
+        </ngx-skeleton-loader>
+      </div>
+
+      <div *ngIf="!isLoading && dataSource?.data.length > 0" class="mt-8 flow-root">
+        <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+          <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+            <div class="overflow-hidden">
+              <table class="min-w-full divide-y divide-gray-300">
+                <thead class="bg-gray-50 w-full">
+                  <tr>
+                    <th *ngFor="let item of displayedColumns" scope="col"
+                      class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                      [ngStyle]="{'width': 'calc(' + item.width/100 + ' * 100%)x`'}">
+                      {{item.value}}</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 bg-white">
+                  <tr (click)="navigateToPage(data?.pk_ticketID)" class="max-w-[100px] hover:bg-gray-50 cursor-pointer"
+                    *ngFor="let data of dataSource.data">
+                    <td *ngFor="let item of displayedColumns"
+                      class="py-3.5 pl-4 pr-3 text-left text-sm text-gray-500 sm:pl-6"
+                      [ngStyle]="{'width': 'calc(' + item.width/100 + ' * 100%)'}">
+                      {{data[item.key]}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <nav class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-2"
+          aria-label="Pagination">
+          <div class="hidden sm:block">
+            <p class="text-sm text-gray-700">
+              Showing
+              <span class="font-medium">{{((dataSource.page-1) * dataSource.size) + 1}}</span>
+              to
+              <span class="font-medium">{{((dataSource.page-1) * dataSource.size) +
+                dataSource.size}}</span>
+              of
+              <span class="font-medium">{{dataSource.totalRecords}}</span>
+              results
+            </p>
+          </div>
+          <div class="flex flex-1 justify-between sm:justify-end">
+            <a (click)="changePage(false)"
+              class="cursor-pointer relative inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 ">Previous</a>
+            <a (click)="changePage(true)"
+              class="cursor-pointer relative ml-3 inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 ">Next</a>
+          </div>
+        </nav>
+
+      </div>
+
+      <div class="mt-2" *ngIf="!isLoading && dataSource?.data?.length === 0">
+        <div>
+          <div class="px-4 pb-4">
+            <fuse-alert [appearance]="'soft'" [dismissible]="false" [dismissed]="false" [name]="'alertBox3'"
+              [type]="'warning'">
+              There are no orders to show in this view or your search did not return any results.
+            </fuse-alert>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- data table end -->
+  </div>
+</div>
