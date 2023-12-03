@@ -704,6 +704,7 @@ export class GeneratorsComponent implements OnInit {
             </div>`
         }
       } else if (type == 'quotes') {
+        console.log('here');
         greeting = 'Hello';
         // Body 
         if (res["qryStoreDefaultEmails"][0].quoteEmail) {
@@ -808,6 +809,8 @@ export class GeneratorsComponent implements OnInit {
             return { locationName, methodName, price: Number(price), setupPrice: Number(setupPrice), colors, runningPrice: Number(runningPrice) };
           });
           this.emailModalContent.totalPrice += carts.subTotal;
+          this.emailModalContent.body = `${greeting} ${message}`;
+          this.emailModalContent.footer = footer;
         });
         this.emailModalContent.cartData = res["cartData"];
       } else if (type == 'survey') {
