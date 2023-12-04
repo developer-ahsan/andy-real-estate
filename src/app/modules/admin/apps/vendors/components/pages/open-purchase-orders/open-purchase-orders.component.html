@@ -56,10 +56,30 @@
               <table class="min-w-full divide-y divide-gray-300">
                 <thead class="bg-gray-50 w-full">
                   <tr>
-                    <th *ngFor="let item of displayedColumns" scope="col"
-                      class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                    <th (click)="setSort(item)" *ngFor="let item of displayedColumns" scope="col"
+                      class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 cursor-pointer"
                       [ngStyle]="{'width': 'calc(' + item.width/100 + ' * 100%)x`'}">
-                      {{item.value}}</th>
+                      <div class="flex flex-row gap-x-1">
+                        <div>
+                          {{item.value}}
+                        </div>
+                        <div  *ngIf="item.showIcon === true">
+                          <svg *ngIf="sortingOrder === 'ASC'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M15.75 17.25L12 21m0 0l-3.75-3.75M12 21V3" />
+                          </svg>
+                          <svg *ngIf="sortingOrder === 'DESC'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M8.25 6.75L12 3m0 0l3.75 3.75M12 3v18" />
+                          </svg>
+                        </div>
+                      </div>
+                    </th>
+
+
+
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 bg-white">
