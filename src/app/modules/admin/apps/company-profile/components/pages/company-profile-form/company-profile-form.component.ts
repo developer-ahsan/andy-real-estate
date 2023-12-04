@@ -244,49 +244,65 @@ export class CompanyProfileFormComponent implements OnInit, OnDestroy {
   }
 
   updateCompanyProfile() {
-
     let params = {
-      companyProfileID: this.route.snapshot.params['companyId'],
-      companyName: this.ticketForm.get('companyName').value,
-      companyWebsite: this.ticketForm.get('companyWebsite').value,
-      address: this.ticketForm.get('address').value,
-      city: this.ticketForm.get('city').value,
-      state: this.ticketForm.get('state').value,
+      companyProfileID: this.route.snapshot.params['companyId']?.trim(),
+      companyName: this.ticketForm.get('companyName').value?.trim(),
+      companyWebsite: this.ticketForm.get('companyWebsite').value?.trim(),
+      address: this.ticketForm.get('address').value?.trim(),
+      city: this.ticketForm.get('city').value?.trim(),
+      state: this.ticketForm.get('state').value?.trim(),
       zip: this.ticketForm.get('zip').value,
-      APContactName: this.ticketForm.get('APContactName').value,
-      APEmail: this.ticketForm.get('APEmail').value,
-      remitEmail: this.ticketForm.get('remitEmail').value,
-      additionalEmail: this.ticketForm.get('additionalEmail').value,
+      APContactName: this.ticketForm.get('APContactName').value?.trim(),
+      APEmail: this.ticketForm.get('APEmail').value?.trim(),
+      remitEmail: this.ticketForm.get('remitEmail').value?.trim(),
+      additionalEmail: this.ticketForm.get('additionalEmail').value?.trim(),
       creditLimit: this.ticketForm.get('creditLimit').value,
-      netTerms: this.ticketForm.get('netTerms').value,
-      paymentMethod: this.ticketForm.get('paymentMethod').value,
+      netTerms: this.ticketForm.get('netTerms').value?.trim(),
+      paymentMethod: this.ticketForm.get('paymentMethod').value?.trim(),
       // dateCreated: this.ticketForm.get('dateCreated').value,
       storeID: this.selectedStoreId,
       blnSalesTaxExempt: this.ticketForm.get('blnSalesTaxExempt').value === 'Yes' ? true : false,
       phone: this.ticketForm.get('phone').value,
       blnGovMVMTCoop: this.ticketForm.get('blnGovMVMTCoop').value,
-      notes: this.ticketForm.get('notes').value,
+      notes: this.ticketForm.get('notes').value?.trim(),
       blnPORequired: this.ticketForm.get('blnPORequired').value,
       update_company_profile: true,
     };
+
+    if (params.companyName === '' || params.companyWebsite === ''
+      || params.address === '' || params.zip === ''
+      || params.APContactName === '' || params.APEmail === ''
+      || params.remitEmail === '') {
+      this._supportService.snackBar("Please fill the reuired fields");
+      return;
+    }
     this.isCreateTicketLoader = true;
     if (this.isUpdate == false || this.isUpdate == undefined) {
       delete params['update_company_profile'];
       delete params['companyProfileID'];
       params['add_company_profile'] = true;
-      this._companiesService.postCompaniesData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._companiesService.postCompaniesData(this.replaceSingleQuotesWithDoubleSingleQuotes(params)).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         this._supportService.snackBar("Company Profile is created successfuly");
         this.isCreateTicketLoader = false;
         this._changeDetectorRef.markForCheck();
       })
       return;
     }
-    this._companiesService.putCompaniesData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._companiesService.putCompaniesData(this.replaceSingleQuotesWithDoubleSingleQuotes(params)).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this._supportService.snackBar("Company Profile is updated successfuly");
       this.isCreateTicketLoader = false;
       this._changeDetectorRef.markForCheck();
     })
   }
+
+  replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
+    for (const key in obj) {
+        if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+            obj[key] = obj[key]?.replace(/'/g, "''");
+        }
+    }
+    return obj;
+}
 
   setStoreId(id) {
     this.selectedStoreId = id;
