@@ -160,7 +160,7 @@ export class CompaniesService {
         });
     };
 
-     // Common put Call
+    // Common put Call
     UpdateCompaniesData(payload) {
         const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
         return this._httpClient.put(
@@ -285,7 +285,7 @@ export class CompaniesService {
 
     // Get calls
     getAPIData(params): Observable<any[]> {
-        return this._httpClient.get<any[]>(environment.vendors, {
+        return this._httpClient.get<any[]>(environment.companies, {
             params: params
         });
     };

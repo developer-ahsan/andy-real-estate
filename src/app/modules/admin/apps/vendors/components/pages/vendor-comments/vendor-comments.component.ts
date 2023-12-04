@@ -129,16 +129,17 @@ export class VendorCommentsComponent implements OnInit, OnDestroy {
   }
 
   addComment() {
+
+    if (this.ngComment.trim() == '') {
+      this._vendorService.snackBar('Comment is required');
+      return;
+    }
     let emailArr = this.emails;
     this.commentators.forEach(element => {
       if (element.checked) {
         emailArr.push(element.email);
       }
     });
-    if (this.ngComment.trim() != '') {
-      this._vendorService.snackBar('Comment is required');
-      return;
-    }
     if (emailArr.length == 0) {
       this._vendorService.snackBar('Email is required');
       return;

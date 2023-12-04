@@ -81,7 +81,8 @@
                                 </th>
 
                                 <td class="cursor-pointer" mat-cell *matCellDef="let element">
-                                    <span class="font-medium text-right" (click)="navigateToUpdate(element)">{{element.companyName}}
+                                    <span class="font-medium text-right"
+                                        (click)="navigateToUpdate(element)">{{element.companyName}}
                                     </span>
                                 </td>
                             </ng-container>
@@ -122,7 +123,7 @@
                                     YTD Sales
                                 </th>
                                 <td class="cursor-pointer" mat-cell *matCellDef="let element">
-                                    <div (click)="navigateToUpdate(element)">{{element.ytd_sales}}
+                                    <div (click)="navigateToUpdate(element)">{{element.ytd_sales | currency}}
                                     </div>
                                 </td>
                             </ng-container>
@@ -131,7 +132,7 @@
                                     YTD Revenue
                                 </th>
                                 <td class="cursor-pointer" mat-cell *matCellDef="let element">
-                                    <div (click)="navigateToUpdate(element)">{{element.ytd_revenue}}</div>
+                                    <div (click)="navigateToUpdate(element)">{{element.ytd_revenue | currency}}</div>
                                 </td>
                             </ng-container>
                             <ng-container matColumnDef="active">

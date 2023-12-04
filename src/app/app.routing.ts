@@ -84,7 +84,7 @@ export const appRoutes: Route[] = [
                 path: 'apps', children: [
                     { path: 'search', loadChildren: () => import('app/modules/admin/apps/search-modules/search-module.module').then(m => m.SearchModule) },
                     { path: 'ecommerce', loadChildren: () => import('app/modules/admin/apps/ecommerce/ecommerce.module').then(m => m.ECommerceModule) },
-                    { path: 'vendors', loadChildren: () => import('app/modules/admin/apps/vendors/vendors.module').then(m => m.VendorsModule), resolve: { states: StatesResolver } },
+                    { path: 'vendors', loadChildren: () => import('app/modules/admin/apps/vendors/vendors.module').then(m => m.VendorsModule) },
                     { path: 'system', loadChildren: () => import('app/modules/admin/apps/system/system.module').then(m => m.SystemModule) },
                     { path: 'flps', loadChildren: () => import('app/modules/admin/apps/flps/flps.module').then(m => m.FlpsModule) },
                     { path: 'users', loadChildren: () => import('app/modules/admin/apps/users/users.module').then(m => m.UsersModule) },

@@ -2,11 +2,11 @@
     <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
     </ngx-skeleton-loader>
     <div *ngIf="!isLoading" class="mb-2 flex flex-row gap-x-2 justify-end mr-2">
-        <button mat-stroked-button class="min-w-20" >
+        <button mat-stroked-button class="min-w-20">
             <span class="text-sm">Email</span>
         </button>
         <button (click)="generatePdf()" mat-stroked-button class="min-w-20">
-            <span class="test-sm">Pdf</span>
+            <span class="test-sm">PDF</span>
         </button>
     </div>
     <div id="pdf-area" class="row my-3" *ngIf="!isLoading">
@@ -211,7 +211,7 @@
                                 <div class="col-12 text-center text-red-500">OR</div>
                                 <!-- Target Price -->
                                 <div class="col-12 mt-5 flex justify-between">
-                                    <b  class="mb-5">Target Price</b>
+                                    <b class="mb-5">Target Price</b>
                                     <p>
                                         <span class="underline font-semibold cursor-pointer mr-2"
                                             (click)="clearTargets()">X</span>
@@ -255,7 +255,7 @@
                                 </div>
                                 <!-- Price Overrid-->
                                 <div class="col-12 mt-5 flex justify-between">
-                                    <b  class="mb-5">Price Override</b>
+                                    <b class="mb-5">Price Override</b>
                                 </div>
                                 <div class="col-lg-2 col-4">
                                     <mat-form-field class="w-full">
@@ -295,7 +295,7 @@
                                 </div>
                                 <!-- Tccd Price -->
                                 <div class="col-12 mt-5 flex justify-between">
-                                    <b  class="mb-5">Tccd Price</b>
+                                    <b class="mb-5">Tccd Price</b>
                                 </div>
                                 <div class="col-lg-2 col-4">
                                     <mat-form-field class="w-full">
