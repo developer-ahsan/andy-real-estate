@@ -39,12 +39,12 @@ export class NewVendorsComponent implements OnInit, OnDestroy {
 
   initForm() {
     this.addCompanyForm = new FormGroup({
-      companyName: new FormControl(''),
-      address: new FormControl(''),
-      city: new FormControl(''),
-      zipCode: new FormControl(''),
-      phone: new FormControl(''),
-      phoneExt: new FormControl(''),
+      companyName: new FormControl('', Validators.required),
+      address: new FormControl('', Validators.required),
+      city: new FormControl('', Validators.required),
+      zipCode: new FormControl('', Validators.required),
+      phone: new FormControl('', Validators.required),
+      phoneExt: new FormControl('', Validators.required),
       fax: new FormControl(''),
       ASI: new FormControl(''),
       PPAI: new FormControl(''),
@@ -116,6 +116,12 @@ export class NewVendorsComponent implements OnInit, OnDestroy {
   addNewCompany() {
     let errorMessage = '';
     const { companyName, address, city, zipCode, phone, fax, ASI, PPAI, artworkEmail, ordersEmail, websiteURL, outsideRep, insideRep, outsideRepPhone, outsideRepEmail, insideRepPhone, insideRepEmail, samplesContactEmail, customerAccountNumber, phoneExt } = this.addCompanyForm.getRawValue();
+
+    if(companyName.trim() === '' || address.trim() === '' || city.trim() === '' || zipCode.trim() === '' || zipCode.trim() === '' || phoneExt.trim() === '') {
+      this._vendorService.snackBar('Please fill all the required fields');
+      return;
+    }
+
     let companyType = [];
     if (this.ngSupplier) {
       companyType.push(1);
@@ -167,7 +173,28 @@ export class NewVendorsComponent implements OnInit, OnDestroy {
     }
 
     let payload: AddCompany = {
-      companyName: companyName.replace(/'/g, "''"), address: address.replace(/'/g, "''"), city: city.replace(/'/g, "''"), zipCode, phone, fax, ASI, PPAI, artworkEmail, ordersEmail, websiteURL, outsideRep, insideRep, outsideRepPhone, outsideRepEmail, insideRepPhone, insideRepEmail, samplesContactEmail, companyType, state: this.selectedState.state, customerAccountNumber, create_company: true
+      companyName: companyName.trim().replace(/'/g, "''"),
+      address: address.trim().replace(/'/g, "''"),
+      city: city.trim().replace(/'/g, "''"),
+      zipCode: zipCode.trim(),
+      phone: phone.trim(),
+      fax: fax.trim(),
+      ASI: ASI.trim(),
+      PPAI: PPAI.trim(),
+      artworkEmail: artworkEmail.trim(),
+      ordersEmail: ordersEmail.trim(),
+      websiteURL: websiteURL.trim(),
+      outsideRep: outsideRep.trim(),
+      insideRep: insideRep.trim(),
+      outsideRepPhone: outsideRepPhone.trim(),
+      outsideRepEmail: outsideRepEmail.trim(),
+      insideRepPhone: insideRepPhone.trim(),
+      insideRepEmail: insideRepEmail.trim(),
+      samplesContactEmail: samplesContactEmail.trim(),
+      companyType,
+      state: this.selectedState.state,
+      customerAccountNumber: customerAccountNumber.trim(),
+      create_company: true
     }
     this.isAddLoader = true;
     this._vendorService.postVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {

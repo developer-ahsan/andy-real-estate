@@ -143,11 +143,11 @@ export class SimpleEmailBlastComponent implements OnInit, OnDestroy {
   sendEmail() {
     const { subject, message } = this.sendEmailForm.getRawValue();
     let messageData = message;
-    if (!subject) {
+    if (!subject || subject.trim()=== '') {
       this._fileManagerService.snackBar('Subject is required');
       return;
     }
-    if (!message) {
+    if (!message || message.trim()) {
       this._fileManagerService.snackBar('Message is required');
       return;
     }

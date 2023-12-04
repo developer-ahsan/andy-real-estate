@@ -26,6 +26,8 @@ import { VendorsInfoComponent } from './components/pages/vendors-info/vendors-in
 import { VendorsComponent } from './components/vendors.component';
 import { SuppliersByIdResolver, SuppliersListsResolver } from './components/vendors.resolvers';
 import { VendorsProfileComponent } from './components/pages/vendor-profile/vendor-profile.component';
+import { DesignerNotesComponent } from './components/pages/designer-notes/designer-notes.component';
+import { OpenPurchaseOrdersComponent } from './components/pages/open-purchase-orders/open-purchase-orders.component';
 export const vendorsRoutes: Route[] = [
 
     {
@@ -77,6 +79,14 @@ export const vendorsRoutes: Route[] = [
                 data: {
                     title: 'Vendor Settings',
                     url: 'vendor-settings'
+                }
+            },
+            {
+                path: 'designer-notes',
+                component: DesignerNotesComponent,
+                data: {
+                    title: 'Designer Notes',
+                    url: 'designer-notes'
                 }
             },
             {
@@ -173,6 +183,14 @@ export const vendorsRoutes: Route[] = [
                 data: {
                     title: 'Vendor Orders',
                     url: 'vendor-orders'
+                }
+            },
+            {
+                path: 'purchase-orders',
+                component: OpenPurchaseOrdersComponent,
+                data: {
+                    title: 'Open POs',
+                    url: 'purchase-orders'
                 }
             },
             {

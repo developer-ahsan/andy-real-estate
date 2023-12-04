@@ -1,0 +1,15 @@
+<div class="col-12">
+    <div class="col-12 pb-6 mb-5">
+        <quill-editor [(ngModel)]="notes" [modules]="quillModules">
+        </quill-editor>
+    </div>
+
+    <div class=" mb-5 w-full flex justify-end">
+        <button mat-button mat-flat-button color="primary" (click)="update()"
+            [disabled]="updateLoader || notes == null">
+            <span *ngIf="!updateLoader">Update</span>
+            <mat-progress-spinner *ngIf="updateLoader" [diameter]="24" [mode]="'indeterminate'">
+            </mat-progress-spinner>
+        </button>
+    </div>
+</div>

@@ -161,16 +161,26 @@
                     <input matInput placeholder="Customer Account #:" maxlength="500"
                         formControlName="customerAccountNumber">
                 </mat-form-field>
+            
             </div>
+
             <div class="col-12 col-md-6">
                 <mat-form-field class="w-full">
-                    <mat-label>Shipping comment:</mat-label>
+                    <mat-label>Shipping comment: <span mat-icon class="fa fa-question-circle clickable" title="This is the shipping comment that shows up on the purchase orders in OrderManage for this vendor." ></span></mat-label>
                     <textarea matInput placeholder="Shipping Comment" formControlName="shippingComment"></textarea>
                 </mat-form-field>
             </div>
+
+            <div class="col-12 col-md-6">
+                <mat-form-field class="w-full">
+                    <mat-label>Imprint Details: <span mat-icon class="fa fa-question-circle clickable" title="This is the imprint detail that will show up in the imprints section on purchase orders for this vendor." ></span></mat-label>
+                    <textarea matInput placeholder="Imprint details" formControlName="imprintDetails"></textarea>
+                </mat-form-field>
+            </div>
+
             <div class="col-12">
                 <mat-form-field class="w-full">
-                    <mat-label>Additional Order Emails</mat-label>
+                    <mat-label>Additional Order Emails <span class="text-red-500">(COMMA SEPARATED)</span></mat-label>
                     <mat-chip-list class="pt-1" #emailchiplist>
                         <mat-chip [removable]="true" [selectable]="true" *ngFor="let email of additionalOrderEmails"
                             (removed)="removeAdditionalEmails(email)">

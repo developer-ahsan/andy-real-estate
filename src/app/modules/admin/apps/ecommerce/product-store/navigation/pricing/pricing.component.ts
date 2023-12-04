@@ -691,7 +691,6 @@ export class PricingComponent implements OnInit, OnDestroy {
       var canvas_image_height = height;
   
       var totalPDFPages = Math.ceil(height / PDF_Height) - 1;
-      // const { pk_orderID } = this.orderDetail;
       let data = document.getElementById('pdf-area');
       const file_name = `OrderReport.pdf`;
       html2canvas(data, { useCORS: true }).then(canvas => {

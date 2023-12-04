@@ -413,6 +413,7 @@ export interface UpdateCompany {
     customerAccountNumber: string;
     shippingComment: string;
     update_company: boolean;
+    imprintDetails : string
 };
 export interface UpdateWebsiteLoginInfo {
     company_id: number;

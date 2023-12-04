@@ -74,11 +74,13 @@ import { VendorUsersComponent } from './components/pages/vendor-users/vendor-use
 import { VendorStatusComponent } from './components/pages/vendor-status/vendor-status.component';
 import { VendorStatusGuard } from './vendor-status.guard';
 import { VendorsProfileComponent } from './components/pages/vendor-profile/vendor-profile.component';
+import { DesignerNotesComponent } from './components/pages/designer-notes/designer-notes.component';
+import { OpenPurchaseOrdersComponent } from './components/pages/open-purchase-orders/open-purchase-orders.component';
 
 @NgModule({
     declarations: [
         VendorsComponent, VendorsListComponent, NewVendorsComponent, VendorsDisabledListComponent, VendorsDownloadComponent, VendorsEmailComponent, VendorsDetailsComponent, VendorsInfoComponent, SystemImprintRunComponent, ImprintChargesComponent, StandardImprintsComponent, AddEditImprintsComponent, VendorTopOrderComponent, VendorSettingsComponent, VendorProductsComponent, VendorCoreProductsComponent, VendorProductsSummaryComponent, VendorFOBLocationComponent,
-        VendorProductsStoreComponent, VendorBlanketComponent, VendorSizingChartComponent, VendorVideosComponent, VendorCoopComponent, VendorBlanketCoopComponent, VendorCommentsComponent, VendorOrdersComponent, VendorApplicationComponent, VendorImprintColorsComponent, VendorBlanketColorsComponent, VendorRunChargesComponent, VendorSetupChargesComponent, VendorUsersComponent, VendorStatusComponent, VendorsProfileComponent
+        VendorProductsStoreComponent, VendorBlanketComponent, VendorSizingChartComponent, VendorVideosComponent, VendorCoopComponent, VendorBlanketCoopComponent, VendorCommentsComponent, VendorOrdersComponent, VendorApplicationComponent, VendorImprintColorsComponent, VendorBlanketColorsComponent, VendorRunChargesComponent, VendorSetupChargesComponent, VendorUsersComponent, VendorStatusComponent, VendorsProfileComponent, DesignerNotesComponent, OpenPurchaseOrdersComponent
     ],
     imports: [
         RouterModule.forChild(vendorsRoutes),
