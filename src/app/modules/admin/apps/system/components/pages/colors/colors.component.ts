@@ -6,6 +6,7 @@ import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { SystemService } from '../../system.service';
 import { AddColor, DeleteColor, UpdateColor } from '../../system.types';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-product-colors',
@@ -41,7 +42,8 @@ export class ColorsComponent implements OnInit, OnDestroy {
   isAddMsg = '';
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _systemService: SystemService
+    private _systemService: SystemService,
+    private _commonService: DashboardsService
   ) { }
 
   ngOnInit(): void {

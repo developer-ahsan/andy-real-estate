@@ -187,6 +187,7 @@ export class QuoteArtworkDetailsComponent implements OnInit, OnDestroy {
         // Mark for check
         this.getArworkFilesUpload(imprint);
         this.fileInput.nativeElement.value = '';
+        this.imageValue = null;
         this._changeDetectorRef.markForCheck();
       }, err => {
         imprint.uploadLoader = false;
