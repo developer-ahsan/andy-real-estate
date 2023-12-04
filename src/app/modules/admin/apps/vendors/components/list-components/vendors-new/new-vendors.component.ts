@@ -64,46 +64,26 @@ export class NewVendorsComponent implements OnInit, OnDestroy {
   }
   ngOnInit(): void {
     this.initForm();
-    this.getStatesObservable();
-    let params;
-    this.searchStateCtrl.valueChanges.pipe(
-      filter((res: any) => {
-        params = {
-          states: true,
-          keyword: res
-        }
-        return res !== null
-      }),
-      distinctUntilChanged(),
-      debounceTime(300),
-      tap(() => {
-        this.allStates = [];
-        this.isSearchingState = true;
-        this._changeDetectorRef.markForCheck();
-      }),
-      switchMap(value => this._vendorService.getVendorsData(params)
-        .pipe(
-          finalize(() => {
-            this.isSearchingState = false
-            this._changeDetectorRef.markForCheck();
-          }),
-        )
-      )
-    ).subscribe((data: any) => {
-      this.allStates = data['data'];
-    });
+    const storedValue = JSON.parse(sessionStorage.getItem('storeStateSupplierData'));
+    this.allStates = this.splitData(storedValue.data[2][0].states);
   };
 
-  getStatesObservable() {
-    this._vendorService.States$.pipe(takeUntil(this._unsubscribeAll)).subscribe(states => {
-      this.allStates = states["data"];
-      this.totalStates = states["totalRecords"];
-      this.searchStateCtrl.setValue({ state: this.allStates[0].state });
-      this.selectedState = this.allStates[0];
+
+  splitData(data) {
+    const dataArray = data.split(",,");
+    const result = [];
+
+    dataArray.forEach(item => {
+      const [id, state, index] = item.split("::");
+      result.push({ id: parseInt(id), state, index: parseInt(index) });
     });
+
+    return result;
   }
+
+
   onSelected(ev) {
-    this.selectedState = ev.option.value;
+    this.selectedState = ev;
   }
 
   displayWith(value: any) {
@@ -116,8 +96,8 @@ export class NewVendorsComponent implements OnInit, OnDestroy {
   addNewCompany() {
     let errorMessage = '';
     const { companyName, address, city, zipCode, phone, fax, ASI, PPAI, artworkEmail, ordersEmail, websiteURL, outsideRep, insideRep, outsideRepPhone, outsideRepEmail, insideRepPhone, insideRepEmail, samplesContactEmail, customerAccountNumber, phoneExt } = this.addCompanyForm.getRawValue();
-
-    if(companyName.trim() === '' || address.trim() === '' || city.trim() === '' || zipCode.trim() === '' || zipCode.trim() === '' || phoneExt.trim() === '') {
+    const state = this.selectedState;
+    if(companyName?.trim() === '' || address?.trim() === '' || city?.trim() === '' || zipCode?.trim() === '' || zipCode?.trim() === '' || phoneExt?.trim() === '') {
       this._vendorService.snackBar('Please fill all the required fields');
       return;
     }
@@ -133,21 +113,23 @@ export class NewVendorsComponent implements OnInit, OnDestroy {
       companyType.push(3);
     }
 
-    const trimAndLen = (value: string) => value.trim().length;
+    const trimAndLen = (value: string) => value?.trim().length;
 
-    const validateEmail = (email: string) => !email.trim() || this.formVal_email(email);
+    const validateEmail = (email: string) => !email?.trim() || this.formVal_email(email);
 
-    const validatePhone = (phone: string, ext: string) => !phone.trim() || this.formVal_phone(phone + ext);
+    const validatePhone = (phone: string, ext: string) => !phone?.trim() || this.formVal_phone(phone + ext);
 
     if (![companyName, address, city, zipCode, phone].every(trimAndLen)) {
       errorMessage = 'Name, address, city, zip, and phone are required.';
     } else if (!this.formVal_zipCode(zipCode)) {
       errorMessage = 'Zip code appears invalid. Enter 5-digit U.S. zip codes only.';
-    } else if (!validatePhone(phone, phoneExt)) {
+    } 
+    else if (!validatePhone(phone, phoneExt)) {
       errorMessage = 'Phone number appears invalid. Enter 10-digit U.S. phone numbers only.';
     } else if (!validatePhone(fax, '')) {
       errorMessage = 'Fax number appears invalid. Enter 10-digit U.S. phone numbers only or leave blank.';
-    } else if (!validateEmail(artworkEmail)) {
+    } 
+    else if (!validateEmail(artworkEmail)) {
       errorMessage = 'Graphics email appears non-valid.';
     } else if (!validateEmail(ordersEmail)) {
       errorMessage = 'Orders email appears non-valid.';
@@ -160,7 +142,7 @@ export class NewVendorsComponent implements OnInit, OnDestroy {
     let formattedFax = '';
     if (!errorMessage) {
       formattedPhone = this.format_phone(phone, phoneExt);
-      formattedFax = fax.trim() ? this.format_phone(fax, '') : '';
+      formattedFax = fax?.trim() ? this.format_phone(fax, '') : '';
     }
     if (!errorMessage && (!Array.isArray(companyType) || companyType.length === 0 || !companyType.some(type => [1, 2, 3].includes(type)))) {
       errorMessage = 'Please select at least one company type.';
@@ -173,27 +155,27 @@ export class NewVendorsComponent implements OnInit, OnDestroy {
     }
 
     let payload: AddCompany = {
-      companyName: companyName.trim().replace(/'/g, "''"),
-      address: address.trim().replace(/'/g, "''"),
-      city: city.trim().replace(/'/g, "''"),
-      zipCode: zipCode.trim(),
-      phone: phone.trim(),
-      fax: fax.trim(),
-      ASI: ASI.trim(),
-      PPAI: PPAI.trim(),
-      artworkEmail: artworkEmail.trim(),
-      ordersEmail: ordersEmail.trim(),
-      websiteURL: websiteURL.trim(),
-      outsideRep: outsideRep.trim(),
-      insideRep: insideRep.trim(),
-      outsideRepPhone: outsideRepPhone.trim(),
-      outsideRepEmail: outsideRepEmail.trim(),
-      insideRepPhone: insideRepPhone.trim(),
-      insideRepEmail: insideRepEmail.trim(),
-      samplesContactEmail: samplesContactEmail.trim(),
+      companyName: companyName?.trim().replace(/'/g, "''"),
+      address: address?.trim().replace(/'/g, "''"),
+      city: city?.trim().replace(/'/g, "''"),
+      zipCode: zipCode?.trim(),
+      phone: phone?.trim(),
+      fax: fax?.trim(),
+      ASI: ASI?.trim(),
+      PPAI: PPAI?.trim(),
+      artworkEmail: artworkEmail?.trim(),
+      ordersEmail: ordersEmail?.trim(),
+      websiteURL: websiteURL?.trim(),
+      outsideRep: outsideRep?.trim(),
+      insideRep: insideRep?.trim(),
+      outsideRepPhone: outsideRepPhone?.trim(),
+      outsideRepEmail: outsideRepEmail?.trim(),
+      insideRepPhone: insideRepPhone?.trim(),
+      insideRepEmail: insideRepEmail?.trim(),
+      samplesContactEmail: samplesContactEmail?.trim(),
       companyType,
-      state: this.selectedState.state,
-      customerAccountNumber: customerAccountNumber.trim(),
+      state: this.selectedState,
+      customerAccountNumber: customerAccountNumber?.trim(),
       create_company: true
     }
     this.isAddLoader = true;
@@ -219,31 +201,31 @@ export class NewVendorsComponent implements OnInit, OnDestroy {
   formVal_email(email: string): boolean {
     // Regular expression for basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email.trim());
+    return emailRegex.test(email?.trim());
   }
   formVal_phone(phone: string): boolean {
     // Regular expression for basic 10-digit U.S. phone number validation
     const phoneRegex = /^\d{10}$/;
-    return phoneRegex.test(phone.trim());
+    return phoneRegex.test(phone?.trim());
   }
 
   formVal_zipCode(zipCode: string): boolean {
     // Regular expression for basic 5-digit U.S. zip code validation
     const zipCodeRegex = /^\d{5}$/;
-    return zipCodeRegex.test(zipCode.trim());
+    return zipCodeRegex.test(zipCode?.trim());
   }
   format_phone(phone: string, extension: string): string {
     // Regular expression for extracting digits from a string
     const digitRegex = /\d/g;
 
     // Extract only digits from the phone number
-    const digits = phone.trim().match(digitRegex)?.join('') || '';
+    const digits = phone?.trim().match(digitRegex)?.join('') || '';
 
     // Format the phone number as (XXX) XXX-XXXX
     const formattedPhone = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
 
     // Append the extension if provided
-    return extension.trim() ? `${formattedPhone} ext. ${extension.trim()}` : formattedPhone;
+    return extension?.trim() ? `${formattedPhone} ext. ${extension?.trim()}` : formattedPhone;
   }
 
   /**
