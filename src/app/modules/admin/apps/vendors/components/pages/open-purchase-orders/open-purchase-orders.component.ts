@@ -1,14 +1,10 @@
 import { Component, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
-import { VendorsService } from '../../vendors.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { takeUntil } from 'rxjs/operators';
 import { MatPaginator } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 import { SupportTicketService } from 'app/modules/admin/support-tickets/components/support-tickets.service';
-import { FLPSService } from 'app/modules/admin/apps/flps/components/flps.service';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-open-purchase-orders',
@@ -76,10 +72,7 @@ export class OpenPurchaseOrdersComponent implements OnInit, OnDestroy {
     private _changeDetectorRef: ChangeDetectorRef,
     private _supportService: SupportTicketService,
     private router: Router,
-    private _flpsService: FLPSService,
     private _commonService: DashboardsService,
-    private _vendorService: VendorsService,
-    private _snackBar: MatSnackBar,
 
   ) { }
   ngOnInit(): void {
@@ -129,17 +122,6 @@ export class OpenPurchaseOrdersComponent implements OnInit, OnDestroy {
     this.searchOrder = '';
     this.searchCustomer = '';
     this.selectedStore = 'All';
-
-    // this.selectedStatus = 'All';
-    // this.selectedTimeFrame = 'All';
-    // this.selectedUser = 'Anyone'
-    // this.params = {
-    //   time_frame: 'all',
-    //   status_id: 0,
-    //   admin_user_id: 0,
-    //   tickets_list: true
-    // }
-    // this.getData();
   }
 
 

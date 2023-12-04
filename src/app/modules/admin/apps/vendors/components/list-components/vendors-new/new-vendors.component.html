@@ -6,18 +6,27 @@
                     <mat-form-field class="w-full">
                         <mat-label>Vendor Name *</mat-label>
                         <input matInput placeholder="Vendor Name" maxlength="50" formControlName="companyName">
+                        <mat-error *ngIf="addCompanyForm.get('companyName').hasError('required') && addCompanyForm.get('companyName').touched">
+                            Vendor Name is required
+                        </mat-error>
                     </mat-form-field>
                 </div>
                 <div class="col-12 col-md-6">
                     <mat-form-field class="w-full">
                         <mat-label>Address *</mat-label>
                         <input matInput placeholder="Address" maxlength="75" formControlName="address">
+                        <mat-error *ngIf="addCompanyForm.get('address').hasError('required') && addCompanyForm.get('address').touched">
+                            Address is required
+                        </mat-error>
                     </mat-form-field>
                 </div>
                 <div class="col-12 col-md-6">
                     <mat-form-field class="w-full">
                         <mat-label>City *</mat-label>
                         <input matInput placeholder="City" maxlength="50" formControlName="city">
+                        <mat-error *ngIf="addCompanyForm.get('city').hasError('required') && addCompanyForm.get('city').touched">
+                            City is required
+                        </mat-error>
                     </mat-form-field>
                 </div>
                 <div class="col-12 col-md-6">
@@ -40,6 +49,9 @@
                     <mat-form-field class="w-full">
                         <mat-label>Zip *</mat-label>
                         <input matInput placeholder="Zip" maxlength="5" formControlName="zipCode">
+                        <mat-error *ngIf="addCompanyForm.get('zipCode').hasError('required') && addCompanyForm.get('zipCode').touched">
+                            Zip is required
+                        </mat-error>
                     </mat-form-field>
                 </div>
                 <div class="col-12 col-md-6">
@@ -47,10 +59,16 @@
                         <mat-form-field class="w-1/2">
                             <mat-label>Phone *</mat-label>
                             <input matInput placeholder="Phone" maxlength="25" formControlName="phone">
+                            <mat-error *ngIf="addCompanyForm.get('phone').hasError('required') && addCompanyForm.get('phone').touched">
+                                Phone is required
+                            </mat-error>
                         </mat-form-field>
                         <mat-form-field class="w-1/3">
                             <mat-label>PhoneEXT *</mat-label>
                             <input matInput placeholder="PhoneEXT" maxlength="4" formControlName="phoneExt">
+                            <mat-error *ngIf="addCompanyForm.get('phoneExt').hasError('required') && addCompanyForm.get('phoneExt').touched">
+                                PhoneEXT is required
+                            </mat-error>
                         </mat-form-field>
                     </div>
                 </div>
@@ -166,7 +184,7 @@
                 </div>
                 <div class="col-12 text-right">
                     <button mat-flat-button class="min-w-50" [color]="'primary'" (click)="addNewCompany()"
-                        [disabled]="isAddLoader">
+                        [disabled]="isAddLoader || !addCompanyForm.valid">
                         <span *ngIf="!isAddLoader">Create Company</span>
                         <mat-progress-spinner *ngIf="isAddLoader" [diameter]="24" [mode]="'indeterminate'">
                         </mat-progress-spinner>

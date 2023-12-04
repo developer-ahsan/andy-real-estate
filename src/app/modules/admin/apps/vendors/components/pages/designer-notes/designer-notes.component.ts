@@ -3,6 +3,7 @@ import { Subject } from 'rxjs';
 import { VendorsService } from '../../vendors.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { takeUntil } from 'rxjs/operators';
+import { C } from '@angular/cdk/keycodes';
 
 @Component({
   selector: 'app-designer-notes',
@@ -24,12 +25,13 @@ export class DesignerNotesComponent implements OnInit, OnDestroy {
 
   notes = null;
   updateLoader: boolean = false;
-  supplierData : any;
+  supplierData: any;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _vendorService: VendorsService,
     private _snackBar: MatSnackBar,
+
   ) { }
 
   ngOnInit(): void {
@@ -45,6 +47,40 @@ export class DesignerNotesComponent implements OnInit, OnDestroy {
       });
       return;
     }
+    this.updateLoader = true;
+    const payload = {
+      companyID: this.supplierData.pk_companyID,
+      designerNotes: this.notes,
+      update_designer_notes: true,
+    }
+    this._vendorService.putVendorsData(this.replaceSingleQuotesWithDoubleSingleQuotes(payload))
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(
+        res => {
+          this.updateLoader = false;
+          this._snackBar.open("Designer notes updated successfully", '', {
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+            duration: 3000
+          });
+          this._changeDetectorRef.markForCheck();
+        },
+        err => {
+          this._vendorService.snackBar('Something went wrong');
+          this.updateLoader = false;
+          this._changeDetectorRef.markForCheck();
+        }
+      );
+
+  }
+
+  replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+        obj[key] = obj[key].replace(/'/g, "''");
+      }
+    }
+    return obj;
   }
 
   getVendorsData() {
