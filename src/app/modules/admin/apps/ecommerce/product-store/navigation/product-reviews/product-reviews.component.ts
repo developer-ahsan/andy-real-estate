@@ -7,6 +7,7 @@ import { StoreProductService } from '../../store.service';
 import { AddReview, DeleteReview, UpdateReview } from '../../store.types';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { environment } from 'environments/environment';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-product-reviews',
@@ -62,7 +63,7 @@ export class ProductReviewsComponent implements OnInit, OnDestroy {
     private _changeDetectorRef: ChangeDetectorRef,
     private _storeService: StoreProductService,
     private _snackBar: MatSnackBar,
-
+    private _commonService: DashboardsService
   ) { }
 
   ngOnInit(): void {
@@ -72,7 +73,7 @@ export class ProductReviewsComponent implements OnInit, OnDestroy {
       date: new FormControl(moment().format("MM/DD/YYYY")),
       rating: new FormControl(1, Validators.required),
       comment: new FormControl('')
-    })
+    });
     this.updateProductReviewForm = new FormGroup({
       pk_reviewID: new FormControl('', Validators.required),
       blnActive: new FormControl('', Validators.required),
@@ -82,15 +83,13 @@ export class ProductReviewsComponent implements OnInit, OnDestroy {
       rating: new FormControl(1, Validators.required),
       comment: new FormControl(''),
       response: new FormControl('')
-    })
-
+    });
     this.productReviewForm = new FormGroup({
       name: new FormControl('', Validators.required),
       subject: new FormControl('', Validators.required),
       recipients: new FormControl('', Validators.required),
       message: new FormControl(''),
-    })
-
+    });
     // Create the selected product form
     this.getStoreProductDetail();
   }
@@ -111,6 +110,13 @@ export class ProductReviewsComponent implements OnInit, OnDestroy {
   }
   calledScreen(value) {
     this.mainScreen = value;
+    if (value == 'Send Product Review') {
+      const userData = JSON.parse(localStorage.getItem('userDetails'));
+      this.productReviewForm.patchValue({
+        name: userData.firstName + ' ' + userData.lastName,
+        subject: userData.firstName + ' ' + userData.lastName + ' from ' + this.selectedProduct.storeName + ' Would Like You To Review This Product'
+      })
+    }
   }
   getReviews(page) {
     let params = {
@@ -166,7 +172,11 @@ export class ProductReviewsComponent implements OnInit, OnDestroy {
   updateProductReview() {
     const { name, date, rating, comment, response, blnActive, pk_reviewID } = this.updateProductReviewForm.getRawValue();
 
-    if (name.trim() === '' || date.trim() === '') {
+    if (name.trim() === '') {
+      this._storeService.snackBar('Please fill all required fields');
+      return;
+    }
+    if (!date) {
       this._storeService.snackBar('Please fill all required fields');
       return;
     }
@@ -183,6 +193,7 @@ export class ProductReviewsComponent implements OnInit, OnDestroy {
         this.editData.fk_storeProductID,
       update_review: true
     };
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
     this.isUpdateLoader = true;
     this._storeService.putStoresData(this.replaceSingleQuotesWithDoubleSingleQuotes(payload))
       .pipe(takeUntil(this._unsubscribeAll))
@@ -306,18 +317,18 @@ export class ProductReviewsComponent implements OnInit, OnDestroy {
     this.productViewLoader = true;
 
     this._storeService.postStoresProductsData(this.replaceSingleQuotesWithDoubleSingleQuotes(payload))
-    .pipe(takeUntil(this._unsubscribeAll))
-    .subscribe((response: any) => {
-      if (response["success"] === true) {
-        this._storeService.snackBar('Review Send Successfully');
-      }
-      this.productViewLoader = false;
-      this.productAddReviewForm.reset();
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this.productViewLoader = false;
-      this._changeDetectorRef.markForCheck();
-    })
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((response: any) => {
+        if (response["success"] === true) {
+          this._storeService.snackBar('Review Send Successfully');
+        }
+        this.productViewLoader = false;
+        this.productAddReviewForm.reset();
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this.productViewLoader = false;
+        this._changeDetectorRef.markForCheck();
+      })
 
   }
 

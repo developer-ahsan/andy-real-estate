@@ -118,7 +118,7 @@ export class InternalNotesComponent implements OnInit, OnDestroy {
   };
   add(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
-    if (value) {
+    if (value && !this.emails.includes(value)) {
       this.emails.push(value);
     }
     event.chipInput!.clear();

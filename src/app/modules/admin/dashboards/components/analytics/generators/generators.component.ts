@@ -15,7 +15,8 @@ export class GeneratorsComponent implements OnInit {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   @ViewChild('quoteEmailModal') quoteEmailModal: ElementRef;
   @ViewChild('quoteDetailsModal') quoteDetailsModal: ElementRef;
-
+  @ViewChild('sampleCommentModal') sampleCommentModal: ElementRef;
+  sampleCommentModalData: any;
   isLoading: boolean = false;
   pendingQuotes: any = [];
   pendingQuotesLoader: boolean = false;
@@ -1175,6 +1176,11 @@ export class GeneratorsComponent implements OnInit {
 
 
     return tableHTML;
+  }
+  openSampleCommentModal(item) {
+    this.sampleCommentModalData = item;
+    console.log(item);
+    $(this.sampleCommentModal.nativeElement).modal('show');
   }
 
 }

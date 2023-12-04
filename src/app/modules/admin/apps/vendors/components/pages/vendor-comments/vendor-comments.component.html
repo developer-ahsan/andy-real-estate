@@ -36,55 +36,59 @@
             <note class="tex-md text-secondary">All comments, including the new one will be emailed to the
                 checked addresses, if any.
             </note>
-            <mat-form-field class="w-full">
-                <textarea [(ngModel)]="ngComment" rows="6" matInput></textarea>
-            </mat-form-field>
-            <mat-form-field class="w-full">
-                <mat-label>
-                    <span class="ml-1">Search Emails</span>
-                </mat-label>
-                <input type="text" placeholder="Search Emails" matInput [formControl]="emailControl"
-                    [matAutocomplete]="auto">
-                <mat-hint class="mb-1"><span *ngFor="let item of emailSelected; let last=last;let i=index">{{item}}<span
-                            class="font-bold ml-1 cursor-pointer text-black-500" (click)="removeSelectedEmail(i)"
-                            [matTooltip]="'Remove this email'">
-                            (x)
-                        </span><span *ngIf="!last">, </span></span>
-                </mat-hint>
-                <mat-autocomplete #auto="matAutocomplete">
-                    <mat-option *ngIf="isEmailLoader" class="is-loading">Loading...
-                    </mat-option>
-                    <ng-container *ngIf="!isEmailLoader">
-                        <mat-option *ngFor="let result of resultEmails" [value]="result.email"
-                            (click)="selectedEmails(result)">
-                            {{ result.email }}
-                        </mat-option>
-                    </ng-container>
-                </mat-autocomplete>
-            </mat-form-field>
-            <mat-form-field class="example-chip-list w-full" appearance="fill">
-                <mat-label>Additional Emails (Comma-separated)</mat-label>
-                <mat-chip-list class="pt-1" #chipList1>
-                    <mat-chip [removable]="true" [selectable]="true" *ngFor="let email of emails"
-                        (removed)="remove(email)">
-                        {{email}}
-                        <mat-icon class="icon-size-5" matChipRemove
-                            [svgIcon]="'heroicons_solid:minus-circle'"></mat-icon>
-                    </mat-chip>
-                    <input [matChipInputFor]="chipList1" placeholder="New Email"
-                        [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="addOnBlur"
-                        (matChipInputTokenEnd)="add($event)">
-                </mat-chip-list>
-            </mat-form-field>
-            <div class="text-right">
-                <button class="min-w-40" mat-stroked-button [disabled]="isAddCommentLoader" [matTooltip]="'Add Comment'"
-                    (click)="addComment()">
-                    <mat-progress-spinner *ngIf="isAddCommentLoader" [diameter]="24"
-                        [mode]="'indeterminate'"></mat-progress-spinner>
-                    <mat-icon *ngIf="!isAddCommentLoader" [svgIcon]="'heroicons_outline:plus'">
-                    </mat-icon>
-                    <span *ngIf="!isAddCommentLoader" class="ml-1 mr-1">Add Comment</span>
-                </button>
+            <div class="row">
+                <div class="col-12 col-md-7">
+                    <mat-form-field class="w-full">
+                        <textarea [(ngModel)]="ngComment" rows="6" matInput></textarea>
+                    </mat-form-field>
+                    <!-- Additional Emails -->
+                    <mat-form-field class="example-chip-list w-full" appearance="fill">
+                        <mat-label>Additional Emails (Comma-separated)</mat-label>
+                        <mat-chip-list class="pt-1" #chipList1>
+                            <mat-chip [removable]="true" [selectable]="true" *ngFor="let email of emails"
+                                (removed)="remove(email)">
+                                {{email}}
+                                <mat-icon class="icon-size-5" matChipRemove
+                                    [svgIcon]="'heroicons_solid:minus-circle'"></mat-icon>
+                            </mat-chip>
+                            <input [matChipInputFor]="chipList1" placeholder="New Email"
+                                [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="addOnBlur"
+                                (matChipInputTokenEnd)="add($event)">
+                        </mat-chip-list>
+                    </mat-form-field>
+                </div>
+                <!-- Commentators -->
+                <div class="col-12 col-md-5">
+                    <div class="flex justify-between mb-2">
+                        <div class="text-lg font-bold">Commentators</div>
+                        <div class="cursor-pointer text-gray-600 hover:text-gray-900" (click)="checkAllCommentators()">
+                            Check All</div>
+                    </div>
+                    <div class="border rounded-lg p-3  h-50 overflow-y-auto overflow-x-hidden">
+                        <div class="w-full" *ngIf="isCommentatorLoader">
+                            <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+                            </ngx-skeleton-loader>
+                        </div>
+                        <div class="row" *ngIf="!isCommentatorLoader">
+                            <div class="col-12" *ngFor="let item of commentators">
+                                <mat-checkbox [(ngModel)]="item.checked">{{item.email}}</mat-checkbox>
+                            </div>
+                        </div>
+                    </div>
+                    <div (click)="navigate()" class="underline text-blue-500 cursor-pointer">
+                        Manage emails
+                    </div>
+                    <div class="text-right mt-2">
+                        <button class="min-w-40" mat-stroked-button [disabled]="isAddCommentLoader"
+                            [matTooltip]="'Add Comment'" (click)="addComment()">
+                            <mat-progress-spinner *ngIf="isAddCommentLoader" [diameter]="24"
+                                [mode]="'indeterminate'"></mat-progress-spinner>
+                            <mat-icon *ngIf="!isAddCommentLoader" [svgIcon]="'heroicons_outline:plus'">
+                            </mat-icon>
+                            <span *ngIf="!isAddCommentLoader" class="ml-1 mr-1">Add Comment</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

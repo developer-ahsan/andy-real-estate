@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { VendorsService } from '../../vendors.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { takeUntil } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { C } from '@angular/cdk/keycodes';
 
 @Component({
@@ -26,6 +26,8 @@ export class DesignerNotesComponent implements OnInit, OnDestroy {
   notes = null;
   updateLoader: boolean = false;
   supplierData: any;
+
+  isLoading: boolean;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -84,7 +86,8 @@ export class DesignerNotesComponent implements OnInit, OnDestroy {
   }
 
   getVendorsData() {
-    this._vendorService.Single_Suppliers$.pipe(takeUntil(this._unsubscribeAll)).subscribe(supplier => {
+    this._vendorService.Single_Suppliers$.pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    })).subscribe(supplier => {
       this.supplierData = supplier["data"][0];
       this.notes = this.supplierData.designerNotes;
     })

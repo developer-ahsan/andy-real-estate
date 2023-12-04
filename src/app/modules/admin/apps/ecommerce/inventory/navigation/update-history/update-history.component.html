@@ -19,7 +19,7 @@
         </div>
     </div>
 
-    <div class="row" *ngIf="showLegacyLoader">
+    <div class="row" *ngIf="showLegacyLoader && !isLoading">
         <div class="col-12 my-2">
             <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
                 <div class="p-6 sm:p-8 lg:p-10 w-full">
@@ -27,8 +27,17 @@
                         Update History
                     </div>
                     <!-- Update history -->
+                    <span *ngIf="htmlHistory.fk_addedByAdminUserID">
+                        <span>
+                            <b>Originally added by {{htmlHistory.qryAdminUser}}</b>
+                            <span *ngIf="htmlHistory.addedOn">
+                                on {{htmlHistory.addedOn}}</span>
+                        </span>
+                    </span>
+                    <span> Last updated by <span>{{htmlHistory.lastUpdatedBy || 'N/A'}} on {{htmlHistory.lastUpdatedDate
+                            || 'N/A'}}</span></span>
                     <div class="gap-y-4">
-                        <div [innerHTML]="htmlHistory" class="text-sm"></div>
+                        <div [innerHTML]="htmlHistory.updateHistory" class="text-sm"></div>
                     </div>
                 </div>
             </fuse-card>
@@ -43,6 +52,7 @@
                         Update History
                     </div>
                 </div>
+
                 <table mat-table [dataSource]="dataSource" class="w-full"
                     *ngIf="dataSource.length > 0;else other_content">
 

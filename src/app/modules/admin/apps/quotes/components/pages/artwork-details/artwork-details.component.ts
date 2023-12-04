@@ -83,7 +83,6 @@ export class QuoteArtworkDetailsComponent implements OnInit, OnDestroy {
         element.imprints = [];
         if (element.imprintDetails) {
           let imprints = element.imprintDetails.split('#_');
-          console.log(imprints);
           imprints.forEach((imprint, index) => {
             let splitImprint = imprint.split('||');
             let find = element.imprints.find(elem => elem.id == splitImprint[0]);
@@ -92,7 +91,6 @@ export class QuoteArtworkDetailsComponent implements OnInit, OnDestroy {
               this.checkIfImageExists(element.imprints[index], `https://assets.consolidus.com/artwork/Proof/Quotes/${this.quoteDetail.storeUserID}/${this.quoteDetail.pk_cartID}/${element.pk_cartLineID}/${splitImprint[0]}.jpg`);
             }
             if (imprints.length == index + 1) {
-              console.log('here');
               // if (splitImprint[3] == 0 && splitImprint[4] == 0 && splitImprint[8] == 0) {
               this.getArworkFilesNew(element);
             }
@@ -101,7 +99,6 @@ export class QuoteArtworkDetailsComponent implements OnInit, OnDestroy {
         }
       });
       this.artworkData = res["data"];
-      console.log(this.artworkData);
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
@@ -170,6 +167,10 @@ export class QuoteArtworkDetailsComponent implements OnInit, OnDestroy {
 
   };
   uploadArtworkMedia(imprint) {
+    if (!this.imageValue) {
+      this._quoteService.snackBar('Please choose any file');
+      return;
+    }
     imprint.uploadLoader = true;
     let count = imprint.artworkFiles.length + 1;
     const { imageUpload, name, type } = this.imageValue;
@@ -243,7 +244,7 @@ export class QuoteArtworkDetailsComponent implements OnInit, OnDestroy {
 
   }
   addNewComment() {
-    if (!this.artworkComment) {
+    if (!this.artworkComment.trim()) {
       this._quoteService.snackBar('Please add any comment');
       return
     }
@@ -262,12 +263,14 @@ export class QuoteArtworkDetailsComponent implements OnInit, OnDestroy {
       comment: this.artworkComment,
       add_cartLine_artwork_comment: true
     }
-    this._quoteService.AddQuoteData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    payload = this._commonService.replaceNullSpaces(payload);
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
+    this._quoteService.AddQuoteData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe((res: any) => {
       if (res["success"]) {
         this._quoteService.snackBar(res["message"]);
       }
       this.modalContent.commentLoader = false;
-      this.modalContent.comments = `${this.modalContent.comments}<br /><br /> - ${this.user.name} Added A Comment (${moment().format('MM/DD/YY')} @ ${moment().format('LT')}) - <br /><br /> ${this.artworkComment}`;
+      this.modalContent.comments = `${this.modalContent.comments}<br /><br /> - ${this.user.name} Added A Comment (${res.currentDate}) - <br /><br /> ${this.artworkComment}`;
       this.artworkComment = '';
       this._changeDetectorRef.markForCheck();
     }, err => {

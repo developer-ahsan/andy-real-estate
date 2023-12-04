@@ -44,7 +44,7 @@ export class UpdateHistoryComponent implements OnInit, OnDestroy {
         this._inventoryService.getUpdateHistoryByProductId(pk_productID)
           .pipe(takeUntil(this._unsubscribeAll))
           .subscribe((history) => {
-            this.htmlHistory = history["data"][0]?.updateHistory;
+            this.htmlHistory = history["data"][0];
 
             this.legacyHistoryLoader = false;
 
@@ -72,7 +72,6 @@ export class UpdateHistoryComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((history) => {
         this.dataSource = history["data"];
-
         if (this.dataSource.length) {
           for (const obj of this.dataSource) {
             const { dateAdded } = obj;

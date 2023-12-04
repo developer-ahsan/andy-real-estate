@@ -8,6 +8,8 @@ import { AuthService } from 'app/core/auth/auth.service';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { vendorComment } from '../../vendors.types';
+import { OrdersService } from 'app/modules/admin/apps/orders/orders-components/orders.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-vendor-comments',
@@ -36,41 +38,24 @@ export class VendorCommentsComponent implements OnInit, OnDestroy {
   ngComment: string = '';
   readonly separatorKeysCodes = [ENTER, COMMA] as const;
 
+  commentators: any;
+  isCommentatorLoader: boolean;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _vendorService: VendorsService,
-    private _authService: AuthService
+    private _authService: AuthService,
+    private _orderService: OrdersService,
+    private router: Router
   ) { }
 
   initForm() {
   }
   ngOnInit(): void {
     this.user = this._authService.parseJwt(this._authService.accessToken);
-    let params;
-    this.emailControl.valueChanges.pipe(filter((res: any) => {
-      params = {
-        commentors: true,
-        keyword: res
-      }
-      return res != null && res.length >= 3
-    }), debounceTime(500), tap(() => {
-      this.resultEmails = [];
-      this.isEmailLoader = true;
-      this._changeDetectorRef.markForCheck();
-    }),
-      switchMap(value => this._vendorService.getVendorsData(params)
-        .pipe(
-          finalize(() => {
-            this.isEmailLoader = false;
-            this._changeDetectorRef.markForCheck();
-          }),
-        ))).subscribe(data => {
-          this.resultEmails = data["data"] as any[];
-          this._changeDetectorRef.markForCheck();
-        });
     this.initForm();
     this.isLoading = true;
     this.getVendorsData();
+    this.getCommentators();
   };
   calledScreen(screen) {
     this.mainScreen = screen;
@@ -97,7 +82,7 @@ export class VendorCommentsComponent implements OnInit, OnDestroy {
       if (type == 'add') {
         this.ngComment = '';
         this.emails = [];
-        this.emailSelected = [];
+        this.commentators.forEach(element => { element.checked = false });
         this.isAddCommentLoader = false;
         this._vendorService.snackBar('Comment Added Successfylly');
         this.mainScreen = 'Current Comments';
@@ -121,7 +106,7 @@ export class VendorCommentsComponent implements OnInit, OnDestroy {
 
   add(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
-    if (value) {
+    if (value && !this.emails.includes(value)) {
       this.emails.push(value);
     }
     event.chipInput!.clear();
@@ -144,8 +129,13 @@ export class VendorCommentsComponent implements OnInit, OnDestroy {
   }
 
   addComment() {
-    let emailArr = this.emails.concat(this.emailSelected);
-    if (this.ngComment! == '') {
+    let emailArr = this.emails;
+    this.commentators.forEach(element => {
+      if (element.checked) {
+        emailArr.push(element.email);
+      }
+    });
+    if (this.ngComment.trim() != '') {
       this._vendorService.snackBar('Comment is required');
       return;
     }
@@ -156,7 +146,7 @@ export class VendorCommentsComponent implements OnInit, OnDestroy {
     this.isAddCommentLoader = true;
     let payload: vendorComment = {
       company_id: Number(this.supplierData.pk_companyID),
-      admin_comment: this.ngComment,
+      admin_comment: this.ngComment.trim(),
       emails: emailArr,
       add_comment: true
     }
@@ -172,9 +162,36 @@ export class VendorCommentsComponent implements OnInit, OnDestroy {
     }, err => {
       this.isAddCommentLoader = false;
       this._changeDetectorRef.markForCheck();
-    })
+    });
   }
+  // GEt Commentators
+  getCommentators() {
+    this.commentators = [];
+    let params = {
+      get_commentators_emails: true
+    }
+    this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      let commentators = res["data"][0].commentorsEmail.split(',,');
+      commentators.forEach(commentator => {
+        const [id, email] = commentator.split('::');
+        this.commentators.push({ id, email });
+      });
 
+      this.isCommentatorLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isCommentatorLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  checkAllCommentators() {
+    this.commentators.forEach(element => {
+      element.checked = true;
+    });
+  }
+  navigate() {
+    this.router.navigateByUrl('/apps/users/admin-commentors');
+  }
   /**
      * On destroy
      */

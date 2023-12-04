@@ -251,7 +251,8 @@
                             <td>
                                 <div class="flex space-x-1 align-items-center">
                                     <mat-button-toggle>
-                                        <mat-icon svgIcon="mat_outline:comment" matTooltip="Sample Comments"></mat-icon>
+                                        <mat-icon svgIcon="mat_outline:comment" (click)="openSampleCommentModal(item)"
+                                            matTooltip="Sample Comments"></mat-icon>
                                     </mat-button-toggle>
 
                                     <mat-button-toggle (click)="openEmailDetailsModal(item,'sample')">
@@ -1015,6 +1016,29 @@
                     </button>
                 </div>
             </ng-container>
+        </div>
+    </div>
+</div>
+
+<!-- Sample comments -->
+<div #sampleCommentModal class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog"
+    aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">SAMPLE COMMENTS FOR ORDER
+                    {{sampleCommentModalData?.orderID}}
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" *ngIf="sampleCommentModalData">
+                There are no comments for this sample order
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="mr-2" mat-button mat-stroked-button data-dismiss="modal">Close</button>
+            </div>
         </div>
     </div>
 </div>

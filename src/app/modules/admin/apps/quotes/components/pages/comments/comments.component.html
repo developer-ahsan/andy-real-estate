@@ -24,9 +24,10 @@
                         <table class="table table-striped">
                             <tr *ngFor="let item of currentComment; let i=index">
                                 <td width="95%">
-                                    <b>{{item.firstName + ' ' + item.lastName}}</b> said on {{item.dateCreated}} <span
-                                        *ngIf="item.recipients" class="fa fa-exclamation-circle clickable"
-                                        title="Recipients: {{item.recipients}}"></span><br><span
+                                    <b>{{item.firstName + ' ' + item.lastName}}</b> said on {{item.dateCreated}}
+                                    <mat-icon svgIcon="heroicons_solid:exclamation-circle" class="mt-1 icon-size-4"
+                                        *ngIf="item.recipients"
+                                        matTooltip="Recipients: {{item.recipients}}"></mat-icon><br><span
                                         [innerHTML]="item.comment"></span>
                                 </td>
                                 <td width="1%">
