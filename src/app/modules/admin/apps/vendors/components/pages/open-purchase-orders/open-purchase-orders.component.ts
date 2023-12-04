@@ -5,6 +5,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 import { SupportTicketService } from 'app/modules/admin/support-tickets/components/support-tickets.service';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
+import { VendorsService } from '../../vendors.service';
 
 @Component({
   selector: 'app-open-purchase-orders',
@@ -15,8 +16,10 @@ export class OpenPurchaseOrdersComponent implements OnInit, OnDestroy {
   @ViewChild('paginator') paginator: MatPaginator;
 
 
-  searchOrder: any;
-  searchCustomer: any;
+  searchOrder: any = '';
+  searchCustomer: any = '';
+  selectedStoreId: any = 0;
+
   selectedStore: any = 'All';
 
   allStores: any[];
@@ -25,67 +28,110 @@ export class OpenPurchaseOrdersComponent implements OnInit, OnDestroy {
   displayedColumns: any = [
     {
       value: 'PO#',
-      key: 'pk_ticketID',
-      width: '10'
+      key: ['fk_orderID', 'pk_orderLineID'],
+      width: '15',
+      moneyField: false,
+      isArray: true
     },
     {
       value: 'STATUS',
-      key: 'subject',
-      width: '35'
+      key: 'statusName',
+      width: '20',
+      moneyField: false,
+      isArray: false
     },
     {
       value: 'EST. SHIP DATE',
-      key: 'modified',
-      width: '20'
+      key: 'estimatedShippingDate',
+      width: '15',
+      moneyField: false,
+      isArray: false
     },
     {
       value: 'STORE',
-      key: 'age',
-      width: '10'
+      key: 'storeName',
+      width: '10',
+      moneyField: false,
+      isArray: false
     },
     {
       value: 'CUSTOMER',
-      key: 'firstName',
-      width: '15'
+      key: ['companyName', 'firstName', 'lastName'],
+      width: '30',
+      moneyField: false,
+      isArray: true
     },
     {
       value: 'TOTAL',
-      key: 'statusName',
-      width: '10'
+      key: 'TOTAL',
+      width: '10',
+      moneyField: true,
+      isArray: false
+
     }
   ];
   totalRecords = 20;
   page = 1;
   userData: any;
 
+  // params: any = {
+  //   time_frame: 'all',
+  //   status_id: 999,
+  //   admin_user_id: 0,
+  //   tickets_list: true,
+  //   page: this.page,
+  //   keyword: '',
+  // }
 
-  params: any = {
-    time_frame: 'all',
-    status_id: 999,
-    admin_user_id: 0,
-    tickets_list: true,
-    page: this.page,
-    keyword: '',
-  }
+
+  params: any = {}
+  vendorData: any;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _supportService: SupportTicketService,
     private router: Router,
     private _commonService: DashboardsService,
+    private _vendorService: VendorsService,
+
 
   ) { }
   ngOnInit(): void {
     let user = localStorage.getItem('userDetails');
     this.userData = JSON.parse(user);
-    this.getData();
+    this.getVendorsData();
     this.getAllStores();
   };
 
+  getVendorsData() {
+    this._vendorService.Single_Suppliers$.pipe(takeUntil(this._unsubscribeAll)).subscribe(supplier => {
+      this.vendorData = supplier["data"][0];
+      this.getData();
+    })
+  }
+
+  getValue(data: any, key: string | string[]): string {
+    if (Array.isArray(key)) {
+      return key.map(k => data[k]).join(' - ');
+    } else {
+      return data[key] !== null ? data[key] : '---';
+    }
+  }
+
 
   getData() {
+    this.params = {
+      vendor_openPOs: true,
+      company_id: this.vendorData.pk_companyID,
+      store_id: this.selectedStoreId,
+      order_search: this.searchOrder,
+      customer_search: this.searchCustomer,
+      sort_order: '',
+      sort_by: '',
+      page: this.page,
+    }
     this.isLoading = true;
-    this._supportService.getApiData(this.params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._vendorService.getVendorsData(this.params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.dataSource = res;
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
@@ -99,29 +145,27 @@ export class OpenPurchaseOrdersComponent implements OnInit, OnDestroy {
   changePage(increment: boolean) {
     if (increment && this.page <= Math.ceil(this.dataSource.totalRecords / this.dataSource.size)) {
       this.page++;
-      this.setParams(this.page, 'page')
+      this.getData()
     }
     else if (!increment && this.page > 1) {
       this.page--;
-      this.setParams(this.page, 'page')
+      this.getData()
     }
   }
 
-  setParams(value?: any, key?: string) {
-    if (value) {
-      this.params = {
-        ...this.params,
-        [key]: value
-      };
+  setParams(value: any = '') {
+    if (value !== '') {
+      this.selectedStoreId = value;
     }
-    // this.getData();
+    this.getData();
   }
 
   resetParams() {
-
     this.searchOrder = '';
     this.searchCustomer = '';
+    this.selectedStoreId = 0;
     this.selectedStore = 'All';
+    this.getData();
   }
 
 
@@ -139,7 +183,7 @@ export class OpenPurchaseOrdersComponent implements OnInit, OnDestroy {
 
 
   navigateToPage(id: string) {
-    this.router.navigateByUrl(`support-tickets/detail/${id}`);
+    this.router.navigateByUrl(`/apps/orders/${id}/summary`);
   }
 
 

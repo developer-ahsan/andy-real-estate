@@ -7,7 +7,7 @@
           <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full">
             <mat-label>Search order/PO:</mat-label>
             <input class="h-6" [(ngModel)]="searchOrder" matInput [matTooltip]="'Press enter key after typing'"
-              (keyup.enter)="setParams('', 'keyword')" (mousewheel)="$event.preventDefault()" [autocomplete]="'off'"
+              (keyup.enter)="setParams()" (mousewheel)="$event.preventDefault()" [autocomplete]="'off'"
               [placeholder]="'Search order/PO:'">
           </mat-form-field>
         </div>
@@ -16,58 +16,25 @@
           <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full">
             <mat-label>Search customer:</mat-label>
             <input class="h-6" [(ngModel)]="searchCustomer" matInput [matTooltip]="'Press enter key after typing'"
-              (keyup.enter)="setParams('', 'keyword')" (mousewheel)="$event.preventDefault()" [autocomplete]="'off'"
+              (keyup.enter)="setParams()" (mousewheel)="$event.preventDefault()" [autocomplete]="'off'"
               [placeholder]="'Search customer:'">
           </mat-form-field>
         </div>
 
         <div>
           <mat-form-field appearance="fill" class="w-full">
-              <mat-label>
-                <span>Store:</span>
-              </mat-label>
-              <mat-select [(ngModel)]="selectedStore" disableRipple>
-                <mat-option (click)="setParams(0,'status_id')" value="All">All </mat-option>
-                <mat-option (click)="setParams(status.key,'status_id')" [value]="store.pk_storeID"
-                  *ngFor="let store of allStores">
-                  {{store.storeName}}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
+            <mat-label>
+              <span>Store:</span>
+            </mat-label>
+            <mat-select [(ngModel)]="selectedStore" disableRipple>
+              <mat-option (click)="setParams(0)" value="All">All </mat-option>
+              <mat-option (click)="setParams(store.pk_storeID)" [value]="store.pk_storeID"
+                *ngFor="let store of allStores">
+                {{store.storeName}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
         </div>
-
-        <!-- <div>
-          <mat-form-field appearance="fill" class="w-full">
-              <mat-label>
-                <span>Timeframe:</span>
-              </mat-label>
-              <mat-select [(ngModel)]="selectedTimeFrame" disableRipple>
-                <mat-option (click)="setParams('all','time_frame')" value="All">All Time</mat-option>
-                <mat-option (click)="setParams(timeFrame.key, 'time_frame')" [value]="timeFrame.value"
-                  *ngFor="let timeFrame of timeFrames">
-                  {{timeFrame.value}}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-        </div> -->
-
-        <!-- <div>
-          <mat-form-field appearance="fill" class="w-full">
-              <mat-label>
-                <span>Submitted by:</span>
-                <span class="ml-3" *ngIf="!isSubmittedRecieved"> (Fetching Users... )</span>
-              </mat-label>
-              <mat-select [(ngModel)]="selectedUser" disableRipple [disabled]="submittedByUsers?.length === 0">
-                <mat-option (click)="setParams(0,'admin_user_id')" value="Anyone">Anyone</mat-option>
-                <mat-option (click)="setParams(user.pk_userID, 'admin_user_id')" [value]="user.fullName"
-                  *ngFor="let user of submittedByUsers">
-                  {{user.fullName}}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-        </div> -->
-
-        
       </div>
 
       <div class="col-12 flex justify-end">
@@ -96,12 +63,17 @@
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 bg-white">
-                  <tr (click)="navigateToPage(data?.pk_ticketID)" class="max-w-[100px] hover:bg-gray-50 cursor-pointer"
+                  <tr (click)="navigateToPage(data?.fk_orderID)" class="max-w-[100px] hover:bg-gray-50 cursor-pointer"
                     *ngFor="let data of dataSource.data">
+
                     <td *ngFor="let item of displayedColumns"
                       class="py-3.5 pl-4 pr-3 text-left text-sm text-gray-500 sm:pl-6"
                       [ngStyle]="{'width': 'calc(' + item.width/100 + ' * 100%)'}">
-                      {{data[item.key]}}</td>
+
+                      <span>{{ item.moneyField ? (getValue(data, item.key) | currency) : getValue(data,
+                        item.key) }}</span>
+                    </td>
+
                   </tr>
                 </tbody>
               </table>
@@ -114,9 +86,9 @@
           <div class="hidden sm:block">
             <p class="text-sm text-gray-700">
               Showing
-              <span class="font-medium">{{((dataSource.page-1) * dataSource.size) + 1}}</span>
+              <span class="font-medium">{{((dataSource.number-1) * dataSource.size) + 1}}</span>
               to
-              <span class="font-medium">{{((dataSource.page-1) * dataSource.size) +
+              <span class="font-medium">{{((dataSource.number-1) * dataSource.size) +
                 dataSource.size}}</span>
               of
               <span class="font-medium">{{dataSource.totalRecords}}</span>
