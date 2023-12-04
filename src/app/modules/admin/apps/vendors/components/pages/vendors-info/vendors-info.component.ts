@@ -94,37 +94,24 @@ export class VendorsInfoComponent implements OnInit, OnDestroy {
   }
   ngOnInit(): void {
     this.initForm();
-    this.getStatesObservable();
     this.getVendorsData();
     this.getWebsiteLogin();
-    let params;
-    this.searchStateCtrl.valueChanges.pipe(
-      filter((res: any) => {
-        params = {
-          states: true,
-          keyword: res
-        }
-        return res !== null
-      }),
-      distinctUntilChanged(),
-      debounceTime(300),
-      tap(() => {
-        this.allStates = [];
-        this.isSearchingState = true;
-        this._changeDetectorRef.markForCheck();
-      }),
-      switchMap(value => this._vendorService.getVendorsData(params)
-        .pipe(
-          finalize(() => {
-            this.isSearchingState = false
-            this._changeDetectorRef.markForCheck();
-          }),
-        )
-      )
-    ).subscribe((data: any) => {
-      this.allStates = data['data'];
-    });
+    const storedValue = JSON.parse(sessionStorage.getItem('storeStateSupplierData'));
+    this.allStates = this.splitData(storedValue.data[2][0].states);
   };
+
+  splitData(data) {
+    const dataArray = data.split(",,");
+    const result = [];
+
+    dataArray.forEach(item => {
+      const [id, state, index] = item.split("::");
+      result.push({ id: parseInt(id), state, index: parseInt(index) });
+    });
+
+    return result;
+  }
+
   getWebsiteLogin() {
     this.isWebsiteDataLoad = true;
     let params = {
@@ -172,14 +159,9 @@ export class VendorsInfoComponent implements OnInit, OnDestroy {
       }
     })
   }
-  getStatesObservable() {
-    this._vendorService.States$.pipe(takeUntil(this._unsubscribeAll)).subscribe(states => {
-      this.allStates = states["data"];
-      this.totalStates = states["totalRecords"];
-    });
-  }
+
   onSelected(ev) {
-    this.selectedState = ev.option.value;
+    this.selectedState = ev;
   }
 
   displayWith(value: any) {
@@ -190,14 +172,13 @@ export class VendorsInfoComponent implements OnInit, OnDestroy {
   }
   // Update New Company
   updateCompany() {
-    const { pk_companyID, companyName, address, city, state, zipCode, phone, fax, ASI, PPAI, artworkEmail, ordersEmail, websiteURL, outsideRep, insideRep, outsideRepPhone, outsideRepEmail, insideRepPhone, insideRepEmail, samplesContactEmail, additionalOrderEmails, vendorRelation, screenprintEmail, embroideryEmail, coopPricing, netSetup, ltm, freeRandomSamples, specSamples, production, customerAccountNumber, shippingComment, notes, phoneExt, imprintDetails } = this.updateCompnayForm.getRawValue();
-
-
-    const trimAndLen = (value: string) => value.trim().length;
+    const { pk_companyID, companyName, address, city, zipCode, phone, fax, ASI, PPAI, artworkEmail, ordersEmail, websiteURL, outsideRep, insideRep, outsideRepPhone, outsideRepEmail, insideRepPhone, insideRepEmail, samplesContactEmail, additionalOrderEmails, vendorRelation, screenprintEmail, embroideryEmail, coopPricing, netSetup, ltm, freeRandomSamples, specSamples, production, customerAccountNumber, shippingComment, notes, phoneExt, imprintDetails } = this.updateCompnayForm.getRawValue();
+    const state = this.selectedState;
+    const trimAndLen = (value: string) => value?.trim().length;
 
     const validateEmail = (email: string) => !email.trim() || this.formVal_email(email);
 
-    const validatePhone = (phone: string, ext: string) => !phone.trim() || this.formVal_phone(phone + ext);
+    const validatePhone = (phone: string, ext: string) => !phone?.trim() || this.formVal_phone(phone + ext);
     let errorMessage = '';
     if (![companyName, address, city, zipCode, phone].every(trimAndLen)) {
       errorMessage = 'Name, address, city, zip, and phone are required.';
@@ -228,7 +209,7 @@ export class VendorsInfoComponent implements OnInit, OnDestroy {
     let formattedFax = '';
     if (!errorMessage) {
       formattedPhone = this.format_phone(phone, phoneExt);
-      formattedFax = fax.trim() ? this.format_phone(fax, '') : '';
+      formattedFax = fax?.trim() ? this.format_phone(fax, '') : '';
     }
 
 
@@ -238,7 +219,7 @@ export class VendorsInfoComponent implements OnInit, OnDestroy {
     }
 
     let payload: UpdateCompany = {
-      company_id: pk_companyID, imprintDetails:imprintDetails.trim().replace(/'/g, "''"), companyName: companyName?.replace(/'/g, "''"), address: address?.replace(/'/g, "''"), city: city?.replace(/'/g, "''"), state, zipCode, phone, fax, ASI, PPAI, artworkEmail, ordersEmail, websiteURL, outsideRep, insideRep, outsideRepPhone, outsideRepEmail, insideRepPhone, insideRepEmail, samplesContactEmail, vendorRelation, screenprintEmail, embroideryEmail, coopPricing: coopPricing?.replace(/'/g, "''"), netSetup: netSetup?.replace(/'/g, "''"), ltm: ltm?.replace(/'/g, "''"), freeRandomSamples: freeRandomSamples?.replace(/'/g, "''"), specSamples: specSamples?.replace(/'/g, "''"), production: production?.replace(/'/g, "''"), update_company: true, additionalOrderEmails: this.additionalOrderEmails.toString(), customerAccountNumber, shippingComment: shippingComment?.replace(/'/g, "''"), notes: notes?.replace(/'/g, "''")
+      company_id: pk_companyID, imprintDetails:imprintDetails?.trim()?.replace(/'/g, "''"), companyName: companyName?.replace(/'/g, "''"), address: address?.replace(/'/g, "''"), city: city?.replace(/'/g, "''"), state, zipCode, phone, fax, ASI, PPAI, artworkEmail, ordersEmail, websiteURL, outsideRep, insideRep, outsideRepPhone, outsideRepEmail, insideRepPhone, insideRepEmail, samplesContactEmail, vendorRelation, screenprintEmail, embroideryEmail, coopPricing: coopPricing?.replace(/'/g, "''"), netSetup: netSetup?.replace(/'/g, "''"), ltm: ltm?.replace(/'/g, "''"), freeRandomSamples: freeRandomSamples?.replace(/'/g, "''"), specSamples: specSamples?.replace(/'/g, "''"), production: production?.replace(/'/g, "''"), update_company: true, additionalOrderEmails: this.additionalOrderEmails.toString(), customerAccountNumber, shippingComment: shippingComment?.replace(/'/g, "''"), notes: notes?.replace(/'/g, "''")
     }
     this.isUpdateLoader = true;
     this._vendorService.putVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -261,7 +242,7 @@ export class VendorsInfoComponent implements OnInit, OnDestroy {
   formVal_email(email: string): boolean {
     if (email) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return emailRegex.test(email.trim());
+      return emailRegex.test(email?.trim());
     }
     // Regular expression for basic email validation
 
@@ -269,26 +250,26 @@ export class VendorsInfoComponent implements OnInit, OnDestroy {
   formVal_phone(phone: string): boolean {
     // Regular expression for basic 10-digit U.S. phone number validation
     const phoneRegex = /^\d{10}$/;
-    return phoneRegex.test(phone.trim());
+    return phoneRegex.test(phone?.trim());
   }
 
   formVal_zipCode(zipCode: string): boolean {
     // Regular expression for basic 5-digit U.S. zip code validation
     const zipCodeRegex = /^\d{5}$/;
-    return zipCodeRegex.test(zipCode.trim());
+    return zipCodeRegex.test(zipCode?.trim());
   }
   format_phone(phone: string, extension: string): string {
     // Regular expression for extracting digits from a string
     const digitRegex = /\d/g;
 
     // Extract only digits from the phone number
-    const digits = phone.trim().match(digitRegex)?.join('') || '';
+    const digits = phone?.trim().match(digitRegex)?.join('') || '';
 
     // Format the phone number as (XXX) XXX-XXXX
     const formattedPhone = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
 
     // Append the extension if provided
-    return extension.trim() ? `${formattedPhone} ext. ${extension.trim()}` : formattedPhone;
+    return extension?.trim() ? `${formattedPhone} ext. ${extension?.trim()}` : formattedPhone;
   }
   // Update Website Login
   updateWebsiteData() {

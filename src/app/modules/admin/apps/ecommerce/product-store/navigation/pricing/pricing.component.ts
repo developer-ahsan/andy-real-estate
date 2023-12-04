@@ -141,7 +141,7 @@ export class PricingComponent implements OnInit, OnDestroy {
       res.margins.forEach((element, index) => {
         if (index == 0) {
           quantity.quantityOne = element.quantity;
-          quantity.marginOne = String(element.margin * 100);
+          quantity.marginOne = String((element.margin * 100).toFixed(3));
           if (element.priceOverride) {
             quantity.priceOverrideOne = String(element.priceOverride.toFixed(3));
           }
@@ -150,7 +150,7 @@ export class PricingComponent implements OnInit, OnDestroy {
           }
         } else if (index == 1) {
           quantity.quantityTwo = element.quantity;
-          quantity.marginTwo = String(element.margin * 100);
+          quantity.marginTwo = String((element.margin * 100).toFixed(3));
           if (element.priceOverride) {
             quantity.priceOverrideTwo = String(element.priceOverride.toFixed(3));
           }
@@ -159,7 +159,7 @@ export class PricingComponent implements OnInit, OnDestroy {
           }
         } else if (index == 2) {
           quantity.quantityThree = element.quantity;
-          quantity.marginThree = String(element.margin * 100);
+          quantity.marginThree = String((element.margin * 100).toFixed(3));
           if (element.priceOverride) {
             quantity.priceOverrideThree = String(element.priceOverride.toFixed(3));
           }
@@ -168,7 +168,7 @@ export class PricingComponent implements OnInit, OnDestroy {
           }
         } else if (index == 3) {
           quantity.quantityFour = element.quantity;
-          quantity.marginFour = String(element.margin * 100);
+          quantity.marginFour = String((element.margin * 100).toFixed(3));
           if (element.priceOverride) {
             quantity.priceOverrideFour = String(element.priceOverride.toFixed(3));
           }
@@ -177,7 +177,7 @@ export class PricingComponent implements OnInit, OnDestroy {
           }
         } else if (index == 4) {
           quantity.quantityFive = element.quantity;
-          quantity.marginFive = String(element.margin * 100);
+          quantity.marginFive = String((element.margin * 100).toFixed(3));
           if (element.priceOverride) {
             quantity.priceOverrideFive = String(element.priceOverride.toFixed(3));
           }
@@ -186,7 +186,7 @@ export class PricingComponent implements OnInit, OnDestroy {
           }
         } else if (index == 5) {
           quantity.quantitySix = element.quantity;
-          quantity.marginSix = String(element.margin * 100);
+          quantity.marginSix = String((element.margin * 100).toFixed(3));
           if (element.priceOverride) {
             quantity.priceOverrideSix = String(element.priceOverride.toFixed(3));
           }
