@@ -138,8 +138,10 @@ export class QuoteArtworkDetailsComponent implements OnInit, OnDestroy {
     this._changeDetectorRef.markForCheck();
     this._quoteService.getFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(files => {
       data.imprints.forEach(element => {
+
         element.artworkFiles = [];
-        files["data"].forEach(file => {
+        files["data"].forEach((file, index) => {
+          file.count = index + 1;
           if (file.ID.includes(element.id)) {
             file.delLoader = false;
             element.artworkFiles.push(file);
@@ -199,7 +201,8 @@ export class QuoteArtworkDetailsComponent implements OnInit, OnDestroy {
     this._changeDetectorRef.markForCheck();
     this._quoteService.getFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(files => {
       imprint.artworkFiles = [];
-      files["data"].forEach(file => {
+      files["data"].forEach((file, index) => {
+        file.count = index + 1;
         if (file.ID.includes(imprint.id)) {
           imprint.artworkFiles.push(file);
         }

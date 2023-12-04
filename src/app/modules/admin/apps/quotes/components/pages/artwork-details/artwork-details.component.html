@@ -55,7 +55,7 @@
                                 <ng-container *ngIf="imprint.logoBankID !== 0; else customerLogoBlock">
                                     <a target="_blank"
                                         href="https://assets.consolidus.com/globalAssets/Stores/logoBank2/{{quoteDetail.storeID}}/Thumbs/{{imprint.logoBankID}}.jpg">
-                                        Artwork File #{{i+1}}
+                                        Artwork File #{{artwork.count}}
                                     </a>
                                 </ng-container>
 
@@ -63,7 +63,7 @@
                                     <ng-container *ngIf="imprint.customerLogoBankID !== 0; else locationLogoBlock">
                                         <a target="_blank"
                                             href="https://assets.consolidus.com/globalAssets/StoreUser/LogoBank/{{quoteDetail.storeUserID}}/{{quoteDetail.storeID}}/Thumbs/{{imprint.customerLogoBankID}}.jpg">
-                                            Artwork File #{{i+1}}
+                                            Artwork File #{{artwork.count}}
                                         </a>
                                     </ng-container>
 
@@ -71,7 +71,7 @@
                                         <ng-container *ngIf="imprint.locationLogoBankID !== 0; else artworkFilesBlock">
                                             <a target="_blank"
                                                 href="https://assets.consolidus.com/globalAssets/Stores/locationLogoBank/{{quoteDetail.pk_locationID}}/Thumbs/{{imprint.locationLogoBankID}}.jpg">
-                                                Artwork File #{{i+1}}
+                                                Artwork File #{{artwork.count}}
                                             </a>
                                         </ng-container>
 
@@ -80,7 +80,7 @@
                                                 *ngIf="imprint.artworkFiles.length > 0"
                                                 href="https://assets.consolidus.com/artwork/quotes/{{quoteDetail.storeID}}/{{quoteDetail.storeUserID}}/{{quoteDetail.pk_cartID}}/{{imprint.pk_cartLineID}}/{{artwork?.ID}}.{{artwork?.EXTENSION}}?{{tempDate}}"
                                                 target="_blank">
-                                                Artwork File #{{i+1}}
+                                                Artwork File #{{artwork.count}}
                                             </a>
                                         </ng-template>
                                     </ng-template>
