@@ -43,6 +43,7 @@ export interface StoreSettings {
     business_name: string;
     report_color: string;
     fk_credit_term_id: string;
+
     registration_text: string;
     bln_require_reference: boolean;
     bln_tax_exempt: boolean;
@@ -78,7 +79,18 @@ export interface StoreSettings {
     bln_pdf_shipping_notification: boolean;
     bln_registered_user_cashback_default: boolean;
     bln_chat: boolean;
-    store_setting: boolean;
+
+    extrasMargin: number;
+    blnImprintSetups: boolean;
+    storeApparelDecoratorID: number;
+    blnQuoteFinalizationReminders: boolean;
+    shippingMargin: number;
+
+    blnMSRP: boolean;
+    blnPercentSavings: boolean;
+    blnWaiveFirstImprintCharge: boolean;
+
+    store_setting: boolean
 };
 
 export interface GroupBuy {

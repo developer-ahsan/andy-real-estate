@@ -18,7 +18,7 @@
             </div>
             <div *ngIf="item.imprints.length > 0">
                 <table class="table table-condensed table-striped table-hover padding-1x"
-                    *ngFor="let imprint of item.imprints; let imprintIndex = index">
+                    *ngFor="let imprint of item.imprints">
                     <tbody>
                         <tr>
                             <td width="30%">
@@ -106,7 +106,7 @@
                                     <input type="file" #fileInput name="newArtworkFile" class="inline"
                                         (change)="uploadFile($event)">&nbsp;&nbsp;&nbsp;
                                     <button type="submit" class="mat-button mat-stroked-button"
-                                        [disabled]="imprint.uploadLoader" (click)="system(imprint)">
+                                        [disabled]="imprint.uploadLoader" (click)="uploadArtworkMedia(imprint)">
                                         <span *ngIf="!imprint.uploadLoader" class="fa fa-upload"> Upload</span>
                                         <mat-progress-spinner *ngIf="imprint.uploadLoader" [diameter]="24"
                                             [mode]="'indeterminate'">

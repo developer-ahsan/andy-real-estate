@@ -6,6 +6,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { FileManagerService } from '../../store-manager.service';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
+import { StoreSettings } from '../../stores.types';
 
 export interface Task {
   name: string;
@@ -71,6 +72,8 @@ export class StoreSettingsComponent implements OnInit, OnDestroy {
             let selectedStore = items["data"][0];
             selectedStore["reportColor"] = `#${selectedStore["reportColor"]}`;
             storeSetting["cashbackPercent"] = storeSetting["cashbackPercent"] * 100;
+            storeSetting["shippingMargin"] = storeSetting["shippingMargin"] * 100;
+            storeSetting["extrasMargin"] = storeSetting["extrasMargin"] * 100;
 
             this.storeSettingsForm.patchValue(selectedStore);
             this.storeSettingsForm.patchValue(storeSetting);
@@ -111,13 +114,14 @@ export class StoreSettingsComponent implements OnInit, OnDestroy {
       fk_creditTermID: [''],
       blnTaxExempt: [''],
       blnCostCenterCodes: [''],
+      blnShowCostCenterCodes: [''],
+      blnRequireCostCenterCode: [''],
       blnRequireLocation: [''],
       blnRequireAccountCode: [''],
       blnPDFInvoice: [''],
       blnPDFShippingNotifications: [''],
       blnLogoBank: [''],
       blnTopReviewEmail: [''],
-      blnRequireCostCenterCode: [''],
       blnElectronicInvoicing: [''],
       blnStoreHeaderImage: [''],
       blnProductNumbers: [''],
@@ -142,7 +146,15 @@ export class StoreSettingsComponent implements OnInit, OnDestroy {
       blnMasterAccountShowAllOrders: [''],
       blnCashback: [''],
       cashbackPercent: [''],
-      blnRegisteredUsersCashbackDefault: ['']
+      blnRegisteredUsersCashbackDefault: [''],
+      blnMSRP: [''],
+      blnPercentSavings: [''],
+      blnWaiveFirstImprintCharge: [''],
+      blnQuoteFinalizationReminders: [''],
+      extrasMargin: [''],
+      blnImprintSetups: [''],
+      storeApparelDecoratorID: [''],
+      shippingMargin: ['']
     });
   }
 
@@ -158,7 +170,7 @@ export class StoreSettingsComponent implements OnInit, OnDestroy {
     const { pk_storeID, championName, blnEProcurement, blnElectronicInvoicing } = this.selectedStore;
     const formValues = this.storeSettingsForm.getRawValue();
 
-    const payload = {
+    let payload: StoreSettings = {
       store_id: pk_storeID,
       store_name: formValues.storeName?.replace(/'/g, "''"),
       store_code: formValues.storeCode?.replace(/'/g, "''"),
@@ -209,15 +221,24 @@ export class StoreSettingsComponent implements OnInit, OnDestroy {
       bln_master_account_show_all_orders: formValues.blnMasterAccountShowAllOrders,
       bln_sales_report: formValues.blnSalesReport,
       bln_cash_back: formValues.blnCashback,
-      cashback_percent: formValues.cashbackPercent,
+      cashback_percent: formValues.cashbackPercent / 100,
       product_builder_text: formValues.productBuilderText?.replace(/'/g, "''"),
       bln_allow_registration: formValues.blnAllowRegistration,
       bln_pdf_shipping_notification: formValues.blnPDFShippingNotifications,
       bln_registered_user_cashback_default: formValues.blnRegisteredUsersCashbackDefault,
       bln_chat: formValues.blnChat,
-      store_setting: true
+      extrasMargin: formValues.extrasMargin / 100,
+      blnImprintSetups: formValues.blnImprintSetups,
+      storeApparelDecoratorID: formValues.storeApparelDecoratorID,
+      blnQuoteFinalizationReminders: formValues.blnQuoteFinalizationReminders,
+      shippingMargin: formValues.shippingMargin / 100,
+      blnMSRP: formValues.blnMSRP,
+      blnPercentSavings: formValues.blnPercentSavings,
+      blnWaiveFirstImprintCharge: formValues.blnWaiveFirstImprintCharge,
+      store_setting: true,
     };
-
+    payload = this._commonService.replaceNullSpaces(payload);
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
     this.isStoreSettingsUpdate = true;
     this._storesManagerService.updateStoreSettings(payload)
       .subscribe((response) => {

@@ -1,33 +1,7 @@
 <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isStoreFetch">
 </ngx-skeleton-loader>
 
-<div class="row py-2 overflow-auto" *ngIf="!isStoreFetch">
-  <div class="col-12">
-    <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen" (change)="calledScreen(group.value)">
-      <mat-button-toggle *ngFor="let buttonValue of screens" value="{{buttonValue}}">
-        {{ buttonValue }}
-      </mat-button-toggle>
-    </mat-button-toggle-group>
-  </div>
-</div>
-
-<div *ngIf="mainScreen == 'Jaggaer Settings'">
-  <div class="row px-3 bg-light" *ngIf="!isStoreFetch">
-    <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
-      <div class="text-2xl font-extrabold tracking-tight leading-none">
-        Jaggaer Settings
-      </div>
-
-      <div class="my-2">
-        *This store is not currently set up for SciQuest. Please go to the
-        <a class="text-secondary font-semibold cursor-pointer" (click)="callStoreScreen()">Store Settings</a>
-        to set this up.
-      </div>
-    </div>
-  </div>
-</div>
-
-<div *ngIf="mainScreen == 'Store Settings'">
+<div>
   <div *ngIf="!isStoreFetch">
     <form [formGroup]="storeSettingsForm">
       <div class="row px-3 bg-light">
@@ -191,8 +165,7 @@
                 </mat-select>
               </mat-form-field>
             </div>
-            <!-- ngif blnEProcurement -->
-            <div class="col-6">
+            <div class="col-6" *ngIf="selectedStore.blnEProcurement">
               <mat-form-field appearance="fill" class="w-full">
                 <mat-label>Electronic Invoicing?</mat-label>
                 <mat-select [formControlName]="'blnElectronicInvoicing'">
@@ -212,19 +185,19 @@
               </mat-form-field>
             </div>
 
-            <div class="col-6" *ngIf="!blnCostCenterCodes">
+            <div class="col-6" *ngIf="!storeSettingsForm.get('blnCostCenterCodes').value">
               <mat-form-field appearance="fill" class="w-full">
                 <mat-label>Save/show all cost center codes?</mat-label>
-                <mat-select [formControlName]="'blnElectronicInvoicing'">
+                <mat-select [formControlName]="'blnShowCostCenterCodes'">
                   <mat-option [value]="true">Yes</mat-option>
                   <mat-option [value]="false">No</mat-option>
                 </mat-select>
               </mat-form-field>
             </div>
-            <div class="col-6" *ngIf="!blnCostCenterCodes">
+            <div class="col-6" *ngIf="!storeSettingsForm.get('blnCostCenterCodes').value">
               <mat-form-field appearance="fill" class="w-full">
                 <mat-label>Require cost center codes?</mat-label>
-                <mat-select [formControlName]="'blnElectronicInvoicing'">
+                <mat-select [formControlName]="'blnRequireCostCenterCode'">
                   <mat-option [value]="true">Yes</mat-option>
                   <mat-option [value]="false">No</mat-option>
                 </mat-select>
@@ -508,51 +481,51 @@
           </div>
 
 
-          <!-- Quote  Settings -->
+          <!-- Quote Settings -->
           <div class="col-12 border-t py-5">
             <div class="text-2xl font-extrabold tracking-tight leading-none">
               Quote Settings
             </div>
           </div>
-          <div class="col-12 col-md-6">
+          <div class="col-6 col-md-6">
             <mat-form-field class="w-full">
               <mat-label>Show MSRP:</mat-label>
-              <mat-select matInput>
-                <mat-option [value]="1">Yes</mat-option>
-                <mat-option [value]="0">No</mat-option>
+              <mat-select matInput formControlName="blnMSRP">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
               </mat-select>
             </mat-form-field>
           </div>
-          <div class="col-12 col-md-6">
+          <div class="col-6 col-md-6">
             <mat-form-field class="w-full">
               <mat-label>Show percent savings:</mat-label>
-              <mat-select matInput>
-                <mat-option [value]="1">Yes</mat-option>
-                <mat-option [value]="0">No</mat-option>
+              <mat-select matInput formControlName="blnPercentSavings">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
               </mat-select>
             </mat-form-field>
           </div>
-          <div class="col-12 col-md-6">
+          <div class="col-6 col-md-6">
             <mat-form-field class="w-full">
               <mat-label>Waive first imprint charge:</mat-label>
-              <mat-select matInput>
-                <mat-option [value]="1">Yes</mat-option>
-                <mat-option [value]="0">No</mat-option>
+              <mat-select matInput formControlName="blnWaiveFirstImprintCharge">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
               </mat-select>
               <mat-hint class="text-red-500 my-2">This includes both setups and runs, for all products and imprints on
                 this
                 store.</mat-hint>
             </mat-form-field>
           </div>
-          <div class="col-12 col-md-6">
+          <div class="col-6 col-md-6">
             <mat-label>Send quote finalization reminders: <mat-icon class="icon-size-4"
                 svgIcon="heroicons_solid:question-mark-circle"
                 [matTooltip]="'If turned on, an email notification will go out to all users who have quotes that are fully approved and waiting to be finalized.'">
               </mat-icon></mat-label>
             <mat-form-field class="w-full">
-              <mat-select matInput>
-                <mat-option [value]="1">Yes</mat-option>
-                <mat-option [value]="0">No</mat-option>
+              <mat-select matInput formControlName="blnQuoteFinalizationReminders">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
               </mat-select>
             </mat-form-field>
           </div>
@@ -563,33 +536,34 @@
               Imprint Settings
             </div>
           </div>
-          <div class="col-12 col-md-6">
+          <div class="col-6 col-md-6">
             <mat-label>Extras Margin:</mat-label>
             <p class="text-red-500">The profit margin amount for setups, additional run charges, and packaging
               Default is 20%</p>
             <mat-form-field class="w-full">
-              <input matInput>
+              <input matInput formControlName="extrasMargin">
               <span matSuffix>%</span>
             </mat-form-field>
           </div>
-          <div class="col-12 col-md-6">
+          <div class="col-6 col-md-6">
             <mat-form-field class="w-full">
               <mat-label>Imprint Setups:</mat-label>
-              <mat-select matInput>
-                <mat-option [value]="1">Yes</mat-option>
-                <mat-option [value]="0">No</mat-option>
+              <mat-select matInput formControlName="blnImprintSetups">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
               </mat-select>
             </mat-form-field>
           </div>
-          <div class="col-12 col-md-6">
+          <div class="col-12 ">
             <mat-label>Store apparel decorator:</mat-label>
             <p>This setting will automatically set the Store Product Level imprint decorator whenever a new product is
               added to this store, overriding the Master Product level imprint decorator settings. Updating this setting
               now does not affect anything on the store, it only affects products when they are added to the store
               moving forward.</p>
             <mat-form-field class="w-full">
-              <mat-select matInput>
-                <mat-option *ngFor="let supplier of suppliersList">{{supplier.companyName}}</mat-option>
+              <mat-select matInput formControlName="storeApparelDecoratorID">
+                <mat-option *ngFor="let supplier of suppliersList"
+                  [value]="supplier.pk_companyID">{{supplier.companyName}}</mat-option>
               </mat-select>
             </mat-form-field>
           </div>
@@ -603,10 +577,11 @@
             <div class="my-5">
               <mat-radio-group aria-label="Select an option" [formControlName]="'fk_creditTermID'">
                 <div class="col-12 my-3 font-weight-bold">
-                  <mat-radio-button [value]="null">None</mat-radio-button>
+                  <mat-radio-button [value]="0">None</mat-radio-button>
                 </div>
                 <div class="col-12 my-3">
-                  <mat-radio-button class="font-weight-bold" style="color: red" [value]="1">Expired</mat-radio-button>
+                  <mat-radio-button class="font-weight-bold" style="color: red"
+                    [value]="true">Expired</mat-radio-button>
                   <br />"Your account's credit terms have expired."
                 </div>
                 <div class="col-12 my-3">
@@ -636,7 +611,7 @@
               <p>This is the shipping margin that marks up our negotiated/contract rate returned to us from UPS.
                 Leaving this blank will provide the published rate returned from UPS with no markup.</p>
               <mat-form-field class="min-w-100">
-                <input matInput>
+                <input matInput formControlName="shippingMargin">
                 <span matSuffix>%</span>
               </mat-form-field>
             </div>
