@@ -93,9 +93,14 @@ export class DefaultMarginsComponent implements OnInit, OnDestroy {
       this.defaultMarginForm.getRawValue()["6"] || null,
     ];
     const realMargins = this.removeNull(margins);
-
-    const hasInvalidValue = margins.some(value => value === null);
-    if (hasInvalidValue) {
+    let count = 0;
+    const hasInvalidValue = margins.some(value => {
+      value === null
+      if (value === null) {
+        count++
+      }
+    });
+    if (count > 0 && count < 6) {
       this._commonService.snackBar('If you are supplying default margins for this product, please supply all six margins.');
       return;
     }
