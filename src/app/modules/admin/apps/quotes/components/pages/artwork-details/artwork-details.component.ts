@@ -137,8 +137,8 @@ export class QuoteArtworkDetailsComponent implements OnInit, OnDestroy {
     }
     this._changeDetectorRef.markForCheck();
     this._quoteService.getFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(files => {
+      let count = 0;
       data.imprints.forEach(element => {
-
         element.artworkFiles = [];
         files["data"].forEach((file, index) => {
           file.count = index + 1;
@@ -146,6 +146,12 @@ export class QuoteArtworkDetailsComponent implements OnInit, OnDestroy {
             file.delLoader = false;
             element.artworkFiles.push(file);
           }
+        });
+      });
+      data.imprints.forEach(element => {
+        element.artworkFiles.forEach(file => {
+          count = count + 1;
+          file.count = count;
         });
       });
       this._changeDetectorRef.markForCheck();
@@ -166,7 +172,6 @@ export class QuoteArtworkDetailsComponent implements OnInit, OnDestroy {
         type: extension
       };
     }
-
   };
   uploadArtworkMedia(imprint) {
     if (!this.imageValue) {
@@ -185,7 +190,8 @@ export class QuoteArtworkDetailsComponent implements OnInit, OnDestroy {
     this._quoteService.getFiles(payload)
       .subscribe((response) => {
         // Mark for check
-        this.getArworkFilesUpload(imprint);
+        // this.getArworkFilesUpload(imprint);
+        this.getArtworkDetails()
         this.fileInput.nativeElement.value = '';
         this.imageValue = null;
         this._changeDetectorRef.markForCheck();
@@ -203,7 +209,6 @@ export class QuoteArtworkDetailsComponent implements OnInit, OnDestroy {
     this._quoteService.getFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(files => {
       imprint.artworkFiles = [];
       files["data"].forEach((file, index) => {
-        file.count = index + 1;
         if (file.ID.includes(imprint.id)) {
           imprint.artworkFiles.push(file);
         }

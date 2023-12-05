@@ -37,6 +37,7 @@ import { FulfillmentInvoicesComponent } from './navigation/fulfillment-invoices/
 import { ResetTopTenComponent } from './navigation/reset-top-ten/reset-top-ten.component';
 import { GroupOrderSettingsComponent } from './navigation/group-order-settings/group-order-settings.component';
 import { ApparelDecoratorComponent } from './navigation/apparel-decorator/apparel-decorator.component';
+import { ProductClicksComponent } from './navigation/product-clicks/product-clicks.component';
 
 export const storeRoutes: Route[] = [
     {
@@ -131,6 +132,14 @@ export const storeRoutes: Route[] = [
                 data: {
                     title: 'Products/Supplier',
                     url: 'product-suppliers'
+                }
+            },
+            {
+                path: 'product-clicks',
+                component: ProductClicksComponent,
+                data: {
+                    title: 'Product Clicks',
+                    url: 'product-clicks'
                 }
             },
             {

@@ -5,6 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { FileManagerService } from '../../store-manager.service';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 export interface Task {
   name: string;
@@ -45,12 +46,13 @@ export class StoreSettingsComponent implements OnInit, OnDestroy {
 
   isStoreSettingsUpdate: boolean = false;
   flashMessage: 'success' | 'error' | null = null;
-
+  suppliersList: any = [];
   constructor(
     private _storesManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _formBuilder: FormBuilder,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+    private _commonService: DashboardsService
   ) { }
 
   ngOnInit(): void {
@@ -62,6 +64,7 @@ export class StoreSettingsComponent implements OnInit, OnDestroy {
       .subscribe((items: any) => {
         this.selectedStore = items["data"][0];
         this.initialize();
+        this.getSuppliers();
         this._storesManagerService.settings$.pipe(takeUntil(this._unsubscribeAll))
           .subscribe((settings: any) => {
             let storeSetting = settings["data"][0];
@@ -75,6 +78,15 @@ export class StoreSettingsComponent implements OnInit, OnDestroy {
             this.isStoreFetch = false;
           });
       });
+  }
+  getSuppliers() {
+    this.suppliersList.push({ companyName: 'NONE - Use master product level imprint settings', pk_companyID: 0 })
+    this._commonService.suppliersData$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(suppliers => {
+        const activeSuppliers = suppliers["data"].filter(element => element.blnActiveVendor);
+        this.suppliersList.push(...activeSuppliers);
+      })
   }
   initialize() {
     this.storeSettingsForm = this._formBuilder.group({

@@ -67,10 +67,6 @@ export class ApparelDecoratorComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
         this.totalSuppliers = res.totalRecords;
-      })
-    this._storeManagerService.getAllSuppliersBln(this.totalSuppliers)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe(res => {
         this.isPageLoading = false;
         res["data"].forEach(element => {
           this.dropdownList.push(element);
@@ -79,6 +75,17 @@ export class ApparelDecoratorComponent implements OnInit, OnDestroy {
         // this.dropdownList = res["data"];
         this._changeDetectorRef.markForCheck();
       })
+    // this._storeManagerService.getAllSuppliersBln(this.totalSuppliers)
+    //   .pipe(takeUntil(this._unsubscribeAll))
+    //   .subscribe(res => {
+    //     this.isPageLoading = false;
+    //     res["data"].forEach(element => {
+    //       this.dropdownList.push(element);
+    //     });
+    //     this.selectedItems = this.dropdownList[0].pk_companyID;
+    //     // this.dropdownList = res["data"];
+    //     this._changeDetectorRef.markForCheck();
+    //   })
   }
   onItemSelect(item: any) {
     console.log(item);

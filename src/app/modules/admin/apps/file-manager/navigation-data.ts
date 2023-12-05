@@ -67,7 +67,6 @@ export const navigations = [
                 icon: 'mat_outline:supervised_user_circle',
                 route: 'product-suppliers'
             },
-
             {
                 id: 6,
                 title: 'Store Product Videos',
@@ -92,11 +91,12 @@ export const navigations = [
                 icon: 'mat_outline:supervised_user_circle',
                 route: 'store-suppliers'
             },
-            // {
-            //     id: 20,
-            //     title: 'Product Clicks',
-            //     icon: 'mat_outline:ads_click',
-            // },
+            {
+                id: 20,
+                title: 'Product Clicks',
+                icon: 'mat_outline:ads_click',
+                route: 'product-clicks'
+            },
             {
                 id: 21,
                 title: 'Search History',

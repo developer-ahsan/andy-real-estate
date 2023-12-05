@@ -7,6 +7,7 @@ import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { SystemService } from '../../system.service';
 import { AddColor, AddImprintColor, AddImprintMethod, AddOhioTaxRate, DeleteColor, DeleteImprintColor, UpdateColor, UpdateImprintColor, UpdateImprintMethod, UpdateOhioTaxRate } from '../../system.types';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-country-sales',
@@ -46,7 +47,8 @@ export class CountrySalesComponent implements OnInit, OnDestroy {
   ngRGBUpdate = '';
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _systemService: SystemService
+    private _systemService: SystemService,
+    private _commonService: DashboardsService
   ) { }
 
   ngOnInit(): void {
@@ -81,6 +83,7 @@ export class CountrySalesComponent implements OnInit, OnDestroy {
       }
       if (type == 'add') {
         this.isAddCountyLoader = false;
+        this.initOhioForm();
         this.ngName = '';
         this.ngDesc = '';
         this._systemService.snackBar('Ohio Tax Added Successfully');
@@ -128,13 +131,20 @@ export class CountrySalesComponent implements OnInit, OnDestroy {
 
   addNewCounty() {
     const { county, zip, rate, add_ohio } = this.addOhioForm.getRawValue();
-    if (county == '' || zip == '' || rate == '') {
+    if (county.trim() == '' || zip.trim() == '' || rate == '') {
       this._systemService.snackBar('Please fill out the required fields.');
       return;
     }
     let payload: AddOhioTaxRate = {
       county, zip, rate, add_ohio
     }
+    payload = this._commonService.replaceNullSpaces(payload);
+    if (county == '' || zip == '' || rate == '') {
+      this._systemService.snackBar('Please fill out the required fields.');
+      return;
+    }
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
+
     this.isAddCountyLoader = true;
     this._systemService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this._changeDetectorRef.markForCheck();
@@ -177,23 +187,31 @@ export class CountrySalesComponent implements OnInit, OnDestroy {
   }
   updateOhio() {
     let ohio_rates = [];
-    this.dataSource.forEach(element => {
-      // if (element.county == '' || element.zip == '' || element.rate == '') {
-      //   this._systemService.snackBar('Please fill out the required fields');
-      //   return;
-      // }
-      if (!element.is_delete) {
-        element.is_delete = false;
+    this.dataSource.forEach((element, index) => {
+      element = this._commonService.replaceNullSpaces(element);
+      element = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(element);
+      if (element.county == '' || element.zip == '' || element.rate == '') {
+        this._systemService.snackBar('Please fill out the required fields');
+        return;
+      } else {
+        if (!element.is_delete) {
+          element.is_delete = false;
+        }
+        ohio_rates.push({
+          county: element.county,
+          zip: element.zip,
+          rate: element.rate,
+          county_id: element.pk_countyID,
+          is_delete: element.is_delete
+        });
       }
-      ohio_rates.push({
-        county: element.county,
-        zip: element.zip,
-        rate: element.rate,
-        county_id: element.pk_countyID,
-        is_delete: element.is_delete
-      });
 
+      if (ohio_rates.length == this.dataSource.length) {
+        this.updateOhios(ohio_rates);
+      }
     });
+  }
+  updateOhios(ohio_rates) {
     let payload: UpdateOhioTaxRate = {
       ohio_rates: ohio_rates,
       update_ohio: true
@@ -210,7 +228,6 @@ export class CountrySalesComponent implements OnInit, OnDestroy {
       this._systemService.snackBar('Something went wrong');
     })
   }
-
   /**
      * On destroy
      */

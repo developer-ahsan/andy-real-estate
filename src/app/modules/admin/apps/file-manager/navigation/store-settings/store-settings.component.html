@@ -191,6 +191,17 @@
                 </mat-select>
               </mat-form-field>
             </div>
+            <!-- ngif blnEProcurement -->
+            <div class="col-6">
+              <mat-form-field appearance="fill" class="w-full">
+                <mat-label>Electronic Invoicing?</mat-label>
+                <mat-select [formControlName]="'blnElectronicInvoicing'">
+                  <mat-option [value]="true">Yes</mat-option>
+                  <mat-option [value]="false">No</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
             <div class="col-6">
               <mat-form-field appearance="fill" class="w-full">
                 <mat-label>Cost Center Codes</mat-label>
@@ -200,6 +211,26 @@
                 </mat-select>
               </mat-form-field>
             </div>
+
+            <div class="col-6" *ngIf="!blnCostCenterCodes">
+              <mat-form-field appearance="fill" class="w-full">
+                <mat-label>Save/show all cost center codes?</mat-label>
+                <mat-select [formControlName]="'blnElectronicInvoicing'">
+                  <mat-option [value]="true">Yes</mat-option>
+                  <mat-option [value]="false">No</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="col-6" *ngIf="!blnCostCenterCodes">
+              <mat-form-field appearance="fill" class="w-full">
+                <mat-label>Require cost center codes?</mat-label>
+                <mat-select [formControlName]="'blnElectronicInvoicing'">
+                  <mat-option [value]="true">Yes</mat-option>
+                  <mat-option [value]="false">No</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
             <div class="col-6">
               <mat-form-field appearance="fill" class="w-full">
                 <mat-label>Require location</mat-label>
@@ -476,6 +507,94 @@
             </mat-form-field>
           </div>
 
+
+          <!-- Quote  Settings -->
+          <div class="col-12 border-t py-5">
+            <div class="text-2xl font-extrabold tracking-tight leading-none">
+              Quote Settings
+            </div>
+          </div>
+          <div class="col-12 col-md-6">
+            <mat-form-field class="w-full">
+              <mat-label>Show MSRP:</mat-label>
+              <mat-select matInput>
+                <mat-option [value]="1">Yes</mat-option>
+                <mat-option [value]="0">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-md-6">
+            <mat-form-field class="w-full">
+              <mat-label>Show percent savings:</mat-label>
+              <mat-select matInput>
+                <mat-option [value]="1">Yes</mat-option>
+                <mat-option [value]="0">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-md-6">
+            <mat-form-field class="w-full">
+              <mat-label>Waive first imprint charge:</mat-label>
+              <mat-select matInput>
+                <mat-option [value]="1">Yes</mat-option>
+                <mat-option [value]="0">No</mat-option>
+              </mat-select>
+              <mat-hint class="text-red-500 my-2">This includes both setups and runs, for all products and imprints on
+                this
+                store.</mat-hint>
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-md-6">
+            <mat-label>Send quote finalization reminders: <mat-icon class="icon-size-4"
+                svgIcon="heroicons_solid:question-mark-circle"
+                [matTooltip]="'If turned on, an email notification will go out to all users who have quotes that are fully approved and waiting to be finalized.'">
+              </mat-icon></mat-label>
+            <mat-form-field class="w-full">
+              <mat-select matInput>
+                <mat-option [value]="1">Yes</mat-option>
+                <mat-option [value]="0">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- Imprint Settings -->
+          <div class="col-12 border-t py-5">
+            <div class="text-2xl font-extrabold tracking-tight leading-none">
+              Imprint Settings
+            </div>
+          </div>
+          <div class="col-12 col-md-6">
+            <mat-label>Extras Margin:</mat-label>
+            <p class="text-red-500">The profit margin amount for setups, additional run charges, and packaging
+              Default is 20%</p>
+            <mat-form-field class="w-full">
+              <input matInput>
+              <span matSuffix>%</span>
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-md-6">
+            <mat-form-field class="w-full">
+              <mat-label>Imprint Setups:</mat-label>
+              <mat-select matInput>
+                <mat-option [value]="1">Yes</mat-option>
+                <mat-option [value]="0">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-md-6">
+            <mat-label>Store apparel decorator:</mat-label>
+            <p>This setting will automatically set the Store Product Level imprint decorator whenever a new product is
+              added to this store, overriding the Master Product level imprint decorator settings. Updating this setting
+              now does not affect anything on the store, it only affects products when they are added to the store
+              moving forward.</p>
+            <mat-form-field class="w-full">
+              <mat-select matInput>
+                <mat-option *ngFor="let supplier of suppliersList">{{supplier.companyName}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+
           <!-- Default Credit Term -->
           <div class="col-12 border-t py-5">
             <div class="text-2xl font-extrabold tracking-tight leading-none">
@@ -505,6 +624,26 @@
               </mat-radio-group>
             </div>
           </div>
+
+
+          <!-- Shipping Setting -->
+          <div class="col-12 border-t py-5">
+            <div class="text-2xl font-extrabold tracking-tight leading-none">
+              Shipping Setting
+            </div>
+            <div class="my-5">
+              <p class="font-bold">Shipping margin:</p>
+              <p>This is the shipping margin that marks up our negotiated/contract rate returned to us from UPS.
+                Leaving this blank will provide the published rate returned from UPS with no markup.</p>
+              <mat-form-field class="min-w-100">
+                <input matInput>
+                <span matSuffix>%</span>
+              </mat-form-field>
+            </div>
+          </div>
+
+
+
 
           <div class="col-12 flex justify-end">
             <div class="items-center">

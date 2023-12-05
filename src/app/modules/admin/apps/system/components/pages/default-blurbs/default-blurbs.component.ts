@@ -43,7 +43,7 @@ export class DefaultBlurbsComponent implements OnInit, OnDestroy {
   ngRGBUpdate = '';
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _systemService: SystemService
+    private _systemService: SystemService,
   ) { }
 
   ngOnInit(): void {
@@ -89,7 +89,7 @@ export class DefaultBlurbsComponent implements OnInit, OnDestroy {
   };
 
   addNewBlurb() {
-    if (this.ngName == '') {
+    if (this.ngName.trim() == '') {
       this._systemService.snackBar('Blurb name is required');
       return;
     }
