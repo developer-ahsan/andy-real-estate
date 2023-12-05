@@ -174,6 +174,11 @@ export const navigations = [
                 route: 'royalties'
             },
             {
+                title: 'Referral Locations',
+                icon: 'mat_outline:speaker_notes',
+                route: 'referral-locations'
+            },
+            {
                 title: 'Art Approval Settings',
                 icon: 'mat_outline:picture_in_picture',
                 route: 'art-approval-settings'

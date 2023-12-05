@@ -8,6 +8,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationDialogComponent, ConfirmDialogModel } from '../../confirmation-dialog/confirmation-dialog.component';
 import { debounceTime, map, distinctUntilChanged, filter } from "rxjs/operators";
 import { Router } from '@angular/router';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 @Component({
   selector: 'app-locations',
   templateUrl: './locations.component.html',
@@ -34,7 +35,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
     "Add New Users"
   ];
 
-  displayedColumns: string[] = ['categoryName', 'department', 'user', 'isTopRated', 'subCategories'];
+  displayedColumns: string[] = ['id', 'categoryName', 'department', 'user', 'isTopRated', 'subCategories'];
   dataSource = [];
   duplicatedDataSource = [];
   dataSourceTotalRecord: number;
@@ -80,6 +81,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar,
     private router: Router,
+    private _commonService: DashboardsService,
     public dialog: MatDialog
   ) { }
 
@@ -188,12 +190,17 @@ export class LocationsComponent implements OnInit, OnDestroy {
   }
 
   updateAttributeLocationName(item) {
+    if (!item.attributeName.trim()) {
+      this._storeManagerService.snackBar('Attribute location name is required');
+      return;
+    }
     item.updateLoader = true;
     let payload = {
       attributeName: item.attributeName,
       pk_attributeID: item.pk_attributeID,
       update_attribute_name: true
     }
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
     this._storeManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res['success']) {
         item.updateLoader = false;
@@ -234,13 +241,14 @@ export class LocationsComponent implements OnInit, OnDestroy {
     })
   }
   addSubLocation() {
-    if (this.ngSublocationName) {
-      this.isAddSublocationLoader = true;
+    if (this.ngSublocationName.trim()) {
       let payload = {
         fk_attributeID: this.updateAttributeId,
         locationName: this.ngSublocationName,
         add_attribute_location: true,
       }
+      payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
+      this.isAddSublocationLoader = true;
       this._storeManagerService.postStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         if (res["success"]) {
           this.refreshSubCategories();
@@ -276,12 +284,17 @@ export class LocationsComponent implements OnInit, OnDestroy {
       });
   }
   updateSubLocationName(item) {
+    if (!item.locationName.trim()) {
+      this._storeManagerService.snackBar('Sub Location name is required');
+      return;
+    }
     item.updateLoader = true;
     let payload = {
       locationName: item.locationName,
       pk_locationID: item.pk_locationID,
       update_sub_location: true
     }
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
     this._storeManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res['success']) {
         item.updateLoader = false;
@@ -422,13 +435,14 @@ export class LocationsComponent implements OnInit, OnDestroy {
     })
   }
   addMainLocation() {
-    if (this.ngAddMainLocation) {
+    if (this.ngAddMainLocation.trim()) {
       this.isAddMainLocationLoader = true;
       let payload = {
         store_id: this.selectedStore.pk_storeID,
         location_name: this.ngAddMainLocation,
         add_main_location: true,
       }
+      payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
       this._storeManagerService.postStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         if (res["success"]) {
           this.getLocations(1, 'add');

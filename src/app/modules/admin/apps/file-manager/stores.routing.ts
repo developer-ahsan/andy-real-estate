@@ -40,6 +40,7 @@ import { ApparelDecoratorComponent } from './navigation/apparel-decorator/appare
 import { ProductClicksComponent } from './navigation/product-clicks/product-clicks.component';
 import { ShippingNotificaitonComponent } from './navigation/shipping-notificaiton/shipping-notificaiton.component';
 import { StoreProcurementSettingsComponent } from './navigation/store-procurement-settings/store-procurement-settings.component';
+import { ReferalLocationsComponent } from './navigation/referal-locations/referal-locations.component';
 
 export const storeRoutes: Route[] = [
     {
@@ -270,6 +271,14 @@ export const storeRoutes: Route[] = [
                 data: {
                     title: 'Royalties',
                     url: 'royalties'
+                }
+            },
+            {
+                path: 'referral-locations',
+                component: ReferalLocationsComponent,
+                data: {
+                    title: 'Referral Locations',
+                    url: 'referral-locations'
                 }
             },
             {

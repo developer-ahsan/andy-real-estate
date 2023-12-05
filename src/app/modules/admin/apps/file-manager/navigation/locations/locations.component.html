@@ -60,6 +60,14 @@
             <table mat-table [dataSource]="dataSource" class="w-full" [multiTemplateDataRows]="true">
               <div class="color-blue">
                 <!-- categoryName Column -->
+                <ng-container matColumnDef="id">
+                  <th class="min-w-15 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
+
+                  </th>
+                  <td mat-cell *matCellDef="let element; let i=index">
+                    {{i + 1 }}
+                  </td>
+                </ng-container>
                 <ng-container matColumnDef="categoryName">
                   <th class="min-w-15 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
                     Attribute Name
