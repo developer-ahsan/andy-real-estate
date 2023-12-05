@@ -165,17 +165,17 @@ export class ImprintLocationsComponent implements OnInit, OnDestroy {
     this.isUpdateLocation = !this.isUpdateLocation;
   }
   updateLocation() {
-    if (this.ngLocationName == '') {
+    if (this.ngLocationName.trim() === '') {
       this._systemService.snackBar('Location name is required');
       return;
     }
     let payload: UpdateLocation = {
-      location_name: this.ngLocationName,
+      location_name: this.ngLocationName.trim(),
       location_id: this.updateLocationData.pk_locationID,
       update_imprint_location: true
     }
     this.isUpdateLocationLoader = true;
-    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._systemService.UpdateSystemData(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this.isUpdateLocationLoader = false;
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
@@ -185,6 +185,15 @@ export class ImprintLocationsComponent implements OnInit, OnDestroy {
     }, err => {
       this._systemService.snackBar('Something went wrong');
     })
+  }
+
+  replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+        obj[key] = obj[key].replace(/'/g, "''");
+      }
+    }
+    return obj;
   }
 
   /**

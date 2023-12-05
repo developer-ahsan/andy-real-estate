@@ -40,6 +40,8 @@ export class PackAndAccessoriesComponent implements OnInit, OnDestroy {
   random: any;
   imgUrl = 'https://assets.consolidus.com/globalAssets/Packagings/';
   updateImage = '';
+  currentlyUsing:any;
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _systemService: SystemService,
@@ -124,6 +126,7 @@ export class PackAndAccessoriesComponent implements OnInit, OnDestroy {
     if (item) {
       this.updateImage = this.imgUrl + 'Thumbnails/' + item.pk_packagingID + '.jpg?' + Math.random();
       this.updatePackageData = item;
+      this.currentlyUsing = item.Suppliers.split(',,')
     }
     this.isUpdatePackage = !this.isUpdatePackage;
   }
@@ -178,16 +181,16 @@ export class PackAndAccessoriesComponent implements OnInit, OnDestroy {
   }
   // Add Package
   addNewPackage() {
-    if (this.ngPackageName == '') {
+    if (this.ngPackageName.trim() == '') {
       this._systemService.snackBar('Package name is required');
       return;
     }
     let payload: AddPackage = {
-      package_name: this.ngPackageName,
+      package_name: this.ngPackageName.trim(),
       add_package: true
     }
     this.isAddPackageLoader = true;
-    this._systemService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._systemService.AddSystemData(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       if (res["success"]) {
@@ -203,22 +206,22 @@ export class PackAndAccessoriesComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isAddPackageLoader = false;
-      this._systemService.snackBar('Something went wrong');
+      this._systemService.snackBar('Error occured while adding a new package');
     })
   }
   // Update
   UpdatePackage() {
-    if (this.updatePackageData.packagingName == '') {
+    if (this.updatePackageData.packagingName.trim() == '') {
       this._systemService.snackBar('Package name is required');
       return;
     }
     let payload: UpdatePackage = {
       package_id: this.updatePackageData.pk_packagingID,
-      package_name: this.updatePackageData.packagingName,
+      package_name: this.updatePackageData.packagingName.trim(),
       update_package: true
     }
     this.isUpdatePackageLoader = true;
-    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._systemService.UpdateSystemData(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       if (res["success"]) {
@@ -275,6 +278,16 @@ export class PackAndAccessoriesComponent implements OnInit, OnDestroy {
     const base64 = this.imageValue.imageUpload.split(",")[1];
 
   }
+
+  replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+        obj[key] = obj[key].replace(/'/g, "''");
+      }
+    }
+    return obj;
+  }
+
   /**
      * On destroy
      */

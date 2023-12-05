@@ -65,15 +65,30 @@
                     <mat-label>Name</mat-label>
                     <input matInput [(ngModel)]="updatePackageData.packagingName" maxlength="75">
                 </mat-form-field>
+
+                <div class="my-5">
+                    <div class="font-bold my-2">Vendors currently using:</div>
+                    <div *ngFor="let item of currentlyUsing">
+                        {{item}}
+                    </div>
+                </div>
                 <!-- <p>Vendors currently using: </p> -->
                 <fuse-alert class="mb-2" [appearance]="'soft'" [type]="'warning'" [showIcon]="false">
                     Image (JPEG) (600px * 600px)
                 </fuse-alert>
                 <input type="file" accept=".jpg" id="image" (change)="uploadImage($event)">
-                <div>
-                    <p class="font-medium">Thumbnail</p>
+                <div class="mt-5">
+                    <div class="font-bold my-2">Thumbnail:</div>
                     <a href="{{imgUrl}}Images/{{updatePackageData.pk_packagingID}}.jpg?{{random}}" target="_blank">
                         <img class="w-20" src="{{updateImage}}"
+                            onError="this.src='https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'">
+                    </a>
+                </div>
+
+                <div class="mt-5">
+                    <div class="font-bold my-2">Full Image:</div>
+                    <a href="{{imgUrl}}Images/{{updatePackageData.pk_packagingID}}.jpg?{{random}}" target="_blank">
+                        <img class="w-80 h-80" src="{{updateImage}}"
                             onError="this.src='https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'">
                     </a>
                 </div>
