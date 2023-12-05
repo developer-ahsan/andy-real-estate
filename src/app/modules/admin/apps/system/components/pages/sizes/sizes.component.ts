@@ -6,6 +6,7 @@ import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { SystemService } from '../../system.service';
 import { AddColor, AddSize, DeleteColor, DeleteSize, UpdateColor, UpdateSize } from '../../system.types';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-product-system-sizes',
@@ -53,7 +54,8 @@ export class SizesComponent implements OnInit, OnDestroy {
   isProductSizes: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _systemService: SystemService
+    private _systemService: SystemService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -153,8 +155,12 @@ export class SizesComponent implements OnInit, OnDestroy {
   };
   // Add new Size
   addNewSize() {
-    if (this.ngSizeName == '') {
+    if (this.ngSizeName.trim() == '') {
       this._systemService.snackBar('Size is required');
+      return;
+    }
+    if (this.ngSizeOrder < 0) {
+      this._systemService.snackBar('Negative value is not allowed');
       return;
     }
     let payload: AddSize = {
@@ -238,6 +244,10 @@ export class SizesComponent implements OnInit, OnDestroy {
     }, err => {
       this._systemService.snackBar('Something went wrong');
     })
+  }
+
+  navigate(id: String) {
+    this.router.navigateByUrl(`/apps/ecommerce/inventory/${id}/sizes`);
   }
 
   /**
