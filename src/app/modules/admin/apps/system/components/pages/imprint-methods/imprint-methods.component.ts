@@ -115,18 +115,27 @@ export class ImprintMethodsComponent implements OnInit, OnDestroy {
     this.totalUsers = this.tempRecords;
   }
 
+  replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+        obj[key] = obj[key].replace(/'/g, "''");
+      }
+    }
+    return obj;
+  }
+
   addNewMethod() {
-    if (this.ngName == '') {
+    if (this.ngName.trim() == '') {
       this._systemService.snackBar('Imprint Method name is required');
       return;
     }
     let payload: AddImprintMethod = {
-      method_name: this.ngName,
-      method_description: this.ngDesc,
+      method_name: this.ngName.trim(),
+      method_description: this.ngDesc.trim(),
       add_imprint_method: true
     }
     this.isAddMethodLoader = true;
-    this._systemService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._systemService.AddSystemData(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       if (res["success"]) {
