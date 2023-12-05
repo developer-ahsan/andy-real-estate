@@ -38,6 +38,8 @@ export class CatalogComponent {
   isPageLoading: boolean = false;
 
   sortBy = 1;
+  activeTooltip: string = '';
+
 
   // fiters
   catalogFilter = {
@@ -93,22 +95,24 @@ export class CatalogComponent {
   keyWord: any = ''
 
   filterPayload: any = {
-    pageNumber: 1,
-    pageSize: 10,
-    sortBy: '',
-    sortOrder: '',
-    blnActive: 1,
+    page: 1,
+    size: 10,
+    sort_by: '',
+    sort_order: '',
+    bln_active: 1,
     keyword: '',
-    companySearch: '',
-    methodSearch: '',
-    colorSearch: '',
-    sizeSearch: '',
-    minPrice: 0,
-    maxPrice: 0,
-    minQuantity: 0,
-    vendorRelation: 0,
+    company_id: '',
+    method_search: '',
+    color_search: '',
+    size_search: '',
+    min_price: 0,
+    max_price: 0,
+    min_quantity: 0,
+    vendor_relation: 0,
     catalog_filter_products: true
   };
+
+
 
   vendorRelations: any = [
     'Any Relation',
@@ -405,6 +409,7 @@ export class CatalogComponent {
     this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
     this.getCatalogs(this.page);
   };
+
   getCatalogs(page) {
     if (this.selectedSupplier) {
       this.catalogFilter.company_search = this.selectedSupplier.pk_companyID;
@@ -426,20 +431,21 @@ export class CatalogComponent {
     this.selectedDecorationString = this.selectedMethod.map(item => item.name).join(',');
     this.selectedSizeString = this.selectedSize.map(item => item.name).join(',')
     this.filterPayload = {
-      pageNumber: this.page || 1,
-      pageSize: this.catalogFilter.perPage || 10,
-      sortBy: this.catalogFilter.sort_by || `pk_productID`,
-      sortOrder: this.catalogFilter.sort_order || "DESC",
-      blnActive: this.catalogFilter.bln_active || 1,
+      page: this.page || 1,
+      size: this.catalogFilter.perPage || 10,
+      sort_by: this.catalogFilter.sort_by || `pk_productID`,
+      sort_order: this.catalogFilter.sort_order || "DESC",
+      bln_active: this.catalogFilter.bln_active || 1,
       keyword: this.keyWord || '',
-      companySearch: this.SelectedVendor.length > 0 ? this.SelectedVendor.map(item => item.pk_companyID)[0] : '',
-      methodSearch: this.selectedMethod !== undefined ? this.selectedMethod.map(item => item.id).join(',') : '',
-      colorSearch: this.selectedColor !== undefined ? this.selectedColor.map(item => item.id).join(',') : '',
-      sizeSearch: this.selectedSize !== undefined ? this.selectedSize.map(item => item.id).join(',') : '',
-      minPrice: this.minPrice || 0,
-      maxPrice: this.maxPrice || 0,
-      minQuantity: this.minQuantity || 0,
-      vendorRelation: this.catalogFilter.vendor_relation || 0,
+      company_id: this.SelectedVendor.length > 0 ? this.SelectedVendor.map(item => item.pk_companyID)[0] : '',
+      method_search: this.selectedMethod !== undefined ? this.selectedMethod.map(item => item.id).join(',') : '',
+      color_search: this.selectedColor !== undefined ? this.selectedColor.map(item => item.id).join(',') : '',
+      size_search: this.selectedSize !== undefined ? this.selectedSize.map(item => item.id).join(',') : '',
+
+      min_price: this.minPrice || 0,
+      max_price: this.maxPrice || 0,
+      min_quantity: this.minQuantity || 0,
+      vendor_relation: this.catalogFilter.vendor_relation || 0,
       catalog_filter_products: true
     }
     this._catalogService.getCatalogData(this.filterPayload).pipe(
@@ -448,6 +454,14 @@ export class CatalogComponent {
       .subscribe(res => {
         this.total = res["totalRecords"];
         this.dataSource = res["data"];
+
+        this.dataSource = this.dataSource.map((product) => {
+          return {
+            ...product,
+            splittedCostDetails: this.splitCostDetails(product.costDetails)
+          };
+        });
+
         this.isLoading = false;
         this.isFilterLoader = false;
         this.isPageLoading = false;
@@ -467,39 +481,36 @@ export class CatalogComponent {
   }
   clearFilter(key: any,) {
     this.filterPayload = {
-      // pageNumber: this.page || 1,
-      // pageSize: this.catalogFilter.perPage || 10,
-      // sortBy: this.catalogFilter.sort_by || `pk_productID`,
-      // sortOrder: this.catalogFilter.sort_order || "DESC",
-      // blnActive: this.catalogFilter.bln_active || 1,
+      ...this.filterPayload,
       keyword: this.keyWord || '',
-      companySearch: this.SelectedVendor.length > 0 ? this.SelectedVendor.map(item => item.pk_companyID)[0] : '',
-      methodSearch: this.selectedMethod !== undefined ? this.selectedMethod.map(item => item.id).join(',') : '',
-      colorSearch: this.selectedColor !== undefined ? this.selectedColor.map(item => item.id).join(',') : '',
-      sizeSearch: this.selectedSize !== undefined ? this.selectedSize.map(item => item.id).join(',') : '',
-      minPrice: this.minPrice || 0,
-      maxPrice: this.maxPrice || 0,
-      minQuantity: this.minQuantity || 0,
-      vendorRelation: this.catalogFilter.vendor_relation || 0,
-      // catalog_filter_products: true
+      company_id: this.SelectedVendor.length > 0 ? this.SelectedVendor.map(item => item.pk_companyID)[0] : '',
+      method_search: this.selectedMethod !== undefined ? this.selectedMethod.map(item => item.id).join(',') : '',
+      color_search: this.selectedColor !== undefined ? this.selectedColor.map(item => item.id).join(',') : '',
+      size_search: this.selectedSize !== undefined ? this.selectedSize.map(item => item.id).join(',') : '',
+      min_price: this.minPrice || 0,
+      max_price: this.maxPrice || 0,
+      min_quantity: this.minQuantity || 0,
+      vendor_relation: this.catalogFilter.vendor_relation || 0,
     }
+
+    console.log(this.filterPayload);
     if (key === 'keyword') {
       this.keyWord = ''
-    } else if (key === 'companySearch') {
+    } else if (key === 'company_id') {
       this.SelectedVendor = [];
-    } else if (key === 'methodSearch') {
+    } else if (key === 'method_search') {
       this.selectedMethod = [];
-    } else if (key === 'colorSearch') {
+    } else if (key === 'color_search') {
       this.selectedColor = []
-    } else if (key === 'sizeSearch') {
+    } else if (key === 'size_search') {
       this.selectedSize = [];
-    } else if (key === 'minPrice') {
+    } else if (key === 'min_price') {
       this.minPrice = 0;
-    } else if (key === 'maxPrice') {
+    } else if (key === 'max_price') {
       this.maxPrice = 0;
-    } else if (key === 'minQuantity') {
+    } else if (key === 'min_quantity') {
       this.minQuantity = 0;
-    } else if (key === 'vendorRelation') {
+    } else if (key === 'vendor_relation') {
       this.catalogFilter.vendor_relation = 0;
     }
 
@@ -534,6 +545,17 @@ export class CatalogComponent {
   vendorFilter(ev) {
     this.page = 1;
     this.selectedVendorRelation = this.vendorRelations[this.catalogFilter.vendor_relation];
+  }
+
+  mouseEnter(ev: any) {
+    this.activeTooltip = ev.target.id;
+  }
+
+  splitCostDetails(costDetails: string) {
+    return costDetails.split("::").map((item) => {
+      const [quantity, cost] = item.split(",");
+      return { quantity: parseInt(quantity), cost: parseFloat(cost) };
+    });
   }
   /**
    * On destroy
