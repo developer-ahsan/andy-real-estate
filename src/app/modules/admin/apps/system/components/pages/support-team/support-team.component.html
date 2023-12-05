@@ -128,6 +128,9 @@
                                 <mat-form-field class="example-chip-list w-full" appearance="fill">
                                     <mat-label>Email (50) *</mat-label>
                                     <input matInput maxlength="50" formControlName="email">
+                                    <mat-error *ngIf="updateMemberForm.get('email').hasError('email')">
+                                        Invalid email format
+                                    </mat-error>
                                 </mat-form-field>
                             </div>
                             <div class="col-12">
@@ -143,13 +146,23 @@
                                     <input matInput maxlength="50" formControlName="phone">
                                 </mat-form-field>
                             </div>
-                            <div class="col-12">
+
+                            <div class="col-12 col-md-6">
                                 <fuse-alert class="mb-3" [appearance]="'soft'" [type]="'warning'" [showIcon]="false">
                                     Image 147px W X 201px H JPG only!
                                 </fuse-alert>
                                 <input type="file" id="fileControl" accept=".jpg" #myInput id="image"
                                     (change)="uploadFile($event)">
                             </div>
+                            <div class="col-12 col-md-6 mb-3">
+                                <div class="font-bold">
+                                    Current Image
+                                </div>
+                                <img class="w-24 h-24"
+                                    src="https://assets.consolidus.com/globalAssets/System/Defaults/SupportTeam/{{updateMemberId}}.jpg?{{element?.random}}">
+                            </div>
+
+
                             <div class="justify-end flex col-12">
                                 <button [disabled]="isUpdateMemberLoader" class="min-w-30 mr-2" mat-stroked-button
                                     [matTooltip]="'Back to list'" (click)="updateMemberToggle(null)">
@@ -159,8 +172,8 @@
                                     [matTooltip]="'Toggle Member Feature List'" (click)="toggleMemberFeature()">
                                     Member Feature
                                 </button>
-                                <button [disabled]="isUpdateMemberLoader" class="min-w-40" mat-stroked-button
-                                    [matTooltip]="'Update Member'" (click)="updateMember()">
+                                <button [disabled]="isUpdateMemberLoader || !updateMemberForm.valid" class="min-w-40"
+                                    mat-stroked-button [matTooltip]="'Update Member'" (click)="updateMember()">
                                     <mat-icon svgIcon="heroicons_solid:pencil" *ngIf="!isUpdateMemberLoader"></mat-icon>
                                     <span class="ml-2" *ngIf="!isUpdateMemberLoader"> Update Member </span>
                                     <mat-progress-spinner *ngIf="isUpdateMemberLoader" [diameter]="24"
@@ -171,7 +184,9 @@
                         </div>
                     </div>
 
-                    <div class="col-12 mt-3" *ngIf="teamMemberFeature">
+
+
+                    <div class="col-12 mt-3" *ngIf="true">
                         <ngx-skeleton-loader *ngIf="!featureList" count="8" appearance="line" animation="pulse">
                         </ngx-skeleton-loader>
                         <div *ngIf="featureList">
@@ -278,6 +293,9 @@
                     <mat-form-field class="example-chip-list w-full" appearance="fill">
                         <mat-label>Email (50) *</mat-label>
                         <input matInput maxlength="50" formControlName="email">
+                        <mat-error *ngIf="addNewMemberForm.get('email').hasError('email')">
+                            Invalid email format
+                        </mat-error>
                     </mat-form-field>
                 </div>
                 <div class="col-12">
@@ -289,17 +307,17 @@
                 <div class="col-12">
                     <mat-form-field class="example-chip-list w-full" appearance="fill">
                         <mat-label>Phone (50) *</mat-label>
-                        <input matInput maxlength="50" formControlName="phone">
+                        <input (keypress)="validateNumberInput($event)" matInput maxlength="50" formControlName="phone">
                     </mat-form-field>
                 </div>
                 <div class="col-12">
                     <fuse-alert class="mb-3" [appearance]="'soft'" [type]="'warning'" [showIcon]="false">
                         Image 147px W X 201px H JPG only!
                     </fuse-alert>
-                    <input type="file" accept=".jpg" id="image" #myInput>
+                    <input (change)="uploadFile($event)" type="file" accept=".jpg" id="image" #myInput>
                 </div>
                 <div class="text-right col-12">
-                    <button [disabled]="isAddTeamLoader" class="min-w-40" mat-stroked-button
+                    <button [disabled]="isAddTeamLoader || !addNewMemberForm.valid" class="min-w-40" mat-stroked-button
                         [matTooltip]="'Add Team Member'" (click)="addNewTeam()">
                         <mat-icon svgIcon="heroicons_solid:plus" *ngIf="!isAddTeamLoader"></mat-icon>
                         <span class="ml-2" *ngIf="!isAddTeamLoader"> Add Team Member </span>
@@ -311,3 +329,6 @@
         </div>
     </div>
 </div>
+
+
+

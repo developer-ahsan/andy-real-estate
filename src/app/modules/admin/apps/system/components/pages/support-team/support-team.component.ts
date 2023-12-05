@@ -1,6 +1,6 @@
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { FormControl, FormGroup, NgForm } from '@angular/forms';
+import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
@@ -25,6 +25,7 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
   totalUsers = 0;
   tempRecords = 0;
   page = 1;
+  isImageCorrect: boolean;
 
   mainScreen: string = 'Current Support Team';
   keyword = '';
@@ -52,6 +53,9 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
   memberFeatureName = '';
   isAddFeatureLoader: boolean = false;
   imageValue: any;
+
+  updateMemberId: any;
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _systemService: SystemService
@@ -62,7 +66,7 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
       role_name: new FormControl(''),
       name: new FormControl(''),
       description: new FormControl(''),
-      email: new FormControl(''),
+      email: new FormControl('', [Validators.email, Validators.required]),
       phone: new FormControl(''),
       role_type: new FormControl(''),
     });
@@ -71,7 +75,7 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
       roleName: new FormControl(''),
       name: new FormControl(''),
       description: new FormControl(''),
-      email: new FormControl(''),
+      email: new FormControl('', [Validators.email, Validators.required]),
       phone: new FormControl(''),
       roleType: new FormControl(''),
     });
@@ -133,6 +137,15 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
     this._changeDetectorRef.markForCheck();
     this.getSupportTeam(1, 'get');
   }
+
+  validateNumberInput(event: KeyboardEvent) {
+    const allowedKeys = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+    if (!allowedKeys.includes(event.key)) {
+      event.preventDefault();
+    }
+  }
+
   resetSearch() {
     if (this.dataSource.length != 0) {
       this.paginator.firstPage();
@@ -144,15 +157,25 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
 
   addNewTeam() {
     const { role_name, name, email, role_type, description, phone } = this.addNewMemberForm.getRawValue();
-    if (description == '' || name == '' || email == '' || phone == '') {
+    if (description.trim() == '' || name.trim() == '' || email.trim() == '' || phone.trim() == '') {
       this._systemService.snackBar('Please fill out the required fields');
       return;
     }
+    if (this.isImageCorrect == false) {
+      this._systemService.snackBar('Dimensions allowed are 147px x 201px.');
+      return;
+    }
     let payload: AddDefaultSupportTeam = {
-      role_name, name, description: description.replace(/'/g, "''"), email, phone, role_type, add_default_support_team: true
+      role_name: role_name.trim(),
+      name: name.trim(),
+      description: description.trim().replace(/'/g, "''"),
+      email: email.trim(),
+      phone,
+      role_type,
+      add_default_support_team: true
     }
     this.isAddTeamLoader = true;
-    this._systemService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._systemService.AddSystemData(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       if (res["success"]) {
@@ -161,12 +184,23 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
         this.isAddTeamLoader = false;
         this._systemService.snackBar(res["message"]);
       }
+      this.addNewMemberForm.reset();
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isAddTeamLoader = false;
       this._systemService.snackBar('Something went wrong');
     })
   }
+
+  replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+        obj[key] = obj[key].replace(/'/g, "''");
+      }
+    }
+    return obj;
+  }
+
   // Delete Member
   deleteMemeber(item) {
     item.delLoader = true;
@@ -191,6 +225,7 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
     this.featureList = null;
     this.teamMemberFeature = false;
     if (item) {
+      this.updateMemberId = item.pk_ID;
       this.updateMemberForm.patchValue(item);
       this.getMemberFeatures(item.pk_ID);
     }
@@ -200,22 +235,26 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
 
   updateMember() {
     const { roleName, name, email, roleType, description, phone, pk_ID } = this.updateMemberForm.getRawValue();
-    if (description == '' || name == '' || email == '' || phone == '') {
+    if (description.trim() == '' || name.trim() == '' || email.trim() == '' || phone.trim() == '') {
       this._systemService.snackBar('Please fill out the required fields');
       return;
     }
+    if (this.isImageCorrect == false) {
+      this._systemService.snackBar('Dimensions allowed are 147px x 201px.');
+      return;
+    }
     let payload: UpdateDefaultSupportTeam = {
-      role_name: roleName,
-      name: name,
-      description: description.replace(/'/g, "''"),
-      email: email,
+      role_name: roleName.trim(),
+      name: name.trim(),
+      description: description.trim().replace(/'/g, "''"),
+      email: email.trim(),
       phone: phone,
       role_type: roleType,
       member_id: pk_ID,
       update_default_support_team: true
     }
     this.isUpdateMemberLoader = true;
-    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._systemService.UpdateSystemData(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this.isUpdateMemberLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
@@ -225,6 +264,8 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
           elem.email = email;
           elem.roleName = roleName;
         }
+        this.isUpdateMember = false;
+
       });
       if (this.imageValue) {
         this.uploadMedia(pk_ID);
@@ -232,7 +273,7 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
       this._systemService.snackBar('Member Updated Successfully');
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this._systemService.snackBar('Something went wrong');
+      this._systemService.snackBar('Error occured while updating Member.');
     })
   }
   // Member Feature
@@ -321,6 +362,7 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
   }
 
   uploadFile(event): void {
+    this.isImageCorrect = true;
     if (event.target.files[0]) {
       const file = event.target.files[0];
       const reader = new FileReader();
@@ -330,16 +372,18 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
         let image: any = new Image;
         image.src = reader.result;
         image.onload = () => {
-          // if (image.width != 147 || image.height != 201) {
-          //   this._systemService.snackBar("Dimensions allowed are 147px x 201px");
-          //   this.imageValue = null;
-          //   this._changeDetectorRef.markForCheck();
-          //   return;
-          // } else 
+          if (image.width != 147 || image.height != 201) {
+            this._systemService.snackBar("Dimensions allowed are 147px x 201px");
+            this.imageValue = null;
+            this._changeDetectorRef.markForCheck();
+            this.isImageCorrect = false;
+            return;
+          }
           if (file["type"] != 'image/jpeg' && file["type"] != 'image/jpg') {
             this._systemService.snackBar("Image should be jpg format only");
             this.imageValue = null;
             this._changeDetectorRef.markForCheck();
+            this.isImageCorrect = false;
             return;
           }
           this.imageValue = {
