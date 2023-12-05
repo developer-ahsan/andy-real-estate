@@ -108,6 +108,7 @@ export class GroupOrderSettingsComponent implements OnInit, OnDestroy {
     const payload: UpdateGroupOrderSettings = {
       bln_choose_existing_customers: formValues.blnChooseFromExistingCustomers,
       bln_groud_order_active: formValues.blnGroupOrderActive,
+      blnInitiatorPays: formValues.blnInitiatorPays,
       store_id: pk_storeID,
       update_group_order_settings: true
     };

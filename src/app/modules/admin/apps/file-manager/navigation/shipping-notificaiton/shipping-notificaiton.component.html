@@ -15,7 +15,8 @@
                             <div class="col-12 mt-3">
                                 <mat-form-field appearance="fill" class="w-full">
                                     <mat-label>
-                                        Choose whether or not you want to receive shipment notification emails
+                                        Choose whether or not you want to receive shipment notification emails at
+                                        service@{{selectedStore.storeName}} coming from OrderManage
                                     </mat-label>
                                     <mat-select [formControlName]="'blnShippingNotification'">
                                         <mat-option [value]="true">Enabled</mat-option>
@@ -38,8 +39,8 @@
                                         <span class="ml-2">An error occurred, try again!</span>
                                     </ng-container>
                                 </div>
-                                <button class="min-w-40" mat-stroked-button [matTooltip]="'Assign new store'"
-                                    (click)="saveChanges()" [disabled]="updateLoader">
+                                <button class="min-w-40" mat-stroked-button [matTooltip]="''" (click)="saveChanges()"
+                                    [disabled]="updateLoader">
                                     <mat-progress-spinner *ngIf="updateLoader" [diameter]="24" [mode]="'indeterminate'">
                                     </mat-progress-spinner>
                                     <mat-icon *ngIf="!updateLoader" svgIcon="edit"></mat-icon>

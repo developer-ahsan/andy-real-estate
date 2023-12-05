@@ -38,6 +38,8 @@ import { ResetTopTenComponent } from './navigation/reset-top-ten/reset-top-ten.c
 import { GroupOrderSettingsComponent } from './navigation/group-order-settings/group-order-settings.component';
 import { ApparelDecoratorComponent } from './navigation/apparel-decorator/apparel-decorator.component';
 import { ProductClicksComponent } from './navigation/product-clicks/product-clicks.component';
+import { ShippingNotificaitonComponent } from './navigation/shipping-notificaiton/shipping-notificaiton.component';
+import { StoreProcurementSettingsComponent } from './navigation/store-procurement-settings/store-procurement-settings.component';
 
 export const storeRoutes: Route[] = [
     {
@@ -148,6 +150,22 @@ export const storeRoutes: Route[] = [
                 data: {
                     title: 'Store Product Videos',
                     url: 'store-product-videos'
+                }
+            },
+            {
+                path: 'shipping-notifications',
+                component: ShippingNotificaitonComponent,
+                data: {
+                    title: 'Shipping Notifications',
+                    url: 'shipping-notifications'
+                }
+            },
+            {
+                path: 'procurement-settings',
+                component: StoreProcurementSettingsComponent,
+                data: {
+                    title: 'Procurement Settings',
+                    url: 'procurement-settings'
                 }
             },
             {

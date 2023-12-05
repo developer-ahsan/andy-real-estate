@@ -4,6 +4,7 @@ import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-ma
 import { takeUntil } from 'rxjs/operators';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ShippingNotification } from '../../stores.types';
 
 @Component({
   selector: 'app-shipping-notificaiton',
@@ -97,17 +98,17 @@ export class ShippingNotificaitonComponent implements OnInit, OnDestroy {
   // Public methods
 
   saveChanges(): void {
-    const { pk_storeID } = this.selectedStore;
+    const { pk_storeID, storeName } = this.selectedStore;
     const formValues = this.shippingNotificationForm.getRawValue();
-
-    const payload = {
+    const payload: ShippingNotification = {
       bln_notification: formValues.blnShippingNotification,
       store_id: pk_storeID,
+      store_name: storeName,
       shipping_notification: true
     };
 
     this.updateLoader = true;
-    this._storeManagerService.updateShippingNotifications(payload)
+    this._storeManagerService.putStoresData(payload)
       .subscribe((response) => {
         this.showFlashMessage(
           response["success"] === true ?

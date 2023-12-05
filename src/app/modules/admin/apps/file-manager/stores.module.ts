@@ -97,6 +97,7 @@ import { NgxPaginationModule } from "ngx-pagination";
 import { ProductSubCategoriesComponent } from "./navigation/product-categories/product-sub-categories/product-sub-categories.component";
 import { ScrollingModule } from "@angular/cdk/scrolling";
 import { CKEditorModule } from 'ckeditor4-angular';
+import { StoreProcurementSettingsComponent } from "./navigation/store-procurement-settings/store-procurement-settings.component";
 
 @NgModule({
   declarations: [
@@ -158,7 +159,7 @@ import { CKEditorModule } from 'ckeditor4-angular';
     PresentationHeaderImageComponent,
     SimpleEmailBlastComponent,
     ProductMainCategoriesComponent,
-    ProductSubCategoriesComponent
+    ProductSubCategoriesComponent, StoreProcurementSettingsComponent
   ],
   imports: [
     RouterModule.forChild(storeRoutes),

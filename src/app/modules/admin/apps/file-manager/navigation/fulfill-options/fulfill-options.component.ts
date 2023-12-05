@@ -2,8 +2,10 @@ import { ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, O
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';
 import { FileManagerService } from '../../store-manager.service';
-import { takeUntil } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { updateFulfillmentOptions } from '../../stores.types';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-fulfill-options',
@@ -18,10 +20,12 @@ export class FulfillOptionsComponent implements OnInit, OnDestroy {
 
   isPageLoading: boolean = false;
   optionForm: FormGroup;
+  isUpdateLoader: boolean = false;
   constructor(
     private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+    private _commonService: DashboardsService
   ) { }
 
   ngOnInit() {
@@ -34,7 +38,7 @@ export class FulfillOptionsComponent implements OnInit, OnDestroy {
       billingState: new FormControl('', Validators.required),
       billingZip: new FormControl('', Validators.required),
       billingPhone: new FormControl('', Validators.required),
-      billingEmail: new FormControl('', Validators.required),
+      billingEmail: new FormControl('', [Validators.required, Validators.email]),
       blnEvent: new FormControl(true, Validators.required),
       blnBilling: new FormControl(true, Validators.required)
     })
@@ -61,6 +65,38 @@ export class FulfillOptionsComponent implements OnInit, OnDestroy {
         this.isPageLoading = false;
         this._changeDetectorRef.markForCheck();
       })
+  }
+  updateFullfillmentOptions() {
+    const { pk_storeID } = this.selectedStore;
+    const { blnEvent, billingCompanyName, billingFirstName, billingLastName, billingAddress, blnBilling, billingCity, billingState, billingZip, billingPhone, billingEmail } = this.optionForm.getRawValue();
+    let payload: updateFulfillmentOptions = {
+      storeID: pk_storeID,
+      blnEvent,
+      billingCompanyName,
+      billingFirstName,
+      billingLastName,
+      billingAddress,
+      blnBilling,
+      billingCity,
+      billingState,
+      billingZip,
+      billingPhone,
+      billingEmail,
+      update_fulfillment_options: true
+    }
+    payload = this._commonService.replaceNullSpaces(payload);
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
+    if (payload.billingCompanyName == '' || payload.billingFirstName == '' || payload.billingLastName == '' || payload.billingAddress == '' || payload.billingCity == '' || payload.billingState == '' || payload.billingZip == '' || payload.billingPhone == '' || payload.billingEmail == '') {
+      this._storeManagerService.snackBar('Please fill out the required fields');
+      return;
+    }
+    this.isUpdateLoader = true;
+    this._storeManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.isUpdateLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      this._storeManagerService.snackBar(res["message"]);
+    })
   }
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions

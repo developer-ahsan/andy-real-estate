@@ -75,6 +75,9 @@ export class CountrySalesComponent implements OnInit, OnDestroy {
       size: 20
     }
     this._systemService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      res["data"].forEach(element => {
+        element.rate = element.rate.toFixed(4);
+      });
       this.dataSource = res["data"];
       this.totalUsers = res["totalRecords"];
       if (this.keyword == '') {

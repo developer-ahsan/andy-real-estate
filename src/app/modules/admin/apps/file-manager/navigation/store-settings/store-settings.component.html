@@ -159,7 +159,8 @@
             <div class="col-6">
               <mat-form-field appearance="fill" class="w-full">
                 <mat-label>SciQuest Enabled</mat-label>
-                <mat-select [formControlName]="'blnElectronicInvoicing'">
+                <mat-select [(ngModel)]="selectedStore.blnEProcurement" [ngModelOptions]=" 
+                {standalone: true}">
                   <mat-option [value]="true">Yes</mat-option>
                   <mat-option [value]="false">No</mat-option>
                 </mat-select>
@@ -579,22 +580,10 @@
                 <div class="col-12 my-3 font-weight-bold">
                   <mat-radio-button [value]="0">None</mat-radio-button>
                 </div>
-                <div class="col-12 my-3">
-                  <mat-radio-button class="font-weight-bold" style="color: red"
-                    [value]="true">Expired</mat-radio-button>
-                  <br />"Your account's credit terms have expired."
-                </div>
-                <div class="col-12 my-3">
-                  <mat-radio-button [value]="2" class="font-weight-bold">Upon application approval</mat-radio-button>
-                  <br />"No credit line has been set up for your account. You may still
-                  place an order; the order will be processed upon approval of your
-                  credit terms application."
-                </div>
-                <div class="col-12 my-3 font-weight-bold">
-                  <mat-radio-button [value]="3">Net 10 days after delivery date</mat-radio-button>
-                </div>
-                <div class="col-12 my-3 font-weight-bold">
-                  <mat-radio-button [value]="4">Net 30</mat-radio-button>
+                <div class="col-12 my-3" *ngFor="let item of qryCreditTerms">
+                  <mat-radio-button class="font-weight-bold" [ngClass]="{'text-red-500': item.pk_creditTermID == -1}"
+                    [value]="item.pk_creditTermID">{{item.creditTermName}}</mat-radio-button>
+                  <span *ngIf="item.creditTermDesc"><br />"{{item.creditTermDesc}}"</span>
                 </div>
               </mat-radio-group>
             </div>

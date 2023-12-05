@@ -48,6 +48,7 @@ export class StoreSettingsComponent implements OnInit, OnDestroy {
   isStoreSettingsUpdate: boolean = false;
   flashMessage: 'success' | 'error' | null = null;
   suppliersList: any = [];
+  qryCreditTerms: any;
   constructor(
     private _storesManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -68,6 +69,7 @@ export class StoreSettingsComponent implements OnInit, OnDestroy {
         this.getSuppliers();
         this._storesManagerService.settings$.pipe(takeUntil(this._unsubscribeAll))
           .subscribe((settings: any) => {
+            this.qryCreditTerms = settings["qryCreditTerms"];
             let storeSetting = settings["data"][0];
             let selectedStore = items["data"][0];
             selectedStore["reportColor"] = `#${selectedStore["reportColor"]}`;

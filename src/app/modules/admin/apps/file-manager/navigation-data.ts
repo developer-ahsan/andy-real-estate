@@ -134,6 +134,11 @@ export const navigations = [
                 route: 'store-settings'
             },
             {
+                title: 'Procurement Settings',
+                icon: 'mat_outline:settings',
+                route: 'procurement-settings'
+            },
+            {
                 title: 'Reset Top Ten',
                 icon: 'mat_outline:refresh',
                 route: 'reset-top-ten'
@@ -142,6 +147,11 @@ export const navigations = [
                 title: 'Margins',
                 icon: 'mat_outline:margin',
                 route: 'margins'
+            },
+            {
+                title: 'Shipping Notifications',
+                icon: 'mat_outline:notifications_active',
+                route: 'shipping-notifications'
             },
             {
                 title: 'Fulfillment Contacts',

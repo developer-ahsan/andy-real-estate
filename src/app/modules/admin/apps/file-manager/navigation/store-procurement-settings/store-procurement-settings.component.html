@@ -1,0 +1,180 @@
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+</ngx-skeleton-loader>
+<div class="row" *ngIf="!isLoading">
+    <div class="col-12 my-2">
+        <div class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+            <div class="p-6 sm:p-8 lg:p-10 w-full">
+                <div class="text-2xl font-bold">
+                    Procurement System Settings
+                </div>
+                <div *ngIf="!selectedStore.blnEProcurement">
+                    <div class="alert alert-warning p-3">
+                        This store is not currently set up for SciQuest. Please go to the <a class="font-bold"
+                            target="_blank"
+                            [routerLink]="['/apps/stores',selectedStore.pk_storeID,'store-setting']">store
+                            settings</a>
+                        to set this up.
+                    </div>
+                </div>
+                <div *ngIf="selectedStore.blnEProcurement">
+                    <div class="row my-5">
+                        <div class="col-12">
+                            <mat-form-field class="w-full">
+                                <mat-label>Procurement System</mat-label>
+                                <mat-select matInput [(ngModel)]="procurementSettings.fk_procurementID">
+                                    <mat-option [value]="0">None</mat-option>
+                                    <mat-option [value]="1">Jaggaer</mat-option>
+                                    <mat-option [value]="2">Unimarket</mat-option>
+                                    <mat-option [value]="3">PeopleSoft</mat-option>
+                                    <mat-option [value]="4">ESM</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6 ">
+                            <mat-form-field class="w-full">
+                                <mat-label>Header From Domain *</mat-label>
+                                <mat-select matInput [(ngModel)]="procurementSettings.fromDomain">
+                                    <mat-option value=""></mat-option>
+                                    <mat-option value="networkID">networkID</mat-option>
+                                    <mat-option value="DUNS">DUNS</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>Header From Identity *</mat-label>
+                                <input matInput maxlength="50" [(ngModel)]="procurementSettings.fromIdentity">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>Header To Domain *</mat-label>
+                                <mat-select matInput [(ngModel)]="procurementSettings.toDomain">
+                                    <mat-option value=""></mat-option>
+                                    <mat-option value="networkID">networkID</mat-option>
+                                    <mat-option value="DUNS">DUNS</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>Header To Identity *</mat-label>
+                                <input matInput maxlength="50" [(ngModel)]="procurementSettings.toIdentity">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>Sender Domain *</mat-label>
+                                <mat-select matInput [(ngModel)]="procurementSettings.senderDomain">
+                                    <mat-option value=""></mat-option>
+                                    <mat-option value="networkID">networkID</mat-option>
+                                    <mat-option value="DUNS">DUNS</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>Sender Identity *</mat-label>
+                                <input matInput maxlength="50" [(ngModel)]="procurementSettings.senderIdentity">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>Shared Secret *</mat-label>
+                                <input matInput maxlength="50" [(ngModel)]="procurementSettings.sharedSecret">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>DUNS Number</mat-label>
+                                <input matInput maxlength="50" [(ngModel)]="procurementSettings.DUNSnumber">
+                            </mat-form-field>
+                        </div>
+                        <!-- Default Address Information -->
+                        <div class="col-12 font-bold text-xl">Default Address Information</div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>Company Name *</mat-label>
+                                <input matInput maxlength="100" [(ngModel)]="procurementSettings.defaultCompanyName">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>Address 1 *</mat-label>
+                                <input matInput maxlength="50" [(ngModel)]="procurementSettings.defaultAddress1">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>Address 2</mat-label>
+                                <input matInput maxlength="50" [(ngModel)]="procurementSettings.defaultAddress2">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>City *</mat-label>
+                                <input matInput maxlength="50" [(ngModel)]="procurementSettings.defaultCity">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>State *</mat-label>
+                                <input matInput maxlength="2" [(ngModel)]="procurementSettings.defaultState">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>Zip *</mat-label>
+                                <input matInput maxlength="5" [(ngModel)]="procurementSettings.defaultZipCode">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>Day Phone</mat-label>
+                                <input matInput maxlength="50" [(ngModel)]="procurementSettings.defaultDayPhone">
+                            </mat-form-field>
+                        </div>
+                        <!-- Other Settings -->
+                        <div class="col-12 font-bold text-xl">Other Settings</div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>Enable Edit/Inspect</mat-label>
+                                <mat-select matInput [(ngModel)]="procurementSettings.blnEditInspect">
+                                    <mat-option [value]="true">YES</mat-option>
+                                    <mat-option [value]="false">NO</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>Shipping charges as line items?</mat-label>
+                                <mat-select matInput [(ngModel)]="procurementSettings.blnShippingLineItems">
+                                    <mat-option [value]="true">YES</mat-option>
+                                    <mat-option [value]="false">NO</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>Alert program manager on punchout?</mat-label>
+                                <mat-select matInput [(ngModel)]="procurementSettings.blnAlertProgramManagerOnPunchout">
+                                    <mat-option [value]="true">YES</mat-option>
+                                    <mat-option [value]="false">NO</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 text-right">
+                            <button class="min-w-40" mat-stroked-button [matTooltip]="'Update Procurement Settings'"
+                                (click)="saveChanges()" [disabled]="updateLoader">
+                                <mat-progress-spinner *ngIf="updateLoader" [diameter]="24" [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                                <mat-icon *ngIf="!updateLoader" svgIcon="mode_edit_outline"></mat-icon>
+                                <span *ngIf="!updateLoader" class="ml-1 mr-1">Update</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

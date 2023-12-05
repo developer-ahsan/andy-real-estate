@@ -93,8 +93,11 @@
                 </div>
                 <div class="row">
                   <div class="col-12 flex justify-end">
-                    <button [matTooltip]="'Update'" class="w-full md:w-50 lg:w-50" mat-stroked-button mat-flat-button>
-                      Update
+                    <button (click)="updateFullfillmentOptions()" [disabled]="!optionForm.valid || isUpdateLoader"
+                      [matTooltip]="'Update'" class="w-full md:w-50 lg:w-50" mat-stroked-button mat-flat-button>
+                      <span *ngIf="!isUpdateLoader">Update</span>
+                      <mat-progress-spinner *ngIf="isUpdateLoader" [diameter]="24" [mode]="'indeterminate'">
+                      </mat-progress-spinner>
                     </button>
                   </div>
                 </div>

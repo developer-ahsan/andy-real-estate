@@ -102,6 +102,7 @@ export interface GroupBuy {
 
 export interface ShippingNotification {
     store_id: number;
+    store_name: string;
     bln_notification: boolean;
     shipping_notification: boolean;
 };
@@ -686,6 +687,7 @@ export interface AddSubCategoriesRapidBuildStoreProduct {
 export interface UpdateGroupOrderSettings {
     bln_choose_existing_customers: boolean;
     bln_groud_order_active: boolean;
+    blnInitiatorPays: boolean;
     store_id: number;
     update_group_order_settings: boolean;
 };
@@ -694,4 +696,44 @@ export interface updateStoreApparelDecorator {
     storeID: number;
     decoratorID: number;
     update_store_apparel_decorator: boolean;
+};
+
+export interface updateProcurementSettings {
+    fromDomain: string;
+    fromIdentity: string;
+    toDomain: string;
+    toIdentity: string;
+    senderDomain: string;
+    senderIdentity: string;
+    sharedSecret: string;
+    DUNSnumber: number;
+    defaultCompanyName: string;
+    defaultAddress1: string;
+    defaultAddress2: string;
+    defaultCity: string;
+    defaultState: string;
+    defaultZipCode: number;
+    defaultDayPhone: string;
+    blnShippingLineItems: boolean;
+    blnEditInspect: boolean;
+    blnAlertProgramManagerOnPunchout: boolean;
+    procurementID: number;
+    storeID: number;
+    update_procurement_settings: boolean;
+};
+
+export interface updateFulfillmentOptions {
+    storeID: number;
+    blnEvent: boolean;
+    billingCompanyName: string;
+    billingFirstName: string;
+    billingLastName: string;
+    billingAddress: string;
+    blnBilling: boolean;
+    billingCity: string;
+    billingState: string;
+    billingZip: string;
+    billingPhone: string;
+    billingEmail: string;
+    update_fulfillment_options: boolean;
 };
