@@ -4,6 +4,7 @@ import { Subject, forkJoin, of } from 'rxjs';
 import { SystemService } from '../../system.service';
 import { takeUntil } from 'rxjs/operators';
 import { DeleteImage } from '../../system.types';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-upload-images',
@@ -23,9 +24,10 @@ export class UploadImagesComponent implements OnInit, OnDestroy {
   imageValue: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _systemService: SystemService
+    private _systemService: SystemService,
+    private _dashboardService: DashboardsService
   ) { }
-
+ 
   ngOnInit(): void {
     this.isLoading = true;
     this.getImages();
@@ -91,12 +93,13 @@ export class UploadImagesComponent implements OnInit, OnDestroy {
   }
 
   removeImage(index, image) {
-    let payload: DeleteImage = {
-      image_path: `/globalAssets/Uploads/${image.FILENAME}`,
-      delete_image: true
+    let payload = {
+      files: [`/globalAssets/Uploads/${image.FILENAME}`],
+      delete_multiple_files: true
     }
+
     image.delLoader = true;
-    this._systemService.removeMedia(payload)
+    this._dashboardService.removeMediaFiles(payload)
       .subscribe((response) => {
         this._systemService.snackBar('Image Removed Successfully');
         this.images.splice(index, 1);
@@ -107,6 +110,7 @@ export class UploadImagesComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
       })
   }
+
   /**
      * On destroy
      */
