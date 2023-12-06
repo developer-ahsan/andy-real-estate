@@ -208,9 +208,8 @@ export class ReportFiltersComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
       });
     }, 500);
-
   }
-  /**
+  /** 
      * On destroy
      */
   ngOnDestroy(): void {
