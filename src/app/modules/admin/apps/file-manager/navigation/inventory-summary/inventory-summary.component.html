@@ -14,10 +14,7 @@
         </span>
       </span>
     </button>
-
-
-
-    <fuse-card class="rounded-2xl shadow bg-card flex pb-0" *ngIf="!isEditInventory">
+    <fuse-card class="rounded-2xl shadow bg-card flex pb-0 w-full" *ngIf="!isEditInventory">
       <div class="row" style="width: -webkit-fill-available;">
         <div class="col-12">
           <div class="p-6 sm:p-8 lg:p-10 w-full">
@@ -44,7 +41,8 @@
                   <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
                     SPID
                   </th>
-                  <td mat-cell *matCellDef="let element">{{ element.pk_storeProductID }}</td>
+                  <td mat-cell *matCellDef="let element" (click)="routeInventory(element.pk_productID)">{{
+                    element.pk_storeProductID }}</td>
                 </ng-container>
 
                 <!-- Name Column -->
@@ -72,10 +70,10 @@
                   </th>
                   <td mat-cell *matCellDef="let element" (click)="routeInventory(element.pk_productID)">
                     {{ element.companyName }}
-                      <mat-icon *ngIf="element.vendorRelation == 2" svgIcon="heroicons_solid:badge-check"
-                        class="icon-size-4 mt-0.5 absolute" color="warn"></mat-icon>
-                      <mat-icon *ngIf="element.vendorRelation == 3" svgIcon="heroicons_solid:star"
-                        class="icon-size-4 mt-0.5 absolute text-green-700"></mat-icon>
+                    <mat-icon *ngIf="element.vendorRelation == 2" svgIcon="heroicons_solid:badge-check"
+                      class="icon-size-4 mt-0.5 absolute" color="warn"></mat-icon>
+                    <mat-icon *ngIf="element.vendorRelation == 3" svgIcon="heroicons_solid:star"
+                      class="icon-size-4 mt-0.5 absolute text-green-700"></mat-icon>
                   </td>
                 </ng-container>
                 <ng-container matColumnDef="inventory">

@@ -39,30 +39,7 @@ export class ShippingNotificaitonComponent implements OnInit, OnDestroy {
         this.shippingNotificationForm = this._formBuilder.group({
           blnShippingNotification: ['']
         });
-
-        const { pk_storeID } = this.selectedStore;
-
-        // Get the items
-        this._storeManagerService.getShippingNotifications(pk_storeID)
-          .pipe(takeUntil(this._unsubscribeAll))
-          .subscribe((response: any) => {
-            let shippingNotification = response["data"][0];
-            this.shippingNotificationForm.patchValue(shippingNotification);
-            this.isStoreFetch = false;
-
-            // Mark for check
-            this._changeDetectorRef.markForCheck();
-          }, err => {
-            this._snackBar.open("Some error occured", '', {
-              horizontalPosition: 'center',
-              verticalPosition: 'bottom',
-              duration: 3500
-            });
-            this.isStoreFetch = false;
-
-            // Mark for check
-            this._changeDetectorRef.markForCheck();
-          });
+        this.shippingNotificationForm.patchValue(this.selectedStore);
       });
   }
 
