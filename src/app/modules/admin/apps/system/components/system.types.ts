@@ -202,6 +202,7 @@ export interface AddPromoCode {
     blnRemovePrice: boolean;
     blnPercent: boolean;
     add_promo_code: boolean;
+    maxAmount: number
 };
 
 export interface DeletePromoCode {
@@ -222,6 +223,7 @@ export interface UpdatePromoCode {
     blnPercent: boolean;
     promocode: string;
     update_promo_code: boolean;
+    maxAmount:number
 };
 
 // Run Charge

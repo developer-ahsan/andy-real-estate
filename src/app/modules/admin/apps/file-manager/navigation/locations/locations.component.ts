@@ -257,7 +257,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
         this.isAddSublocationLoader = false;
       })
     } else {
-      this._snackBar.open("Location name is empty", '', {
+      this._snackBar.open("Department name is empty", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
         duration: 3000

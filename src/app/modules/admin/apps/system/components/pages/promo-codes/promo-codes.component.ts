@@ -64,7 +64,8 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
       blnRemoveShippingPrice: new FormControl(true, Validators.required),
       blnRemoveCost: new FormControl(false, Validators.required),
       blnRemovePrice: new FormControl(false, Validators.required),
-      blnPercent: new FormControl(false, Validators.required)
+      blnPercent: new FormControl(false, Validators.required),
+      maxAmount:new FormControl(''),
     });
     this.updatePromoForm = new FormGroup({
       promocode: new FormControl({ value: '', disabled: true }, [Validators.required]),
@@ -78,7 +79,8 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
       blnRemoveShippingPrice: new FormControl(true, Validators.required),
       blnRemoveCost: new FormControl(false, Validators.required),
       blnRemovePrice: new FormControl(false, Validators.required),
-      blnPercent: new FormControl(false, Validators.required)
+      blnPercent: new FormControl(false, Validators.required),
+      maxAmount:new FormControl(''),
     });
   }
   ngOnInit(): void {
@@ -153,9 +155,18 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
     this.totalUsers = this.tempRecords;
   }
 
+  replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+        obj[key] = obj[key]?.replace(/'/g, "''");
+      }
+    }
+    return obj;
+  }
+
   addNewPromoCode() {
-    const { promocode, amount, threshold, description, blnActive, expDate, blnShipping, blnRemoveShippingCost, blnRemoveShippingPrice, blnRemoveCost, blnRemovePrice, blnPercent } = this.addPromoForm.getRawValue();
-    if (promocode == '' || description == '') {
+    const { maxAmount,promocode, amount, threshold, description, blnActive, expDate, blnShipping, blnRemoveShippingCost, blnRemoveShippingPrice, blnRemoveCost, blnRemovePrice, blnPercent } = this.addPromoForm.getRawValue();
+    if (promocode.trim() == '' || description.trim() == '') {
       this._systemService.snackBar('Please fill out the required fields');
       return;
     }
@@ -166,10 +177,10 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
       date = 0;
     }
     let payload: AddPromoCode = {
-      promocode, amount, threshold, description, blnActive, expDate: date, blnShipping, blnRemoveShippingCost, blnRemoveShippingPrice, blnRemoveCost, blnRemovePrice, blnPercent, add_promo_code: true
+      maxAmount,promocode: promocode.trim(), amount, threshold, description: description.trim(), blnActive, expDate: date, blnShipping, blnRemoveShippingCost, blnRemoveShippingPrice, blnRemoveCost, blnRemovePrice, blnPercent, add_promo_code: true
     }
     this.isAddPromoLoader = true;
-    this._systemService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._systemService.AddSystemData(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       if (res["success"]) {
@@ -219,8 +230,8 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
     this.isUpdatePromo = !this.isUpdatePromo;
   }
   updatePromoCode() {
-    const { promocode, amount, threshold, description, blnActive, expDate, blnShipping, blnRemoveShippingCost, blnRemoveShippingPrice, blnRemoveCost, blnRemovePrice, blnPercent } = this.updatePromoForm.getRawValue();
-    if (promocode == '' || description == '') {
+    const { maxAmount, promocode, amount, threshold, description, blnActive, expDate, blnShipping, blnRemoveShippingCost, blnRemoveShippingPrice, blnRemoveCost, blnRemovePrice, blnPercent } = this.updatePromoForm.getRawValue();
+    if (promocode.trim() == '' || description.trim() == '') {
       this._systemService.snackBar('Please fill out the required fields');
       return;
     }
@@ -231,10 +242,10 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
       date = 0;
     }
     let payload: UpdatePromoCode = {
-      amount, threshold, description, blnActive, expDate: date, blnShipping, blnRemoveShippingCost, blnRemoveShippingPrice, blnRemoveCost, blnRemovePrice, blnPercent, promocode, update_promo_code: true
+      amount, maxAmount, threshold, description: description.trim(), blnActive, expDate: date, blnShipping, blnRemoveShippingCost, blnRemoveShippingPrice, blnRemoveCost, blnRemovePrice, blnPercent, promocode: promocode.trim(), update_promo_code: true
     }
     this.isUpdatePromoLoader = true;
-    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._systemService.UpdateSystemData(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this.isUpdatePromoLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {

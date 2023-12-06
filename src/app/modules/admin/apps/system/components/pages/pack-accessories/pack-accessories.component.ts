@@ -199,6 +199,7 @@ export class PackAndAccessoriesComponent implements OnInit, OnDestroy {
         } else {
           this.getPackAccessories(1, 'add');
         }
+        this._systemService.snackBar(res["message"]);
       } else {
         this.isAddPackageLoader = false;
         this._systemService.snackBar(res["message"]);

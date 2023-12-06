@@ -70,7 +70,7 @@
                 </ng-container>
                 <ng-container matColumnDef="categoryName">
                   <th class="min-w-15 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
-                    Attribute Name
+                    Location Name
                   </th>
                   <td mat-cell *matCellDef="let element">
                     <mat-form-field class="min-w-60 mt-3">
@@ -145,7 +145,7 @@
                       [@expandCollapse]="selectedCategory?.pk_attributeID == element?.pk_attributeID ? 'expanded' : 'collapsed'">
                       <div class="row mb-1 bg-hover p-5 font-semibold" *ngIf="!subCategoriesLoader">
                         <div class="col-9">
-                          Location Name
+                          Department
                         </div>
                         <div class="col-3 flex justify-between">
                           <span>Action</span>
@@ -201,7 +201,7 @@
                             <mat-progress-spinner *ngIf="isAddSublocationLoader" [diameter]="24"
                               [mode]="'indeterminate'">
                             </mat-progress-spinner>
-                            <span *ngIf="!isAddSublocationLoader">Add Location</span>
+                            <span *ngIf="!isAddSublocationLoader">Add Department</span>
                           </button>
                         </div>
                       </div>
