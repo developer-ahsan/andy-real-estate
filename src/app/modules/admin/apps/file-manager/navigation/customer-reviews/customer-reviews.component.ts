@@ -259,7 +259,16 @@ export class CustomerReviewsComponent implements OnInit, OnDestroy {
     return obj;
   }
 
+
   updateProductReview(element) {
+    if (element.value.name.trim() === '' || element.value.date.trim() === '' || element.value.comment.trim() === '') {
+      this._snackBar.open("Please fill the required fields", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
+      return;
+    }
     element.patchValue({
       loader: true
     })
@@ -296,6 +305,14 @@ export class CustomerReviewsComponent implements OnInit, OnDestroy {
     this.flashMessage1 = true;
     this.isAddLoader = true;
     const { name, company, date, rating, comment } = this.productAddReviewForm.getRawValue();
+    if (name.trim() == '' || company.trim() === '') {
+      this._snackBar.open("Please fill the required fields", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
+      return;
+    }
     let payload = {
       storeProductId: this.editData.pk_storeProductID,
       name: name + '-' + company, company, date, rating, comment,

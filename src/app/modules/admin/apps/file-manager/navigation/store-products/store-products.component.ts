@@ -4,6 +4,8 @@ import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-ma
 import { retry, takeUntil } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import moment from 'moment';
+import * as Excel from 'exceljs/dist/exceljs.min.js';
 
 /**
  * @title Basic use of `<table mat-table>`
@@ -25,6 +27,10 @@ export class StoreProductsComponent implements OnInit, OnDestroy {
   totalRecords = 0;
   totalProducts = 0;
   itemsPerPage = 50;
+
+  totalRecordsExcel: any;
+
+  generateReportLoader: boolean = false;
 
   duplicatedDataSource = [];
   dataSourceTotalRecord: number;
@@ -84,6 +90,7 @@ export class StoreProductsComponent implements OnInit, OnDestroy {
       page: page
     }
     this._storeManagerService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.totalRecordsExcel = res['totalRecords'];
       let data = [];
       res["data"].forEach(element => {
         if (element.categoryName) {
@@ -270,6 +277,79 @@ export class StoreProductsComponent implements OnInit, OnDestroy {
   }
 
   generateDataSheet() {
+
+    let params = {
+      store_products_per_store: true,
+      store_id: this.selectedStore.pk_storeID,
+      keyword: this.keyword,
+      status: this.status,
+      category_id: this.category,
+      has_description: this.hasDescription,
+      has_ordered: this.hasOrdered,
+      vendor_relation: this.vendorRelation,
+      has_video: this.hasVideo,
+      size: this.totalRecordsExcel
+    }
+    this.generateReportLoader = true;
+
+    this._storeManagerService.getStoresData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      const data = res['data'];
+
+      const fileName = `${this.selectedStore.storeName}-${moment(new Date()).format('MM-DD-yy-hh-mm-ss')}`;
+      const workbook = new Excel.Workbook();
+      const worksheet = workbook.addWorksheet("storeProducts");
+
+      // Columns
+      worksheet.columns = [
+        { header: "pk_storeProductID", key: "pk_storeProductID", width: 30 },
+        { header: "blnStoreActive", key: "blnStoreActive", width: 30 },
+        { header: "storeProductPermalink", key: "storeProductPermalink", width: 30 },
+        { header: "productNumber", key: "productNumber", width: 30 },
+        { header: "blnActive", key: "blnActive", width: 30 },
+        { header: "permalink", key: "permalink", width: 10 },
+        { header: "lastUpdatedDate", key: "lastUpdatedDate", width: 30 },
+        { header: "pk_productID", key: "pk_productID", width: 30 },
+        { header: "technoLogoSKU", key: "technoLogoSKU", width: 30 },
+        { header: "fk_supplierID", key: "fk_supplierID", width: 30 },
+        { header: "firstColumnPricing", key: "firstColumnPricing", width: 30 },
+        { header: "msrp", key: "msrp", width: 10 },
+        { header: "percentSavings", key: "percentSavings", width: 30 },
+        { header: "categoryName", key: "categoryName", width: 30 },
+        { header: "pk_categoryID", key: "pk_categoryID", width: 30 },
+        { header: "specialDescription", key: "specialDescription", width: 30 },
+        { header: "vendorRelation", key: "vendorRelation", width: 30 },
+        { header: "companyName", key: "companyName", width: 30 },
+        { header: "productVideo", key: "productVideo", width: 30 },
+        { header: "storeProductVideo", key: "storeProductVideo", width: 30 },
+        { header: "productCost", key: "productCost", width: 30 },
+      ];
+      for (const obj of data) {
+        worksheet.addRow(obj);
+      }
+      setTimeout(() => {
+        workbook.xlsx.writeBuffer().then((data: any) => {
+          const blob = new Blob([data], {
+            type:
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          });
+          let url = window.URL.createObjectURL(blob);
+          let a = document.createElement("a");
+          document.body.appendChild(a);
+          a.setAttribute("style", "display: none");
+          a.href = url;
+          a.download = `${fileName}.xlsx`;
+          a.click();
+          window.URL.revokeObjectURL(url);
+          a.remove();
+          this.generateReportLoader = false;
+          this._changeDetectorRef.markForCheck();
+        });
+      }, 500);
+      this.generateReportLoader = false;
+    })
+
+
+
 
   }
 
