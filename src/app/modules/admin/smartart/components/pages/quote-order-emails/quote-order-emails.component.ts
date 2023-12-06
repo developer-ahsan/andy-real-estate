@@ -9,6 +9,8 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { SmartArtService } from '../../smartart.service';
 import { sendQuoteCustomerEmail } from '../../smartart.types';
+import { Location } from '@angular/common';
+
 @Component({
   selector: 'app-quote-order-emails',
   templateUrl: './quote-order-emails.component.html',
@@ -93,6 +95,7 @@ export class QuoteOrderEmailComponent implements OnInit, OnDestroy {
     private _authService: AuthService,
     private _smartartService: SmartArtService,
     private router: Router,
+    private _location: Location,
     private _activeRoute: ActivatedRoute
   ) { }
 
@@ -172,26 +175,48 @@ export class QuoteOrderEmailComponent implements OnInit, OnDestroy {
     });
   }
   senAutoArtRequest() {
+    let imprintIDs = [];
+    this.imprintdata.forEach(element => {
+      imprintIDs.push(element.imprintID);
+    });
+    if (this.ngTo.trim() == '') {
+      this._smartartService.snackBar('Please choose any email');
+      return;
+    }
+    this.sendEmailLoader = true;
+    let email = [];
+    if (this.ngTo != '') {
+      email.push(this.ngTo);
+    }
     this.sendEmailLoader = true;
     this._changeDetectorRef.markForCheck();
     let payload: sendQuoteCustomerEmail = {
-      to_email: this.ngTo,
+      to_email: email,
       from: this.ngFrom,
       subject: this.ngSubject,
       message: this.ngMessage,
       storeName: this.orderData.storeName,
+      blnEProcurement: this.orderData.blnEProcurement,
       store_id: this.orderData.pk_storeID,
-      storeURL: this.orderData.storeURL,
-      cartLineImprintID: this.paramData.fk_imprintID,
       userID: this.paramData.pfk_userID,
+      storeURL: this.orderData.storeURL,
       cartLineID: this.paramData.pk_cartLineID,
-      productName: this.orderData.productName,
+      imprintNumList: imprintIDs,
       cartID: this.paramData.fk_cartID,
-      send_customer_email: true
+      cartLineImprintID: this.paramData.fk_imprintID,
+      productName: this.orderData.productName[0],
+      send_quote_customer_email: true
     };
     this._smartartService.AddSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this._smartartService.snackBar(res["message"]);
+      if (res) {
+        this._smartartService.snackBar(res["message"]);
+        this._location.back();
+      }
       this.sendEmailLoader = false;
+      this.ngTo = '';
+      this.ngSubject = '';
+      this.ngFrom = '';
+      this.ngMessage = '';
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.sendEmailLoader = false;

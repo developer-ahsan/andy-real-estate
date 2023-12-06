@@ -623,7 +623,8 @@
                                     </div>
 
                                     <!--- NEW PENDING --->
-                                    <div *ngIf="imprint.fk_statusID == 2" class="rounded-2xl shadow bg-card p-4 col-12">
+                                    <div *ngIf="imprint.fk_statusID == 2"
+                                        class="rounded-2xl w-full shadow bg-card p-4 col-12">
                                         <fuse-alert class="mb-2" [appearance]="'outline'" [type]="'warning'"
                                             [showIcon]="false">
                                             As of {{imprint.statusDate | date: 'MM/dd/yyyy'}} the status of this
@@ -820,7 +821,8 @@
                                         </div>
                                     </div>
                                     <!--- AWAITING ARTWORK APPROVAL --->
-                                    <div *ngIf="imprint.fk_statusID == 3" class="rounded-2xl shadow bg-card p-4 ">
+                                    <div *ngIf="imprint.fk_statusID == 3"
+                                        class="w-full rounded-2xl shadow bg-card p-4 ">
                                         <fuse-alert class="mb-2" [appearance]="'outline'" [type]="'warning'"
                                             [showIcon]="false">
                                             As of {{imprint.statusDate | date: 'MM/dd/yyyy'}} the status of this
@@ -1008,7 +1010,8 @@
                                         </div>
                                     </div>
                                     <!--- ON HOLD --->
-                                    <div *ngIf="imprint.fk_statusID == 12" class="rounded-2xl shadow bg-card p-4 ">
+                                    <div *ngIf="imprint.fk_statusID == 12"
+                                        class="w-full rounded-2xl shadow bg-card p-4 ">
                                         <fuse-alert class="mb-2" [appearance]="'outline'" [type]="'warning'"
                                             [showIcon]="false">
                                             As of {{imprint.statusDate | date: 'MM/dd/yyyy'}} the status of this
@@ -1218,7 +1221,8 @@
                                         </div>
                                     </div>
                                     <!--- ARTWORK REVISION --->
-                                    <div *ngIf="imprint.fk_statusID == 4" class="rounded-2xl shadow bg-card p-4 ">
+                                    <div *ngIf="imprint.fk_statusID == 4"
+                                        class="w-full rounded-2xl shadow bg-card p-4 ">
                                         <fuse-alert class="mb-2" [appearance]="'outline'" [type]="'warning'"
                                             [showIcon]="false">
                                             As of {{imprint.statusDate | date: 'MM/dd/yyyy'}} the status of this
@@ -1336,7 +1340,8 @@
                                         </div>
                                     </div>
                                     <!--- NO PROOF NEEDED --->
-                                    <div *ngIf="imprint.fk_statusID == 7" class="rounded-2xl shadow bg-card p-4 ">
+                                    <div *ngIf="imprint.fk_statusID == 7"
+                                        class="w-full rounded-2xl shadow bg-card p-4 ">
                                         <fuse-alert class="mb-2" [appearance]="'outline'" [type]="'warning'"
                                             [showIcon]="false">
                                             As of {{imprint.statusDate | date: 'MM/dd/yyyy'}} the status of this
@@ -1397,7 +1402,8 @@
                                         </div>
                                     </div>
                                     <!--- ARTWORK APPROVED --->
-                                    <div *ngIf="imprint.fk_statusID == 9" class="rounded-2xl shadow bg-card p-4 ">
+                                    <div *ngIf="imprint.fk_statusID == 9"
+                                        class="w-full rounded-2xl shadow bg-card p-4 ">
                                         <fuse-alert class="mb-2" [appearance]="'outline'" [type]="'warning'"
                                             [showIcon]="false">
                                             As of {{imprint.statusDate | date: 'MM/dd/yyyy'}} the status of this
@@ -1511,7 +1517,8 @@
                                         </div>
                                     </div>
                                     <!--- FOLLOW UP FOR APPROVAL --->
-                                    <div *ngIf="imprint.fk_statusID == 13" class="rounded-2xl shadow bg-card p-4 ">
+                                    <div *ngIf="imprint.fk_statusID == 13"
+                                        class="w-full rounded-2xl shadow bg-card p-4 ">
                                         <fuse-alert class="mb-2" [appearance]="'outline'" [type]="'warning'"
                                             [showIcon]="false">
                                             As of {{imprint.statusDate | date: 'MM/dd/yyyy'}} the status of this

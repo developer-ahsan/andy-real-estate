@@ -99,7 +99,12 @@
                             </mat-expansion-panel-header>
                             <div>
                                 <div><b>Company name:</b> {{orderData?.companyInformationName}}</div>
-                                <div><b>Location:</b> {{orderData?.locationName}}</div>
+                                <div *ngIf="orderData?.fk_companyProfileID"><b>Location:</b>
+                                    <span>{{orderData?.companyProfileName}}</span>
+                                    <span *ngIf="orderData?.storeUserDepartmentsLocationName"> -
+                                        {{orderData?.storeUserDepartmentsLocationName}} -
+                                        {{orderData?.storeUserDepartmentsDepartmentName}}</span>
+                                </div>
                                 <div><b>Name:</b> {{orderData.billingName}}</div>
                                 <div><b>Company:</b> {{orderData.companyInformationName}}</div>
                                 <div><b>Address:</b> {{orderData.billingAddress}} {{orderData.billingCity}}</div>

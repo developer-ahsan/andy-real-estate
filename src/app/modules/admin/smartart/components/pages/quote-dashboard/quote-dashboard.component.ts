@@ -249,14 +249,14 @@ export class QuoteDashboardComponent implements OnInit, OnDestroy {
   quoteDetails(item) {
     this._smartartService.routeData = item;
     const queryParams: NavigationExtras = {
-      queryParams: { fk_imprintID: item.fk_imprintID, pfk_userID: item.pfk_userID, fk_cartID: item.fk_cartID, pk_cartLineID: item.pk_cartLineID, pk_storeID: item.pk_storeID, fk_productID: item.fk_productID, statusName: item.statusName }
+      queryParams: { fk_imprintID: item.fk_imprintID, pfk_userID: item.pfk_userID, fk_cartID: item.fk_cartID, pk_cartLineID: item.pk_cartLineID, pk_storeID: item.pk_storeID, fk_productID: item.pk_productID, statusName: item.statusName }
     };
     this.router.navigate(['/smartart/quote-details'], queryParams);
   }
   // Customer Email
   customerEmail(item) {
     const queryParams: NavigationExtras = {
-      queryParams: { fk_imprintID: item.fk_imprintID, pfk_userID: item.pfk_userID, fk_cartID: item.fk_cartID, pk_cartLineID: item.pk_cartLineID, pk_storeID: item.pk_storeID, fk_productID: item.fk_productID, statusName: item.statusName }
+      queryParams: { fk_imprintID: item.fk_imprintID, pfk_userID: item.pfk_userID, fk_cartID: item.fk_cartID, pk_cartLineID: item.pk_cartLineID, pk_storeID: item.pk_storeID, fk_productID: item.pk_productID, statusName: item.statusName }
     };
     this.router.navigate(['/smartart/email-customer'], queryParams);
   }

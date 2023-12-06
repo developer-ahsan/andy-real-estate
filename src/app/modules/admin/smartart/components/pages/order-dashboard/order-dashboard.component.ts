@@ -210,7 +210,6 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
         this.drawer.toggle();
       }
       res["data"].forEach(element => {
-        element.Age = Math.floor(element?.age / 60);
         if (element.viewProofDetails) {
           element.proofDetails = element.viewProofDetails.split(',');
         } else {
