@@ -175,19 +175,19 @@ export class ImprintMethodsComponent implements OnInit, OnDestroy {
     this.isUpdateMethod = !this.isUpdateMethod;
   }
   updateMethod() {
-    if (this.updateMethodData.imprintColorName == '') {
-      this._systemService.snackBar('Color name is required');
+    if (this.updateMethodData.methodName?.trim() == '' || this.updateMethodData.methodName === undefined) {
+      this._systemService.snackBar('Method name is required');
       return;
     }
     const rgb = this.ngRGBUpdate.replace('#', '');
     let payload: UpdateImprintMethod = {
       method_id: this.updateMethodData.pk_methodID,
-      method_name: this.updateMethodData.methodName,
-      description: this.updateMethodData.methodDescription,
+      method_name: this.updateMethodData.methodName?.trim(),
+      description: this.updateMethodData.methodDescription?.trim(),
       update_imprint_method: true
     }
     this.isUpdateMethodLoader = true;
-    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._systemService.UpdateSystemData(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this.isUpdateMethodLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
