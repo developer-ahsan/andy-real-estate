@@ -149,7 +149,7 @@ export class DashboardsService {
     storeStateSupplierData(): Observable<any> {
         sessionStorage.removeItem('storeStateSupplierData');
         let params = {
-            stores_suppliers_states:true
+            stores_suppliers_states: true
         }
         return this._httpClient.get(environment.dashboard, { params: params }).pipe(
             retry(3),
@@ -344,5 +344,16 @@ export class DashboardsService {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         return emailRegex.test(email);
+    }
+    // convertHoursToDays
+    convertHoursToDays(hours) {
+        if (hours >= 24) {
+            // Convert hours to days
+            const days = Math.floor(hours / 24);
+            return `${days} days`;
+        } else {
+            // Show in hours if less than 1 day
+            return `${hours} hours`;
+        }
     }
 }

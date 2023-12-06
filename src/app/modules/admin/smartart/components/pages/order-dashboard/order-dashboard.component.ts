@@ -9,6 +9,7 @@ import { SmartArtService } from '../../smartart.service';
 import { HideUnhideCart, HideUnhideOrder, UpdateOrderLineClaim, updateAttentionFlagOrder, updateOrderBulkStatusUpdate } from '../../smartart.types';
 import { AuthService } from 'app/core/auth/auth.service';
 import { trigger, state, style, transition, animate } from '@angular/animations';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 @Component({
   selector: 'app-order-dashboard',
   templateUrl: './order-dashboard.component.html',
@@ -86,6 +87,7 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
     private _changeDetectorRef: ChangeDetectorRef,
     private _smartartService: SmartArtService,
     private router: Router,
+    private _commonService: DashboardsService,
     private _authService: AuthService,
     private _activeRoute: ActivatedRoute
   ) { }
@@ -208,6 +210,7 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
         this.drawer.toggle();
       }
       res["data"].forEach(element => {
+        element.Age = Math.floor(element?.age / 60);
         if (element.viewProofDetails) {
           element.proofDetails = element.viewProofDetails.split(',');
         } else {

@@ -89,7 +89,7 @@ export class StoreSettingsComponent implements OnInit, OnDestroy {
     this._commonService.suppliersData$
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(suppliers => {
-        const activeSuppliers = suppliers["data"].filter(element => element.blnActiveVendor);
+        const activeSuppliers = suppliers["data"];
         this.suppliersList.push(...activeSuppliers);
       })
   }
