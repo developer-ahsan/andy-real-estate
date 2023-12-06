@@ -517,5 +517,35 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
     this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
   };
-
+  resendProofEmail(order) {
+    let store_user_approval_contact_id = 0;
+    let art_approval_contact_id = 0;
+    order.isProofLoader = true;
+    console.log(order);
+    let email = order.email;
+    if (order.fk_storeUserApprovalContactID || order.fk_artApprovalContactID) {
+      if (order.fk_storeUserApprovalContactID) {
+        store_user_approval_contact_id = order.fk_storeUserApprovalContactID;
+        art_approval_contact_id = 0;
+      } else if (order.fk_artApprovalContactID) {
+        store_user_approval_contact_id = 0;
+        art_approval_contact_id = order.fk_artApprovalContactID;
+      }
+      let params = {
+        resend_proof_contact: true,
+        store_user_approval_contact_id, art_approval_contact_id
+      }
+      this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+        email = res["data"][0].email;
+        this.uploadResenedProofEmail(email, order);
+      })
+    } else {
+      this.uploadResenedProofEmail(email, order);
+    }
+  }
+  uploadResenedProofEmail(email, order) {
+    console.log(email);
+    order.isProofLoader = false;
+    this._changeDetectorRef.markForCheck();
+  }
 }

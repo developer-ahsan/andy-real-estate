@@ -1718,4 +1718,5 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     })
   }
+
 }
