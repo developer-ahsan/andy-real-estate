@@ -126,7 +126,7 @@ export class PackAndAccessoriesComponent implements OnInit, OnDestroy {
     if (item) {
       this.updateImage = this.imgUrl + 'Thumbnails/' + item.pk_packagingID + '.jpg?' + Math.random();
       this.updatePackageData = item;
-      this.currentlyUsing = item.Suppliers.split(',,')
+      this.currentlyUsing = item?.Suppliers?.split(',,');
     }
     this.isUpdatePackage = !this.isUpdatePackage;
   }

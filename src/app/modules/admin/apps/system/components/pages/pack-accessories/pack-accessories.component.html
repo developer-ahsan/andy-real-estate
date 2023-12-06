@@ -71,6 +71,9 @@
                     <div *ngFor="let item of currentlyUsing">
                         {{item}}
                     </div>
+                    <div *ngIf="currentlyUsing === undefined">
+                        No vendors found.
+                    </div>
                 </div>
                 <!-- <p>Vendors currently using: </p> -->
                 <fuse-alert class="mb-2" [appearance]="'soft'" [type]="'warning'" [showIcon]="false">
