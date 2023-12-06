@@ -35,7 +35,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
     "Add New Users"
   ];
 
-  displayedColumns: string[] = ['id', 'categoryName', 'department', 'user', 'isTopRated', 'subCategories'];
+  displayedColumns: string[] = ['categoryName', 'department', 'user', 'isTopRated', 'subCategories'];
   dataSource = [];
   duplicatedDataSource = [];
   dataSourceTotalRecord: number;

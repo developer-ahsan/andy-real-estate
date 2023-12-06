@@ -138,6 +138,7 @@ export class CountrySalesComponent implements OnInit, OnDestroy {
       this._systemService.snackBar('Please fill out the required fields.');
       return;
     }
+
     let payload: AddOhioTaxRate = {
       county, zip, rate, add_ohio
     }
@@ -147,7 +148,10 @@ export class CountrySalesComponent implements OnInit, OnDestroy {
       return;
     }
     payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
-
+    if (payload.rate < 0) {
+      this._systemService.snackBar('Tax rate should be positive value');
+      return;
+    }
     this.isAddCountyLoader = true;
     this._systemService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this._changeDetectorRef.markForCheck();
@@ -195,6 +199,9 @@ export class CountrySalesComponent implements OnInit, OnDestroy {
       element = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(element);
       if (element.county == '' || element.zip == '' || element.rate == '') {
         this._systemService.snackBar('Please fill out the required fields');
+        return;
+      } else if (element.rate < 0) {
+        this._systemService.snackBar('Tax rate should be positive value');
         return;
       } else {
         if (!element.is_delete) {

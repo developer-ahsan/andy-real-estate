@@ -24,8 +24,6 @@ export class ApparelDecoratorComponent implements OnInit, OnDestroy {
     idField: 'pk_companyID',
     textField: 'companyName',
     enableCheckAll: false,
-    selectAllText: 'Select All',
-    unSelectAllText: 'Unselect All',
     allowSearchFilter: true,
     limitSelection: 1,
     clearSearchFilter: true,
@@ -74,22 +72,10 @@ export class ApparelDecoratorComponent implements OnInit, OnDestroy {
         this.selectedItems = this.dropdownList[0].pk_companyID;
         // this.dropdownList = res["data"];
         this._changeDetectorRef.markForCheck();
-      })
-    // this._storeManagerService.getAllSuppliersBln(this.totalSuppliers)
-    //   .pipe(takeUntil(this._unsubscribeAll))
-    //   .subscribe(res => {
-    //     this.isPageLoading = false;
-    //     res["data"].forEach(element => {
-    //       this.dropdownList.push(element);
-    //     });
-    //     this.selectedItems = this.dropdownList[0].pk_companyID;
-    //     // this.dropdownList = res["data"];
-    //     this._changeDetectorRef.markForCheck();
-    //   })
+      });
   }
   onItemSelect(item: any) {
-    console.log(item);
-    this.selectedItems = item;
+    this.selectedItems = item.pk_companyID;
   };
 
   saveChanges(): void {
