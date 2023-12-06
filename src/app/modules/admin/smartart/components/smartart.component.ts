@@ -48,9 +48,9 @@ export class SmartArtComponent {
         { value: 9, label: 'Artwork Approved' },
         { value: 16, label: 'PO Sent' },
         { value: 11, label: 'In Production' },
-        { value: 17, label: 'Hidden' },
-        { value: 99, label: 'Waiting for GroupBuy' },
-        { value: 999, label: 'In-Hands Date' },
+        { value: 999, label: 'Hidden' },
+        { value: 17, label: 'Waiting for GroupBuy' },
+        { value: 18, label: 'In-Hands Date' },
     ];
     //   Quote Options
     quoteOptions = [
