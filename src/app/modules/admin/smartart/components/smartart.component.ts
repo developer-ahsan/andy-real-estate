@@ -160,71 +160,15 @@ export class SmartArtComponent {
                     this.allStores.push(element);
                 }
             });
-            // this.allStores = this.allStores.concat(res['data']);
             this.selectedStore = this.allStores[0];
         });
         this._smartartService.smartArtUsers$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-            this.allDesigners.push({ firstName: 'All', lastName: " Designers", pk_userID: null });
-            this.allDesigners = this.allDesigners.concat(res['data']);
-            this.selectedDesigner = this.allDesigners[0];
-        });
-        let params;
-        this.searchStoreCtrl.valueChanges.pipe(
-            filter((res: any) => {
-                params = {
-                    stores: true,
-                    bln_active: 1,
-                    keyword: res
-                }
-                return res !== null && res.length >= 3
-            }),
-            distinctUntilChanged(),
-            debounceTime(300),
-            tap(() => {
-                this.allStores = [];
-                this.isSearchingStore = true;
+            if (res) {
+                this.allDesigners.push({ firstName: 'All', lastName: " Designers", pk_userID: 0 });
+                this.allDesigners = this.allDesigners.concat(res);
+                this.selectedDesigner = this.allDesigners[0];
                 this._changeDetectorRef.markForCheck();
-            }),
-            switchMap(value => this._smartartService.getSmartArtData(params)
-                .pipe(
-                    finalize(() => {
-                        this.isSearchingStore = false
-                        this._changeDetectorRef.markForCheck();
-                    }),
-                )
-            )
-        ).subscribe((data: any) => {
-            this.allStores.push({ storeName: 'All Stores', pk_storeID: null });
-            this.allStores = this.allStores.concat(data['data']);
-        });
-        let params1;
-        this.searchDesignerCtrl.valueChanges.pipe(
-            filter((res: any) => {
-                params1 = {
-                    smart_art_designers: true,
-                    role_id: 1,
-                    keyword: res
-                }
-                return res !== null && res.length >= 3
-            }),
-            distinctUntilChanged(),
-            debounceTime(300),
-            tap(() => {
-                this.allDesigners = [];
-                this.isSearchingDesigner = true;
-                this._changeDetectorRef.markForCheck();
-            }),
-            switchMap(value => this._smartartService.getSmartArtData(params1)
-                .pipe(
-                    finalize(() => {
-                        this.isSearchingDesigner = false
-                        this._changeDetectorRef.markForCheck();
-                    }),
-                )
-            )
-        ).subscribe((data: any) => {
-            this.allDesigners.push({ firstName: 'All', lastName: " Designers", pk_userID: null });
-            this.allDesigners = this.allDesigners.concat(data['data']);
+            }
         });
 
     }

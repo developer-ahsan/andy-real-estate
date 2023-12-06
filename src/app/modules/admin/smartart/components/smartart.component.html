@@ -70,7 +70,12 @@
                 </li>
                 <li class="col-span-1 flex rounded-md">
                     <mat-form-field class="w-full">
-                        <input matInput placeholder="Search Designer" matTooltip="Search designer by name"
+                        <mat-select matInput [(ngModel)]="selectedDesigner" [ngModelOptions]=" 
+                        {standalone: true}">
+                            <mat-option *ngFor="let designer of allDesigners" [value]="designer">{{designer.firstName +
+                                ' ' + designer.lastName}}</mat-option>
+                        </mat-select>
+                        <!-- <input matInput placeholder="Search Designer" matTooltip="Search designer by name"
                             [matAutocomplete]="designer" [formControl]="searchDesignerCtrl">
                         <mat-autocomplete class="w-full" #designer="matAutocomplete"
                             (optionSelected)="onSelectedDesigner($event)" [displayWith]="displayWithDesigner">
@@ -80,7 +85,7 @@
                                     <span>{{item.firstName + ' ' + item.lastName}}</span>
                                 </mat-option>
                             </ng-container>
-                        </mat-autocomplete>
+                        </mat-autocomplete> -->
                     </mat-form-field>
                 </li>
             </ul>
@@ -163,7 +168,11 @@
                 <div>
                     <mat-form-field class="w-full">
                         <mat-label>Search Designer</mat-label>
-                        <input matInput placeholder="Search Designer" matTooltip="Search designer by name"
+                        <mat-select matInput>
+                            <mat-option *ngFor="let designer of allDesigners" [(ngModel)]="selectedDesigner"
+                                [value]="designer">{{designer.firstName + ' ' + designer.lastName}}</mat-option>
+                        </mat-select>
+                        <!-- <input matInput placeholder="Search Designer" matTooltip="Search designer by name"
                             [matAutocomplete]="designer" [formControl]="searchDesignerCtrl">
                         <mat-autocomplete class="w-full" #designer="matAutocomplete"
                             (optionSelected)="onSelectedDesigner($event)" [displayWith]="displayWithDesigner">
@@ -173,7 +182,7 @@
                                     <span>{{item.firstName + ' ' + item.lastName}}</span>
                                 </mat-option>
                             </ng-container>
-                        </mat-autocomplete>
+                        </mat-autocomplete> -->
                     </mat-form-field>
                 </div>
                 <div>

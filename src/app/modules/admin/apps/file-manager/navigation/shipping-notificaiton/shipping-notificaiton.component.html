@@ -10,11 +10,12 @@
 
                         <div class="row">
                             <div class="col-12 mt-3">
+                                <p>
+                                    Choose whether or not you want to receive shipment notification emails at
+                                    service@{{selectedStore.storeName}} coming from OrderManage
+                                </p>
                                 <mat-form-field appearance="fill" class="w-full">
-                                    <mat-label>
-                                        Choose whether or not you want to receive shipment notification emails at
-                                        service@{{selectedStore.storeName}} coming from OrderManage
-                                    </mat-label>
+
                                     <mat-select [formControlName]="'blnShippingNotification'">
                                         <mat-option [value]="true">Enabled</mat-option>
                                         <mat-option [value]="false">Disabled</mat-option>
@@ -29,7 +30,7 @@
                                     <ng-container *ngIf="flashMessage === 'success'">
                                         <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
                                         </mat-icon>
-                                        <span class="ml-2">Shipping notification updated successfully</span>
+                                        <span class="ml-2">{{toastMessage}}</span>
                                     </ng-container>
                                     <ng-container *ngIf="flashMessage === 'error'">
                                         <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>

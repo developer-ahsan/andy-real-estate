@@ -151,11 +151,11 @@
                                     {{orderData.locationName}}</div>
                                 <div><b>Customer Name:</b> {{orderData?.firstName + ' ' + orderData?.lastName}}</div>
                                 <div><b>PO:</b> {{orderData.fk_orderID}}-{{paramData?.pk_orderLineID}}</div>
-                                <div><b>Order Placed:</b> {{orderData.orderDate | date: 'MM/dd/yyyy'}}</div>
+                                <div><b>Order Placed:</b> {{orderData.orderDate}}</div>
                                 <div><b>Store: </b> <a
                                         href="{{orderData?.protocol}}{{orderData?.storeURL}}/{{orderData?.categoryPermalink}}/{{orderData?.subCategoryPermalink}}/{{orderData?.productPermaLink}}"
                                         target="_blank"> {{orderData.storeName}}</a></div>
-                                <div><b>In-Hands:</b> {{orderData.inHandsDate | date: 'MM/dd/yyyy'}}</div>
+                                <div><b>In-Hands:</b> {{orderData.inHandsDate }}</div>
                                 <div><b>Rush:</b> {{orderData.sessionArtworkBlnRushOrder? 'YES' : 'NO'}}</div>
                             </div>
                             <div *ngIf="smartArtUser.blnMaster">
@@ -164,7 +164,7 @@
                                 </div>
                                 <div><b>Quote ID:</b> {{orderData.quoteID}}-{{paramData?.fk_imprintID}}</div>
                                 <div><b>PO:</b> {{orderData.fk_orderID}}-{{paramData?.pk_orderLineID}}</div>
-                                <div><b>Order Placed:</b> {{orderData.orderDate | date: 'MM/dd/yyyy'}}</div>
+                                <div><b>Order Placed:</b> {{orderData.orderDate }}</div>
                                 <div><b>Store: </b> <a
                                         href="{{orderData?.protocol}}{{orderData?.storeURL}}/{{orderData?.categoryPermalink}}/{{orderData?.subCategoryPermalink}}/{{orderData?.productPermaLink}}"
                                         target="_blank"> {{orderData.storeName}}</a></div>
@@ -178,12 +178,16 @@
                                 <div><b>Rush:</b> {{orderData.sessionArtworkBlnRushOrder? 'YES' : 'NO'}}</div>
                                 <div>
                                     <b>In-Hands:</b> (mm/dd/yyyy)
-                                    <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full min-w-50">
+                                    <input type="date" [(ngModel)]="orderData.inHandsDate"
+                                        class="block w-full rounded-md border-0 p-2.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        aria-describedby="email-optional">
+
+                                    <!-- <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full min-w-50">
                                         <input matInput readonly [matDatepicker]="picker" (click)="picker.open()"
                                             [(ngModel)]="orderData.inHandsDate">
                                         <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                                         <mat-datepicker #picker></mat-datepicker>
-                                    </mat-form-field>
+                                    </mat-form-field> -->
                                 </div>
                                 <div>
                                     <b>Event: </b>

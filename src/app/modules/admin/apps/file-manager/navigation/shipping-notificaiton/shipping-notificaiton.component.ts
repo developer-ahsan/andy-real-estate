@@ -20,6 +20,7 @@ export class ShippingNotificaitonComponent implements OnInit, OnDestroy {
   isStoreFetch: boolean = true;
   updateLoader = false;
   flashMessage: 'success' | 'error' | null = null;
+  toastMessage: any = '';
 
   constructor(
     private _storeManagerService: FileManagerService,
@@ -93,7 +94,7 @@ export class ShippingNotificaitonComponent implements OnInit, OnDestroy {
             'error'
         );
         this.updateLoader = false;
-
+        this.toastMessage = response["message"];
         // Mark for check
         this._changeDetectorRef.markForCheck();
       }, err => {
