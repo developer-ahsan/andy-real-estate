@@ -5,9 +5,13 @@
                 <div class="p-6 pb-2 sm:p-8 dm:pb-2 lg:p-10 lg:pb-2 w-full">
                     <div>
                         <button (click)="generateDataSheet()"
+                        [disabled]="generateReportLoader"
                             class="mat-focus-indicator mat-tooltip-trigger mb-3 mat-flat-button mat-button-base mat-primary"
                             aria-describedby="cdk-describedby-message-1">
-                            <span class="mat-button-wrapper ml-2 mr-1">Generate Data Sheet</span></button>
+                            <mat-progress-spinner *ngIf="generateReportLoader" class="mr-2" [diameter]="24"
+                                    [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                            <span *ngIf="!generateReportLoader" class="mat-button-wrapper ml-2 mr-1">Generate Data Sheet</span></button>
                     </div>
                     <div class="row">
                         <div class="col-12 flex justify-between">
