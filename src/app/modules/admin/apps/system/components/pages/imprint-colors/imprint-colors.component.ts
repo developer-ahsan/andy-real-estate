@@ -118,21 +118,21 @@ export class ImprintColorsComponent implements OnInit, OnDestroy {
   }
 
   addNewColor() {
-    if (this.ngName == '') {
+    if (this.ngName.trim() === '') {
       this._systemService.snackBar('Color name is required');
       return;
     }
-    if (this.ngRGB == '') {
+    if (this.ngRGB.trim() === '') {
       this._systemService.snackBar('RGB is required');
       return;
     }
     let payload: AddImprintColor = {
-      color_name: this.ngName,
+      color_name: this.ngName.trim(),
       rgb: this.ngRGB.replace('#', ''),
       add_imprint_color: true
     }
     this.isAddColorLoader = true;
-    this._systemService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._systemService.AddSystemData(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       if (res["success"]) {
@@ -154,7 +154,7 @@ export class ImprintColorsComponent implements OnInit, OnDestroy {
       imprint_color_id: item.pk_imprintColorID,
       delete_imprint_color: true
     }
-    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._systemService.UpdateSystemData(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       item.delLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
@@ -178,14 +178,14 @@ export class ImprintColorsComponent implements OnInit, OnDestroy {
     this.isUpdateColors = !this.isUpdateColors;
   }
   updateColor() {
-    if (this.updateColorData.imprintColorName == '') {
+    if (this.updateColorData.imprintColorName.trim() === '') {
       this._systemService.snackBar('Color name is required');
       return;
     }
     const rgb = this.ngRGBUpdate.replace('#', '');
     let payload: UpdateImprintColor = {
       color_id: this.updateColorData.pk_imprintColorID,
-      color_name: this.updateColorData.imprintColorName,
+      color_name: this.updateColorData.imprintColorName.trim(),
       rgb: rgb,
       update_imprint_color: true
     }
@@ -205,6 +205,15 @@ export class ImprintColorsComponent implements OnInit, OnDestroy {
     }, err => {
       this._systemService.snackBar('Something went wrong');
     })
+  }
+
+  replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+        obj[key] = obj[key]?.replace(/'/g, "''");
+      }
+    }
+    return obj;
   }
 
   /**

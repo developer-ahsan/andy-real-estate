@@ -138,14 +138,21 @@
                             [matTooltip]="'In the form of dollars and cents, if doing a dollar amount off. To add to order total, make negative. In the form of a percentage, if doing a percent off'">
                             Savings amount* <i class="fas fa-question-circle"></i></mat-label>
                         <mat-form-field class="w-full">
-                            <input matInput type="number" formControlName="amount">
+                            <input min="0" matInput type="number" formControlName="amount">
                         </mat-form-field>
                     </div>
                     <div class="col-12 col-md-6">
                         <mat-label class="font-medium" [matTooltip]="'In the form of dollars and cents'">Threshold* <i
                                 class="fas fa-question-circle"></i></mat-label>
                         <mat-form-field class="w-full">
-                            <input matInput type="number" formControlName="threshold">
+                            <input min="0" matInput type="number" formControlName="threshold">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <mat-label class="font-medium" [matTooltip]="'In the form of dollars and cents'">Max Amount <i
+                                class="fas fa-question-circle"></i></mat-label>
+                        <mat-form-field class="w-full">
+                            <input min="0" maxlength="20" matInput type="number" formControlName="maxAmount">
                         </mat-form-field>
                     </div>
                     <div class="col-12">
@@ -231,7 +238,7 @@
                     <mat-label class="font-medium" [matTooltip]="'10 characters max'">Name* <i
                             class="fas fa-question-circle"></i></mat-label>
                     <mat-form-field class="w-full">
-                        <input matInput maxlength="10" formControlName="promocode">
+                        <input matInput maxlength="50" formControlName="promocode">
                     </mat-form-field>
                 </div>
                 <div class="col-12 col-md-6">
@@ -252,14 +259,21 @@
                         [matTooltip]="'In the form of dollars and cents, if doing a dollar amount off. To add to order total, make negative. In the form of a percentage, if doing a percent off'">
                         Savings amount* <i class="fas fa-question-circle"></i></mat-label>
                     <mat-form-field class="w-full">
-                        <input matInput type="number" formControlName="amount">
+                        <input min="0" maxlength="20" matInput type="number" formControlName="amount">
                     </mat-form-field>
                 </div>
                 <div class="col-12 col-md-6">
                     <mat-label class="font-medium" [matTooltip]="'In the form of dollars and cents'">Threshold* <i
                             class="fas fa-question-circle"></i></mat-label>
                     <mat-form-field class="w-full">
-                        <input matInput type="number" formControlName="threshold">
+                        <input min="0" maxlength="20" matInput type="number" formControlName="threshold">
+                    </mat-form-field>
+                </div>
+                <div class="col-12 col-md-6">
+                    <mat-label class="font-medium" [matTooltip]="'In the form of dollars and cents'">Max Amount <i
+                            class="fas fa-question-circle"></i></mat-label>
+                    <mat-form-field class="w-full">
+                        <input min="0" maxlength="20" matInput type="number" formControlName="maxAmount">
                     </mat-form-field>
                 </div>
                 <div class="col-12">
@@ -282,7 +296,7 @@
                     <mat-label class="font-medium" [matTooltip]="'Enter in the form mm/dd/yy. If none, leave blank'">
                         Expiration Date <i class="fas fa-question-circle"></i></mat-label>
                     <mat-form-field class="w-full">
-                        <input readonly matInput [matDatepicker]="picker" formControlName="expDate">
+                        <input maxlength="10" readonly matInput [matDatepicker]="picker" formControlName="expDate">
                         <mat-hint>MM/DD/YYYY</mat-hint>
                         <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                         <mat-datepicker #picker></mat-datepicker>

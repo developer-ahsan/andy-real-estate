@@ -284,6 +284,61 @@
             </div>
           </form>
         </mat-tab>
+
+
+        <mat-tab label="Student Organization">
+          <div class="row">
+            <div class="col-lg-6 col-12 pb-6 sm:pb-8 lg:pb-8">
+              <div class="text-2xl font-bold">
+                Import Student Organization Data Sheet
+              </div>
+            </div>
+          </div>
+          <form [formGroup]="studentForm">
+            <div class="row">
+
+              <div class="col-12 col-md-4">
+                <div> Select a CSV file to import: </div>
+                <input class="mt-1" type="file" accept=".jpg" [formControlName]="'image'" (change)="upload($event)"
+                  style="line-height: 2.5;" #fileInputImage />
+              </div>
+
+              <div class="col-md-4 col-12">
+                <span> Import option: </span><span class="fa fa-question-circle fa-lg"
+                  matTooltip="If you choose to append this data, the current student organization data will remain with the imported data appended.  If you choose to overwrite, all existing data will be replaced with the imported data."></span>
+                <mat-form-field class="w-full">
+                  <mat-select matInput formControlName="importOption">
+                    <mat-option value="0">Append</mat-option>
+                    <mat-option value="1">Overwrite</mat-option>
+                    <mat-option value="2">Update</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div class="col-md-4 col-12">
+                <mat-form-field class="w-full">
+                  <mat-label>Campus</mat-label>
+                  <mat-select placeholder="Select Campus" matInput formControlName="campus">
+                    <mat-option value="Newark">Newark</mat-option>
+                    <mat-option value="New Brunswick">New Brunswick</mat-option>
+                    <mat-option value="Camden">Camden</mat-option>
+                    <mat-option value="RBHS">RBHS</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+              <div class="col-12 flex items-center justify-end w-full">
+
+                <button (click)="importData()" [disabled]="isStudentFormLoader" [matTooltip]="'Update'" class="min-w-40"
+                  mat-stroked-button mat-flat-button>
+                  <span class="px-2" *ngIf="!isStudentFormLoader">Import Data</span>
+                  <mat-progress-spinner *ngIf="isStudentFormLoader" [diameter]="24" [mode]="'indeterminate'">
+                  </mat-progress-spinner>
+                </button>
+              </div>
+            </div>
+          </form>
+        </mat-tab>
+
       </mat-tab-group>
       <div class="row p-6" style="width: -webkit-fill-available;">
         <div class="col-12" *ngIf="isEditStoreOrg">
