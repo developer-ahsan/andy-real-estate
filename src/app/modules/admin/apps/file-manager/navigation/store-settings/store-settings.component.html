@@ -186,7 +186,7 @@
               </mat-form-field>
             </div>
 
-            <div class="col-6" *ngIf="!storeSettingsForm.get('blnCostCenterCodes').value">
+            <div class="col-6" *ngIf="storeSettingsForm.get('blnCostCenterCodes').value">
               <mat-form-field appearance="fill" class="w-full">
                 <mat-label>Save/show all cost center codes?</mat-label>
                 <mat-select [formControlName]="'blnShowCostCenterCodes'">
@@ -195,7 +195,7 @@
                 </mat-select>
               </mat-form-field>
             </div>
-            <div class="col-6" *ngIf="!storeSettingsForm.get('blnCostCenterCodes').value">
+            <div class="col-6" *ngIf="storeSettingsForm.get('blnCostCenterCodes').value">
               <mat-form-field appearance="fill" class="w-full">
                 <mat-label>Require cost center codes?</mat-label>
                 <mat-select [formControlName]="'blnRequireCostCenterCode'">
