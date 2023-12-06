@@ -36,6 +36,9 @@ export class StudentOrgComponent implements OnInit, OnDestroy {
   isAddMsg: boolean = false;
   isAddMsgText = '';
 
+  studentForm: FormGroup;
+  isStudentFormLoader: boolean = false
+
   filterBy = 'all';
 
   isCampusForm: FormGroup;
@@ -86,6 +89,12 @@ export class StudentOrgComponent implements OnInit, OnDestroy {
       advisorName: new FormControl(''),
       campus: new FormControl('Newark'),
       update_campus: new FormControl(true)
+    })
+
+    this.studentForm = new FormGroup({
+      campus: new FormControl(''),
+      importOption : new FormControl('Append')
+
     })
   }
   getOrgsList(type) {
@@ -175,7 +184,7 @@ export class StudentOrgComponent implements OnInit, OnDestroy {
 
   updateOrg(item) {
     const { name, advisorEmail, advisorName } = this.isEditFormOrg.getRawValue();
-    if (name == '' || advisorEmail == '' || advisorName == '') {
+    if (name.trim() == '' || advisorEmail.trim() == '' || advisorName.trim() == '') {
       this._snackBar.open("Please Check Input Fields", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
@@ -183,7 +192,7 @@ export class StudentOrgComponent implements OnInit, OnDestroy {
       });
     } else {
       this.isEditLoader = true;
-      this._storeManagerService.putStoresData(this.isEditFormOrg.value).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._storeManagerService.putStoresData(this.replaceSingleQuotesWithDoubleSingleQuotes(this.isEditFormOrg.value)).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         if (res["success"]) {
           this.getOrgsList('update')
           this._changeDetectorRef.markForCheck();
@@ -197,7 +206,7 @@ export class StudentOrgComponent implements OnInit, OnDestroy {
 
   addOrg() {
     const { advisorEmail, advisorName, name, campus, code, add_student_org } = this.isAddFormOrg.getRawValue();
-    if (name == '' || code == '') {
+    if (name.trim() == '' || code.trim() == '') {
       this._snackBar.open("Please Check Input Fields", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
@@ -208,9 +217,9 @@ export class StudentOrgComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
       const fk_storeID = this.selectedStore.pk_storeID;
       let payload = {
-        fk_storeID, advisorEmail, advisorName, name, campus, code, add_student_org: true
+        fk_storeID, advisorEmail, advisorName, name: name.trim(), campus, code: code.trim(), add_student_org: true
       }
-      this._storeManagerService.postStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._storeManagerService.postStoresData(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         this.isAddMsgText = res["message"];
         if (res["success"]) {
           this.getOrgsList('add')
@@ -231,6 +240,33 @@ export class StudentOrgComponent implements OnInit, OnDestroy {
 
   }
 
+  replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+        obj[key] = obj[key]?.replace(/'/g, "''");
+      }
+    }
+    return obj;
+  }
+
+  importData() {
+
+  }
+
+  upload(event) {
+    // const file = event.target.files[0];
+    // this.fileName = !this.imagesArray.length ? "1" : `${this.imagesArray.length + 1}`;
+    // let fileType = file["type"];
+    // const reader = new FileReader();
+    // reader.readAsDataURL(file);
+    // reader.onload = () => {
+    //   this.images = {
+    //     imageUpload: reader.result,
+    //     fileType: fileType
+    //   };
+    // };
+  };
+
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions
     this._unsubscribeAll.next();
@@ -248,7 +284,7 @@ export class StudentOrgComponent implements OnInit, OnDestroy {
   }
   updateCampusEmail() {
     const { advisorEmail, advisorName, campus, update_campus } = this.isCampusForm.getRawValue();
-    if (advisorEmail == '' || advisorName == '') {
+    if (advisorEmail.trim() == '' || advisorName.trim() == '') {
       this._snackBar.open("Please Check Input Fields", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
@@ -256,7 +292,7 @@ export class StudentOrgComponent implements OnInit, OnDestroy {
       });
     } else {
       let payload = {
-        advisorEmail, advisorName, campus, update_campus, fk_storeID: this.selectedStore.pk_storeID
+        advisorEmail: advisorEmail.trim(), advisorName: advisorName.trim(), campus, update_campus, fk_storeID: this.selectedStore.pk_storeID
       }
       this.isCampusUpdateLoader = true;
       this._storeManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {

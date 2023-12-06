@@ -158,8 +158,28 @@
                                 {{product?.companyName || not_available}}
                             </td>
                         </ng-container>
-                        <ng-container matColumnDef="mrp">
+                        <ng-container matColumnDef="date_registered">
                             <th class="w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                *matHeaderCellDef mat-sort-header disableClear>
+                                Date Registered
+                            </th>
+                            <td class="pr-4" mat-cell *matCellDef="let product" (click)="editCustomer(product)"
+                                style="cursor: pointer;">
+                                {{product?.date | date:'MM/dd/yyyy'}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="rem">
+                            <th class="w-5 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                *matHeaderCellDef mat-sort-header disableClear>
+                                Rem.
+                            </th>
+                            <td class="pr-4" mat-cell *matCellDef="let product" (click)="editCustomer(product)"
+                                style="cursor: pointer;">
+                                <span *ngIf="product?.blnReminders === 1" class="fa fa-exclamation-circle fa-lg text-danger"  matTooltip="This user has reminders."></span>
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="mrp">
+                            <th class="w-5 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
                                 *matHeaderCellDef mat-sort-header disableClear>
                                 MRP
                             </th>
