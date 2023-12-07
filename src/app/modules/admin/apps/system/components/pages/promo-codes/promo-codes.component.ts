@@ -26,6 +26,10 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
   tempRecords = 0;
   page = 1;
 
+  sort_by: string = '';
+  sort_order: string = 'ASC'
+
+
   mainScreen: string = 'Current Promo Codes';
   keyword = '';
   not_available = 'N/A';
@@ -65,7 +69,7 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
       blnRemoveCost: new FormControl(false, Validators.required),
       blnRemovePrice: new FormControl(false, Validators.required),
       blnPercent: new FormControl(false, Validators.required),
-      maxAmount:new FormControl(''),
+      maxAmount: new FormControl(''),
     });
     this.updatePromoForm = new FormGroup({
       promocode: new FormControl({ value: '', disabled: true }, [Validators.required]),
@@ -80,7 +84,7 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
       blnRemoveCost: new FormControl(false, Validators.required),
       blnRemovePrice: new FormControl(false, Validators.required),
       blnPercent: new FormControl(false, Validators.required),
-      maxAmount:new FormControl(''),
+      maxAmount: new FormControl(''),
     });
   }
   ngOnInit(): void {
@@ -99,9 +103,13 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
     let params = {
       promo_codes: true,
       keyword: this.keyword,
-      page: page,
-      size: 20
+      page: this.page,
+      size: 20,
+      sort_by: this.sort_by,
+      sort_order: this.sort_order
     }
+    this.isLoading = true;
+
     this._systemService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.dataSource = res["data"];
       this.totalUsers = res["totalRecords"];
@@ -155,6 +163,12 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
     this.totalUsers = this.tempRecords;
   }
 
+  sortData(column: string) {
+    this.sort_order = this.sort_order === 'ASC' ? 'DESC' : 'ASC';
+    this.sort_by = column;
+    this.getPromoCodes(1, 'get');
+  }
+
   replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
     for (const key in obj) {
       if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
@@ -165,7 +179,7 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
   }
 
   addNewPromoCode() {
-    const { maxAmount,promocode, amount, threshold, description, blnActive, expDate, blnShipping, blnRemoveShippingCost, blnRemoveShippingPrice, blnRemoveCost, blnRemovePrice, blnPercent } = this.addPromoForm.getRawValue();
+    const { maxAmount, promocode, amount, threshold, description, blnActive, expDate, blnShipping, blnRemoveShippingCost, blnRemoveShippingPrice, blnRemoveCost, blnRemovePrice, blnPercent } = this.addPromoForm.getRawValue();
     if (promocode.trim() == '' || description.trim() == '') {
       this._systemService.snackBar('Please fill out the required fields');
       return;
@@ -177,7 +191,7 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
       date = 0;
     }
     let payload: AddPromoCode = {
-      maxAmount,promocode: promocode.trim(), amount, threshold, description: description.trim(), blnActive, expDate: date, blnShipping, blnRemoveShippingCost, blnRemoveShippingPrice, blnRemoveCost, blnRemovePrice, blnPercent, add_promo_code: true
+      maxAmount, promocode: promocode.trim(), amount, threshold, description: description.trim(), blnActive, expDate: date, blnShipping, blnRemoveShippingCost, blnRemoveShippingPrice, blnRemoveCost, blnRemovePrice, blnPercent, add_promo_code: true
     }
     this.isAddPromoLoader = true;
     this._systemService.AddSystemData(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll), finalize(() => {

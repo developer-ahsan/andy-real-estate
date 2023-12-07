@@ -28,40 +28,120 @@
             <div *ngIf="dataSource.length > 0 && !isUpdatePromo;else other_content" class="w-full">
                 <table mat-table [dataSource]="dataSource" class="w-full border-t">
                     <ng-container matColumnDef="name">
-                        <th mat-header-cell *matHeaderCellDef class="w-40 min-w-40">
-                            Name
+                        <th (click)="sortData('promocode')" mat-header-cell *matHeaderCellDef
+                            class="w-40 min-w-40 cursor-pointer">
+                            <div class="flex">
+                                <span> Name </span>
+                                <div *ngIf="sort_by === 'promocode'" class="flex mt-0.5">
+                                    <svg *ngIf="sort_order === 'ASC'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M15.75 17.25L12 21m0 0l-3.75-3.75M12 21V3" />
+                                    </svg>
+
+                                    <svg *ngIf="sort_order === 'DESC'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M8.25 6.75L12 3m0 0l3.75 3.75M12 3v18" />
+                                    </svg>
+                                </div>
+                            </div>
                         </th>
                         <td mat-cell *matCellDef="let element">
                             {{element.promocode || not_available}}
                         </td>
                     </ng-container>
                     <ng-container matColumnDef="savings">
-                        <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15 text-center">
-                            Savings
+                        <th (click)="sortData('amount')" mat-header-cell *matHeaderCellDef
+                            class="w-15 min-w-15 text-center cursor-pointer">
+                            <div class="flex">
+                                <span> Savings </span>
+                                <div *ngIf="sort_by === 'amount'" class="flex mt-0.5">
+                                    <svg *ngIf="sort_order === 'ASC'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M15.75 17.25L12 21m0 0l-3.75-3.75M12 21V3" />
+                                    </svg>
+
+                                    <svg *ngIf="sort_order === 'DESC'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M8.25 6.75L12 3m0 0l3.75 3.75M12 3v18" />
+                                    </svg>
+                                </div>
+                            </div>
                         </th>
                         <td mat-cell *matCellDef="let element" class="text-center">
                             {{element.amount | currency}}
                         </td>
                     </ng-container>
                     <ng-container matColumnDef="threshold">
-                        <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15 text-center">
-                            Threshold
+                        <th (click)="sortData('threshold')" mat-header-cell *matHeaderCellDef
+                            class="w-15 min-w-15 text-center cursor-pointer">
+                            <div class="flex">
+                                <span> Threshold </span>
+                                <div *ngIf="sort_by === 'threshold'" class="flex mt-0.5">
+                                    <svg *ngIf="sort_order === 'ASC'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M15.75 17.25L12 21m0 0l-3.75-3.75M12 21V3" />
+                                    </svg>
+
+                                    <svg *ngIf="sort_order === 'DESC'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M8.25 6.75L12 3m0 0l3.75 3.75M12 3v18" />
+                                    </svg>
+                                </div>
+                            </div>
                         </th>
                         <td mat-cell *matCellDef="let element" class="text-center">
                             {{element.threshold | currency}}
                         </td>
                     </ng-container>
                     <ng-container matColumnDef="exp">
-                        <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15 text-center">
-                            Exp
+                        <th (click)="sortData('expDate')" mat-header-cell *matHeaderCellDef
+                            class="w-15 min-w-15 text-center cursor-pointer">
+                            <div class="flex">
+                                <span> Exp </span>
+                                <div *ngIf="sort_by === 'expDate'" class="flex mt-0.5">
+                                    <svg *ngIf="sort_order === 'ASC'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M15.75 17.25L12 21m0 0l-3.75-3.75M12 21V3" />
+                                    </svg>
+
+                                    <svg *ngIf="sort_order === 'DESC'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M8.25 6.75L12 3m0 0l3.75 3.75M12 3v18" />
+                                    </svg>
+                                </div>
+                            </div>
                         </th>
                         <td mat-cell *matCellDef="let element" class="text-center">
                             {{element.expDate==0 ? 'None': element.expDate }}
                         </td>
                     </ng-container>
                     <ng-container matColumnDef="active">
-                        <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15 text-center">
-                            Active
+                        <th (click)="sortData('blnActive')" mat-header-cell *matHeaderCellDef
+                            class="w-15 min-w-15 text-center cursor-pointer">
+                            <div class="flex">
+                                <span> Active </span>
+                                <div *ngIf="sort_by === 'blnActive'" class="flex mt-0.5">
+                                    <svg *ngIf="sort_order === 'ASC'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M15.75 17.25L12 21m0 0l-3.75-3.75M12 21V3" />
+                                    </svg>
+
+                                    <svg *ngIf="sort_order === 'DESC'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M8.25 6.75L12 3m0 0l3.75 3.75M12 3v18" />
+                                    </svg>
+                                </div>
+                            </div>
                         </th>
                         <td mat-cell *matCellDef="let element" class="text-center">
                             <mat-icon *ngIf="element.blnActive" svgIcon="heroicons_outline:check"></mat-icon>
@@ -69,8 +149,24 @@
                         </td>
                     </ng-container>
                     <ng-container matColumnDef="shipping">
-                        <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15 text-center">
-                            Free Shipping
+                        <th (click)="sortData('blnShipping')" mat-header-cell *matHeaderCellDef
+                            class="w-15 min-w-15 text-center cursor-pointer">
+                            <div class="flex">
+                                <span> Free Shipping </span>
+                                <div *ngIf="sort_by === 'blnShipping'" class="flex mt-0.5">
+                                    <svg *ngIf="sort_order === 'ASC'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M15.75 17.25L12 21m0 0l-3.75-3.75M12 21V3" />
+                                    </svg>
+
+                                    <svg *ngIf="sort_order === 'DESC'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M8.25 6.75L12 3m0 0l3.75 3.75M12 3v18" />
+                                    </svg>
+                                </div>
+                            </div>
                         </th>
                         <td mat-cell *matCellDef="let element" class="text-center">
                             <mat-icon *ngIf="element.blnShipping" svgIcon="heroicons_outline:check"></mat-icon>
