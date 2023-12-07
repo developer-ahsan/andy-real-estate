@@ -12,12 +12,6 @@
                   Search History
                 </div>
               </div>
-              <div class="col-lg-6 col-12 flex justify-end">
-                <p class="text-md cursor-pointer font-medium text-primary-500 hover:text-primary-900">
-                  <span *ngIf="!isAdvancedSearch" (click)="advancedSearchToggle()">Advanced Search</span>
-                  <span *ngIf="isAdvancedSearch" (click)="resetSearch()">Reset Search</span>
-                </p>
-              </div>
               <div class="col-12" *ngIf="isAdvancedSearch">
                 <form class="pt-6 sm:pt-8" [formGroup]="filterForm">
                   <div class="row">
@@ -87,8 +81,9 @@
                     </div>
                     <div class="flex w-full justify-end">
                       <div class="flex flex-row gap-3">
-                        <button *ngIf="this.showReset === true" (click)="getData()" [matTooltip]="'Fetch'" [disabled]="isResetLoader"
-                          class="order-first sm:order-last min-w-40" mat-flat-button mat-stroked-button>
+                        <button *ngIf="this.showReset === true" (click)="getData()" [matTooltip]="'Fetch'"
+                          [disabled]="isResetLoader" class="order-first sm:order-last min-w-40" mat-flat-button
+                          mat-stroked-button>
                           <mat-progress-spinner *ngIf="isResetLoader" class="mr-2" [diameter]="24"
                             [mode]="'indeterminate'">
                           </mat-progress-spinner>
@@ -102,7 +97,7 @@
                           </mat-progress-spinner>
                           <span class="mr-1">Fetch</span>
                         </button>
-                        
+
                       </div>
                     </div>
                   </div>
