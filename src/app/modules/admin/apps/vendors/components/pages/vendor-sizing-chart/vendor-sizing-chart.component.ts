@@ -53,6 +53,7 @@ export class VendorSizingChartComponent implements OnInit, OnDestroy {
   imageValue: any;
   @ViewChild('removeChart') removeChart: ElementRef;
   removeModalData: any;
+  random = Math.random();
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _vendorService: VendorsService,
@@ -286,6 +287,7 @@ export class VendorSizingChartComponent implements OnInit, OnDestroy {
     })
   }
   toggleUpdate(data) {
+    this.random = Math.random();
     this.isUpdate = true;
     this.chartData = data;
     this.ngName = data.name;

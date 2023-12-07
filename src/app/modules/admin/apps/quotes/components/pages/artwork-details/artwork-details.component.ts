@@ -99,6 +99,7 @@ export class QuoteArtworkDetailsComponent implements OnInit, OnDestroy {
         }
       });
       this.artworkData = res["data"];
+      console.log(this.artworkData);
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     }, err => {

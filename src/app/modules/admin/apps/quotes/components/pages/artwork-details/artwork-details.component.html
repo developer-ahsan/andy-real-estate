@@ -14,7 +14,7 @@
             </div>
             <div class="my-2 border-b"></div>
             <div *ngIf="item.imprints.length == 0" class="px-3">
-                <div class="alert alert-warning">This itemis blank</div>
+                <div class="alert alert-warning">This item is blank</div>
             </div>
             <div *ngIf="item.imprints.length > 0">
                 <table class="table table-condensed table-striped table-hover padding-1x"
@@ -52,7 +52,7 @@
                             <td width="30%"></td>
                             <td width="10%"></td>
                             <td width="40%">
-                                <ng-container *ngIf="imprint.logoBankID !== 0; else customerLogoBlock">
+                                <ng-container *ngIf="imprint.logoBankID != 0; else customerLogoBlock">
                                     <a target="_blank"
                                         href="https://assets.consolidus.com/globalAssets/Stores/logoBank2/{{quoteDetail.storeID}}/Thumbs/{{imprint.logoBankID}}.jpg">
                                         Artwork File #{{artwork.count}}
@@ -60,7 +60,7 @@
                                 </ng-container>
 
                                 <ng-template #customerLogoBlock>
-                                    <ng-container *ngIf="imprint.customerLogoBankID !== 0; else locationLogoBlock">
+                                    <ng-container *ngIf="imprint.customerLogoBankID != 0; else locationLogoBlock">
                                         <a target="_blank"
                                             href="https://assets.consolidus.com/globalAssets/StoreUser/LogoBank/{{quoteDetail.storeUserID}}/{{quoteDetail.storeID}}/Thumbs/{{imprint.customerLogoBankID}}.jpg">
                                             Artwork File #{{artwork.count}}
@@ -68,7 +68,7 @@
                                     </ng-container>
 
                                     <ng-template #locationLogoBlock>
-                                        <ng-container *ngIf="imprint.locationLogoBankID !== 0; else artworkFilesBlock">
+                                        <ng-container *ngIf="imprint.locationLogoBankID != 0; else artworkFilesBlock">
                                             <a target="_blank"
                                                 href="https://assets.consolidus.com/globalAssets/Stores/locationLogoBank/{{quoteDetail.pk_locationID}}/Thumbs/{{imprint.locationLogoBankID}}.jpg">
                                                 Artwork File #{{artwork.count}}

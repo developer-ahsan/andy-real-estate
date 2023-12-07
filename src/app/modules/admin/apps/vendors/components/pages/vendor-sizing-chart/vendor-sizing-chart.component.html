@@ -110,8 +110,14 @@
                     </ngx-dropzone>
                 </div>
                 <div class="col-6 mb-2">
-                    <img class=""
-                        src="https://assets.consolidus.com/globalAssets/Companies/SizingCharts/{{chartData.pk_chartID}}.{{chartData.extension}}"
+                    <div class="alert alert-warning p-3" *ngIf="chartData.extension == 'pdf'">
+                        <a href="https://assets.consolidus.com/globalAssets/Companies/SizingCharts/{{chartData.pk_chartID}}.{{chartData.extension}}?{{random}}"
+                            target="_blank" class="flext align-items-center">
+                            <span>Click to view this sizing chart</span>
+                        </a>
+                    </div>
+                    <img *ngIf="chartData.extension != 'pdf'" class=""
+                        src="https://assets.consolidus.com/globalAssets/Companies/SizingCharts/{{chartData.pk_chartID}}.{{chartData.extension}}?{{random}}"
                         alt="">
                 </div>
                 <div class="col-12 text-right">
