@@ -211,7 +211,8 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
       }
       res["data"].forEach(element => {
         if (element.viewProofDetails) {
-          element.proofDetails = element.viewProofDetails.split(',');
+          const proof = element.viewProofDetails.split(';');
+          element.proofDetails = proof[0].split(',');
         } else {
           element.proofDetails = null;
         }

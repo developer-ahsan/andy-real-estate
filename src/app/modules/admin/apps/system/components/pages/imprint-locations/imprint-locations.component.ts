@@ -180,7 +180,7 @@ export class ImprintLocationsComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       this.updateLocationData.locationName = this.ngLocationName;
-      this._systemService.snackBar('Location Updated Successfully');
+      this._systemService.snackBar(res["message"]);
       this._changeDetectorRef.markForCheck();
     }, err => {
       this._systemService.snackBar('Something went wrong');
