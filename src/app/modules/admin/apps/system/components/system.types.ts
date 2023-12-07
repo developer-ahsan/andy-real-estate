@@ -162,6 +162,8 @@ export interface UpdateDefaultSupportTeam {
     role_type: string;
     member_id: number;
     update_default_support_team: boolean;
+    call_type:string,
+    stores: number[]
 };
 
 export interface DeleteTeamMember {

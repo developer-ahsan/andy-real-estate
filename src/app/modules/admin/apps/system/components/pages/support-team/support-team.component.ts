@@ -7,6 +7,8 @@ import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { SystemService } from '../../system.service';
 import { AddColor, AddDefaultSupportTeam, AddImprintColor, AddImprintMethod, AddMemberFeature, DeleteColor, DeleteImprintColor, DeleteMemberFeature, DeleteTeamMember, UpdateColor, UpdateDefaultSupportTeam, UpdateImprintColor, UpdateImprintMethod, UpdateMemberFeature } from '../../system.types';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-support-team',
@@ -26,6 +28,8 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
   tempRecords = 0;
   page = 1;
   isImageCorrect: boolean;
+  isActiveStoreOrderLoader: boolean = false
+
 
   mainScreen: string = 'Current Support Team';
   keyword = '';
@@ -55,10 +59,13 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
   imageValue: any;
 
   updateMemberId: any;
+  allStores: any = [];
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _systemService: SystemService
+    private _systemService: SystemService,
+    private _commonService: DashboardsService,
+    private router: Router,
   ) { }
 
   ngOnInit(): void {
@@ -81,6 +88,7 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
     });
     this.isLoading = true;
     this.getSupportTeam(1, 'get');
+    this.getAllStores();
   };
   calledScreen(value) {
     this.mainScreen = value;
@@ -251,7 +259,9 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
       phone: phone,
       role_type: roleType,
       member_id: pk_ID,
-      update_default_support_team: true
+      update_default_support_team: true,
+      call_type: "update",
+      stores: [],
     }
     this.isUpdateMemberLoader = true;
     this._systemService.UpdateSystemData(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
@@ -419,6 +429,57 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
   handleImageError(element) {
     element.src = 'https://assets.consolidus.com/globalAssets/Support/anonymous.png';
   }
+
+  addtoAllActiveStores() {
+    const { roleName, name, email, roleType, description, phone, pk_ID } = this.updateMemberForm.getRawValue();
+    if (description.trim() == '' || name.trim() == '' || email.trim() == '' || phone.trim() == '') {
+      this._systemService.snackBar('Please fill out the required fields');
+      return;
+    }
+    if (this.isImageCorrect == false) {
+      this._systemService.snackBar('Dimensions allowed are 147px x 201px.');
+      return;
+    }
+
+    let payload: UpdateDefaultSupportTeam = {
+      role_name: roleName.trim(),
+      name: name.trim(),
+      description: description.trim().replace(/'/g, "''"),
+      email: email.trim(),
+      phone: phone,
+      role_type: roleType,
+      member_id: pk_ID,
+      call_type: "add_to_store",
+      stores: this.allStores,
+      update_default_support_team: true
+    }
+    this.isActiveStoreOrderLoader = true;
+    this._systemService.UpdateSystemData(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.isActiveStoreOrderLoader = false
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+
+      this._systemService.snackBar('Member added to all active stores Successfully');
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isActiveStoreOrderLoader = false
+      this._systemService.snackBar('Error occured while adding to active stores.');
+    })
+  }
+
+  getAllStores() {
+    this._commonService.storesData$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      res["data"].forEach(element => {
+        if (element.blnActive) {
+          this.allStores.push(element.pk_storeID);
+        }
+      });
+    })
+  }
+  navigation(url: string) {
+    this.router.navigateByUrl(url);
+  }
+
   /**
      * On destroy
      */
