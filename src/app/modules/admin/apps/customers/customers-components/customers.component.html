@@ -175,7 +175,7 @@
                             </th>
                             <td class="pr-4" mat-cell *matCellDef="let product" (click)="editCustomer(product)"
                                 style="cursor: pointer;">
-                                <span *ngIf="product?.blnReminders === 1" class="fa fa-exclamation-circle fa-lg text-danger"  matTooltip="This user has reminders."></span>
+                                <span *ngIf="product?.rem !== null" class="fa fa-exclamation-circle fa-lg text-danger"  matTooltip="This user has reminders."></span>
                             </td>
                         </ng-container>
                         <ng-container matColumnDef="mrp">

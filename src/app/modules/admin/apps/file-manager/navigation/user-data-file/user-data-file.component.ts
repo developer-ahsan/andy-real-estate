@@ -94,12 +94,13 @@ export class UserDataFileComponent implements OnInit, OnDestroy {
     const worksheet = workbook.addWorksheet("Sheet 1");
     // Columns
     worksheet.columns = [
+      { header: "userID", key: "userID", width: 15 },
       { header: "FirstName", key: "firstName", width: 15 },
       { header: "LastName", key: "lastName", width: 15 },
       { header: "Title", key: "title", width: 32 },
       { header: "CompanyName", key: "companyName", width: 32 },
       { header: "Location", key: "locationName", width: 20 },
-      { header: "Department", key: "department", width: 20 },
+      { header: "Department", key: "attributeName", width: 20 },
       { header: "Address1", key: "address1", width: 32 },
       { header: "Address2", key: "address2", width: 10 },
       { header: "City", key: "city", width: 20 },

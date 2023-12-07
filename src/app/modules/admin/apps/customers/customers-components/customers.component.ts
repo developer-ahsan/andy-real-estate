@@ -94,6 +94,7 @@ export class CustomersListComponent implements OnInit, OnDestroy {
             });
         this.getStoresList();
     };
+    
     getStoresList() {
         this.allStores = [];
         this._commonService.storesData$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
