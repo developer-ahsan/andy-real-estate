@@ -183,7 +183,7 @@ export class CampaignsComponent implements OnInit, OnDestroy {
       shortDesc,
       blnFeature, blnActive, videoURL, permalink, add_new_campaign
     }
-    this._storeManagerService.AddCampaign(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._storeManagerService.AddCampaign(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this.selectedProducts = [];
         if (this.imageValue) {
@@ -258,7 +258,7 @@ export class CampaignsComponent implements OnInit, OnDestroy {
       strategy: new FormControl(''),
       results: new FormControl(''),
       title: new FormControl(''),
-      shortDesc: new FormControl(''),
+      shortDesc: new FormControl('', [Validators.maxLength(500)]),
       blnFeature: new FormControl(false),
       blnActive: new FormControl(true),
       videoURL: new FormControl(''),
@@ -271,7 +271,7 @@ export class CampaignsComponent implements OnInit, OnDestroy {
       title: new FormControl(''),
       permalink: new FormControl(''),
       objective: new FormControl(''),
-      shortDesc: new FormControl(''),
+      shortDesc: new FormControl('', [Validators.maxLength(500)]),
       strategy: new FormControl(''),
       results: new FormControl(''),
       videoURL: new FormControl(''),
@@ -387,18 +387,25 @@ export class CampaignsComponent implements OnInit, OnDestroy {
       }))
   }
   updateDisplayOrder() {
-    this.updateFeatureLoading = true;
-    let checkArray = []
+    let checkArray: any = []
     this.dataSource.forEach(element => {
-      if (element.blnFeature) {
-        checkArray.push({ campaign_id: element.pk_campaignID, display_order: Number(element.listOrder) })
-      }
+      checkArray.push({ campaign_id: element.pk_campaignID, display_order: Number(element.listOrder) })
     });
+    const hasNegativeDisplayOrder = checkArray?.some(item => item?.display_order < 0);
+    if(hasNegativeDisplayOrder) {
+      this._snackBar.open("Only positive numbers are allowed", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      return
+    }
     let params = {
       // store_id: this.selectedStore.pk_storeID,
       display_order: checkArray,
       campaign_display: true
     }
+    this.updateFeatureLoading = true;
     this._storeManagerService.putStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
@@ -480,17 +487,36 @@ export class CampaignsComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
       });
   };
+
+  replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+        obj[key] = obj[key]?.replace(/'/g, "''");
+      }
+    }
+    return obj;
+  }
+
   updateMainCampaign(item) {
-    this.mainCampaign.update_loader = true;
     const { pk_storeID } = this.selectedStore;
     let payload = {
       store_id: pk_storeID,
       campaign_center_copy: item.campaignCenterCopy.replace(`'`, `"`),
-      title: item.campaignTitle.replace(`'`, `"`),
+      title: item.campaignTitle.trim().replace(`'`, `"`),
       campaign_update: true
     }
+    if (payload.title === '') {
+      this._snackBar.open("Please fill Campaign Title field", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      return;
+    }
+
+    this.mainCampaign.update_loader = true;
     // Get the supplier products
-    this._storeManagerService.putStoresData(payload)
+    this._storeManagerService.putStoresData(this.replaceSingleQuotesWithDoubleSingleQuotes(payload))
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.mainCampaign.update_loader = false;
