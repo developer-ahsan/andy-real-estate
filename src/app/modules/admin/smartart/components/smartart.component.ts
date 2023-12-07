@@ -269,6 +269,7 @@ export class SmartArtComponent {
         sessionStorage.removeItem('smartArt');
     }
     filterSmartArtList(check) {
+        console.log(this.selectedDesigner)
         if (check == 0) {
             const queryParams: NavigationExtras = {
                 queryParams: { search: this.ngSearchField, store: this.selectedStore.pk_storeID, customer: this.ngCustomerField, designer: this.selectedDesigner.pk_userID, product: this.ngFilterProduct, filterField: this.ngFilterField }

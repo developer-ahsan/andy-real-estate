@@ -30,8 +30,8 @@ export const systemRoutes: Route[] = [
         path: '',
         component: SystemComponent,
         resolve: {
-            stores: StoresListsResolver,
-            suppliers: SuppliersListsResolver
+            // stores: StoresListsResolver,
+            // suppliers: SuppliersListsResolver
         },
         children: [
             {

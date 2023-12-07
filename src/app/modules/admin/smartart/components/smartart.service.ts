@@ -133,8 +133,8 @@ export class SmartArtService {
                 if (response["data"][0].smartArtDesigners) {
                     const designers = response["data"][0].smartArtDesigners.split(',,');
                     designers.forEach(element => {
-                        const [firstName, lastName, email, roleName, pk_userID] = element.split('::');
-                        designerss.push({ firstName, lastName, email, roleName, pk_userID });
+                        const [firstName, lastName, email, userName, roleName, pk_userID] = element.split('::');
+                        designerss.push({ firstName, lastName, email, userName, roleName, pk_userID });
                     });
                 }
                 this._smartArtUsers.next(designerss);
