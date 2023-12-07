@@ -4,14 +4,14 @@
             <div class="col-12">
                 <div class="p-6 pb-2 sm:p-8 dm:pb-2 lg:p-10 lg:pb-2 w-full">
                     <div>
-                        <button (click)="generateDataSheet()"
-                        [disabled]="generateReportLoader"
+                        <button (click)="generateDataSheet()" [disabled]="generateReportLoader"
                             class="mat-focus-indicator mat-tooltip-trigger mb-3 mat-flat-button mat-button-base mat-primary"
                             aria-describedby="cdk-describedby-message-1">
                             <mat-progress-spinner *ngIf="generateReportLoader" class="mr-2" [diameter]="24"
-                                    [mode]="'indeterminate'">
-                                </mat-progress-spinner>
-                            <span *ngIf="!generateReportLoader" class="mat-button-wrapper ml-2 mr-1">Generate Data Sheet</span></button>
+                                [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                            <span *ngIf="!generateReportLoader" class="mat-button-wrapper ml-2 mr-1">Generate Data
+                                Sheet</span></button>
                     </div>
                     <div class="row">
                         <div class="col-12 flex justify-between">
@@ -199,10 +199,10 @@
                                                     *ngIf="product.specialDescription"></mat-icon>
                                             </td>
                                             <td class="text-center">
-                                                <mat-icon svgIcon="heroicons_outline:x" *ngIf="product.blnImage == 0"
+                                                <mat-icon svgIcon="heroicons_outline:x" *ngIf="!product.blnImage"
                                                     class="text-red-700"></mat-icon>
                                                 <mat-icon svgIcon="heroicons_outline:check" class="text-green-500"
-                                                    *ngIf="product.blnImage == 1"></mat-icon>
+                                                    *ngIf="product.blnImage"></mat-icon>
                                             </td>
                                             <td class="text-center">
                                                 <mat-icon svgIcon="heroicons_outline:x"
@@ -211,10 +211,10 @@
                                                     *ngIf="product.storeProductVideo"></mat-icon>
                                             </td>
                                             <td class="text-center">
-                                                <mat-icon svgIcon="heroicons_outline:x" *ngIf="product.blnColor == 0"
+                                                <mat-icon svgIcon="heroicons_outline:x" *ngIf="!product.blnColor"
                                                     class="text-red-700"></mat-icon>
                                                 <mat-icon svgIcon="heroicons_outline:check" class="text-green-500"
-                                                    *ngIf="product.blnColor == 1"></mat-icon>
+                                                    *ngIf="product.blnColor"></mat-icon>
                                             </td>
                                             <td class="text-center">
                                                 <mat-icon svgIcon="heroicons_outline:x" *ngIf="!product.technoLogoSKU"
