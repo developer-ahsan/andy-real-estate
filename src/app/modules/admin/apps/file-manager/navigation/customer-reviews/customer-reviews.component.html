@@ -178,18 +178,18 @@
                   <textarea rows="10" matInput formControlName="response"></textarea>
                 </mat-form-field>
               </div>
-              <!-- <div class="col-md-6 col-12">
+              <div class="col-md-6 col-12">
                 <fuse-alert [type]="'warn'" [appearance]="'outline'">
                   <span fuseAlertTitle>User-submitted images:
                   </span>
                   The user did not submit any image with this review.
                 </fuse-alert>
-              </div> -->
-              <!-- <div class="col-md-6 col-12">
+              </div>
+              <div class="col-md-6 col-12">
                 <mat-label>Upload an image with this review:</mat-label>
                 <p class="text-danger">JPG only. 600 x 600 minimum, 1500 x 1500 maximum.</p>
                 <input accept="image/*" (change)="upload($event, item)" type="file" />
-              </div> -->
+              </div>
               <div class="col-12 flex items-center justify-end w-full">
                 <div class="flex mr-4" *ngIf="item.get('flashMessage').value == true">
                   <ng-container>
