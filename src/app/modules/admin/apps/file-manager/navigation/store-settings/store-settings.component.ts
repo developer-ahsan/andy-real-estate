@@ -79,6 +79,9 @@ export class StoreSettingsComponent implements OnInit, OnDestroy {
 
             this.storeSettingsForm.patchValue(selectedStore);
             this.storeSettingsForm.patchValue(storeSetting);
+            this.storeSettingsForm.patchValue({
+              fk_creditTermID: this.selectedStore.fk_creditTermID
+            })
 
             this.isStoreFetch = false;
           });
@@ -244,6 +247,7 @@ export class StoreSettingsComponent implements OnInit, OnDestroy {
     this.isStoreSettingsUpdate = true;
     this._storesManagerService.updateStoreSettings(payload)
       .subscribe((response) => {
+        this.selectedStore.fk_creditTermID = formValues.fk_creditTermID;
         this.showFlashMessage(
           response["success"] === true ?
             'success' :

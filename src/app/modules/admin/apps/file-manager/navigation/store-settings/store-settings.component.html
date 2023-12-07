@@ -576,16 +576,19 @@
               Default Credit Term
             </div>
             <div class="my-5">
-              <mat-radio-group aria-label="Select an option" [formControlName]="'fk_creditTermID'">
+              <mat-radio-group aria-label="Select an option" [formControlName]="'fk_creditTermID'"
+                [(value)]="selectedStore.fk_creditTermID">
                 <div class="col-12 my-3 font-weight-bold">
-                  <mat-radio-button [value]="0">None</mat-radio-button>
+                  <mat-radio-button [value]="null">None</mat-radio-button>
                 </div>
                 <div class="col-12 my-3" *ngFor="let item of qryCreditTerms">
-                  <mat-radio-button class="font-weight-bold" [ngClass]="{'text-red-500': item.pk_creditTermID == -1}"
+                  <mat-radio-button class="font-weight-bold" [ngClass]="{'text-red-500': item.pk_creditTermID === -1}"
                     [value]="item.pk_creditTermID">{{item.creditTermName}}</mat-radio-button>
-                  <span *ngIf="item.creditTermDesc"><br />"{{item.creditTermDesc}}"</span>
+                  <span *ngIf="item.creditTermDesc"><br />{{item.creditTermDesc}}</span>
                 </div>
               </mat-radio-group>
+
+
             </div>
           </div>
 
