@@ -114,8 +114,9 @@
             <div *ngIf="isUpdatePromo" class="p-6">
                 <div class="row" [formGroup]="updatePromoForm">
                     <div class="col-12 col-md-6">
-                        <mat-label class="font-medium" [matTooltip]="'10 characters max'">Name* <i
-                                class="fas fa-question-circle"></i></mat-label>
+                        <mat-label class="font-medium" [matTooltip]="'10 characters max'">Name*
+                            <mat-icon svgIcon="heroicons_solid:question-mark-circle"
+                                class="icon-size-4"></mat-icon></mat-label>
                         <mat-form-field class="w-full">
                             <input matInput maxlength="10" formControlName="promocode">
                         </mat-form-field>
@@ -124,7 +125,7 @@
                         <mat-label class="font-medium"
                             [matTooltip]="'Determines whether the promo code deducts a dollar amount or a percentage off'">
                             Type*
-                            <i class="fas fa-question-circle"></i>
+                            <mat-icon svgIcon="heroicons_solid:question-mark-circle" class="icon-size-4"></mat-icon>
                         </mat-label>
                         <mat-form-field class="w-full">
                             <mat-select matInput formControlName="blnPercent">
@@ -136,28 +137,32 @@
                     <div class="col-12 col-md-6">
                         <mat-label class="font-medium"
                             [matTooltip]="'In the form of dollars and cents, if doing a dollar amount off. To add to order total, make negative. In the form of a percentage, if doing a percent off'">
-                            Savings amount* <i class="fas fa-question-circle"></i></mat-label>
+                            Savings amount* <mat-icon svgIcon="heroicons_solid:question-mark-circle"
+                                class="icon-size-4"></mat-icon></mat-label>
                         <mat-form-field class="w-full">
                             <input min="0" matInput type="number" formControlName="amount">
                         </mat-form-field>
                     </div>
                     <div class="col-12 col-md-6">
-                        <mat-label class="font-medium" [matTooltip]="'In the form of dollars and cents'">Threshold* <i
-                                class="fas fa-question-circle"></i></mat-label>
+                        <mat-label class="font-medium" [matTooltip]="'In the form of dollars and cents'">Threshold*
+                            <mat-icon svgIcon="heroicons_solid:question-mark-circle"
+                                class="icon-size-4"></mat-icon></mat-label>
                         <mat-form-field class="w-full">
                             <input min="0" matInput type="number" formControlName="threshold">
                         </mat-form-field>
                     </div>
                     <div class="col-12 col-md-6">
-                        <mat-label class="font-medium" [matTooltip]="'In the form of dollars and cents'">Max Amount <i
-                                class="fas fa-question-circle"></i></mat-label>
+                        <mat-label class="font-medium" [matTooltip]="'In the form of dollars and cents'">Max Amount
+                            <mat-icon svgIcon="heroicons_solid:question-mark-circle"
+                                class="icon-size-4"></mat-icon></mat-label>
                         <mat-form-field class="w-full">
                             <input min="0" maxlength="20" matInput type="number" formControlName="maxAmount">
                         </mat-form-field>
                     </div>
                     <div class="col-12">
-                        <mat-label class="font-medium" [matTooltip]="'100 characters max'">Description* <i
-                                class="fas fa-question-circle"></i></mat-label>
+                        <mat-label class="font-medium" [matTooltip]="'100 characters max'">Description* <mat-icon
+                                svgIcon="heroicons_solid:question-mark-circle"
+                                class="icon-size-4"></mat-icon></mat-label>
                         <mat-form-field class="w-full">
                             <input matInput maxlength="100" formControlName="description">
                         </mat-form-field>
@@ -174,7 +179,8 @@
                     <div class="col-12 col-md-6">
                         <mat-label class="font-medium"
                             [matTooltip]="'Enter in the form mm/dd/yy. If none, leave blank'">
-                            Expiration Date <i class="fas fa-question-circle"></i></mat-label>
+                            Expiration Date <mat-icon svgIcon="heroicons_solid:question-mark-circle"
+                                class="icon-size-4"></mat-icon></mat-label>
                         <mat-form-field class="w-full">
                             <input readonly matInput [matDatepicker]="picker" formControlName="expDate">
                             <mat-hint>MM/DD/YYYY</mat-hint>
@@ -186,7 +192,7 @@
                         <mat-label class="font-medium"
                             [matTooltip]="'Setting this to yes will automatically remove whatever shipping is currently in the cart when this promo code is applied.'">
                             Free Shipping*
-                            <i class="fas fa-question-circle"></i>
+                            <mat-icon svgIcon="heroicons_solid:question-mark-circle" class="icon-size-4"></mat-icon>
                         </mat-label>
                         <mat-form-field class="w-full">
                             <mat-select matInput formControlName="blnShipping">
@@ -235,8 +241,9 @@
         <div *ngIf="mainScreen == 'Add New Promo Code'" class="p-6 ">
             <div class="row" [formGroup]="addPromoForm">
                 <div class="col-12 col-md-6">
-                    <mat-label class="font-medium" [matTooltip]="'10 characters max'">Name* <i
-                            class="fas fa-question-circle"></i></mat-label>
+                    <mat-label class="font-medium" [matTooltip]="'10 characters max'">Name*
+                        <mat-icon svgIcon="heroicons_solid:question-mark-circle"
+                            class="icon-size-4"></mat-icon></mat-label>
                     <mat-form-field class="w-full">
                         <input matInput maxlength="50" formControlName="promocode">
                     </mat-form-field>
@@ -245,7 +252,7 @@
                     <mat-label class="font-medium"
                         [matTooltip]="'Determines whether the promo code deducts a dollar amount or a percentage off'">
                         Type*
-                        <i class="fas fa-question-circle"></i>
+                        <mat-icon svgIcon="heroicons_solid:question-mark-circle" class="icon-size-4"></mat-icon>
                     </mat-label>
                     <mat-form-field class="w-full">
                         <mat-select matInput formControlName="blnPercent">
@@ -257,28 +264,31 @@
                 <div class="col-12 col-md-6">
                     <mat-label class="font-medium"
                         [matTooltip]="'In the form of dollars and cents, if doing a dollar amount off. To add to order total, make negative. In the form of a percentage, if doing a percent off'">
-                        Savings amount* <i class="fas fa-question-circle"></i></mat-label>
+                        Savings amount* <mat-icon svgIcon="heroicons_solid:question-mark-circle"
+                            class="icon-size-4"></mat-icon></mat-label>
                     <mat-form-field class="w-full">
                         <input min="0" maxlength="20" matInput type="number" formControlName="amount">
                     </mat-form-field>
                 </div>
                 <div class="col-12 col-md-6">
-                    <mat-label class="font-medium" [matTooltip]="'In the form of dollars and cents'">Threshold* <i
-                            class="fas fa-question-circle"></i></mat-label>
+                    <mat-label class="font-medium" [matTooltip]="'In the form of dollars and cents'">Threshold*
+                        <mat-icon svgIcon="heroicons_solid:question-mark-circle"
+                            class="icon-size-4"></mat-icon></mat-label>
                     <mat-form-field class="w-full">
                         <input min="0" maxlength="20" matInput type="number" formControlName="threshold">
                     </mat-form-field>
                 </div>
                 <div class="col-12 col-md-6">
-                    <mat-label class="font-medium" [matTooltip]="'In the form of dollars and cents'">Max Amount <i
-                            class="fas fa-question-circle"></i></mat-label>
+                    <mat-label class="font-medium" [matTooltip]="'In the form of dollars and cents'">Max Amount
+                        <mat-icon svgIcon="heroicons_solid:question-mark-circle"
+                            class="icon-size-4"></mat-icon></mat-label>
                     <mat-form-field class="w-full">
                         <input min="0" maxlength="20" matInput type="number" formControlName="maxAmount">
                     </mat-form-field>
                 </div>
                 <div class="col-12">
-                    <mat-label class="font-medium" [matTooltip]="'100 characters max'">Description* <i
-                            class="fas fa-question-circle"></i></mat-label>
+                    <mat-label class="font-medium" [matTooltip]="'100 characters max'">Description* <mat-icon
+                            svgIcon="heroicons_solid:question-mark-circle" class="icon-size-4"></mat-icon></mat-label>
                     <mat-form-field class="w-full">
                         <input matInput maxlength="100" formControlName="description">
                     </mat-form-field>
@@ -294,7 +304,8 @@
                 </div>
                 <div class="col-12 col-md-6">
                     <mat-label class="font-medium" [matTooltip]="'Enter in the form mm/dd/yy. If none, leave blank'">
-                        Expiration Date <i class="fas fa-question-circle"></i></mat-label>
+                        Expiration Date <mat-icon svgIcon="heroicons_solid:question-mark-circle"
+                            class="icon-size-4"></mat-icon></mat-label>
                     <mat-form-field class="w-full">
                         <input maxlength="10" readonly matInput [matDatepicker]="picker" formControlName="expDate">
                         <mat-hint>MM/DD/YYYY</mat-hint>
@@ -306,7 +317,7 @@
                     <mat-label class="font-medium"
                         [matTooltip]="'Setting this to yes will automatically remove whatever shipping is currently in the cart when this promo code is applied.'">
                         Free Shipping*
-                        <i class="fas fa-question-circle"></i>
+                        <mat-icon svgIcon="heroicons_solid:question-mark-circle" class="icon-size-4"></mat-icon>
                     </mat-label>
                     <mat-form-field class="w-full">
                         <mat-select matInput formControlName="blnShipping">
