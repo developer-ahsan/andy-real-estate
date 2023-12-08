@@ -186,21 +186,24 @@ export class SearchHistoryComponent implements OnInit, OnDestroy {
     this.dataSource = this.firstDataTemp.data;
     this.dataSourceTotalRecord = this.firstDataTemp.totalRecords;
     this.filterForm.reset();
-    this.filterForm.patchValue({
-      keyword: ''
+    this.filterForm = new FormGroup({
+      keyword: new FormControl(''),
+      check: new FormControl('all'),
+      start_date: new FormControl(null),
+      end_date: new FormControl(null),
     })
     // Mark for check
     this._changeDetectorRef.markForCheck();
   };
   filterSearchHistory(page) {
     this.showReset = true;
-    if (page == 1) {
+    if (page == 1 && this.dataSourceTotalRecord > 0) {
       this.page = 1;
       this.paginator.pageIndex = 0;
     }
     this.isFilterLoader = true;
     const { pk_storeID } = this.selectedStore;
-    const { keyword, start_date, end_date } = this.filterForm.getRawValue();
+    const { keyword, start_date, end_date, check } = this.filterForm.getRawValue();
     let params: any = {
       search_history: true,
       store_id: this.selectedStore.pk_storeID,
@@ -209,12 +212,28 @@ export class SearchHistoryComponent implements OnInit, OnDestroy {
       sort_order: this.sortOrderd,
       size: 20
     }
+    let startDate = start_date;
+    let endDate = end_date;
+
+    if (!start_date) {
+      if (check == 'week') {
+        startDate = moment().startOf('isoWeek').format('yyyy-MM-DD');
+        endDate = moment().endOf('isoWeek').format('yyyy-MM-DD');
+      } else if (check == 'month') {
+        startDate = moment().startOf('month').format('yyyy-MM-DD');
+        endDate = moment().endOf('month').format('yyyy-MM-DD');
+      } else if (check == 'year') {
+        startDate = moment().startOf('year').format('yyyy-MM-DD');
+        endDate = moment().endOf('year').format('yyyy-MM-DD');
+      }
+    }
+
     if (keyword != '' || keyword != null) {
       params.keyword = keyword;
     }
-    if (start_date) {
-      params.start_date = moment(this.filterForm.get('start_date').value).format('MM-DD-YYYY');
-      params.end_date = moment(this.filterForm.get('end_date').value).format('MM-DD-YYYY');
+    if (startDate || endDate) {
+      params.start_date = moment(startDate).format('MM-DD-YYYY');
+      params.end_date = moment(endDate).format('MM-DD-YYYY');
     }
 
     // Get the supplier products
@@ -257,6 +276,13 @@ export class SearchHistoryComponent implements OnInit, OnDestroy {
   }
 
   async getData() {
+    this.filterForm.reset();
+    this.filterForm = new FormGroup({
+      keyword: new FormControl(''),
+      check: new FormControl('all'),
+      start_date: new FormControl(null),
+      end_date: new FormControl(null),
+    })
     this.getFirstCall(this.page);
 
   }

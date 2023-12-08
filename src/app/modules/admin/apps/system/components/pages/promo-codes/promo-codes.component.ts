@@ -65,7 +65,7 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
       blnRemoveCost: new FormControl(false, Validators.required),
       blnRemovePrice: new FormControl(false, Validators.required),
       blnPercent: new FormControl(false, Validators.required),
-      maxAmount:new FormControl(''),
+      maxAmount: new FormControl(''),
     });
     this.updatePromoForm = new FormGroup({
       promocode: new FormControl({ value: '', disabled: true }, [Validators.required]),
@@ -80,7 +80,7 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
       blnRemoveCost: new FormControl(false, Validators.required),
       blnRemovePrice: new FormControl(false, Validators.required),
       blnPercent: new FormControl(false, Validators.required),
-      maxAmount:new FormControl(''),
+      maxAmount: new FormControl(''),
     });
   }
   ngOnInit(): void {
@@ -112,7 +112,7 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
       if (type == 'add') {
         this.isAddPromoLoader = false;
         this.initForm();
-        this._systemService.snackBar('PromoCode Added Successfully');
+        this._systemService.snackBar('Promo code added successfully');
         this.mainScreen = 'Current Promo Codes';
       }
       this.isLoading = false;
@@ -165,7 +165,7 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
   }
 
   addNewPromoCode() {
-    const { maxAmount,promocode, amount, threshold, description, blnActive, expDate, blnShipping, blnRemoveShippingCost, blnRemoveShippingPrice, blnRemoveCost, blnRemovePrice, blnPercent } = this.addPromoForm.getRawValue();
+    const { maxAmount, promocode, amount, threshold, description, blnActive, expDate, blnShipping, blnRemoveShippingCost, blnRemoveShippingPrice, blnRemoveCost, blnRemovePrice, blnPercent } = this.addPromoForm.getRawValue();
     if (promocode.trim() == '' || description.trim() == '') {
       this._systemService.snackBar('Please fill out the required fields');
       return;
@@ -177,7 +177,7 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
       date = 0;
     }
     let payload: AddPromoCode = {
-      maxAmount,promocode: promocode.trim(), amount, threshold, description: description.trim(), blnActive, expDate: date, blnShipping, blnRemoveShippingCost, blnRemoveShippingPrice, blnRemoveCost, blnRemovePrice, blnPercent, add_promo_code: true
+      maxAmount, promocode: promocode.trim(), amount, threshold, description: description.trim(), blnActive, expDate: date, blnShipping, blnRemoveShippingCost, blnRemoveShippingPrice, blnRemoveCost, blnRemovePrice, blnPercent, add_promo_code: true
     }
     this.isAddPromoLoader = true;
     this._systemService.AddSystemData(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
@@ -210,7 +210,7 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
       this.totalUsers--;
       this.tempDataSource = this.tempDataSource.filter(elem => elem.promocode != item.promocode);
       this.tempRecords--;
-      this._systemService.snackBar('PromoCode Deleted Successfully');
+      this._systemService.snackBar('Promo code deleted successfully');
       this._changeDetectorRef.markForCheck();
     }, err => {
       this._systemService.snackBar('Something went wrong');

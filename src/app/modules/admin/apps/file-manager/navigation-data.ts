@@ -91,12 +91,12 @@ export const navigations = [
                 icon: 'mat_outline:supervised_user_circle',
                 route: 'store-suppliers'
             },
-            {
-                id: 20,
-                title: 'Product Clicks',
-                icon: 'mat_outline:ads_click',
-                route: 'product-clicks'
-            },
+            // {
+            //     id: 20,
+            //     title: 'Product Clicks',
+            //     icon: 'mat_outline:ads_click',
+            //     route: 'product-clicks'
+            // },
             {
                 id: 21,
                 title: 'Search History',
@@ -115,12 +115,12 @@ export const navigations = [
                 icon: 'mat_outline:history',
                 route: 'inventory-summary'
             },
-            {
-                id: 50,
-                title: 'Offline Products',
-                icon: 'heroicons_outline:academic-cap',
-                route: 'offline-products'
-            },
+            // {
+            //     id: 50,
+            //     title: 'Offline Products',
+            //     icon: 'heroicons_outline:academic-cap',
+            //     route: 'offline-products'
+            // },
         ]
     },
     {
@@ -158,26 +158,26 @@ export const navigations = [
                 icon: 'mat_outline:contacts',
                 route: 'fulfillment-contacts'
             },
-            {
-                title: 'Fulfillment Invoices',
-                icon: 'mat_outline:inventory',
-                route: 'fulfillment-invoices'
-            },
-            {
-                title: 'Fulfillment Options',
-                icon: 'heroicons_outline:template',
-                route: 'fulfillment-options'
-            },
+            // {
+            //     title: 'Fulfillment Invoices',
+            //     icon: 'mat_outline:inventory',
+            //     route: 'fulfillment-invoices'
+            // },
+            // {
+            //     title: 'Fulfillment Options',
+            //     icon: 'heroicons_outline:template',
+            //     route: 'fulfillment-options'
+            // },
             {
                 title: 'Royalties',
                 icon: 'mat_outline:reviews',
                 route: 'royalties'
             },
-            {
-                title: 'Referral Locations',
-                icon: 'mat_outline:speaker_notes',
-                route: 'referral-locations'
-            },
+            // {
+            //     title: 'Referral Locations',
+            //     icon: 'mat_outline:speaker_notes',
+            //     route: 'referral-locations'
+            // },
             {
                 title: 'Art Approval Settings',
                 icon: 'mat_outline:picture_in_picture',

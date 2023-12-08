@@ -389,7 +389,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
       } else if (screenName == 'Logo bank') {
         this.getLogoBanks(1);
       } else if (screenName == 'Order Options') {
-        let url = environment.storeMedia + `/orderOptionsHeaders/` + this.selectedStore.pk_storeID + ".jpg";
+        let url = environment.storeMedia + `/orderOptionsHeaders/` + this.selectedStore.pk_storeID + ".jpg?" + Math.random();
         this.checkIfImageExists(url);
       }
     }
@@ -938,20 +938,24 @@ export class PresentationComponent implements OnInit, OnDestroy {
       }
     }
 
-    const payload = {
-      file_upload: true,
-      image_file: base64,
-      image_path: img_path
-    };
+    const files = [
+      {
+        image_file: base64,
+        image_path: img_path
+      }
+    ];
 
-    this._storeManagerService.addPresentationMedia(payload)
+    this._commonService.uploadMultipleMediaFiles(files)
       .subscribe((response) => {
         this.mastHeadImg = url;
         if (check == 'options') {
           this.orderOptions.image = url;
           this.orderOptions.check = true;
           this.orderOptions.loader = false;
+          this.orderOptionImage = true;
+          this.orderOptions.imageValue = null;
         }
+        this._storeManagerService.snackBar('Order option header image updated successfully');
         // Mark for check
         this._changeDetectorRef.markForCheck();
       }, err => {

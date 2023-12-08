@@ -9,7 +9,48 @@
                 <div class="text-2xl font-bold">
                     Bulk RapidBuild Actions
                 </div>
+                <p>Total products: 1198</p>
+                <div class="flex space-x-2">
+                    <mat-form-field class="min-w-200">
+                        <mat-select matInput>
+                            <mat-option [value]="0">Select an action</mat-option>
+                            <mat-option [value]="'delete'">Remove current image and add to rapidBuild</mat-option>
+                            <mat-option [value]="'rapidBuild'">Keep current image and add to rapidBuild</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <button class="min-w-50 rounded-md" mat-flat-button color="primary">Update</button>
+                </div>
             </div>
+        </div>
+        <div class="col-12">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>SPID</th>
+                        <th>Name</th>
+                        <th>
+                            <div class="flex">
+                                <span>Master</span>
+                                <mat-icon matTooltip="Master product status"
+                                    svgIcon="heroicons_solid:question-mark-circle" class="icon-size-4 ml-1"></mat-icon>
+                            </div>
+                        </th>
+                        <th>
+                            <div class="flex">
+                                <span>Store</span>
+                                <mat-icon matTooltip="Store product status"
+                                    svgIcon="heroicons_solid:question-mark-circle" class="icon-size-4 ml-1"></mat-icon>
+                            </div>
+                        </th>
+                        <th>Image</th>
+                        <th>
+                            <div class="mt-5">
+                                <mat-checkbox></mat-checkbox>
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+            </table>
         </div>
     </div>
 </div>

@@ -15,7 +15,7 @@
               <div class="col-12" *ngIf="isAdvancedSearch">
                 <form class="pt-6 sm:pt-8" [formGroup]="filterForm">
                   <div class="row">
-                    <!-- <div class="col-md-4  col-12">
+                    <div class="col-md-4  col-12">
                       <mat-form-field>
                         <mat-label>View History from: </mat-label>
                         <mat-select matInput formControlName="check">
@@ -25,7 +25,7 @@
                           <mat-option value="year">This year</mat-option>
                         </mat-select>
                       </mat-form-field>
-                    </div> -->
+                    </div>
 
                     <!-- <div class="col-md-4 col-12">
                       <mat-form-field>
@@ -39,7 +39,7 @@
                       </mat-form-field>
                     </div> -->
 
-                    <div class="col-md-6 col-12">
+                    <div class="col-md-4 col-12">
                       <mat-form-field>
                         <mat-label>Keyword:</mat-label>
                         <input formControlName="keyword" matInput placeholder="Keyword:" />
@@ -62,7 +62,7 @@
                         </mat-error>
                       </mat-form-field>
                     </div> -->
-                    <div class="col-md-6 col-12">
+                    <div class="col-md-4 col-12">
                       <mat-form-field appearance="fill">
                         <mat-label>Enter a date range</mat-label>
                         <mat-date-range-input [rangePicker]="picker">
@@ -171,12 +171,14 @@
             </table>
           </ng-container>
           <ng-template #noRecords>
-            <div class="font-semibold tracking-tight text-center mb-5">
-              <p>No record found</p>
+            <div class="font-semibold tracking-tight text-center mb-5 alert alert-warning">
+              <p>There is no search history for this store. Search history will be added automatically when searches are
+                made on this store.
+              </p>
             </div>
           </ng-template>
         </div>
-        <div class="col-12" *ngIf="!isKeywordSearch">
+        <div class="col-12" *ngIf="!isKeywordSearch && dataSourceTotalRecord > 0">
           <mat-paginator #paginator
             class="sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
             [ngClass]="{'pointer-events-none': isLoading}" (page)="getNextData($event)" [length]="dataSourceTotalRecord"
