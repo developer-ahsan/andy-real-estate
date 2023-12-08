@@ -197,6 +197,13 @@ export class LogoBankComponent implements OnInit {
   }
 
   updateLogoBank(item) {
+
+    if(item.name.trim() === '' || item.description.trim() === '' || item.colorList.trim() == '') {
+      this._cutomerService.snackBar('Please fill the required fields');
+      return;
+    }
+
+
     let payload: updateLogoBank = {
       name: item.name,
       description: item.description,
@@ -243,12 +250,16 @@ export class LogoBankComponent implements OnInit {
       return;
     }
     const { name, description, colorList } = this.addLogoBankForm.getRawValue();
+    if(name.trim() === '' || description.trim() === '' || colorList.trim() == '') {
+      this._cutomerService.snackBar('Please fill the required fields');
+      return;
+    }
     let payload: addLogoBank = {
       user_id: this.selectedCustomer.pk_userID,
-      name: name,
-      description: description,
+      name: name.trim(),
+      description: description.trim(),
       vectorFileExtension: this.logoBankImageValue.type,
-      colorList: colorList,
+      colorList: colorList.trim(),
       store_id: Number(this.selectedStore.storeID),
       add_logo_bank: true
     }
