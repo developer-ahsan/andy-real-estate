@@ -2,14 +2,13 @@
   <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
   </ngx-skeleton-loader>
   <div *ngIf="!isLoading">
-    <div class="flex-auto p-3">
+    <div class="flex-auto p-3" *ngIf="!orderDetail">
       <b class="text-2xl" style="color: #64748b; line-height: 2;">Group Orders for {{selectedCustomer?.firstName + ' '
         +selectedCustomer?.lastName}}
       </b>
     </div>
-    <div class="mt-3 overflow-auto">
+    <div class="mt-3 overflow-auto" *ngIf="!orderDetail">
       <ng-container *ngIf="dataSource.length > 0; else noOrders">
-
         <table class="table table-striped">
           <thead>
             <tr>
@@ -50,7 +49,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let order of dataSource">
+            <tr *ngFor="let order of dataSource" (click)="orderDetails(order)" class="cursor-pointer">
               <td>{{order.ID}}</td>
               <td>{{order.orderID}}</td>
               <td>{{order.Created}}</td>
@@ -76,6 +75,86 @@
           There are currently no GroupBuys created for this customer.
         </div>
       </ng-template>
+    </div>
+    <div class="mt-3 p-3" *ngIf="orderDetail">
+      <b class="text-2xl" style="color: #64748b; line-height: 2;">Group order Items & Artwork
+      </b>
+      <button class="ml-4 float-right" mat-stroked-button (click)="backToList()">
+        <mat-icon [svgIcon]="'heroicons_outline:arrow-narrow-left'"></mat-icon>
+        <span class="ml-2 mr-1">Back</span>
+      </button>
+      <div class="w-full">
+        <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="orderDetail.detailsLoader">
+        </ngx-skeleton-loader>
+        <div *ngFor="let prod of orderDetail.detail" class="row border-b my-2">
+          <div class="col-md-2 col-12">
+            <img src="https://assets.consolidus.com/globalAssets/Products/HiRes/{{prod.SPID}}.jpg?{{random}}"
+              onError="this.src='https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'">
+          </div>
+          <div class="col-md-10">
+            <div class="border-b text-lg font-bold">{{prod.productName}}</div>
+            <div class="row">
+              <div class="col-md-4 col-12 font-bold">
+                <p>SPID: {{prod.SPID}}</p>
+                <div class="flex">
+                  <mat-icon [svgIcon]="'heroicons_solid:question-mark-circle'" class="icon-size-4 ml-1"
+                    matTooltip="The minimum quantity allowed as specified by our system/vendors.'"></mat-icon>
+                  <span>Minimum Quantity Allowed: {{prod.minQty}}</span>
+                </div>
+                <div class="flex">
+                  <mat-icon [svgIcon]="'heroicons_solid:question-mark-circle'" class="icon-size-4 ml-1"
+                    matTooltip="The minimum for this item as set by the initiator of the group order.  The total quantity ordered on this group order must meet or exceed this minimum in order for the group order to be completed.'"></mat-icon>
+                  <span>Minimum Threshold Per Initiator: {{prod.groupBuyThreshold || 'N/A'}}</span>
+                </div>
+                <div class="flex">
+                  <mat-icon [svgIcon]="'heroicons_solid:question-mark-circle'" class="icon-size-4 ml-1"
+                    matTooltip="The minimum for this item as set by the initiator of the group order.  The total quantity ordered on this group order must meet or exceed this minimum in order for the group order to be completed.'"></mat-icon>
+                  <span>Ordered so far: {{prod.totalOrdered}}</span>
+                  <mat-icon svgIcon="heroicons_outline:check" *ngIf="prod.totalOrdered >= prod.minQty"
+                    class="text-green-500"></mat-icon>
+                  <mat-icon svgIcon="heroicons_outline:x" *ngIf="prod.totalOrdered < prod.minQty"
+                    class="text-red-500"></mat-icon>
+                </div>
+              </div>
+              <div class="col-md-8 col-12">
+                <div class="border-b text-lg font-bold">Artwork</div>
+                <div *ngFor="let artwork of prod.Artworks">
+                  <p>{{artwork.location}} / {{artwork.method}}: <span
+                      class="{{artwork.color}}">{{artwork.statusName}}</span></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-12">
+            <p class="text-lg font-bold">Current Participants</p>
+          </div>
+          <div class="col-12 col-md-4">
+            <mat-form-field class="w-full">
+              <mat-select matInput>
+                <mat-option value="0">All invitees</mat-option>
+                <mat-option value="1">Participating invitees</mat-option>
+                <mat-option value="2">Declined invitees</mat-option>
+                <mat-option value="3">>Non-participating invitees</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-md-4">
+            <mat-form-field class="w-full">
+              <mat-select matInput>
+                <mat-option value="0">Existing and new customers</mat-option>
+                <mat-option value="1">Existing customers only</mat-option>
+                <mat-option value="2">New customers only</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-md-4">
+            <button class="w-full rounded-md" mat-flat-button color="primary">Filter</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

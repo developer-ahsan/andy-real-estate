@@ -185,8 +185,10 @@ export class RemindersComponent implements OnInit, OnDestroy {
     this.editRemidnderData = reminder;
     var originalDate = new Date(reminder.remindOn);
     // Format the date in the desired format
-    var formattedDate = originalDate.toISOString().replace("Z", "").replace("T", " ");
+    var formattedDate = moment(originalDate).format("YYYY-MM-DDTHH:mm");
+
     this.editRemidnderData.remindDate = formattedDate;
+    console.log(reminder)
   }
   backToList() {
     this.editRemidnderData = null;
