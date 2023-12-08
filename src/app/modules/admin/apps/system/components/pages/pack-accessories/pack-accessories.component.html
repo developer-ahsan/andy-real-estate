@@ -61,6 +61,12 @@
             </div>
             <!-- Update Packages -->
             <div *ngIf="isUpdatePackage" class="p-6">
+                <div class="text-right">
+                    <button [disabled]="isUpdatePackageLoader" class="min-w-30 mr-2" mat-stroked-button
+                        [matTooltip]="'Back to list'" (click)="updatePackageToggle(null)">
+                        <span> Back to list </span>
+                    </button>
+                </div>
                 <mat-form-field class="w-full">
                     <mat-label>Name</mat-label>
                     <input matInput [(ngModel)]="updatePackageData.packagingName" maxlength="75">
