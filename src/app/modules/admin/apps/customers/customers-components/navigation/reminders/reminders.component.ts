@@ -5,6 +5,7 @@ import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { CustomersService } from '../../orders.service';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
+import moment from 'moment';
 
 @Component({
   selector: 'app-reminders',
@@ -35,6 +36,8 @@ export class RemindersComponent implements OnInit, OnDestroy {
   pageSize = 10;
   pageSizeOptions: number[] = [5, 10, 25, 100];
   reminderPage = 1;
+
+  editRemidnderData: any;
 
   constructor(
     private _customerService: CustomersService,
@@ -98,7 +101,6 @@ export class RemindersComponent implements OnInit, OnDestroy {
 
   createReminder(): void {
     const userData = JSON.parse(localStorage.getItem('userDetails'));
-
     const { name, reminderOn } = this.reminderForm.getRawValue();
     if (name.trim() == '' || reminderOn == '') {
       this._customerService.snackBar('Please fill out the required fields');
@@ -179,6 +181,45 @@ export class RemindersComponent implements OnInit, OnDestroy {
     }, 3000);
   }
 
+  toggleUpdateUserData(reminder) {
+    this.editRemidnderData = reminder;
+    var originalDate = new Date(reminder.remindOn);
+    // Format the date in the desired format
+    var formattedDate = originalDate.toISOString().replace("Z", "").replace("T", " ");
+    this.editRemidnderData.remindDate = formattedDate;
+  }
+  backToList() {
+    this.editRemidnderData = null;
+  }
+
+
+  updateReminder() {
+    const { pk_reminderID, remindOn, remindDate, notes, name, blnActive } = this.editRemidnderData;
+    if (name.trim() == '' || remindDate == '') {
+      this._customerService.snackBar('Please fill out the required fields');
+      return;
+    }
+    let payload = {
+      reminderID: pk_reminderID,
+      remindOn: remindDate,
+      name,
+      notes,
+      blnActive,
+      update_reminder: true
+    }
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
+    this.editRemidnderData.loader = true;
+    this._customerService.PutApiData(payload).subscribe(res => {
+      this.editRemidnderData.loader = false;
+      this._changeDetectorRef.markForCheck();
+      this._customerService.snackBar(res["message"]);
+      this.backToList();
+      this.getReminders();
+    }, err => {
+      this.editRemidnderData.loader = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions
     this._unsubscribeAll.next();

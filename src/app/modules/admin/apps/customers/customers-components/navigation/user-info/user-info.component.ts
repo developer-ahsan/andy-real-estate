@@ -47,6 +47,7 @@ export class UserInfoComponent implements OnInit {
     this.selectedCustomerForm = new FormGroup({
       userName: new FormControl(''),
       password: new FormControl(''),
+      GovMVMTContractNumber: new FormControl(''),
       blnActive: new FormControl(true),
       new_email: new FormControl(''),
       old_email: new FormControl(''),
@@ -59,7 +60,7 @@ export class UserInfoComponent implements OnInit {
       title: new FormControl(''),
       department: new FormControl(''),
       companyName: new FormControl(''),
-      account_charge_code: new FormControl(''),
+      accountChargeCode: new FormControl(''),
       shippingAddress1: new FormControl(''),
       shippingAddress2: new FormControl(''),
       shippingCity: new FormControl(''),
@@ -103,7 +104,7 @@ export class UserInfoComponent implements OnInit {
     const { pk_userID } = this.selectedCustomer;
 
     // Get the product object
-    const { userName, password, blnActive, new_email, old_email, blnAdmin, email, firstName, lastName, website, fax, title, department, companyName, account_charge_code, shippingAddress1,
+    const { userName, password, blnActive, new_email, old_email, blnAdmin, email, firstName, lastName, website, fax, title, department, companyName, accountChargeCode, shippingAddress1,
       shippingAddress2,
       shippingCity,
       shippingCompanyName,
@@ -117,6 +118,7 @@ export class UserInfoComponent implements OnInit {
       shippingZipCode,
       shippingZipCodeExt,
       billingStudentOrgName,
+      GovMVMTContractNumber,
       billingStudentOrgCode, designerNotes } = this.selectedCustomerForm.getRawValue();
 
     const payload = {
@@ -134,7 +136,7 @@ export class UserInfoComponent implements OnInit {
       website: website,
       title: title,
       fax: fax,
-      account_charge_code: account_charge_code,
+      account_charge_code: accountChargeCode,
       billingOrgName: billingStudentOrgName,
       billingOrgCode: billingStudentOrgCode,
       shippingFirstName: shippingFirstName,
@@ -151,6 +153,7 @@ export class UserInfoComponent implements OnInit {
       shippingZipExt: shippingZipCodeExt,
       shippingPhone: shippingDayPhone,
       designerNotes: designerNotes,
+      GovMVMTContractNumber,
       additionalEmails: this.emails.toString()
     };
 

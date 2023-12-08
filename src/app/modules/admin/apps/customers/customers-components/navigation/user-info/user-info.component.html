@@ -45,13 +45,20 @@
                                 </mat-select>
                             </mat-form-field>
                         </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field class="w-full">
+                                <mat-label>GovMVMT Contract #</mat-label>
+                                <input matInput formControlName="GovMVMTContractNumber"
+                                    placeholder="GovMVMTContractNumber">
+                            </mat-form-field>
+                        </div>
                     </div>
                     <div class="border-b text-lg font-bold my-2">General information</div>
                     <div class="row">
                         <div class="col-12 flex justify-between">
                             <div>
                                 <p class="font-semibold mr-2">Date Registered:</p>
-                                <p>{{selectedCustomer?.date | date: 'MM/dd/yyyy'}}</p>
+                                <p>{{selectedCustomer?.dataRegistered}}</p>
                             </div>
                             <div>
                                 <p class="font-semibold mr-2">IP Address:</p>
@@ -110,7 +117,7 @@
                         <div class="col-lg-4 col-6">
                             <mat-form-field class="w-full">
                                 <mat-label>Account/charge code</mat-label>
-                                <input matInput [formControlName]="'account_charge_code'"
+                                <input matInput [formControlName]="'accountChargeCode'"
                                     placeholder="Account/charge code">
                             </mat-form-field>
                         </div>
