@@ -3,6 +3,7 @@ import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { CustomersService } from '../../orders.service';
 import { SmartArtService } from 'app/modules/admin/smartart/components/smartart.service';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-quotes',
@@ -28,7 +29,8 @@ export class QuotesComponent implements OnInit, OnDestroy {
   constructor(
     private _customerService: CustomersService,
     private _smartartService: SmartArtService,
-    private _changeDetectorRef: ChangeDetectorRef
+    private _changeDetectorRef: ChangeDetectorRef,
+    private _commonService: DashboardsService
   ) { }
 
   ngOnInit(): void {
@@ -153,6 +155,7 @@ export class QuotesComponent implements OnInit, OnDestroy {
       cartLineID: imprint.pk_cartLineID,
       updateCartLine_artwork: true
     }
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
     this._customerService.PutApiData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       imprint.updateLoader = false;
       this._changeDetectorRef.markForCheck();
