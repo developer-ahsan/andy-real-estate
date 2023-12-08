@@ -199,7 +199,8 @@
                                 <button class="min-w-10 min-h-7 h-7 px-2 leading-6" mat-stroked-button
                                     (click)="openedAccordion(product)">
                                     <mat-icon class="icon-size-5"
-                                        [svgIcon]="selectedCategory?.pk_userID == product?.pk_userID ? 'heroicons_solid:chevron-up' : 'heroicons_solid:chevron-down'">
+                                        [svgIcon]="selectedCategory?.pk_userID == product?.pk_userID  &&  selectedCategory?.storeName== product?.storeName
+                                        ? 'heroicons_solid:chevron-up' : 'heroicons_solid:chevron-down'">
                                     </mat-icon>
                                 </button>
                             </td>
@@ -209,16 +210,7 @@
                             <td class="p-0 border-b" mat-cell *matCellDef="let product"
                                 [attr.colspan]="customerTableColumns.length">
                                 <div class="shadow-lg overflow-hidden px-10"
-                                    [@expandCollapse]="selectedCategory?.pk_userID == product?.pk_userID ? 'expanded' : 'collapsed'">
-                                    <!-- <div class="row mb-1 bg-hover p-5 font-semibold">
-                                        <div class="col-9">
-                                            Department
-                                        </div>
-                                        <div class="col-3 flex justify-between">
-                                            <span>Action</span>
-                                        </div>
-
-                                    </div> -->
+                                    [@expandCollapse]="selectedCategory?.pk_userID == product?.pk_userID  &&  selectedCategory?.storeName== product?.storeName ? 'expanded' : 'collapsed'">
 
                                     <div class="row add-border-bottom grid grid-cols-2 w-full my-5">
                                         <div class=" flex flex-row gap-x-5">
@@ -301,8 +293,8 @@
                                             </td>
 
                                             <td width="20%" valign="middle">
-                                                <a href="index.cfm?action=storeUser.viewReminders&amp;userID=21645">{{product.rem
-                                                    ? 'This user has reminders.' : 'No reminders/alerts' }}</a>
+                                                <a class="cursor-pointer" (click)="navigateToReminder(product)">{{product.rem
+                                                    ? product.rem : 'No reminders/alerts' }}</a>
                                             </td>
                                         </tr>
 
@@ -313,7 +305,7 @@
                                             </td>
 
                                             <td width="20%" valign="top">
-                                                {{product.address1}}, {{product.state}} {{product.zipCode}}<br>
+                                                {{product.address1}} {{product.city}}, {{product.state}} {{product.zipCode}}<br>
                                             </td>
 
                                             <td width="1%" valign="middle">
@@ -323,7 +315,7 @@
 
                                             <td width="20%" valign="middle">
                                                 <span *ngIf="product.qryRecentPurchase"> Most recent purchase on
-                                                    <b>12/05/2023</b> </span>
+                                                    <b>{{product.qryRecentPurchase | date: 'MM/dd/yyyy'}}</b> </span>
                                                 <span *ngIf="!product.qryRecentPurchase">No Purchases</span>
                                             </td>
 
@@ -333,8 +325,8 @@
                                             </td>
 
                                             <td width="20%" valign="middle">
-                                               <span *ngIf="product.qrySalesVolume"> Sales volume: <b>{{product.qrySalesVolume}}</b> </span>
-                                               <span *ngIf="!product.qrySalesVolume"> Sales volume: <b>$0.00</b> </span>
+                                               <span *ngIf="product.qrySalesVolume"> Sales volume: <b>{{salesVolume(product)}} </b> </span>
+                                               <span *ngIf="!product.qrySalesVolume"> Sales volume: <b>$0.00, 0 sales.</b> </span>
                                             </td>
                                         </tr>
                                     </tbody>

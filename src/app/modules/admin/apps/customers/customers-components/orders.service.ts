@@ -82,7 +82,7 @@ export class CustomersService {
                 size: this.pageSize,
                 page: this.pageNumber,
                 keyword: search,
-                sort_by: 'pk_userID',
+                // sort_by: 'pk_userID',
                 // sort_order: 'DESC'
             }
         }).pipe(
