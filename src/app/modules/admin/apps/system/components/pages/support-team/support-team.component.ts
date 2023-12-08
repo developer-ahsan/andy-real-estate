@@ -60,6 +60,7 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
 
   updateMemberId: any;
   allStores: any = [];
+  isImageExists: boolean;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -234,8 +235,10 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
     this.teamMemberFeature = false;
     if (item) {
       this.updateMemberId = item.pk_ID;
+      item= {...item, description:item.description.slice(0, 400)}
       this.updateMemberForm.patchValue(item);
       this.getMemberFeatures(item.pk_ID);
+      this.checkImageExist()
     }
     this.updateTeamData = item;
     this.isUpdateMember = !this.isUpdateMember;
@@ -305,13 +308,13 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
     });
   }
   addNewFeature() {
-    if (this.memberFeatureName == '') {
-      this._systemService.snackBar('Please fill out the required fields');
+    if (this.memberFeatureName.trim() == '') {
+      this._systemService.snackBar('Please fill out the required field');
       return;
     }
     let payload: AddMemberFeature = {
       member_id: this.updateTeamData.pk_ID,
-      feature: this.memberFeatureName,
+      feature: this.memberFeatureName.trim(),
       add_member_feature: true
     }
     this.isAddFeatureLoader = true;
@@ -349,13 +352,13 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
     });
   }
   updateFeature(item) {
-    if (item.feature == '') {
-      this._systemService.snackBar('Please fill out the required fields');
+    if (item.feature.trim() == '') {
+      this._systemService.snackBar('Please fill out the required field');
       return;
     }
     item.updateLoader = true;
     let payload: UpdateMemberFeature = {
-      feature: item.feature,
+      feature: item.feature.trim(),
       member_id: item.fk_ID,
       feature_id: item.pk_featureID,
       update_member_feature: true
@@ -476,6 +479,21 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
       });
     })
   }
+
+  checkImageExist() {
+    const url = `https://assets.consolidus.com/globalAssets/System/Defaults/SupportTeam/${this.updateMemberId}.jpg`
+    const img = new Image();
+    img.src = url;
+    img.onload = () => {
+      this.isImageExists = true;
+      this._changeDetectorRef.markForCheck();
+    };
+    img.onerror = () => {
+      this.isImageExists = false;
+      this._changeDetectorRef.markForCheck();
+    };
+  }
+
   navigation(url: string) {
     this.router.navigateByUrl(url);
   }
