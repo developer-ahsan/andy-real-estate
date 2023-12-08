@@ -185,8 +185,8 @@ export class LogoBankComponent implements OnInit {
     this._changeDetectorRef.markForCheck();
   }
   onSelected(ev) {
-    if (this.selectedStore != ev.option.value) {
-      this.selectedStore = ev.option.value;
+    if (this.selectedStore != ev) {
+      this.selectedStore = ev;
       this.logoBanks = [];
       this.logoBanksPage = 1;
       this.getLogoBanks(1);
@@ -202,18 +202,16 @@ export class LogoBankComponent implements OnInit {
       this._cutomerService.snackBar('Please fill the required fields');
       return;
     }
-
-
     let payload: updateLogoBank = {
-      name: item.name,
-      description: item.description,
+      name: item.name.trim(),
+      description: item.description.trim(),
       vectorFileExtension: item.vectorFileExtension,
-      colorList: item.colorList,
+      colorList: item.colorList.trim(),
       logoBankID: item.pk_logoBankID,
       update_logo_bank: true
     }
     item.updateLoader = true;
-    this._cutomerService.PutApiData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._cutomerService.PutApiData(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this._cutomerService.snackBar(res["message"]);
       }
@@ -245,13 +243,14 @@ export class LogoBankComponent implements OnInit {
     });
   }
   uploadLogoBank() {
-    if (!this.logoBankImageValue) {
-      this._cutomerService.snackBar('Please select any file');
-      return;
-    }
+
     const { name, description, colorList } = this.addLogoBankForm.getRawValue();
     if(name.trim() === '' || description.trim() === '' || colorList.trim() == '') {
       this._cutomerService.snackBar('Please fill the required fields');
+      return;
+    }
+    if (!this.logoBankImageValue) {
+      this._cutomerService.snackBar('Please select any file');
       return;
     }
     let payload: addLogoBank = {
@@ -264,7 +263,7 @@ export class LogoBankComponent implements OnInit {
       add_logo_bank: true
     }
     this.isAddLogoBankLoader = true;
-    this._cutomerService.PostApiData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._cutomerService.PostApiData(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this._cutomerService.snackBar(res["message"]);
         this.uploadMediaLogoBank(res["newID"]);
@@ -278,6 +277,17 @@ export class LogoBankComponent implements OnInit {
       this._changeDetectorRef.markForCheck();
     });
   }
+
+
+  replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
+    for (const key in obj) {
+        if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+            obj[key] = obj[key]?.replace(/'/g, "''");
+        }
+    }
+    return obj;
+}
+
   uploadLogoBankFile(event): void {
     const file = event.target.files[0];
     let type = '';

@@ -218,6 +218,18 @@ export class CustomersListComponent implements OnInit, OnDestroy {
     this._router.navigate([route]);
   }
 
+  navigateToReminder(customer) {
+    this.isLoading = true;
+    const { pk_userID } = customer;
+    let route = `/apps/customers/${pk_userID}/reminders`;
+    this._router.navigate([route]);
+  }
+
+  salesVolume(product): string {
+    let data = product.qrySalesVolume.split(',,')
+    return `$${data[0]}, ${data[1]} sales.`;
+  }
+
   /**
    * Track by function for ngFor loops
    *
