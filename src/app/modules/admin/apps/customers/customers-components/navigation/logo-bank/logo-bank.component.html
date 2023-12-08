@@ -13,46 +13,31 @@
             </div>
             <div class="col-12">
                 <mat-form-field class="w-full">
-                    <mat-label>Select Store</mat-label>
-
-                    <div style="position: relative;">
-                        <input matInput placeholder="Search Stores" matTooltip="Search Stores by name"
-                            [matAutocomplete]="auto" [formControl]="searchStoreCtrl">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="w-6 h-6"
-                            style="position: absolute; left: 900px; top: 50%; transform: translateY(-50%);">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                        </svg>
-                    </div>
-
-                    <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelected($event)"
-                        [displayWith]="displayWith">
-                        <mat-option *ngIf="isSearchingStore" class="is-loading">Loading...</mat-option>
-                        <ng-container *ngIf="!isSearchingStore">
-                            <mat-option *ngFor="let item of alllStores" [value]="item">
-                                <span>{{item.storeName}}</span>
-                            </mat-option>
-                        </ng-container>
-                    </mat-autocomplete>
-                </mat-form-field>
+                    <mat-select placeholder="Search Stores" matTooltip="Search Stores by name"
+                     [formControl]="searchStoreCtrl">
+                      <mat-option (click)="onSelected(item)" *ngFor="let item of alllStores" [value]="item">
+                        <span>{{item.storeName}}</span>
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
             </div>
             <div class="mt-4 col-12">
                 <mat-form-field appearance="fill" class="w-full">
                     <mat-label>Logo name:</mat-label>
-                    <input matInput formControlName="name" />
+                    <input maxlength="100" matInput formControlName="name" />
                 </mat-form-field>
             </div>
             <div class="mt-4 col-12">
                 <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Description(500):</mat-label>
-                    <textarea matInput formControlName="description"></textarea>
+                    <mat-label>Description:</mat-label>
+                    <textarea maxlength="300" matInput formControlName="description"></textarea>
                 </mat-form-field>
             </div>
             <div class="mt-4 col-12">
                 <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Imprint colors: (800, optional, comma-separated list of color names or PMS
+                    <mat-label>Imprint colors: (optional, comma-separated list of color names or PMS
                         colors):</mat-label>
-                    <textarea matInput formControlName="colorList"></textarea>
+                    <textarea maxlength="800" matInput formControlName="colorList"></textarea>
                 </mat-form-field>
             </div>
             <div class="col-12">
@@ -79,26 +64,13 @@
             </div>
             <div class="col-12" *ngIf="allStores.length > 0 && !logoBanksLoader">
                 <mat-form-field class="w-full">
-                    <div style="position: relative;">
-                        <input matInput placeholder="Search Stores" matTooltip="Search Stores by name"
-                            [matAutocomplete]="auto" [formControl]="searchStoreCtrl">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="w-6 h-6"
-                            style="position: absolute; left: 970px; top: 50%; transform: translateY(-50%);">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                        </svg>
-                    </div>
-
-                    <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelected($event)"
-                        [displayWith]="displayWith">
-                        <mat-option *ngIf="isSearchingStore" class="is-loading">Loading...</mat-option>
-                        <ng-container *ngIf="!isSearchingStore">
-                            <mat-option *ngFor="let item of allStores" [value]="item">
-                                <span>{{item.storeName}}</span>
-                            </mat-option>
-                        </ng-container>
-                    </mat-autocomplete>
-                </mat-form-field>
+                    <mat-select placeholder="Search Stores" matTooltip="Search Stores by name"
+                     [formControl]="searchStoreCtrl">
+                      <mat-option (click)="onSelected(item)" *ngFor="let item of allStores" [value]="item">
+                        <span>{{item.storeName}}</span>
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
             </div>
             <div *ngIf="logoBanks.length == 0 && !logoBanksLoader " class="col-12 text-center my-2 font-bold">
                 No Logo Bank Found
@@ -116,26 +88,28 @@
             <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow my-2" *ngFor="let item of logoBanks">
                 <div class="row">
                     <div class="col-md-2">
-                        <img src="https://assets.consolidus.com/globalAssets/Stores/LogoBank2/{{item.fk_storeID}}/Thumbs/{{item.pk_logoBankID}}.jpg"
-                            alt="img" />
+
+                            <img class="w-40 rounded-lg object-cover" src="https://assets.consolidus.com/globalAssets/Stores/LogoBank2/{{item.fk_storeID}}/Thumbs/{{item.pk_logoBankID}}.jpg"
+                                    onError="this.src='https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'"
+                                    alt="Product Image">
                     </div>
                     <div class="col-md-10" style="height: 100%">
                         <div class="my-2">
-                            <span class="font-bold">Store:</span> {{item.storeName}}
+                            <span class="font-bol">Store:</span> {{item.storeName}}
                         </div>
                         <mat-form-field appearance="fill" class="w-full">
                             <mat-label> Name: </mat-label>
-                            <input [(ngModel)]="item.name" matInput />
+                            <input maxlength="100" [(ngModel)]="item.name" matInput />
                         </mat-form-field>
                         <mat-form-field appearance="fill" class="w-full">
-                            <mat-label> Description(500): </mat-label>
-                            <textarea [(ngModel)]="item.description" matInput></textarea>
+                            <mat-label> Description: </mat-label>
+                            <textarea maxlength="300" [(ngModel)]="item.description" matInput></textarea>
                         </mat-form-field>
                         <mat-form-field appearance="fill" class="w-full">
-                            <mat-label> Imprint colors: (800, optional, comma-separated list of color names or PMS
+                            <mat-label> Imprint colors: (optional, comma-separated list of color names or PMS
                                 colors)
                             </mat-label>
-                            <textarea [(ngModel)]="item.colorList" matInput></textarea>
+                            <textarea maxlength="800" [(ngModel)]="item.colorList" matInput></textarea>
                         </mat-form-field>
                         <a class="mt-3"
                             href="https://assets.consolidus.com/globalAssets/Stores/LogoBank2/{{item.fk_storeID}}/Thumbs/{{item.pk_logoBankID}}.jpg"><u>View
