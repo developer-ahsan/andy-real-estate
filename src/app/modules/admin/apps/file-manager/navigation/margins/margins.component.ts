@@ -61,24 +61,24 @@ export class MarginsComponent implements OnInit, OnDestroy {
         this.selectedStore = items["data"][0];
         this.initialize();
         this.defaultMarginForm.patchValue({
-          margin1: Number((this.selectedStore.margin1 * 100).toFixed(2)),
-          margin2: Number((this.selectedStore.margin2 * 100).toFixed(2)),
-          margin3: Number((this.selectedStore.margin3 * 100).toFixed(2)),
-          margin4: Number((this.selectedStore.margin4 * 100).toFixed(2)),
-          margin5: Number((this.selectedStore.margin5 * 100).toFixed(2)),
-          margin6: Number((this.selectedStore.margin6 * 100).toFixed(2)),
-          apparel1: Number((this.selectedStore?.apparelmargin1 * 100).toFixed(2)),
-          apparel2: Number((this.selectedStore?.apparelMargin2 * 100).toFixed(2)),
-          apparel3: Number((this.selectedStore?.apparelMargin3 * 100).toFixed(2)),
-          apparel4: Number((this.selectedStore?.apparelMargin4 * 100).toFixed(2)),
-          apparel5: Number((this.selectedStore?.apparelMargin5 * 100).toFixed(2)),
-          apparel6: Number((this.selectedStore?.apparelMargin6 * 100).toFixed(2)),
-          print1: Number((this.selectedStore?.printMargin1 * 100).toFixed(2)),
-          print2: Number((this.selectedStore?.printMargin2 * 100).toFixed(2)),
-          print3: Number((this.selectedStore?.printMargin3 * 100).toFixed(2)),
-          print4: Number((this.selectedStore?.printMargin4 * 100).toFixed(2)),
-          print5: Number((this.selectedStore?.printMargin5 * 100).toFixed(2)),
-          print6: Number((this.selectedStore?.printMargin6 * 100).toFixed(2)),
+          margin1: Number((this.selectedStore.margin1 * 100).toFixed(4)),
+          margin2: Number((this.selectedStore.margin2 * 100).toFixed(4)),
+          margin3: Number((this.selectedStore.margin3 * 100).toFixed(4)),
+          margin4: Number((this.selectedStore.margin4 * 100).toFixed(4)),
+          margin5: Number((this.selectedStore.margin5 * 100).toFixed(4)),
+          margin6: Number((this.selectedStore.margin6 * 100).toFixed(4)),
+          apparel1: Number((this.selectedStore?.apparelmargin1 * 100).toFixed(4)),
+          apparel2: Number((this.selectedStore?.apparelMargin2 * 100).toFixed(4)),
+          apparel3: Number((this.selectedStore?.apparelMargin3 * 100).toFixed(4)),
+          apparel4: Number((this.selectedStore?.apparelMargin4 * 100).toFixed(4)),
+          apparel5: Number((this.selectedStore?.apparelMargin5 * 100).toFixed(4)),
+          apparel6: Number((this.selectedStore?.apparelMargin6 * 100).toFixed(4)),
+          print1: Number((this.selectedStore?.printMargin1 * 100).toFixed(4)),
+          print2: Number((this.selectedStore?.printMargin2 * 100).toFixed(4)),
+          print3: Number((this.selectedStore?.printMargin3 * 100).toFixed(4)),
+          print4: Number((this.selectedStore?.printMargin4 * 100).toFixed(4)),
+          print5: Number((this.selectedStore?.printMargin5 * 100).toFixed(4)),
+          print6: Number((this.selectedStore?.printMargin6 * 100).toFixed(4)),
         });
         this.dataSourceLoading = true;
         this.getFirstCall();
@@ -295,12 +295,12 @@ export class MarginsComponent implements OnInit, OnDestroy {
   marginDetails(item) {
     this.marginDetailsData = item;
     this.marginDetailForm.patchValue({
-      margin1: (item.margin1 * 100).toFixed(2),
-      margin2: (item.margin2 * 100).toFixed(2),
-      margin3: (item.margin3 * 100).toFixed(2),
-      margin4: (item.margin4 * 100).toFixed(2),
-      margin5: (item.margin5 * 100).toFixed(2),
-      margin6: (item.margin6 * 100).toFixed(2)
+      margin1: (item.margin1 * 100).toFixed(4),
+      margin2: (item.margin2 * 100).toFixed(4),
+      margin3: (item.margin3 * 100).toFixed(4),
+      margin4: (item.margin4 * 100).toFixed(4),
+      margin5: (item.margin5 * 100).toFixed(4),
+      margin6: (item.margin6 * 100).toFixed(4)
     });
     this.isMarginDetails = true;
     this.getMarginProducts(1);
@@ -319,12 +319,12 @@ export class MarginsComponent implements OnInit, OnDestroy {
       });
     } else {
       this.marginDetailForm.patchValue({
-        margin1: print1,
-        margin2: print2,
-        margin3: print3,
-        margin4: print4,
-        margin5: print5,
-        margin6: print6
+        margin1: margin1,
+        margin2: margin2,
+        margin3: margin3,
+        margin4: margin4,
+        margin5: margin5,
+        margin6: margin6
       });
     }
   }

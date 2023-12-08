@@ -163,7 +163,9 @@ export class ImprintColorsComponent implements OnInit, OnDestroy {
       this.tempDataSource = this.tempDataSource.filter(color => color.pk_imprintColorID != item.pk_imprintColorID);
       this.tempRecords--;
       this.resetSearch();
-      this._systemService.snackBar('Color Deleted Successfully');
+      if (res) {
+        this._systemService.snackBar(res["message"]);
+      }
       this._changeDetectorRef.markForCheck();
     }, err => {
       this._systemService.snackBar('Something went wrong');

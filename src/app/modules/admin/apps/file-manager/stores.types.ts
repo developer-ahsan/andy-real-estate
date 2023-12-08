@@ -737,3 +737,14 @@ export interface updateFulfillmentOptions {
     billingEmail: string;
     update_fulfillment_options: boolean;
 };
+
+export interface updateStoreRoyalty {
+    blnRoyaltyStore: boolean;
+    royaltyAmount: number;
+    apparelRoyaltyAmount: number;
+    royaltyCopy: string;
+    royaltyName: string;
+    blnRoyaltyOnByDefault: boolean;
+    storeID: number;
+    update_royality: boolean;
+};
