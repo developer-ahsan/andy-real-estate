@@ -195,7 +195,7 @@ export class CustomersListComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     }, 3000);
   }
-  
+
 
   closeDetails(): void {
     this.selectedCategory = null;
@@ -211,20 +211,27 @@ export class CustomersListComponent implements OnInit, OnDestroy {
     this.selectedCategory = data;
   }
 
-    /**
-     * Track by function for ngFor loops
-     *
-     * @param index
-     * @param item
-     */
-    trackByFn(index: number, item: any): any {
-      return item.id || index;
-    }
-
-    editCustomer(customer) {
-      this.isLoading = true;
-      const { pk_userID } = customer;
-      let route = `/apps/customers/${pk_userID}`;
-      this._router.navigate([route]);
-    }
+  navigateToLocation(customer) {
+    this.isLoading = true;
+    const { pk_userID } = customer;
+    let route = `/apps/customers/${pk_userID}/locations`;
+    this._router.navigate([route]);
   }
+
+  /**
+   * Track by function for ngFor loops
+   *
+   * @param index
+   * @param item
+   */
+  trackByFn(index: number, item: any): any {
+    return item.id || index;
+  }
+
+  editCustomer(customer) {
+    this.isLoading = true;
+    const { pk_userID } = customer;
+    let route = `/apps/customers/${pk_userID}`;
+    this._router.navigate([route]);
+  }
+}

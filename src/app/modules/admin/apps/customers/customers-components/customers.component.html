@@ -281,8 +281,8 @@
                                                     title="Location"></span>
                                             </td>
 
-                                            <td width="20%" valign="middle">
-                                                <a>{{product.qryUserProfileLocationName ?
+                                            <td (click)="navigateToLocation(product)" width="20%" valign="middle">
+                                                <a class="cursor-pointer">{{product.qryUserProfileLocationName ?
                                                     product.qryUserProfileLocationName : 'No location' }}</a>
                                             </td>
 
@@ -333,7 +333,8 @@
                                             </td>
 
                                             <td width="20%" valign="middle">
-                                                Sales volume: <b>$1,744.21, 8 sales.</b>
+                                               <span *ngIf="product.qrySalesVolume"> Sales volume: <b>{{product.qrySalesVolume}}</b> </span>
+                                               <span *ngIf="!product.qrySalesVolume"> Sales volume: <b>$0.00</b> </span>
                                             </td>
                                         </tr>
                                     </tbody>
