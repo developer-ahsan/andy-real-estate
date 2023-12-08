@@ -37,16 +37,14 @@ export class GroupOrdersComponent implements OnInit, OnDestroy {
       .subscribe((response) => {
         this.selectedCustomer = response;
         let params = {
-          list: true,
           user_id: this.selectedCustomer.pk_userID,
-          group_order: true
+          get_user_group_orders: true
         }
         this._customerService.GetApiData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
           this.isLoading = false;
           this._changeDetectorRef.markForCheck();
         })).subscribe(group_orders => {
           this.dataSource = group_orders["data"];
-          this.ordersHistoryLength = group_orders["totalRecords"];
         }, err => {
           this.isLoading = false;
           this._changeDetectorRef.markForCheck();

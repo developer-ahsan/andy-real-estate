@@ -47,7 +47,23 @@
                                 </button>
                             </div>
                         </mat-expansion-panel>
-                        <mat-expansion-panel [expanded]="true">
+
+                        <mat-expansion-panel [expanded]="true" *ngIf="storeProductImage && !ngProofCheck">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    Final Image
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <div>
+                                <div class="py-2">
+                                    <img *ngIf="storeProductImage"
+                                        src="https://assets.consolidus.com/globalAssets/Products/HiRes/{{buildDetails.fk_storeProductID}}.jpg?{{date}}"
+                                        class="w-full" (error)="checkStoreImages($event)">
+                                </div>
+                            </div>
+                        </mat-expansion-panel>
+
+                        <mat-expansion-panel [expanded]="true" *ngIf="ngProofCheck">
                             <mat-expansion-panel-header>
                                 <mat-panel-title>
                                     Current Proof

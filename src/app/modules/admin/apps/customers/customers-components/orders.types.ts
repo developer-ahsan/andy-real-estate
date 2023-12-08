@@ -321,6 +321,7 @@ export interface sendRegistrationEmails {
     storeUserName: string;
     store_name: string;
     storeURL: string;
+    protocol: string;
     additionalEmails: string[];
     user_email: string[];
     send_registration_email: boolean;

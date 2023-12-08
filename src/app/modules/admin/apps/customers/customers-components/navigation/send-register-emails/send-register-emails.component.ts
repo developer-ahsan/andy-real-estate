@@ -132,7 +132,8 @@ export class SendRegisterEmailsComponent implements OnInit, OnDestroy {
       storeUserName: this.selectedCustomer.storeUserName,
       store_name: this.selectedStore.storeName,
       storeURL: this.selectedStore.storeURL,
-      additionalEmails: this.selectedCustomer.additionalEmails,
+      additionalEmails: this.selectedCustomer.additionalEmails ? this.selectedCustomer.additionalEmails?.split(',') : [],
+      protocol: this.selectedStore.protocol,
       user_email: [this.selectedCustomer.email],
       send_registration_email: true,
     }

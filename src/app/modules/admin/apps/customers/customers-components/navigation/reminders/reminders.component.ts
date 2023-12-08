@@ -4,6 +4,7 @@ import { Reminders } from 'app/modules/admin/apps/ecommerce/customers/customers.
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { CustomersService } from '../../orders.service';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-reminders',
@@ -15,7 +16,7 @@ export class RemindersComponent implements OnInit, OnDestroy {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   clickedRows = new Set<Reminders>();
-  displayedColumns: string[] = ['notes', 'name', 'createdOn', 'remindOn', 'status'];
+  displayedColumns: string[] = ['notes', 'name', 'createdOn', 'remindOn', 'status', 'action'];
   dataSource: Reminders[] = [];
   remindersLength: number = 0;
   logoBanksLength = 10;
@@ -38,6 +39,7 @@ export class RemindersComponent implements OnInit, OnDestroy {
   constructor(
     private _customerService: CustomersService,
     private _formBuilder: FormBuilder,
+    private _commonService: DashboardsService,
     private _changeDetectorRef: ChangeDetectorRef
   ) { }
 
@@ -95,16 +97,24 @@ export class RemindersComponent implements OnInit, OnDestroy {
   }
 
   createReminder(): void {
-    const payload = {
+    const userData = JSON.parse(localStorage.getItem('userDetails'));
+
+    const { name, reminderOn } = this.reminderForm.getRawValue();
+    if (name.trim() == '' || reminderOn == '') {
+      this._customerService.snackBar('Please fill out the required fields');
+      return;
+    }
+    let payload = {
       user_id: this.selectedCustomer.pk_userID,
       created_on: Date.now().toString(),
       remind_on: this.reminderForm.getRawValue().reminderOn,
-      admin_user_id: 866,
+      admin_user_id: userData.pk_userID,
       name: this.reminderForm.getRawValue().name,
       notes: this.reminderForm.getRawValue().notes,
       reminder: true
     }
 
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
     this.commentUpdateLoader = true;
     this._customerService.PostApiData(payload)
       .subscribe((response: any) => {
@@ -134,8 +144,8 @@ export class RemindersComponent implements OnInit, OnDestroy {
     item.delLoader = true;
     this._changeDetectorRef.markForCheck();
     let payload = {
-      user_id: item.pk_userID,
-      remove_rapidbuild_user: true
+      reminderID: item.pk_reminderID,
+      remove_reminder: true
     }
     this._customerService.PutApiData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       item.delLoader = false
@@ -143,7 +153,7 @@ export class RemindersComponent implements OnInit, OnDestroy {
     })).subscribe(res => {
       this.dataSource = this.dataSource.filter(elem => elem.pk_reminderID != item.pk_reminderID);
       this.remindersLength--;
-      this._customerService.snackBar('Reminder Deleted Successfully');
+      this._customerService.snackBar(res["message"]);
       this._changeDetectorRef.markForCheck();
     }, err => {
       this._customerService.snackBar('Something went wrong');

@@ -1,7 +1,55 @@
 <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="dataSourceLoading">
 </ngx-skeleton-loader>
 <div *ngIf="!dataSourceLoading">
-  <div *ngIf="!isLoading">
+
+  <mat-button-toggle-group class="mb-2" #group="matButtonToggleGroup" [value]="mainScreen"
+    (change)="calledScreen(group.value)">
+    <mat-button-toggle value="Product Reviews">
+      Product Reviews
+    </mat-button-toggle>
+    <mat-button-toggle value="Export Reviews">
+      Export Reviews
+    </mat-button-toggle>
+  </mat-button-toggle-group>
+  <!-- Export Reviews -->
+  <div class="bg-card rounded-2xl shadow-lg p-5" *ngIf="mainScreen == 'Export Reviews'">
+    <div class="row" style="width: -webkit-fill-available;">
+      <div class="col-12">
+        <div class="p-6 sm:p-8 lg:p-10 w-full">
+          <div class="row">
+            <div class="col-lg-6 col-12">
+              <div class="text-2xl font-bold">
+                Export Reviews
+              </div>
+            </div>
+            <div class="col-12 alert alert-info">
+              This tool will export all reviews from this store to the target store. The export will only include
+              reviews for products that are both on this store and the target store. Only stores that currently have
+              reviews are available below.
+            </div>
+            <div class="col-12">
+              <mat-form-field class="w-full">
+                <mat-select matInput [(ngModel)]="targetdStore">
+                  <mat-option *ngFor="let store of allActiveStores"
+                    [value]="store.pk_storeID">{{store.storeName}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="col-12">
+              <button class="min-w-30" (click)="exportReviews()" mat-flat-button color="primary"
+                [disabled]="exportLoader">
+                <mat-progress-spinner *ngIf="exportLoader" [diameter]="24" [mode]="'indeterminate'">
+                </mat-progress-spinner>
+                <span *ngIf="!exportLoader">Export Reviews</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Product Reviews -->
+  <div *ngIf="!isLoading && mainScreen == 'Product Reviews'">
     <fuse-card class="rounded-2xl shadow bg-card flex pb-3"
       *ngIf="!isEditReview && !isAddReview && !isSendProductReview">
       <div class="row" style="width: -webkit-fill-available;">
@@ -16,7 +64,6 @@
             </div>
           </div>
         </div>
-
         <div class="col-12 px-10" *ngIf="dataSourceLoading">
           <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
           </ngx-skeleton-loader>
@@ -78,8 +125,8 @@
         </div>
         <div class="col-12">
           <mat-paginator class="sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-            (page)="getNextData($event)" [length]="dataSourceTotalRecord"
-            [pageIndex]="this.page - 1" [pageSize]="pageInformation.size" [hidePageSize]="true">
+            (page)="getNextData($event)" [length]="dataSourceTotalRecord" [pageIndex]="this.page - 1"
+            [pageSize]="pageInformation.size" [hidePageSize]="true">
           </mat-paginator>
         </div>
       </div>
@@ -111,9 +158,9 @@
                     (click)="addReviewToggle()">Add
                     Product
                     Review</button>
-                  <!-- <button (click)="editsendProductToggle()" mat-flat-button mat-stroked-button
+                  <button (click)="editsendProductToggle()" mat-flat-button color="primary"
                     [matTooltip]="'Send Product Review'">Send Product
-                    Review</button> -->
+                    Review</button>
                 </div>
               </div>
             </div>

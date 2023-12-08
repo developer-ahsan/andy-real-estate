@@ -6,6 +6,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import * as moment from 'moment';
 import { AuthService } from 'app/core/auth/auth.service';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 @Component({
   selector: 'app-customer-reviews',
   templateUrl: './customer-reviews.component.html'
@@ -51,17 +52,23 @@ export class CustomerReviewsComponent implements OnInit, OnDestroy {
   user: any;
 
   isAddLoader: boolean = false;
+  mainScreen = 'Product Reviews';
+  targetdStore = 0;
+  allActiveStores = [];
+  exportLoader: boolean = false;
   constructor(
     private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private fb: FormBuilder,
     private _snackBar: MatSnackBar,
     private el: ElementRef,
-    private _authService: AuthService
+    private _authService: AuthService,
+    private _commonService: DashboardsService
   ) { }
 
   ngOnInit(): void {
     this.getStoreDetails();
+    this.getAllActiveStores();
   };
   getStoreDetails() {
     this._storeManagerService.storeDetail$
@@ -73,6 +80,35 @@ export class CustomerReviewsComponent implements OnInit, OnDestroy {
         this.dataSourceLoading = true;
         this.getCustomerReviews(1);
       });
+  }
+  getAllActiveStores() {
+    this._commonService.storesData$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.allActiveStores.push({ storeName: 'Select a store', pk_storeID: 0 });
+      res["data"].forEach(element => {
+        if (element.blnActive) {
+          this.allActiveStores.push(element);
+        }
+      });
+    });
+  }
+  exportReviews() {
+    if (this.targetdStore == 0) {
+      this._storeManagerService.snackBar('Please select a store');
+      return;
+    }
+    let payload = {
+      source_store_id: this.selectedStore.pk_storeID,
+      target_store_id: this.targetdStore,
+      export_review: true
+    }
+    this.exportLoader = true;
+    this._storeManagerService.postStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res) {
+        this._storeManagerService.snackBar(res["message"]);
+      }
+      this.exportLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
   }
   initialize() {
     this.user = this._authService.parseJwt(this._authService.accessToken);
@@ -95,9 +131,17 @@ export class CustomerReviewsComponent implements OnInit, OnDestroy {
       store_name: new FormControl(''),
       send_review_email: new FormControl(true)
     })
+    const userData = JSON.parse(localStorage.getItem('userDetails'));
+    this.sendProductReviewForm.patchValue({
+      name: userData.firstName + ' ' + userData.lastName,
+      subject: userData.firstName + ' ' + userData.lastName + ' from ' + this.selectedStore.storeName + ' Would Like You To Review This Product'
+    })
   }
   get reviewListArray(): FormArray {
     return this.productReviewForm.get('reviews') as FormArray;
+  }
+  calledScreen(screen) {
+    this.mainScreen = screen;
   }
   getCustomerReviews(page) {
     let params = {

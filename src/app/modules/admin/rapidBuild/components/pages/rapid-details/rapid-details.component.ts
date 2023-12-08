@@ -108,6 +108,7 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
 
   ngStatus = 0;
   ngProofCheck = true;
+  storeProductImage = true;
   imageValue: any;
   ngProofComment: any;
   isUploadProofLoader: boolean = false;
@@ -297,6 +298,11 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
   }
   checkProof(ev) {
     this.ngProofCheck = false;
+    this._changeDetectorRef.markForCheck();
+  }
+  checkStoreImages(ev) {
+    this.storeProductImage = false;
+    this._changeDetectorRef.markForCheck();
   }
   uploadFile(event) {
     this.imageValue = null;
