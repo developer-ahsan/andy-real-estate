@@ -3,6 +3,8 @@ import { StoresList } from 'app/modules/admin/apps/ecommerce/customers/customers
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { CustomersService } from '../../orders.service';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-store-usage',
@@ -34,21 +36,31 @@ export class StoreUsageComponent implements OnInit, OnDestroy {
 
   constructor(
     private _customerService: CustomersService,
-    private _changeDetectorRef: ChangeDetectorRef
+    private _changeDetectorRef: ChangeDetectorRef,
+    private _commonService: DashboardsService,
+    private _snackBar: MatSnackBar,
+
   ) { }
 
 
   ngOnInit(): void {
     this.isLoading = true;
     this.getCustomer();
-    this._customerService.getAllStores()
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((stores) => {
-        this.allStores = stores["data"];
-        this._changeDetectorRef.markForCheck();
-      });
+    this.getStores();
   }
+
+  getStores() {
+    this._commonService.storesData$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.allStores = res["data"].filter(store => store.blnActive);
+    });
+  }
+
   getCustomer() {
+    this.storesListLength = 0;
+    this.isLoading = true;
+    this._changeDetectorRef.markForCheck();
+
+
     this._customerService.customer$
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response) => {
@@ -79,13 +91,39 @@ export class StoreUsageComponent implements OnInit, OnDestroy {
   }
 
   deleteStore(store): void {
+
+    const payload = {
+      user_id: store.storeUserID,
+      store_id: store.storeID,
+      delete_store_usage: true
+    }
+    this._customerService.PutApiData(payload)
+      .subscribe((response: any) => {
+        this._snackBar.open('Store deleted successfuly', '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        this.getCustomer();
+
+      });
   }
 
   createStore(): void {
+
+    if (this.selectedStore === null) {
+      this._snackBar.open('Please select a store', '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      return;
+    }
+
     const payload = {
       user_id: this.selectedCustomer.pk_userID,
       store_id: this.selectedStore.pk_storeID,
-      store_usage: true
+      add_store_usage: true
     }
     this.commentUpdateLoader = true;
     this._customerService.PostApiData(payload)
@@ -95,6 +133,8 @@ export class StoreUsageComponent implements OnInit, OnDestroy {
             'success' :
             'error'
         );
+
+        this.getCustomer();
         this.commentUpdateLoader = false;
       });
   }
