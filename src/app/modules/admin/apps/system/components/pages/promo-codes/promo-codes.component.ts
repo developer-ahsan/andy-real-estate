@@ -26,6 +26,10 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
   tempRecords = 0;
   page = 1;
 
+  sort_by: string = '';
+  sort_order: string = 'ASC'
+
+
   mainScreen: string = 'Current Promo Codes';
   keyword = '';
   not_available = 'N/A';
@@ -99,9 +103,13 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
     let params = {
       promo_codes: true,
       keyword: this.keyword,
-      page: page,
-      size: 20
+      page: this.page,
+      size: 20,
+      sort_by: this.sort_by,
+      sort_order: this.sort_order
     }
+    this.isLoading = true;
+
     this._systemService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.dataSource = res["data"];
       this.totalUsers = res["totalRecords"];
@@ -153,6 +161,12 @@ export class PromoCodesComponent implements OnInit, OnDestroy {
     this.keyword = '';
     this.dataSource = this.tempDataSource;
     this.totalUsers = this.tempRecords;
+  }
+
+  sortData(column: string) {
+    this.sort_order = this.sort_order === 'ASC' ? 'DESC' : 'ASC';
+    this.sort_by = column;
+    this.getPromoCodes(1, 'get');
   }
 
   replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {

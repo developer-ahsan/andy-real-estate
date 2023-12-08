@@ -168,9 +168,12 @@
                                     [matTooltip]="'Back to list'" (click)="updateMemberToggle(null)">
                                     Back
                                 </button>
-                                <button [disabled]="isUpdateMemberLoader" class="min-w-30 mr-2" mat-stroked-button
-                                    [matTooltip]="'Toggle Member Feature List'" (click)="toggleMemberFeature()">
-                                    Member Feature
+                                <button [disabled]="isActiveStoreOrderLoader" class="min-w-30 mr-2" mat-stroked-button
+                                    [matTooltip]="'Toggle Member Feature List'" (click)="addtoAllActiveStores()">
+                                    <span *ngIf="!isActiveStoreOrderLoader">Add to all active stores</span>
+                                    <mat-progress-spinner *ngIf="isActiveStoreOrderLoader" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
                                 </button>
                                 <button [disabled]="isUpdateMemberLoader || !updateMemberForm.valid" class="min-w-40"
                                     mat-stroked-button [matTooltip]="'Update Member'" (click)="updateMember()">
@@ -329,6 +332,3 @@
         </div>
     </div>
 </div>
-
-
-

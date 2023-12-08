@@ -169,23 +169,177 @@
                             </td>
                         </ng-container>
                         <ng-container matColumnDef="rem">
-                            <th class="w-5 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                *matHeaderCellDef mat-sort-header disableClear>
+                            <th class="w-5 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef
+                                mat-sort-header disableClear>
                                 Rem.
                             </th>
                             <td class="pr-4" mat-cell *matCellDef="let product" (click)="editCustomer(product)"
                                 style="cursor: pointer;">
-                                <span *ngIf="product?.rem !== null" class="fa fa-exclamation-circle fa-lg text-danger"  matTooltip="This user has reminders."></span>
+                                <span *ngIf="product?.rem !== null" class="fa fa-exclamation-circle fa-lg text-danger"
+                                    matTooltip="This user has reminders."></span>
                             </td>
                         </ng-container>
                         <ng-container matColumnDef="mrp">
-                            <th class="w-5 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                *matHeaderCellDef mat-sort-header disableClear>
+                            <th class="w-5 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef
+                                mat-sort-header disableClear>
                                 MRP
                             </th>
                             <td class="pr-4" mat-cell *matCellDef="let product" (click)="editCustomer(product)"
                                 style="cursor: pointer;">
                                 {{product?.MRP | date:'MM/dd/yyyy'}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="dropdown">
+
+                            <th class="w-5 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef
+                                mat-sort-header disableClear>
+                            </th>
+
+                            <td class="text-center" mat-cell *matCellDef="let product">
+                                <button class="min-w-10 min-h-7 h-7 px-2 leading-6" mat-stroked-button
+                                    (click)="openedAccordion(product)">
+                                    <mat-icon class="icon-size-5"
+                                        [svgIcon]="selectedCategory?.pk_userID == product?.pk_userID ? 'heroicons_solid:chevron-up' : 'heroicons_solid:chevron-down'">
+                                    </mat-icon>
+                                </button>
+                            </td>
+
+                        </ng-container>
+                        <ng-container matColumnDef="dropdownList">
+                            <td class="p-0 border-b" mat-cell *matCellDef="let product"
+                                [attr.colspan]="customerTableColumns.length">
+                                <div class="shadow-lg overflow-hidden px-10"
+                                    [@expandCollapse]="selectedCategory?.pk_userID == product?.pk_userID ? 'expanded' : 'collapsed'">
+                                    <!-- <div class="row mb-1 bg-hover p-5 font-semibold">
+                                        <div class="col-9">
+                                            Department
+                                        </div>
+                                        <div class="col-3 flex justify-between">
+                                            <span>Action</span>
+                                        </div>
+
+                                    </div> -->
+
+                                    <div class="row add-border-bottom grid grid-cols-2 w-full my-5">
+                                        <div class=" flex flex-row gap-x-5">
+                                            <div class="col-xs-1 add-padding-sm">
+                                                <span class="fa fa-address-card fa-4x center-fa"></span>
+                                            </div>
+
+                                            <div class="col-xs-8 add-padding-sm mt-3 border-b-1">
+                                                <a>
+                                                    <h1 (click)="editCustomer(product)"
+                                                        class="underline text-xl cursor-pointer add-margin-top-xs no-bottom-margin no-bottom-padding">
+                                                        {{ product.firstName }} {{ product.lastName }}
+                                                    </h1>
+                                                </a>
+                                                <b>{{product.companyName[0]}}</b>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-xs-3 add-padding-sm text-right">
+                                            <a>
+                                                <button (click)="editCustomer(product)" type="button" class="btn btn-primary btn-sm"
+                                                    style="margin-top: 10px;">View User</button>
+                                            </a>
+                                        </div>
+                                    </div>
+
+
+                                    <tbody class="mb-5">
+                                        <tr>
+                                            <td width="1%" valign="middle">
+                                                <span class="fa fa-check fa-2x center-fa fa-fw text-success"></span>
+                                            </td>
+
+                                            <td width="20%" valign="middle">
+                                                <span class="text-success">User account is active</span>
+                                            </td>
+
+                                            <td width="1%" valign="middle">
+                                                <span class="fa fa-clock-o fa-2x center-fa fa-fw"
+                                                    title="Customer since"></span>
+                                            </td>
+
+                                            <td width="20%" valign="middle">
+                                                Customer since: {{product.date}}
+                                            </td>
+
+                                            <td width="1%" valign="middle">
+                                                <span class="fa fa-phone fa-2x fa-fw center-fa"
+                                                    title="Phone number"></span>
+                                            </td>
+
+                                            <td width="20%" valign="middle">
+                                                {{product.dayPhone}}
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td width="1%" valign="middle">
+                                                <span class="fa fa-map-pin fa-2x center-fa fa-fw"
+                                                    title="Location"></span>
+                                            </td>
+
+                                            <td width="20%" valign="middle">
+                                                <a>{{product.qryUserProfileLocationName ?
+                                                    product.qryUserProfileLocationName : 'No location' }}</a>
+                                            </td>
+
+                                            <td width="1%" valign="middle">
+                                                <span class="fa fa-envelope fa-2x center-fa fa-fw"
+                                                    title="Email address"></span>
+                                            </td>
+
+                                            <td width="20%" valign="middle">
+                                                <a [href]="'mailto:' + product.email">{{ product.email }}</a>
+                                            </td>
+
+                                            <td width="1%" valign="middle">
+                                                <span class="fa fa-exclamation-circle fa-2x center-fa fa-fw "
+                                                    title="Alerts/reminders"></span>
+                                            </td>
+
+                                            <td width="20%" valign="middle">
+                                                <a href="index.cfm?action=storeUser.viewReminders&amp;userID=21645">{{product.rem
+                                                    ? 'This user has reminders.' : 'No reminders/alerts' }}</a>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td width="1%" valign="top">
+                                                <span class="fa fa-map-marker fa-2x center-fa fa-fw"
+                                                    title="Address"></span>
+                                            </td>
+
+                                            <td width="20%" valign="top">
+                                                {{product.address1}}, {{product.state}} {{product.zipCode}}<br>
+                                            </td>
+
+                                            <td width="1%" valign="middle">
+                                                <span class="fa fa-history fa-2x center-fa fa-fw"
+                                                    title="Most recent purchase"></span>
+                                            </td>
+
+                                            <td width="20%" valign="middle">
+                                                <span *ngIf="product.qryRecentPurchase"> Most recent purchase on
+                                                    <b>12/05/2023</b> </span>
+                                                <span *ngIf="!product.qryRecentPurchase">No Purchases</span>
+                                            </td>
+
+                                            <td width="1%" valign="middle">
+                                                <span class="fa fa-dollar fa-2x center-fa fa-fw"
+                                                    title="Sales volume"></span>
+                                            </td>
+
+                                            <td width="20%" valign="middle">
+                                                Sales volume: <b>$1,744.21, 8 sales.</b>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+
+
+                                </div>
                             </td>
                         </ng-container>
                         <!-- Details -->
@@ -207,6 +361,8 @@
                         <tr class="shadow" mat-header-row *matHeaderRowDef="customerTableColumns; sticky: true"></tr>
                         <tr class="h-16 hover:bg-gray-100 dark:hover:bg-hover" mat-row
                             *matRowDef="let product; columns: customerTableColumns;"></tr>
+                        <tr class="h-0 border-b-1" mat-row *matRowDef="let product; columns: ['dropdownList']">
+                        </tr>
                     </table>
 
                 </div>
