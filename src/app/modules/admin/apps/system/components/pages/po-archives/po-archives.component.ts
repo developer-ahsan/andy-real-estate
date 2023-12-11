@@ -7,6 +7,7 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { SystemService } from '../../system.service';
 import { AddColor, AddImprintColor, AddImprintMethod, DeleteColor, DeleteImprintColor, UpdateColor, UpdateImprintColor, UpdateImprintMethod } from '../../system.types';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-po-archives',
@@ -60,82 +61,28 @@ export class POArchivesComponent implements OnInit, OnDestroy {
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _systemService: SystemService
+    private _systemService: SystemService,
+    private _commonService: DashboardsService
   ) { }
 
   ngOnInit(): void {
-    this._systemService.stores$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.allStores = res["data"];
-      this.stores = res["data"];
-    });
-    this._systemService.Suppliers$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.suppliers = res["data"];
-      this.allSuppliers = res["data"];
-    });
-    let params;
-    this.searchSupplierCtrl.valueChanges.pipe(
-      filter((res: any) => {
-        params = {
-          supplier: true,
-          bln_active: 1,
-          keyword: res
-        }
-        return res !== null && res.length >= 3
-      }),
-      distinctUntilChanged(),
-      debounceTime(300),
-      tap(() => {
-        this.allSuppliers = [];
-        this.isSearchingSupplier = true;
-        this._changeDetectorRef.markForCheck();
-      }),
-      switchMap(value => this._systemService.getSystemsData(params)
-        .pipe(
-          finalize(() => {
-            this.isSearchingSupplier = false
-            this._changeDetectorRef.markForCheck();
-          }),
-        )
-      )
-    ).subscribe((data: any) => {
-      this.allSuppliers = data['data'];
-    });
-    // Stores
-    // let paramsStore;
-    // this.searchStoreCtrl.valueChanges.pipe(
-    //   filter((res: any) => {
-    //     params = {
-    //       stores_list: true,
-    //       keyword: res
-    //     }
-    //     return res !== null && res.length >= 3
-    //   }),
-    //   distinctUntilChanged(),
-    //   debounceTime(300),
-    //   tap(() => {
-    //     this.allStores = [];
-    //     this.isSearchingStore = true;
-    //     this._changeDetectorRef.markForCheck();
-    //   }),
-    //   switchMap(value => this._systemService.getSystemsData(paramsStore)
-    //     .pipe(
-    //       finalize(() => {
-    //         this.isSearchingStore = false
-    //         this._changeDetectorRef.markForCheck();
-    //       }),
-    //     )
-    //   )
-    // ).subscribe((data: any) => {
-    //   this.allStores = data['data'];
-    // });
-    setTimeout(() => {
-      this.isLoading = false;
-      this.isLoadingChange.emit(false);
-      this._changeDetectorRef.markForCheck()
-    }, 100);
-
-    // this.isLoading = true;
-    // this.getImprintMethods(1, 'get');
+    this._commonService.storesData$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(res => {
+        this.allStores = [
+          ...res["data"].filter(element => element.blnActive)
+        ];
+      });
+    this._commonService.suppliersData$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(res => {
+        this.allSuppliers = [
+          ...res["data"].filter(element => element.blnActiveVendor)
+        ];
+      });
+    this.isLoading = false;
+    this.isLoadingChange.emit(false);
+    this._changeDetectorRef.markForCheck();
   };
   onSelected(ev) {
     this.selectedSupplier = ev.option.value;
