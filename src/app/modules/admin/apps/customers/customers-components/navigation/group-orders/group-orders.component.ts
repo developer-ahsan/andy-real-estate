@@ -56,7 +56,6 @@ export class GroupOrdersComponent implements OnInit, OnDestroy {
 
   orderDetails(order) {
     this.random = Math.random();
-    console.log(order)
     this.orderDetail = order;
     this.orderDetail.detailsLoader = true;
     let params = {

@@ -57,6 +57,7 @@ import { customersRoutes } from './customers.routing';
 import { CustomerDetailsComponent } from './customers-components/details/details.customers.component';
 import { CKEditorModule } from 'ckeditor4-angular';
 import { CustomerFlpsUsersComponent } from './customers-components/navigation/flps-users/flps-users.component';
+import { CurrencyPipe } from '@angular/common';
 
 @NgModule({
     declarations: [
@@ -121,6 +122,7 @@ import { CustomerFlpsUsersComponent } from './customers-components/navigation/fl
         NgxStripeModule,
         CKEditorModule
     ],
+    providers: [CurrencyPipe]
 })
 export class CustomersModule {
 }

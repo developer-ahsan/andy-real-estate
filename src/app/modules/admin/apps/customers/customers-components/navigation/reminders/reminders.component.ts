@@ -17,7 +17,7 @@ export class RemindersComponent implements OnInit, OnDestroy {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   clickedRows = new Set<Reminders>();
-  displayedColumns: string[] = ['notes', 'name', 'createdOn', 'remindOn', 'status', 'action'];
+  displayedColumns: string[] = ['name', 'notes', 'createdOn', 'remindOn', 'status', 'action'];
   dataSource: Reminders[] = [];
   remindersLength: number = 0;
   logoBanksLength = 10;

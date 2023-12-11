@@ -8,6 +8,8 @@ import { Subject, Subscription } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { CustomersService } from '../../orders.service';
 import { userComment } from '../../customers.types';
+import { OrdersService } from 'app/modules/admin/apps/orders/orders-components/orders.service';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-user-comments',
@@ -47,14 +49,19 @@ export class UserCommentsComponent implements OnInit {
   commentsPage = 1;
   isLoadComments: boolean = false;
 
+  userData: any;
+
   constructor(
     private _customerService: CustomersService,
+    private _orderService: OrdersService,
     private _formBuilder: FormBuilder,
     private _snackBar: MatSnackBar,
-    private _changeDetectorRef: ChangeDetectorRef
+    private _changeDetectorRef: ChangeDetectorRef,
+    private _commonService: DashboardsService
   ) { }
 
   ngOnInit(): void {
+    this.userData = JSON.parse(localStorage.getItem('userDetails'));
     this.isLoading = true;
     this.commentAddingForm = this._formBuilder.group({
       comment: ['']
@@ -103,7 +110,7 @@ export class UserCommentsComponent implements OnInit {
   }
   add(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
-    if (value) {
+    if (value && !this.emails.includes(value)) {
       this.emails.push(value);
     }
     event.chipInput!.clear();
@@ -117,22 +124,22 @@ export class UserCommentsComponent implements OnInit {
   }
   getCommentators() {
     let params = {
-      commentor: true,
-      page: this.commentatorPage
+      get_commentators_emails: true
     }
-    this._customerService.GetApiData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.commentators = this.commentators.concat(res["data"]);
-      this.totalCommentator = res["totalRecords"];
+    this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      let commentators = res["data"][0].commentorsEmail.split(',,');
+      commentators.forEach(commentator => {
+        const [id, email] = commentator.split('::');
+        this.commentators.push({ id, email });
+      });
       this.isCommentatorLoader = false;
-      this.isLoadMore = false;
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isCommentatorLoader = false;
-      this.isLoadMore = false;
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
-    })
+    });
   }
   getNexCommentator() {
     this.commentatorPage++;
@@ -153,7 +160,7 @@ export class UserCommentsComponent implements OnInit {
   // Public functions
   addComment() {
     let emailArr = this.emails;
-    if (this.ngComment! == '') {
+    if (this.ngComment.trim() == '') {
       this._snackBar.open("Comment is required", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
@@ -177,13 +184,14 @@ export class UserCommentsComponent implements OnInit {
     this.isAddCommentLoader = true;
 
     const { pk_userID, userName } = this.selectedCustomer;
-    const payload: userComment = {
+    let payload: userComment = {
       admin_comment: this.ngComment,
       user_id: pk_userID,
       user_name: userName,
       emails: emailArr,
       user_comment: true
     };
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
     this.commentUpdateLoader = true;
     return this._customerService.PutApiData((payload))
       .subscribe((response: any) => {

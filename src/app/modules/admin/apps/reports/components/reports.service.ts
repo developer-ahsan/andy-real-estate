@@ -392,7 +392,7 @@ export class ReportsService {
     getStatusValue(statusValues: any) {
         let statusColor = '';
         let statusValue = '';
-        let status = statusValues.split('|');
+        let status = statusValues?.split('|');
         status.forEach(element => {
             let status = Number(element);
             if (status == 1 || status == 2 || status == 3 || status == 4) {

@@ -102,10 +102,14 @@ export class CustomersListComponent implements OnInit, OnDestroy {
 
   getStoresList() {
     this.allStores = [];
-    this._commonService.storesData$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.allStores.push({ pk_storeID: 0, storeName: 'All Stores' });
-      this.allStores = this.allStores.concat(res["data"]);
-    });
+    this._commonService.storesData$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(res => {
+        this.allStores = [
+          { pk_storeID: 0, storeName: 'All Stores' },
+          ...res["data"].filter(element => element.blnActive)
+        ];
+      });
   }
   /**
    * On destroy
