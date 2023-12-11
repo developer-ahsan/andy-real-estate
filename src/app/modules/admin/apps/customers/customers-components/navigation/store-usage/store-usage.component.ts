@@ -99,7 +99,7 @@ export class StoreUsageComponent implements OnInit, OnDestroy {
     }
     this._customerService.PutApiData(payload)
       .subscribe((response: any) => {
-        this._snackBar.open('Store deleted successfuly', '', {
+        this._snackBar.open(response["message"], '', {
           horizontalPosition: 'center',
           verticalPosition: 'bottom',
           duration: 3500
@@ -128,11 +128,16 @@ export class StoreUsageComponent implements OnInit, OnDestroy {
     this.commentUpdateLoader = true;
     this._customerService.PostApiData(payload)
       .subscribe((response: any) => {
-        this.showFlashMessage(
-          response["success"] === true ?
-            'success' :
-            'error'
-        );
+        this._snackBar.open(response["message"], '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        // this.showFlashMessage(
+        //   response["success"] === true ?
+        //     'success' :
+        //     'error'
+        // );
 
         this.getCustomer();
         this.commentUpdateLoader = false;
