@@ -159,15 +159,13 @@
                                         </tr>
                                         <tr>
                                             <td valign="top"><b>Product name:</b></td>
-                                            <td valign="top"><a class="text-blue-500"
-                                                    routerLink="/apps/ecommerce/inventory/{{buildDetails.pk_productID}}"
-                                                    target="_blank">{{buildDetails.productName}}</a></td>
+                                            <td valign="top">
+                                                <span [innerHTML]="buildDetails.productName"></span>
+                                            </td>
                                         </tr>
                                         <tr>
                                             <td valign="top"><b>Product number:</b></td>
-                                            <td valign="top"><a class="text-blue-500"
-                                                    routerLink="/apps/ecommerce/inventory/{{buildDetails.pk_productID}}"
-                                                    target="_blank">{{buildDetails.productNumber}}</a></td>
+                                            <td valign="top">{{buildDetails.productNumber}}</td>
                                         </tr>
 
                                         <tr>
@@ -212,10 +210,10 @@
                                         <tr>
                                             <td valign="top"><b>SPID:</b></td>
                                             <td valign="top">
-                                                <!-- <a href="https://admin.consolidus.com/ssadm/index.cfm?action=storeProduct.viewPricing&amp;storeProductID=154483"
-                                                    target="_blank"> -->
-                                                {{buildDetails.fk_storeProductID}}
-                                                <!-- </a> -->
+                                                <a [routerLink]="['/apps/ecommerce/inventory/storeProduct',buildDetails.fk_storeProductID]"
+                                                    target="_blank">
+                                                    {{buildDetails.fk_storeProductID}}
+                                                </a>
                                             </td>
                                         </tr>
                                         <tr>
@@ -232,7 +230,7 @@
                                         <tr>
                                             <td valign="top"><b>Available Colors:</b></td>
                                             <td valign="top">
-                                                <div class="max-h-40 overflow-y-auto" *ngIf="colorsData.length > 0">
+                                                <div class="" *ngIf="colorsData.length > 0">
                                                     <p *ngFor="let item of colorsData">
                                                         {{item.colorName}}
                                                     </p>
