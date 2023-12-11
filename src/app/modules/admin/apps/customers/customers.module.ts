@@ -58,6 +58,7 @@ import { CustomerDetailsComponent } from './customers-components/details/details
 import { CKEditorModule } from 'ckeditor4-angular';
 import { CustomerFlpsUsersComponent } from './customers-components/navigation/flps-users/flps-users.component';
 import { CurrencyPipe } from '@angular/common';
+import { SavedCartsDetailComponent } from './customers-components/navigation/saved-carts-detail/saved-carts-detail.component';
 
 @NgModule({
     declarations: [
@@ -74,6 +75,7 @@ import { CurrencyPipe } from '@angular/common';
         QuotesComponent,
         RemindersComponent,
         SavedCartsComponent,
+        SavedCartsDetailComponent,
         SendRegisterEmailsComponent,
         StoreUsageComponent,
         UserAddressComponent,

@@ -1,0 +1,83 @@
+<div class="inset-0 min-w-50 overflow-hidden mt-5 bg-card dark:bg-transparent w-full p-5">
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isCartLoader">
+    </ngx-skeleton-loader>
+    <div *ngIf="!isCartLoader">
+        <div class="mt-3 overflow-auto" *ngIf="cartData?.length == 0">
+                <div class="p-8 sm:p-16 text-2xl font-semibold not-found-color">
+                    There are no quotes created for this user.
+                </div>
+        </div>
+        <div class="mt-3" *ngIf="cartData?.length !== 0">
+            <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isCartLoader">
+            </ngx-skeleton-loader>
+            <div *ngIf="!isCartLoader">
+                <div class="alert alert-warning my-2">
+                    NOTE: The "< br>" tag in the artwork comments signifies a line break (return) and is needed for
+                        formatting purposes. Please leave the line breaks and other code in the comments
+                </div>
+                <div class="flex justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold my-2">Cart Item Details</h3>
+                        <p>
+                            Cart ID: {{cardId}}<br>
+                            Date Created: {{dateCreated}}<br>
+                            Store: {{storeName}}
+                        </p>
+                    </div>
+                </div>
+                <div class="my-2">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Item Number</th>
+                                <th>Item Name</th>
+                                <th>Item Location</th>
+                                <th>Decoration</th>
+                                <th>Proof</th>
+                                <th>Comments</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of cartData">
+                                <td>{{item.productNumber}}</td>
+                                <td>{{item.productName}}</td>
+                                <td>{{item.locationName}}</td>
+                                <td>{{item.decorationName}}</td>
+                                <td>
+                                    <span *ngIf="item?.proof">
+                                        <a href="https://assets.consolidus.com/artwork/Proof/Quotes/{{selectedCustomer.pk_userID}}/{{imprint.pk_cartID}}/{{imprint.pk_cartLineID}}/{{imprint.imprintID}}.jpg"
+                                            target="_blank">View Proof</a>
+                                    </span>
+                                    <span *ngIf="!item?.proof">N/A</span>
+                                </td>
+                                <td>
+                                    <mat-form-field class="w-full">
+                                        <textarea matInput [(ngModel)]="item.customerArtworkComment"></textarea>
+                                    </mat-form-field>
+                                    <button mat-button mat-flat-button color="primary" (click)="updateCartItems(item)"
+                                        [disabled]="item.updateLoader">
+                                        <span *ngIf="!item.updateLoader">Update</span>
+                                        <mat-progress-spinner *ngIf="item.updateLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                    </button>
+                                    <br>
+                                    <div *ngIf="item.artworkFiles.length > 0">
+                                        <a href="http://assets.consolidus.com/artwork/tempArtwork/#fileArray[i]#"
+                                            target="_blank">VIEW
+                                            ARTWORK FILE #i#</a>
+                                        <br>
+                                    </div>
+                                    <div class="alert alert-warning text-center my-2 text-sm"
+                                        *ngIf="item.artworkFiles.length == 0">NO
+                                        ARTWORK SUBMITTED FOR
+                                        THIS ITEM IN THIS CART</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
