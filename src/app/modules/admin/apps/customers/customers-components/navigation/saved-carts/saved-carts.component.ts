@@ -2,6 +2,7 @@ import { Component, Input, Output, OnInit, EventEmitter, OnDestroy, ChangeDetect
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { CustomersService } from '../../orders.service';
+import { Router } from '@angular/router';
 
 export interface PeriodicElement {
   name: string;
@@ -33,7 +34,7 @@ export class SavedCartsComponent implements OnInit, OnDestroy {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   clickedRows = new Set<PeriodicElement>();
-  displayedColumns: string[] = ['pk_cartID', 'dateCreated', 'storeName', 'price', 'cost'];
+  displayedColumns: string[] = ['pk_cartID', 'dateCreated', 'dateModified', 'storeName', 'items', 'price', 'artwork', 'remove'];
   dataSource = [];
   savedCartsLength: number = 0;
 
@@ -42,7 +43,8 @@ export class SavedCartsComponent implements OnInit, OnDestroy {
 
   constructor(
     private _customerService: CustomersService,
-    private _changeDetectorRef: ChangeDetectorRef
+    private _changeDetectorRef: ChangeDetectorRef,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -70,6 +72,32 @@ export class SavedCartsComponent implements OnInit, OnDestroy {
         })
       });
   }
+
+  getItems(item: any) {
+
+    const itemsArray = item.split(",,");
+    let htmlOutput = '';
+    itemsArray.forEach((item, index) => {
+      const components = item.split("::");
+      htmlOutput += `<div>
+                        <p> <span class="font-bold">${index + 1}. </span> ${components[0]}</p>
+                        <p><span class="font-bold">Colors</span>: ${components[1]}</p>
+                        <p><span class="font-bold">Setup</span>: NONE</p>
+                        <p><span class="font-bold">Add. Run</span>: NONE</p>
+                    
+                </div>`;
+    });
+    return htmlOutput;
+  }
+
+  navigate(cart) {
+    this.router.navigateByUrl(`/apps/customers/${this.selectedCustomer.pk_userID}/saved-carts-detail/${cart.cartID}/${cart.dateCreated}/${cart.storeName}`);
+  }
+
+  navigateToSummary(cart) {
+    this.router.navigateByUrl(`/apps/quotes/${cart.cartID}/summary`);
+  }
+
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions
     this._unsubscribeAll.next();

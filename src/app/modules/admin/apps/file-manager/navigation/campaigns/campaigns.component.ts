@@ -192,6 +192,11 @@ export class CampaignsComponent implements OnInit, OnDestroy {
         }
         this.getFirstCall('add');
       }
+      this._snackBar.open("Campaign created succesfuly.", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
 
     }, err => {
       this.addNewCampaignLoader = false;
