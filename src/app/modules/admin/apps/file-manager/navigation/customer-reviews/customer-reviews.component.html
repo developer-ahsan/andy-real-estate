@@ -226,11 +226,21 @@
                 </mat-form-field>
               </div>
               <div class="col-md-6 col-12">
-                <fuse-alert [type]="'warn'" [appearance]="'outline'">
+                <fuse-alert [type]="'warn'" [appearance]="'outline'"
+                  *ngIf="productReviewsData[i]?.reviewImages?.length == 0">
                   <span fuseAlertTitle>User-submitted images:
                   </span>
                   The user did not submit any image with this review.
                 </fuse-alert>
+                <div class="row">
+                  <div class="col-12 col-md-4" *ngFor="let image of productReviewsData[i]?.reviewImages">
+                    <img
+                      src="https://assets.consolidus.com/globalAssets/StoreProducts/reviewImages/{{productReviewsData[i].pk_reviewID}}/{{image.FILENAME}}?{{randomString}}">
+                    <br>
+                    <mat-checkbox class="text-red-500" [ngModelOptions]="{standalone: true}"
+                      [(ngModel)]="image.delCheck">Remove</mat-checkbox>
+                  </div>
+                </div>
               </div>
               <div class="col-md-6 col-12">
                 <mat-label>Upload an image with this review:</mat-label>
@@ -255,7 +265,7 @@
                 </button>
                 <button [disabled]="!item.valid || item.get('loader').value" [matTooltip]="'Update'"
                   class="order-first sm:order-last" mat-flat-button mat-stroked-button
-                  (click)="updateProductReview(item)">
+                  (click)="updateProductReview(item,productReviewsData[i])">
                   <mat-progress-spinner *ngIf="item.get('loader').value" [diameter]="24" [mode]="'indeterminate'">
                   </mat-progress-spinner>
                   <mat-icon *ngIf="!item.get('loader').value" svgIcon="mode_edit_outline"></mat-icon>

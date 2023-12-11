@@ -56,6 +56,7 @@ export class CustomerReviewsComponent implements OnInit, OnDestroy {
   targetdStore = 0;
   allActiveStores = [];
   exportLoader: boolean = false;
+  randomString = Math.random();
   constructor(
     private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -169,6 +170,7 @@ export class CustomerReviewsComponent implements OnInit, OnDestroy {
       })
   }
   getCustomerReviewsByID(product) {
+    this.randomString = Math.random();
     this.initialize();
     this.editData = product;
     if (!this.flashMessage1) {
@@ -182,6 +184,9 @@ export class CustomerReviewsComponent implements OnInit, OnDestroy {
     this._storeManagerService.getStoresData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
+        response["data"].forEach(element => {
+          this.getReviewImages(element);
+        });
         this.productReviewsData = response["data"];
         for (let i = 0; i < response["data"].length; i++) {
           this.reviewListArray.push(this.fb.group({
@@ -215,6 +220,16 @@ export class CustomerReviewsComponent implements OnInit, OnDestroy {
         this.isEditPageLoader = false;
         this._changeDetectorRef.markForCheck();
       })
+  }
+  getReviewImages(review) {
+    let payload = {
+      files_fetch: true,
+      path: `globalAssets/StoreProducts/reviewImages/${review.pk_reviewID}`
+    };
+    this._commonService.getFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      review.reviewImages = res["data"];
+      this._changeDetectorRef.markForCheck();
+    })
   }
   getNextData(event) {
     const { previousPageIndex, pageIndex } = event;
@@ -281,17 +296,40 @@ export class CustomerReviewsComponent implements OnInit, OnDestroy {
     this.isAddReview = true;
   }
   upload(event, element) {
-    const { fk_colorID } = element;
+    element.inputElement = event.target;
+    const image = element.inputElement.files[0]
+
     const file = event.target.files[0];
-    let type = file["type"];
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => {
-      const image = String(reader.result).split(",")[1];
-      element.patchValue({
-        image: image
-      })
-    };
+      let image: any = new Image;
+      image.src = reader.result;
+      image.onload = () => {
+        if ((image.width >= 600 && image.height >= 600) && (image.width <= 1500 && image.height <= 1500)) {
+          if (file["type"] != 'image/jpeg' && file["type"] != 'image/jpg') {
+            this._storeManagerService.snackBar("Image should be jpg format only");
+            element.patchValue({
+              image: null
+            });
+            element.inputElement.value = '';
+            this._changeDetectorRef.markForCheck();
+            return;
+          } else {
+            element.patchValue({
+              image: reader.result
+            })
+          }
+        } else {
+          this._storeManagerService.snackBar("Dimensions allowed between 600 x 600 minimum, 1500 x 1500 maximum.");
+          element.patchValue({
+            image: null
+          })
+          element.inputElement.value = '';
+          this._changeDetectorRef.markForCheck();
+        }
+      }
+    }
   };
 
   replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
@@ -304,7 +342,7 @@ export class CustomerReviewsComponent implements OnInit, OnDestroy {
   }
 
 
-  updateProductReview(element) {
+  updateProductReview(element, reviewsData) {
     if (element.value.name.trim() === '' || element.value.date.trim() === '' || element.value.comment.trim() === '') {
       this._snackBar.open("Please fill the required fields", '', {
         horizontalPosition: 'center',
@@ -318,10 +356,19 @@ export class CustomerReviewsComponent implements OnInit, OnDestroy {
     })
     let payload = element.value;
     payload = this.replaceSingleQuotesWithDoubleSingleQuotes(payload);
-
+    // Remove Media
+    this.removeReviewMedia(reviewsData);
+    // Upload Media
+    if (element.value.image) {
+      this.uploadReviewMedia(element, reviewsData);
+    }
     this._storeManagerService.putStoresData(payload)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
+        if (response["success"]) {
+          this._storeManagerService.snackBar(response["message"]);
+          this.getCustomerReviewsByID(this.editData);
+        }
         if (response["success"] === true) {
           element.patchValue({
             flashMessage: true
@@ -345,6 +392,43 @@ export class CustomerReviewsComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
       })
   }
+
+  removeReviewMedia(reviewsData) {
+    let images = [];
+    reviewsData.reviewImages.forEach(image => {
+      if (image.delCheck) {
+        images.push(`/globalAssets/StoreProducts/reviewImages/${reviewsData.pk_reviewID}/${image.FILENAME}`)
+      }
+    });
+    if (images.length) {
+      let payload = {
+        files: images,
+        delete_multiple_files: true
+      }
+      this._commonService.removeMediaFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+
+      });
+    }
+
+  }
+  uploadReviewMedia(element, reviewsData) {
+    let base64;
+    base64 = element.value.image.split(",")[1];
+    const img_path = `/globalAssets/StoreProducts/reviewImages/${reviewsData.pk_reviewID}/${Math.random()}.jpg`;
+
+    const files = [{
+      image_file: base64,
+      image_path: img_path
+    }]
+
+    this._commonService.uploadMultipleMediaFiles(files).subscribe(res => {
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+
+
   addProductReview() {
     this.flashMessage1 = true;
     this.isAddLoader = true;
