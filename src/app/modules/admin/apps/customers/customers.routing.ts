@@ -21,6 +21,7 @@ import { UserMetricsComponent } from './customers-components/navigation/user-met
 import { CustomerDetailsComponent } from './customers-components/details/details.customers.component';
 import { GetCustomer, GetCustomersList } from './customers-components/customers.resolvers';
 import { CustomerFlpsUsersComponent } from './customers-components/navigation/flps-users/flps-users.component';
+import { SavedCartsDetailComponent } from './customers-components/navigation/saved-carts-detail/saved-carts-detail.component';
 
 export const customersRoutes: Route[] = [
     {
@@ -128,6 +129,14 @@ export const customersRoutes: Route[] = [
                 data: {
                     title: 'Saved Carts',
                     url: 'saved-carts'
+                }
+            },
+            {
+                path: 'saved-carts-detail/:cartId/:date/:name',
+                component: SavedCartsDetailComponent,
+                data: {
+                    title: 'Saved Carts Detail',
+                    url: 'saved-carts-detail'
                 }
             },
             {
