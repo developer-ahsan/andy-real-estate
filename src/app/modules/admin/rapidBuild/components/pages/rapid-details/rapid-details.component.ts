@@ -9,6 +9,7 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { RapidBuildService } from '../../rapid-build.service';
 import { removeRapidBuildEntry, sendAutoRequest, UpdateArtworkTgas, updateProof, UpdateQuoteOptions, updateQuotePurchaseOrderComment, updateReorderNumber, updateStatus, uploadProof } from '../../rapid-build.types';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 
 @Component({
@@ -117,13 +118,15 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
   date = new Date().toLocaleString();
   params: any;
   @ViewChild('fileInput') fileInput: ElementRef;
+  removeProofLoader: boolean;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _authService: AuthService,
     private _rapidService: RapidBuildService,
     private router: Router,
-    private _activeRoute: ActivatedRoute
+    private _activeRoute: ActivatedRoute,
+    private _commonService: DashboardsService
   ) {
 
   }
@@ -303,6 +306,23 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
   checkStoreImages(ev) {
     this.storeProductImage = false;
     this._changeDetectorRef.markForCheck();
+  }
+  removeProof() {
+    const paths: string[] = [`/globalAssets/rapidBuild/${this.buildDetails.pk_rapidBuildID}.jpg`];
+    this.removeProofLoader = true;
+    let payload = {
+      files: paths,
+      delete_multiple_files: true
+    }
+    this._commonService.removeMediaFiles(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.removeProofLoader = false;
+      this.ngProofCheck = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      this._rapidService.snackBar('Current Removed Successfully!');
+      this.ngProofCheck = false;
+      this._changeDetectorRef.markForCheck();
+    });
   }
   uploadFile(event) {
     this.imageValue = null;

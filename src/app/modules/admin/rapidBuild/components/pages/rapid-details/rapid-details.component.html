@@ -74,6 +74,13 @@
                                     <img *ngIf="ngProofCheck"
                                         src="https://assets.consolidus.com/globalAssets/rapidBuild/{{buildDetails.pk_rapidBuildID}}.jpg?{{date}}"
                                         class="w-full" (error)="checkProof($event)">
+                                    <button *ngIf="ngProofCheck" class="min-w-20 mt-2 btn buttonDanger hover:bg-red-200"
+                                        [disabled]="removeProofLoader" (click)="removeProof()">
+                                        <span *ngIf="!removeProofLoader">Remove Proof</span>
+                                        <mat-progress-spinner *ngIf="removeProofLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                    </button>
                                     <fuse-alert *ngIf="!ngProofCheck" class="my-2" [appearance]="'soft'"
                                         [type]="'warning'" [showIcon]="false">
                                         This product does not yet have a proof.
@@ -244,12 +251,12 @@
                                                     class="fa fa-question-circle fa-md clickable"></span>
                                             </td>
                                             <td valign="top">
-                                                <span class="disabled"
-                                                    *ngIf="buildDetails.additionalColorsCount > 0"><span
-                                                        class="fa fa-times fa-md"></span> No</span>
-                                                <span class="active"
-                                                    *ngIf="buildDetails.additionalColorsCount == 0"><span
-                                                        class="fa fa-check fa-md"></span> Yes</span>
+                                                <span class="text-red-600"
+                                                    *ngIf="buildDetails.additionalColorsCount > 0 || buildDetails.blnAllHexColors">
+                                                    No</span>
+                                                <span class="text-green-600"
+                                                    *ngIf="buildDetails.additionalColorsCount == 0 && !buildDetails.blnAllHexColors">
+                                                    Yes</span>
                                             </td>
                                         </tr>
                                         <tr>
@@ -268,14 +275,14 @@
                                             </td>
                                         </tr>
                                         <tr *ngIf="!userData.blnMaster && colorsData.length > 0">
-                                            <td valign="top"><b>Blank Images:</b></td>
+                                            <td valign="top"><b>Blank Color Images:</b></td>
                                             <td valign="top">
-                                                <div *ngIf="colorsData.length > 0">
-                                                    <span class="space-x-2 space-y-2" *ngFor="let item of colorsData">
-                                                        <a href="https://assets.consolidus.com/globalAssets/Products/Colors/{{item.pk_productID}}/{{item.fk_colorID}}.jpg"
+                                                <div *ngIf="!colorsData.length > 0" class="row">
+                                                    <span class="mb-1 col-6 col-md-2" *ngFor="let item of colorsData">
+                                                        <a href="https://assets.consolidus.com/globalAssets/Products/Colors/{{buildDetails.pk_productID}}/{{item.fk_colorID}}.jpg"
                                                             target="_blank">
                                                             <img class="w-20"
-                                                                src="https://assets.consolidus.com/globalAssets/Products/Colors/{{item.pk_productID}}/{{item.fk_colorID}}.jpg">
+                                                                src="https://assets.consolidus.com/globalAssets/Products/Colors/{{buildDetails.pk_productID}}/{{item.fk_colorID}}.jpg">
                                                         </a>
                                                     </span>
                                                 </div>
@@ -354,6 +361,21 @@
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                        </mat-expansion-panel>
+                        <!-- Instructions -->
+                        <mat-expansion-panel [expanded]="true" *ngIf="userData.blnMaster">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    Instructions
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <div class="py-2">
+                                <a href="https://admin.consolidus.com/ssadm/controller/view/system/images/rapidBuild/instructions.jpg"
+                                    target="_blank">
+                                    <img src="https://admin.consolidus.com/ssadm/controller/view/system/images/rapidBuild/instructions.jpg"
+                                        class="rapidBuildFinalImage w-70" />
+                                </a>
                             </div>
                         </mat-expansion-panel>
                     </mat-accordion>
