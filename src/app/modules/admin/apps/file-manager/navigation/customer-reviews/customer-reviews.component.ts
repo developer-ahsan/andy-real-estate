@@ -343,7 +343,7 @@ export class CustomerReviewsComponent implements OnInit, OnDestroy {
 
 
   updateProductReview(element, reviewsData) {
-    if (element.value.name.trim() === '' || element.value.date.trim() === '' || element.value.comment.trim() === '') {
+    if (element.value.name.trim() === '' || element.value.comment.trim() === '') {
       this._snackBar.open("Please fill the required fields", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
@@ -430,8 +430,6 @@ export class CustomerReviewsComponent implements OnInit, OnDestroy {
 
 
   addProductReview() {
-    this.flashMessage1 = true;
-    this.isAddLoader = true;
     const { name, company, date, rating, comment } = this.productAddReviewForm.getRawValue();
     if (name.trim() == '' || company.trim() === '') {
       this._snackBar.open("Please fill the required fields", '', {
@@ -447,6 +445,8 @@ export class CustomerReviewsComponent implements OnInit, OnDestroy {
       add_review: true
     };
     payload = this.replaceSingleQuotesWithDoubleSingleQuotes(payload);
+    this.isAddLoader = true;
+    this.flashMessage1 = true;
     this._storeManagerService.postStoresData(payload)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
@@ -463,7 +463,6 @@ export class CustomerReviewsComponent implements OnInit, OnDestroy {
       })
   }
   sendProductReviewEmail() {
-    this.isSendProductReviewLoader = true;
     let myCurrentContent: string = this.myHighlight.nativeElement.innerHTML;
     let html = '<!DOCTYPE html>' + myCurrentContent;
     this.sendProductReviewForm.patchValue({
@@ -472,9 +471,15 @@ export class CustomerReviewsComponent implements OnInit, OnDestroy {
     })
     const { email_list, subject, store_name, html_body, send_review_email } = this.sendProductReviewForm.getRawValue();
     let emails = email_list.split(",");
+    if (emails.length == 0) {
+      this._storeManagerService.snackBar('Email is required');
+      return;
+    }
     let payload = {
       email_list: emails, subject, store_name, html_body, send_review_email
     }
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
+    this.isSendProductReviewLoader = true;
     this._storeManagerService.postStoresData(payload)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
