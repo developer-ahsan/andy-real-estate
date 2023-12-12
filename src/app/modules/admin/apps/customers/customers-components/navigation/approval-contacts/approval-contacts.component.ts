@@ -4,6 +4,7 @@ import { StoresList } from 'app/modules/admin/apps/ecommerce/customers/customers
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { CustomersService } from '../../orders.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-approval-contacts',
@@ -35,7 +36,8 @@ export class ApprovalContactsComponent implements OnInit, OnDestroy {
   constructor(
     private _customerService: CustomersService,
     private _formBuilder: FormBuilder,
-    private _changeDetectorRef: ChangeDetectorRef
+    private _changeDetectorRef: ChangeDetectorRef,
+    private _snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
@@ -101,17 +103,27 @@ export class ApprovalContactsComponent implements OnInit, OnDestroy {
     const { storeID, storeUserID } = this.selectedStore;
     const customer = this.selectedCustomerForm.getRawValue();
     const { first_name, last_name, email, bln_emails, bln_royalties, student_org_code, student_org_name } = customer;
+
+    if(first_name.trim() === '' || last_name.trim() === '' || email.trim() === '') {
+      this._snackBar.open('Please fill the required fields', '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+    });
+      return;
+    }
+
     const payload = {
       store_user_id: storeUserID,
       list_order: 10,
-      first_name: first_name,
-      last_name: last_name,
-      email: email,
+      first_name: first_name.trim(),
+      last_name: last_name.trim(),
+      email: email.trim(),
       bln_emails: bln_emails,
       bln_royalties: bln_royalties,
       store_id: storeID,
-      student_org_code: student_org_code,
-      student_org_name: student_org_name,
+      student_org_code: student_org_code.trim(),
+      student_org_name: student_org_name.trim(),
       approval_contact: true
     }
     this.addApprovalLoader = true;
