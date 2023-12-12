@@ -25,10 +25,12 @@ export class StudentOrgComponent implements OnInit, OnDestroy {
   isPageLoading: boolean = false;
   isContactListLoading: boolean = false;
   importDataLoader: boolean = false;
+  toggleOrder: boolean = true;
+
 
 
   // Table
-  displayedColumns: string[] = ['code', 'name', 'a_name', 'a_email', 'campus', 'active', 'action'];
+  displayedColumns: string[] = ['id', 'code', 'name', 'a_name', 'a_email', 'campus', 'active', 'action'];
   dataSource = [];
   tempDataSource = [];
   usersData: any;
@@ -193,7 +195,7 @@ export class StudentOrgComponent implements OnInit, OnDestroy {
   updateOrg(item) {
     const { name, advisorEmail, advisorName } = this.isEditFormOrg.getRawValue();
     if (name.trim() == '' || advisorEmail.trim() == '' || advisorName.trim() == '') {
-      this._snackBar.open("Please Check Input Fields", '', {
+      this._snackBar.open("Please fill the required Fields", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
         duration: 3000
@@ -215,7 +217,7 @@ export class StudentOrgComponent implements OnInit, OnDestroy {
   addOrg() {
     const { advisorEmail, advisorName, name, campus, code, add_student_org } = this.isAddFormOrg.getRawValue();
     if (name.trim() == '' || code.trim() == '') {
-      this._snackBar.open("Please Check Input Fields", '', {
+      this._snackBar.open("Please fill the required Fields", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
         duration: 3000
@@ -362,7 +364,7 @@ export class StudentOrgComponent implements OnInit, OnDestroy {
   updateCampusEmail() {
     const { advisorEmail, advisorName, campus, update_campus } = this.isCampusForm.getRawValue();
     if (advisorEmail.trim() == '' || advisorName.trim() == '') {
-      this._snackBar.open("Please Check Input Fields", '', {
+      this._snackBar.open("Please fill the require fields", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
         duration: 3000
@@ -389,6 +391,23 @@ export class StudentOrgComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
       })
     }
+  }
+
+sortedColumn:string;
+  sortData(key) {
+    this.sortedColumn = key;
+    this.dataSource = this.dataSource.slice().sort((a, b) => {
+      const valA = a[key];
+      const valB = b[key];
+  
+      if (valA && valB) {
+        const comparison = valA.localeCompare(valB);
+        return this.toggleOrder ? comparison * -1 : comparison;
+      }
+      return 0;
+    });
+  
+    this.toggleOrder = !this.toggleOrder; // Toggle the order for next sorting
   }
 
 }
