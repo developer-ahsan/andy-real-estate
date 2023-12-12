@@ -212,6 +212,16 @@ export class VendorsInfoComponent implements OnInit, OnDestroy {
       formattedFax = fax?.trim() ? this.format_phone(fax, '') : '';
     }
 
+    if(coopPricing.length > 500 || netSetup.length > 500 || ltm.length > 500 || freeRandomSamples.length > 500 || specSamples.length > 500 || production.length > 500 ) {
+      this._vendorService.snackBar('Max length should be 500');
+      return;
+    }
+
+    if(notes.length > 5000) {
+      this._vendorService.snackBar('Max length should be 5000');
+      return;
+    }
+
 
     if (errorMessage) {
       this._vendorService.snackBar(errorMessage);
