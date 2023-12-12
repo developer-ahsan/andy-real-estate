@@ -1,9 +1,10 @@
-import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, OnDestroy, ElementRef, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import { takeUntil } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormControl, FormGroup } from '@angular/forms';
+declare var $: any;
 
 @Component({
   selector: 'app-margins',
@@ -21,6 +22,8 @@ export class MarginsComponent implements OnInit, OnDestroy {
   dataSourceTotalRecord: number;
   dataSourceLoading = false;
   page: number = 1;
+  @ViewChild('changeProfile') changeProfile: ElementRef;
+
 
   marginData = {
     margin1: 'Margin 1',
@@ -440,8 +443,22 @@ export class MarginsComponent implements OnInit, OnDestroy {
     this.getMarginProducts(this.marginProdPage);
   }
 
+  openUpdateModal() {
+    $(this.changeProfile.nativeElement).modal('show');
+  }
+
   updateMarginProducts() {
     const { margin1, margin2, margin3, margin4, margin5, margin6 } = this.marginDetailForm.getRawValue();
+
+    if (margin1 < 15 || margin2 < 15 || margin3 < 15 || margin4 < 15 || margin5 < 15 || margin6 < 15) {
+      this._snackBar.open("Margins less than 15 are not currently allowed.", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      return
+    }
+
     let marginsToUpdate = [];
     let margin_group = [];
     let count = 0;
@@ -483,7 +500,8 @@ export class MarginsComponent implements OnInit, OnDestroy {
       group_size: count,
       margins_to_update: marginsToUpdate
     }
-    // console.log(payload)
+
+    $(this.changeProfile.nativeElement).modal('hide');
   }
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions

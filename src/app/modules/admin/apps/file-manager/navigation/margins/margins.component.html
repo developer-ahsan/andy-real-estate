@@ -153,7 +153,7 @@
         <div class="col-12">
           <div class="px-6 sm:px-8 lg:px-10 w-full">
             <mat-form-field class="min-w-100">
-              <mat-label>Filter</mat-label>
+              <mat-label>Filter by product type:</mat-label>
               <mat-select matInput [(ngModel)]="ngProdFilter">
                 <mat-option [value]="'all'" (click)="getMarginProducts(1)">All</mat-option>
                 <mat-option [value]="'hardgoods'" (click)="getMarginProducts(1)">Hardgoods</mat-option>
@@ -250,7 +250,7 @@
               <a (click)="applyMargins('goods')" class="cursor-pointer">Apply apparel margins</a>
             </div>
             <div>
-              <button mat-button mat-stroked-button class="min-w-30" (click)="updateMarginProducts()">Update product
+              <button mat-button mat-stroked-button class="min-w-30" (click)="openUpdateModal()">Update product
                 margins</button>
             </div>
           </div>
@@ -461,5 +461,25 @@
         </div>
       </div>
     </fuse-card>
+  </div>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" #changeProfile>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Remove Company Profile</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to proceed?  This will update all the products above to the margins defined here.  This cannot be undone.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="updateMarginProducts()">Yes</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
   </div>
 </div>

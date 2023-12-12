@@ -1,4 +1,4 @@
-import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, ViewChild, OnDestroy } from '@angular/core';
+import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, ViewChild, OnDestroy, ElementRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import { takeUntil } from 'rxjs/operators';
@@ -6,12 +6,16 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ConfirmationDialogComponent, ConfirmDialogModel } from '../../confirmation-dialog/confirmation-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-import { I } from '@angular/cdk/keycodes';
+import * as XLSX from 'xlsx';
+declare var $: any;
+
 @Component({
   selector: 'app-student-org',
   templateUrl: './student-org.component.html'
 })
 export class StudentOrgComponent implements OnInit, OnDestroy {
+
+  @ViewChild('changeProfile') changeProfile: ElementRef;
 
   selectedStore: any;
   isLoading: boolean;
@@ -20,6 +24,8 @@ export class StudentOrgComponent implements OnInit, OnDestroy {
   locationsData: any;
   isPageLoading: boolean = false;
   isContactListLoading: boolean = false;
+  importDataLoader: boolean = false;
+
 
   // Table
   displayedColumns: string[] = ['code', 'name', 'a_name', 'a_email', 'campus', 'active', 'action'];
@@ -44,6 +50,8 @@ export class StudentOrgComponent implements OnInit, OnDestroy {
   isCampusForm: FormGroup;
   isCampusUpdateLoader: boolean = false;
   isCampusUpdateMsg: boolean = false;
+  images: { imageUpload: string | ArrayBuffer; fileType: any; };
+  excelData: any;
 
   constructor(
     private _storeManagerService: FileManagerService,
@@ -93,7 +101,7 @@ export class StudentOrgComponent implements OnInit, OnDestroy {
 
     this.studentForm = new FormGroup({
       campus: new FormControl(''),
-      importOption : new FormControl('Append')
+      importOption: new FormControl('0')
 
     })
   }
@@ -250,22 +258,91 @@ export class StudentOrgComponent implements OnInit, OnDestroy {
   }
 
   importData() {
+    const { campus, importOption } = this.studentForm.getRawValue();
+    if (!campus) {
+      this._snackBar.open("Please select the campus you would like to upload the student organization data for.", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
+
+      return;
+    }
+    if (!this.excelData) {
+      this._snackBar.open("There appears to be something wrong with the CSV file you provided. Please check the file to make sure the file extension for the file is .CSV and the file contains no special formatting (colors, bold, italics, etc.)", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
+      return;
+    }
+    $(this.changeProfile.nativeElement).modal('hide');
+
+
+    let excel = [];
+
+    this.excelData.forEach((item: any) => {
+      excel.push({
+        fk_storeID: this.selectedStore.pk_storeID,
+        advisorEmail: item.advisorEmail,
+        advisorName: item.advisorName,
+        status: item.status,
+        name: item.organizationName,
+        campus: campus,
+        code: item.accountNumber,
+        add_student_org: true,
+      })
+    })
+
+    const payload = {
+      import_option: importOption,
+      campus: campus,
+      fk_storeID: this.selectedStore.pk_storeID,
+      import_data: excel,
+      import_student_org: true
+    }
+    this.importDataLoader = true;
+    this._storeManagerService.postStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.importDataLoader = false;
+      this._snackBar.open("Data imported successfuly", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
+      this.getOrgsList('get');
+
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.importDataLoader = false;
+      this._snackBar.open("Error occured while importing the data", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
+      this._changeDetectorRef.markForCheck();
+    })
 
   }
 
+  openUpdateModal() {
+    $(this.changeProfile.nativeElement).modal('show');
+  }
+
   upload(event) {
-    // const file = event.target.files[0];
-    // this.fileName = !this.imagesArray.length ? "1" : `${this.imagesArray.length + 1}`;
-    // let fileType = file["type"];
-    // const reader = new FileReader();
-    // reader.readAsDataURL(file);
-    // reader.onload = () => {
-    //   this.images = {
-    //     imageUpload: reader.result,
-    //     fileType: fileType
-    //   };
-    // };
-  };
+    const file = event.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = (e: any) => {
+      const workbook = XLSX.read(e.target.result, { type: 'binary' });
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      this.excelData = XLSX.utils.sheet_to_json(worksheet, { raw: true });
+      this._changeDetectorRef.markForCheck();
+
+    };
+
+    reader.readAsBinaryString(file);
+  }
 
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions
@@ -313,4 +390,9 @@ export class StudentOrgComponent implements OnInit, OnDestroy {
       })
     }
   }
+
 }
+
+
+
+
