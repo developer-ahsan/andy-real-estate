@@ -27,8 +27,8 @@ export class SavedCartsDetailComponent implements OnInit, OnDestroy {
   cartData: any = [];
   isCartLoader: boolean = false;
   cartItems: any;
-  cardId:any;
-  storeName:any;
+  cardId: any;
+  storeName: any;
   dateCreated
   constructor(
     private _customerService: CustomersService,
@@ -56,7 +56,7 @@ export class SavedCartsDetailComponent implements OnInit, OnDestroy {
         this.selectedCustomer = response;
       });
   }
-  
+
   viewArtworkDetails() {
     this.isCartLoader = true;
     this.isArtworkDetails = true;
@@ -103,6 +103,7 @@ export class SavedCartsDetailComponent implements OnInit, OnDestroy {
       }
     })
   }
+
   removeCart(cart) {
     cart.removeLoader = true;
     let payload = {

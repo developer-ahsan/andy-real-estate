@@ -3,9 +3,9 @@
     </ngx-skeleton-loader>
     <div *ngIf="!isCartLoader">
         <div class="mt-3 overflow-auto" *ngIf="cartData?.length == 0">
-                <div class="p-8 sm:p-16 text-2xl font-semibold not-found-color">
-                    There are no quotes created for this user.
-                </div>
+            <div class="p-8 sm:p-16 text-2xl font-semibold not-found-color">
+                There are no quotes created for this user.
+            </div>
         </div>
         <div class="mt-3" *ngIf="cartData?.length !== 0">
             <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isCartLoader">
@@ -45,14 +45,15 @@
                                 <td>{{item.decorationName}}</td>
                                 <td>
                                     <span *ngIf="item?.proof">
-                                        <a href="https://assets.consolidus.com/artwork/Proof/Quotes/{{selectedCustomer.pk_userID}}/{{imprint.pk_cartID}}/{{imprint.pk_cartLineID}}/{{imprint.imprintID}}.jpg"
+                                        <a href="https://assets.consolidus.com/artwork/Proof/Quotes/{{selectedCustomer.pk_userID}}/{{item.pk_cartID}}/{{item.pk_cartLineID}}/{{item.imprintID}}.jpg"
                                             target="_blank">View Proof</a>
                                     </span>
                                     <span *ngIf="!item?.proof">N/A</span>
                                 </td>
                                 <td>
                                     <mat-form-field class="w-full">
-                                        <textarea matInput [(ngModel)]="item.customerArtworkComment"></textarea>
+                                        <textarea matInput [(ngModel)]="item.customerArtworkComment" rows="10"
+                                            maxlength="300"></textarea>
                                     </mat-form-field>
                                     <button mat-button mat-flat-button color="primary" (click)="updateCartItems(item)"
                                         [disabled]="item.updateLoader">

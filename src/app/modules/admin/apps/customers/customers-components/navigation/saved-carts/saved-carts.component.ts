@@ -3,6 +3,7 @@ import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { CustomersService } from '../../orders.service';
 import { Router } from '@angular/router';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 export interface PeriodicElement {
   name: string;
@@ -41,10 +42,12 @@ export class SavedCartsComponent implements OnInit, OnDestroy {
   pageSize = 10;
   pageSizeOptions: number[] = [5, 10, 25, 100];
 
+  page = 1;
   constructor(
     private _customerService: CustomersService,
     private _changeDetectorRef: ChangeDetectorRef,
-    private router: Router
+    private router: Router,
+    private _commonService: DashboardsService
   ) { }
 
   ngOnInit(): void {
@@ -56,23 +59,36 @@ export class SavedCartsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response) => {
         this.selectedCustomer = response;
-        let params = {
-          cart: true,
-          user_id: this.selectedCustomer.pk_userID
-        }
-        this._customerService.GetApiData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-          this.isLoading = false;
-          this._changeDetectorRef.markForCheck();
-        })).subscribe(carts => {
-          this.dataSource = carts["data"];
-          this.savedCartsLength = carts["totalRecords"];
-        }, err => {
-          this.isLoading = false;
-          this._changeDetectorRef.markForCheck();
-        })
+        this.getSavedCarts(this.page);
       });
   }
+  getSavedCarts(page) {
+    let params = {
+      cart: true,
+      user_id: this.selectedCustomer.pk_userID,
+      page: page
+    }
+    this._customerService.GetApiData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(carts => {
+      this.dataSource = carts["data"];
+      this.savedCartsLength = carts["totalRecords"];
+    }, err => {
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
+  getNextData(event) {
+    const { previousPageIndex, pageIndex } = event;
 
+    if (pageIndex > previousPageIndex) {
+      this.page++;
+    } else {
+      this.page--;
+    };
+    this.getSavedCarts(this.page);
+  };
   getItems(item: any) {
 
     const itemsArray = item.split(",,");
@@ -82,8 +98,8 @@ export class SavedCartsComponent implements OnInit, OnDestroy {
       htmlOutput += `<div>
                         <p> <span class="font-bold">${index + 1}. </span> ${components[0]}</p>
                         <p><span class="font-bold">Colors</span>: ${components[1]}</p>
-                        <p><span class="font-bold">Setup</span>: NONE</p>
-                        <p><span class="font-bold">Add. Run</span>: NONE</p>
+                        <p><span class="font-bold">Setup</span>: ${components[2]}</p>
+                        <p><span class="font-bold">Add. Run</span>: ${components[3]}</p>
                     
                 </div>`;
     });
@@ -97,6 +113,27 @@ export class SavedCartsComponent implements OnInit, OnDestroy {
   navigateToSummary(cart) {
     this.router.navigateByUrl(`/apps/quotes/${cart.cartID}/summary`);
   }
+
+
+  removeCart(cart) {
+    cart.removeLoader = true;
+    let payload = {
+      userID: this.selectedCustomer.pk_userID,
+      cartID: cart.cartID,
+      remove_store_user_quote: true
+    }
+    this._customerService.PutApiData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      cart.removeLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      if (res) {
+        this.dataSource = this.dataSource.filter(item => item.cartID != cart.cartID);
+        this.savedCartsLength--;
+        this._customerService.snackBar(res["message"]);
+      }
+    })
+  }
+
 
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions

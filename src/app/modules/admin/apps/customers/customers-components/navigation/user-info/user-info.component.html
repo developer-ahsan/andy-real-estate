@@ -18,13 +18,13 @@
                         <div class="col-12 col-md-6">
                             <mat-form-field class="w-full">
                                 <mat-label>Username</mat-label>
-                                <input matInput formControlName="userName" placeholder="Username">
+                                <input matInput formControlName="userName" maxlength="50" placeholder="Username">
                             </mat-form-field>
                         </div>
                         <div class="col-12 col-md-6">
                             <mat-form-field class="w-full">
                                 <mat-label>Password</mat-label>
-                                <input matInput formControlName="password" placeholder="Password">
+                                <input matInput formControlName="password" maxlength="50" placeholder="Password">
                             </mat-form-field>
                         </div>
                         <div class="col-12 col-md-6">
@@ -34,6 +34,12 @@
                                     <mat-option [value]="true">Active</mat-option>
                                     <mat-option [value]="false">Disabled</mat-option>
                                 </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6" *ngIf="!selectedCustomerForm.get('blnActive').value">
+                            <mat-form-field class="w-full">
+                                <mat-label>Why are you disabling this customer</mat-label>
+                                <textarea matInput formControlName="disabledReason" maxlength="500"></textarea>
                             </mat-form-field>
                         </div>
                         <div class="col-12 col-md-6">
@@ -49,7 +55,7 @@
                             <mat-form-field class="w-full">
                                 <mat-label>GovMVMT Contract #</mat-label>
                                 <input matInput formControlName="GovMVMTContractNumber"
-                                    placeholder="GovMVMTContractNumber">
+                                    placeholder="GovMVMTContractNumber" maxlength="100">
                             </mat-form-field>
                         </div>
                     </div>
@@ -68,50 +74,51 @@
                         <div class="col-lg-4 col-12">
                             <mat-form-field class="w-full">
                                 <mat-label>Email</mat-label>
-                                <input matInput [formControlName]="'new_email'" placeholder="Email">
+                                <input matInput [formControlName]="'new_email'" maxlength="50" placeholder="Email">
                             </mat-form-field>
                         </div>
                         <div class="col-lg-4 col-6">
                             <mat-form-field class="w-full">
                                 <mat-label>First Name</mat-label>
-                                <input matInput [formControlName]="'firstName'" placeholder="First Name">
+                                <input matInput [formControlName]="'firstName'" maxlength="30" placeholder="First Name">
                             </mat-form-field>
                         </div>
                         <div class="col-lg-4 col-6">
                             <mat-form-field class="w-full">
                                 <mat-label>Last Name</mat-label>
-                                <input matInput [formControlName]="'lastName'" placeholder="Last Name">
+                                <input matInput [formControlName]="'lastName'" maxlength="50" placeholder="Last Name">
                             </mat-form-field>
                         </div>
                         <div class="col-lg-4 col-6">
                             <mat-form-field class="w-full">
                                 <mat-label>Company Name</mat-label>
-                                <input matInput [formControlName]="'companyName'" placeholder="Company">
+                                <input matInput [formControlName]="'companyName'" maxlength="100" placeholder="Company">
                             </mat-form-field>
                         </div>
 
                         <div class="col-lg-4 col-6">
                             <mat-form-field class="w-full">
                                 <mat-label>Title</mat-label>
-                                <input matInput [formControlName]="'title'" placeholder="Title">
+                                <input matInput [formControlName]="'title'" maxlength="50" placeholder="Title">
                             </mat-form-field>
                         </div>
                         <div class="col-lg-4 col-6">
                             <mat-form-field class="w-full">
                                 <mat-label>Fax</mat-label>
-                                <input matInput [formControlName]="'fax'" placeholder="Fax">
+                                <input matInput [formControlName]="'fax'" maxlength="50" placeholder="Fax">
                             </mat-form-field>
                         </div>
                         <div class="col-lg-4 col-6">
                             <mat-form-field class="w-full">
                                 <mat-label>Website</mat-label>
-                                <input matInput [formControlName]="'website'" placeholder="Website">
+                                <input matInput maxlength="50" [formControlName]="'website'" placeholder="Website">
                             </mat-form-field>
                         </div>
                         <div class="col-lg-4 col-6">
                             <mat-form-field class="w-full">
                                 <mat-label>Department</mat-label>
-                                <input matInput [formControlName]="'department'" placeholder="Department">
+                                <input matInput [formControlName]="'department'" maxlength="50"
+                                    placeholder="Department">
                             </mat-form-field>
                         </div>
                         <div class="col-lg-4 col-6">
@@ -132,7 +139,7 @@
                             <mat-form-field class="w-full">
                                 <mat-label>Rutgers workflow override</mat-label>
                                 <mat-select matInput [formControlName]="'rutgersWorkflowOverride'">
-                                    <mat-option value="">Follow normal workflow</mat-option>
+                                    <mat-option [value]="0">Follow normal workflow</mat-option>
                                     <mat-option value="student">Student</mat-option>
                                     <mat-option value="faculty">Faculty</mat-option>
                                 </mat-select>
@@ -144,59 +151,65 @@
                             <div class="border-b text-lg font-bold my-2">Billing Address</div>
                             <mat-form-field class="w-full">
                                 <mat-label>First name</mat-label>
-                                <input matInput [formControlName]="'firstName'" readonly placeholder="First name">
+                                <input matInput [formControlName]="'firstName'" maxlength="30" readonly
+                                    placeholder="First name">
                             </mat-form-field>
                             <mat-form-field class="w-full">
                                 <mat-label>Last name</mat-label>
-                                <input matInput [formControlName]="'lastName'" readonly placeholder="Last name">
+                                <input matInput [formControlName]="'lastName'" maxlength="50" readonly
+                                    placeholder="Last name">
                             </mat-form-field>
                             <mat-form-field class="w-full">
                                 <mat-label>Company name</mat-label>
-                                <input matInput [formControlName]="'companyName'" readonly placeholder="Company name">
+                                <input matInput [formControlName]="'companyName'" maxlength="100" readonly
+                                    placeholder="Company name">
                             </mat-form-field>
                             <mat-form-field class="w-full">
                                 <mat-label>Email</mat-label>
-                                <input matInput [formControlName]="'email'" readonly placeholder="Email">
+                                <input matInput [formControlName]="'email'" maxlength="50" readonly placeholder="Email">
                             </mat-form-field>
                             <mat-form-field class="w-full">
                                 <mat-label>Address 1</mat-label>
-                                <input matInput formControlName="shippingAddress1" placeholder="Address 1">
+                                <input matInput formControlName="shippingAddress1" maxlength="100"
+                                    placeholder="Address 1">
                             </mat-form-field>
                             <mat-form-field class="w-full">
                                 <mat-label>Address 2</mat-label>
-                                <input matInput formControlName="shippingAddress2" placeholder="Address 2">
+                                <input matInput formControlName="shippingAddress2" maxlength="100"
+                                    placeholder="Address 2">
                             </mat-form-field>
                             <div class="space-x-2">
                                 <mat-form-field class="w-1/3">
                                     <mat-label>Student org code</mat-label>
                                     <input matInput formControlName="billingStudentOrgCode"
-                                        placeholder="Student org code">
+                                        placeholder="Student org code" maxlength="100">
                                 </mat-form-field>
                                 <mat-form-field class="w-1/3">
                                     <mat-label>Student org name</mat-label>
                                     <input matInput formControlName="billingStudentOrgName"
-                                        placeholder="Student org name">
+                                        placeholder="Student org name" maxlength="100">
                                 </mat-form-field>
                             </div>
                             <mat-form-field class="w-full">
                                 <mat-label>City</mat-label>
-                                <input matInput formControlName="shippingCity" placeholder="City">
+                                <input matInput formControlName="shippingCity" placeholder="City" maxlength="50">
                             </mat-form-field>
                             <mat-form-field class="w-full">
                                 <mat-label>State</mat-label>
-                                <input matInput formControlName="shippingState" placeholder="State">
+                                <input matInput formControlName="shippingState" placeholder="State" maxlength="50">
                             </mat-form-field>
                             <mat-form-field class="w-full">
                                 <mat-label>Zip</mat-label>
-                                <input matInput formControlName="shippingZipCode" placeholder="Zip">
+                                <input matInput formControlName="shippingZipCode" placeholder="Zip" maxlength="5">
                             </mat-form-field>
                             <mat-form-field class="w-full">
                                 <mat-label>Zip Ext</mat-label>
-                                <input matInput formControlName="shippingZipCodeExt" placeholder="Zip Ext">
+                                <input matInput formControlName="shippingZipCodeExt" placeholder="Zip Ext"
+                                    maxlength="4">
                             </mat-form-field>
                             <mat-form-field class="w-full">
                                 <mat-label>Phone</mat-label>
-                                <input matInput formControlName="shippingDayPhone" placeholder="Phone">
+                                <input matInput formControlName="shippingDayPhone" placeholder="Phone" maxlength="50">
                             </mat-form-field>
                         </div>
                         <!-- Shipping -->
@@ -204,59 +217,65 @@
                             <div class="border-b text-lg font-bold my-2">Shipping Address</div>
                             <mat-form-field class="w-full">
                                 <mat-label>First name</mat-label>
-                                <input matInput formControlName="shippingFirstName" placeholder="First name">
+                                <input matInput formControlName="shippingFirstName" maxlength="30"
+                                    placeholder="First name">
                             </mat-form-field>
                             <mat-form-field class="w-full">
                                 <mat-label>Last name</mat-label>
-                                <input matInput formControlName="shippingLastName" placeholder="Last name">
+                                <input matInput formControlName="shippingLastName" maxlength="50"
+                                    placeholder="Last name">
                             </mat-form-field>
                             <mat-form-field class="w-full">
                                 <mat-label>Company name</mat-label>
-                                <input matInput formControlName="shippingCompanyName" placeholder="Company name">
+                                <input matInput formControlName="shippingCompanyName" maxlength="100"
+                                    placeholder="Company name">
                             </mat-form-field>
                             <mat-form-field class="w-full">
                                 <mat-label>Email</mat-label>
-                                <input matInput formControlName="shippingEmail" placeholder="Email">
+                                <input matInput formControlName="shippingEmail" placeholder="Email" maxlength="50">
                             </mat-form-field>
                             <mat-form-field class="w-full">
                                 <mat-label>Address 1</mat-label>
-                                <input matInput formControlName="shippingAddress1" placeholder="Address 1">
+                                <input matInput formControlName="shippingAddress1" maxlength="100"
+                                    placeholder="Address 1">
                             </mat-form-field>
                             <mat-form-field class="w-full">
                                 <mat-label>Address 2</mat-label>
-                                <input matInput formControlName="shippingAddress2" placeholder="Address 2">
+                                <input matInput formControlName="shippingAddress2" maxlength="100"
+                                    placeholder="Address 2">
                             </mat-form-field>
                             <div class="space-x-2">
                                 <mat-form-field class="w-1/3">
                                     <mat-label>Student org code</mat-label>
                                     <input matInput formControlName="shippingStudentOrgCode"
-                                        placeholder="Student org code">
+                                        placeholder="Student org code" maxlength="100">
                                 </mat-form-field>
                                 <mat-form-field class="w-1/3">
                                     <mat-label>Student org name</mat-label>
                                     <input matInput formControlName="shippingStudentOrgName"
-                                        placeholder="Student org name">
+                                        placeholder="Student org name" maxlength="100">
                                 </mat-form-field>
                             </div>
                             <mat-form-field class="w-full">
                                 <mat-label>City</mat-label>
-                                <input matInput formControlName="shippingCity" placeholder="City">
+                                <input matInput formControlName="shippingCity" placeholder="City" maxlength="50">
                             </mat-form-field>
                             <mat-form-field class="w-full">
                                 <mat-label>State</mat-label>
-                                <input matInput formControlName="shippingState" placeholder="State">
+                                <input matInput formControlName="shippingState" placeholder="State" maxlength="50">
                             </mat-form-field>
                             <mat-form-field class="w-full">
                                 <mat-label>Zip</mat-label>
-                                <input matInput formControlName="shippingZipCode" placeholder="Zip">
+                                <input matInput formControlName="shippingZipCode" placeholder="Zip" maxlength="5">
                             </mat-form-field>
                             <mat-form-field class="w-full">
                                 <mat-label>Zip Ext</mat-label>
-                                <input matInput formControlName="shippingZipCodeExt" placeholder="Zip Ext">
+                                <input matInput formControlName="shippingZipCodeExt" placeholder="Zip Ext"
+                                    maxlength="4">
                             </mat-form-field>
                             <mat-form-field class="w-full">
                                 <mat-label>Phone</mat-label>
-                                <input matInput formControlName="shippingDayPhone" placeholder="Phone">
+                                <input matInput formControlName="shippingDayPhone" placeholder="Phone" maxlength="50">
                             </mat-form-field>
                         </div>
                         <!-- Emails Comma Seperated -->

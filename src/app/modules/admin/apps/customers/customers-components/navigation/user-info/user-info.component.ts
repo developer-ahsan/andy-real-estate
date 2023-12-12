@@ -1,10 +1,11 @@
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { takeUntil } from 'rxjs/operators';
 import { merge, Observable, Subject } from 'rxjs';
 import { CustomersService } from '../../orders.service';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MatChipInputEvent } from '@angular/material/chips';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-user-info',
@@ -41,25 +42,27 @@ export class UserInfoComponent implements OnInit {
     private _customerService: CustomersService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _formBuilder: FormBuilder,
+    private _commonService: DashboardsService
   ) { }
 
   ngOnInit(): void {
     this.selectedCustomerForm = new FormGroup({
-      userName: new FormControl(''),
-      password: new FormControl(''),
+      userName: new FormControl('', Validators.required),
+      password: new FormControl('', Validators.required),
       GovMVMTContractNumber: new FormControl(''),
       blnActive: new FormControl(true),
-      new_email: new FormControl(''),
+      new_email: new FormControl('', [Validators.email, Validators.required]),
       old_email: new FormControl(''),
       blnAdmin: new FormControl(false),
+      disabledReason: new FormControl(''),
       email: new FormControl(''),
-      firstName: new FormControl(''),
-      lastName: new FormControl(''),
+      firstName: new FormControl('', Validators.required),
+      lastName: new FormControl('', Validators.required),
       website: new FormControl(''),
       fax: new FormControl(''),
       title: new FormControl(''),
       department: new FormControl(''),
-      companyName: new FormControl(''),
+      companyName: new FormControl('', Validators.required),
       accountChargeCode: new FormControl(''),
       shippingAddress1: new FormControl(''),
       shippingAddress2: new FormControl(''),
@@ -89,7 +92,12 @@ export class UserInfoComponent implements OnInit {
         this.selectedCustomerForm.patchValue(response);
         this.selectedCustomerForm.patchValue({
           new_email: response.email
-        })
+        });
+        if (!this.selectedCustomer.rutgersWorkflowOverride) {
+          this.selectedCustomerForm.patchValue({
+            rutgersWorkflowOverride: 0
+          });
+        }
         if (this.selectedCustomer.additionalEmails) {
           this.emails = this.selectedCustomer.additionalEmails.split(',');
         }
@@ -121,9 +129,12 @@ export class UserInfoComponent implements OnInit {
       shippingZipCodeExt,
       billingStudentOrgName,
       GovMVMTContractNumber,
-      billingStudentOrgCode, designerNotes, rutgersStudentType, rutgersWorkflowOverride } = this.selectedCustomerForm.getRawValue();
-
-    const payload = {
+      billingStudentOrgCode, designerNotes, rutgersStudentType, rutgersWorkflowOverride, disabledReason } = this.selectedCustomerForm.getRawValue();
+    let rutgersWorkflowOverrides = rutgersWorkflowOverride;
+    if (rutgersWorkflowOverride == 0) {
+      rutgersWorkflowOverrides = null;
+    }
+    let payload = {
       update_user: true,
       userID: parseInt(pk_userID),
       user_name: userName,
@@ -156,10 +167,12 @@ export class UserInfoComponent implements OnInit {
       shippingPhone: shippingDayPhone,
       designerNotes: designerNotes,
       GovMVMTContractNumber,
-      rutgersStudentType, rutgersWorkflowOverride,
+      rutgersStudentType, rutgersWorkflowOverride: rutgersWorkflowOverrides,
+      bln_admin: blnAdmin,
+      disabledReason,
       additionalEmails: this.emails.toString()
     };
-
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
     this.updateUserLoader = true;
     this._customerService.PutApiData(payload)
       .subscribe((response: any) => {
