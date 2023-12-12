@@ -412,6 +412,7 @@ export class MarginsComponent implements OnInit, OnDestroy {
     }
     let params = {
       margin_group: true,
+      product_type: this.ngProdFilter,
       store_id: pk_storeID,
       page: page,
       group_size: count,
@@ -502,6 +503,29 @@ export class MarginsComponent implements OnInit, OnDestroy {
     }
 
     $(this.changeProfile.nativeElement).modal('hide');
+
+    this._storesManagerService.putStoresData(payload)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((response: any) => {
+
+        this._snackBar.open("Product margins updated successfuly.", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        this._snackBar.open("Error occured while updating product margins.", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3500
+        });
+        this._changeDetectorRef.markForCheck();
+        this.defaultMarginLoader = false;
+      });
+
+
   }
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions
