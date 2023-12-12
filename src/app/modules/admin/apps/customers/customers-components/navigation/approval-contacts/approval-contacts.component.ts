@@ -5,6 +5,7 @@ import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { CustomersService } from '../../orders.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-approval-contacts',
@@ -15,148 +16,211 @@ export class ApprovalContactsComponent implements OnInit, OnDestroy {
   isLoading: boolean = false;
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
-  flashMessage: 'success' | 'error' | null = null;
-  approval_detail_text: string = "Define any additional artwork approval contacts in the fields below. Approval contacts defined here will run specific to this user, in additional to any approval contacts defined at the store level. These approval contacts below only apply if the store approval contacts are set to include the customer-level approval contacts."
-  e_check: string = "Determines whether to include any additional emails defined below when proofs are sent to this contact."
-  r_check: string = "Determines whether this approval contact as ability to designate royalities during approval."
-  selectedStore: StoresList = null;
-  stores: string[] = [
-    'RaceWorldPromos.com',
-    'RaceWorldPromos.com',
-    'RaceWorldPromos.com'
-  ];
-  storesList: StoresList[] = [];
-  storesListLength: number = 0;
-  enableAddRequest = false;
-  enableBackNavigation = false;
-  enableForm = false;
-  selectedCustomerForm: FormGroup;
-  addApprovalLoader = false;
-
+  allStores = [];
+  selectedStore: any;
+  isGetContactsLoader: boolean = false;
+  approvalContacts = [];
+  addForm: any;
   constructor(
     private _customerService: CustomersService,
-    private _formBuilder: FormBuilder,
     private _changeDetectorRef: ChangeDetectorRef,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+    private _commonService: DashboardsService
   ) { }
 
   ngOnInit(): void {
-    this.isLoading = true;
+    this.addForm = {
+      listOrder: 1,
+      firstName: '',
+      lastName: '',
+      email: '',
+      studentOrgCode: '',
+      studentOrgName: '',
+      blnEmails: false,
+      blnRoyalties: false,
+    }
+    this.getStores();
     this.getCustomer();
-
-    let emailregex: RegExp = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
-    // Create the selected product form
-    this.selectedCustomerForm = this._formBuilder.group({
-      first_name: ['', [Validators.required]],
-      last_name: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.pattern(emailregex)]],
-      student_org_code: [''],
-      student_org_name: [''],
-      bln_emails: false,
-      bln_royalties: false
-    });
   }
   getCustomer() {
     this._customerService.customer$
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response) => {
         this.selectedCustomer = response;
-        let params = {
-          approval_contact: true,
-          user_id: this.selectedCustomer.pk_userID,
-          store_id: this.selectedCustomer.storeId
-        }
-        this._customerService.GetApiData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-          this.isLoading = false;
-          this._changeDetectorRef.markForCheck();
-        })).subscribe(stores => {
-          this.storesList = stores["data"];
-          this.storesListLength = stores["totalRecords"];
-        }, err => {
-          this.isLoading = false;
-          this._changeDetectorRef.markForCheck();
-        })
       });
   }
-  storeSelection() {
-    this.enableAddRequest = true;
+  getStores() {
+    this._commonService.storesData$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(res => {
+        this.allStores.push({ storeName: 'Select a store', pk_storeID: 0 });
+        const activeStores = res["data"].filter(element => element.blnActive);
+        this.allStores.push(...activeStores);
+        this.selectedStore = this.allStores[0];
+      });
   }
-
-  approvalFormToggle() {
-    this.enableForm = !this.enableForm;
-    this.enableBackNavigation = !this.enableBackNavigation;
+  getApprovalContacts() {
+    if (this.selectedStore.pk_storeID != 0) {
+      this.addForm = {
+        listOrder: 1,
+        firstName: '',
+        lastName: '',
+        email: '',
+        studentOrgCode: '',
+        studentOrgName: '',
+        blnEmails: false,
+        blnRoyalties: false,
+      }
+      this.approvalContacts = [];
+      this.isGetContactsLoader = true;
+      let params = {
+        approval_contact: true,
+        user_id: this.selectedCustomer.pk_userID,
+        store_id: this.selectedStore.pk_storeID
+      }
+      this._customerService.GetApiData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+        this.isGetContactsLoader = false;
+        this._changeDetectorRef.markForCheck();
+      })).subscribe(res => {
+        if (res["data"][0]) {
+          const contacts = res["data"][0].qryContacts.split(',,');
+          contacts.forEach(contact => {
+            const [pk_approvalContactID, listOrder, blnIncludeAdditionalEmails, firstName, lastName, email, studentOrgCode, studentOrgName, blnRoyalties] = contact.split('::');
+            let blnEmails = false;
+            let royalties = false;
+            let code = studentOrgCode;
+            let name = 'false';
+            if (blnRoyalties == '1') {
+              royalties = true;
+            }
+            if (blnIncludeAdditionalEmails == '1') {
+              blnEmails = true;
+            }
+            if (studentOrgCode == 'N/A') {
+              code = '';
+            }
+            if (studentOrgName == 'N/A') {
+              name = '';
+            }
+            this.approvalContacts.push({ pk_approvalContactID, listOrder, blnIncludeAdditionalEmails: blnEmails, firstName, lastName, email, studentOrgCode: code, studentOrgName: name, blnRoyalties: royalties });
+          });
+        }
+      });
+    }
   }
-
-  toggleBackNavigation() {
-    this.enableForm = !this.enableForm;
-    this.enableBackNavigation = !this.enableBackNavigation;
-    this.enableAddRequest = false;
-    this.selectedCustomerForm.reset();
-    this.selectedStore = null;
-  }
-
-  /**
-     * Update the selected product using the form mock-api
-     */
-  addApprovalContact(): void {
-    const { storeID, storeUserID } = this.selectedStore;
-    const customer = this.selectedCustomerForm.getRawValue();
-    const { first_name, last_name, email, bln_emails, bln_royalties, student_org_code, student_org_name } = customer;
-
-    if(first_name.trim() === '' || last_name.trim() === '' || email.trim() === '') {
-      this._snackBar.open('Please fill the required fields', '', {
-        horizontalPosition: 'center',
-        verticalPosition: 'bottom',
-        duration: 3500
-    });
+  addNewContact() {
+    const { listOrder, firstName, lastName, email, studentOrgCode, studentOrgName, blnEmails, blnRoyalties } = this.addForm;
+    if (listOrder <= 0) {
+      this._customerService.snackBar('List order should be greater than 0');
       return;
     }
-
-    const payload = {
-      store_user_id: storeUserID,
-      list_order: 10,
-      first_name: first_name.trim(),
-      last_name: last_name.trim(),
-      email: email.trim(),
-      bln_emails: bln_emails,
-      bln_royalties: bln_royalties,
-      store_id: storeID,
-      student_org_code: student_org_code.trim(),
-      student_org_name: student_org_name.trim(),
-      approval_contact: true
+    if (firstName.trim() == '' || lastName.trim() == '' || email.trim() == '') {
+      this._customerService.snackBar('First Name, Last Name and Email is required.');
+      return;
     }
-    this.addApprovalLoader = true;
-    this._customerService.PostApiData(payload)
-      .subscribe((response: any) => {
-        this.showFlashMessage(
-          response["success"] === true ?
-            'success' :
-            'error'
-        );
-        this.addApprovalLoader = false;
-      });
-  }
-
-  /**
-     * Show flash message
-     */
-  showFlashMessage(type: 'success' | 'error'): void {
-    // Show the message
-    this.flashMessage = type;
-
-    // Mark for check
+    if (!this._commonService.isValidEmail(email)) {
+      this._customerService.snackBar('Please enter a valid email address');
+      return;
+    }
+    let payload = {
+      list_order: listOrder,
+      first_name: firstName,
+      last_name: lastName,
+      email,
+      bln_emails: blnEmails,
+      store_id: Number(this.selectedStore.pk_storeID),
+      student_org_code: studentOrgCode,
+      student_org_name: studentOrgName,
+      bln_royalties: blnRoyalties,
+      store_user_id: this.selectedCustomer.pk_userID,
+      add_approval_contact: true
+    }
+    this.addForm.isAddLoader = true;
     this._changeDetectorRef.markForCheck();
-
-    // Hide it after 3 seconds
-    setTimeout(() => {
-
-      this.flashMessage = null;
-
-      // Mark for check
+    this._customerService.PostApiData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.addForm.isAddLoader = false;
       this._changeDetectorRef.markForCheck();
-    }, 3000);
+    })).subscribe(res => {
+      if (res["success"]) {
+        this._customerService.snackBar(res["message"]);
+        this.addForm = {
+          listOrder: 1,
+          firstName: '',
+          lastName: '',
+          email: '',
+          studentOrgCode: '',
+          studentOrgName: '',
+          blnEmails: false,
+          blnRoyalties: false
+        }
+        this.getApprovalContacts();
+      }
+    });
   }
+  updateApprovalContact(contact) {
+    const { pk_approvalContactID, listOrder, firstName, lastName, email, studentOrgCode, studentOrgName, blnIncludeAdditionalEmails, blnRoyalties } = contact;
+    if (listOrder <= 0) {
+      this._customerService.snackBar('List order should be greater than 0');
+      return;
+    }
+    if (firstName.trim() == '' || lastName.trim() == '' || email.trim() == '') {
+      this._customerService.snackBar('First Name, Last Name and Email is required.');
+      return;
+    }
+    if (!this._commonService.isValidEmail(email)) {
+      this._customerService.snackBar('Please enter a valid email address');
+      return;
+    }
+    let payload = {
+      list_order: Number(listOrder),
+      first_name: firstName,
+      last_name: lastName,
+      email,
+      bln_emails: blnIncludeAdditionalEmails,
+      bln_royalties: blnRoyalties,
+      store_id: this.selectedCustomer.pk_userID,
+      student_org_code: studentOrgCode,
+      student_org_name: studentOrgName,
+      approvalContactID: Number(pk_approvalContactID),
+      update_approval_contact: true
+    }
+    contact.isUpdateLoader = true;
+    this._changeDetectorRef.markForCheck();
+    this._customerService.PutApiData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      contact.isUpdateLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      if (res["success"]) {
+        this._customerService.snackBar(res["message"]);
+      }
+    });
+  }
+  removaApprovalContact(contact) {
+    const { pk_approvalContactID, listOrder, firstName, lastName, email, studentOrgCode, studentOrgName, blnIncludeAdditionalEmails, blnRoyalties } = contact;
+    this._commonService.showConfirmation('Are you sure you want to remove this art approval contact?', (confirmed) => {
+      if (confirmed) {
+        contact.isRemoveLoader = true;
+        let payload = {
+          approvalContactID: Number(pk_approvalContactID),
+          remove_approval_contact: true
+        }
+        this._customerService.PutApiData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+          contact.isRemoveLoader = false;
+          this._changeDetectorRef.markForCheck();
+        })).subscribe(res => {
+          if (res["success"]) {
+            this._customerService.snackBar(res["message"]);
+            this.approvalContacts = this.approvalContacts.filter(item => item.pk_approvalContactID != contact.pk_approvalContactID);
+          }
+        }, err => {
+          contact.isRemoveLoader = false;
+          this._changeDetectorRef.markForCheck();
+        });
+      }
+    });
+  }
+
+
 
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions

@@ -356,4 +356,8 @@ export class DashboardsService {
             return `${hours} hours`;
         }
     }
+    showConfirmation(message: string, callback: (confirmed: boolean) => void) {
+        const result = window.confirm(message);
+        callback(result);
+    }
 }
