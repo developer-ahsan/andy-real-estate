@@ -81,7 +81,7 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
   isDefaultGroupData: any = [];
   isDefaultGroupDataTotal: any;
   isDefaultGroupPage = 1;
-  isDefaultGroupColumns: string[] = ['order', 'first', 'last', 'emails', 'user', 'royalities', 'ca', 'action'];
+  isDefaultGroupColumns: string[] = ['order', 'first', 'last', 'emails','email', 'user', 'royalities', 'ca', 'action'];
 
 
   locationsList: any;
