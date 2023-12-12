@@ -225,7 +225,7 @@
                                                         {{ product.firstName }} {{ product.lastName }}
                                                     </h1>
                                                 </a>
-                                                <b>{{product.companyName[0]}}</b>
+                                                <b>{{ getFirstCompanyName(product.companyName) }}</b>
                                             </div>
                                         </div>
 
@@ -293,8 +293,7 @@
                                             </td>
 
                                             <td width="20%" valign="middle">
-                                                <a class="cursor-pointer" (click)="navigateToReminder(product)">{{product.rem
-                                                    ? product.rem : 'No reminders/alerts' }}</a>
+                                                <a class="cursor-pointer" (click)="navigateToReminder(product)">{{ getReminder(product.rem) }}</a>
                                             </td>
                                         </tr>
 

@@ -5,9 +5,9 @@
     <div class="border p-4 mt-2 h-full overflow-auto">
       <div class="flex-auto my-1">
         <b class="text-1xl" style="color: #64748b; line-height: 2;">Art approval contact settings</b>
-        <button mat-icon-button matTooltip="{{approval_detail_text}}" matTooltipClass="example-tooltip-red">
+        <!-- <button mat-icon-button matTooltip="{{approval_detail_text}}" matTooltipClass="example-tooltip-red">
           <i class="fas fa-question-circle"></i>
-        </button>
+        </button> -->
         <button class="ml-4 float-right" mat-stroked-button *ngIf="enableAddRequest && !enableBackNavigation"
           (click)="approvalFormToggle()">
           <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>

@@ -5,9 +5,9 @@
     <div class="border p-4 mt-2 h-full overflow-auto">
       <div class="flex-auto my-1">
         <b class="text-1xl" style="color: #64748b; line-height: 2;">Art approval contact settings</b>
-        <button mat-icon-button matTooltip="{{approval_detail_text}}" matTooltipClass="example-tooltip-red">
+        <!-- <button mat-icon-button matTooltip="{{approval_detail_text}}" matTooltipClass="example-tooltip-red">
           <i class="fas fa-question-circle"></i>
-        </button>
+        </button> -->
         <button class="ml-4 float-right" mat-stroked-button *ngIf="enableAddRequest && !enableBackNavigation"
           (click)="approvalFormToggle()">
           <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
@@ -85,14 +85,16 @@
             <div class="col-lg-2 col-md-6">
               <mat-checkbox [formControlName]="'bln_emails'">E
                 <button mat-icon-button matTooltip="{{e_check}}" matTooltipClass="example-tooltip-red">
-                  <i class="fas fa-question-circle"></i>
+              <span class="fa fa-question-circle" title="Detemrines whether to include any additional emails defined below when proofs are sent to this contact."></span>
+
                 </button>
               </mat-checkbox>
+
             </div>
             <div class="col-lg-2 col-md-6">
               <mat-checkbox [formControlName]="'bln_royalties'">R
                 <button mat-icon-button matTooltip="{{r_check}}" matTooltipClass="example-tooltip-red">
-                  <i class="fas fa-question-circle"></i>
+                  <span class="fa fa-question-circle" title="Determines whether this approval contact as ability to designate royalties during approval."></span>
                 </button>
               </mat-checkbox>
             </div>
