@@ -299,7 +299,7 @@
 
               <div class="col-12 col-md-4">
                 <div> Select a CSV file to import: </div>
-                <input class="mt-1" type="file" accept=".jpg" [formControlName]="'image'" (change)="upload($event)"
+                <input class="mt-1" type="file" accept=".csv" [formControlName]="'image'" (change)="upload($event)"
                   style="line-height: 2.5;" #fileInputImage />
               </div>
 
@@ -328,10 +328,10 @@
 
               <div class="col-12 flex items-center justify-end w-full">
 
-                <button (click)="importData()" [disabled]="isStudentFormLoader" [matTooltip]="'Update'" class="min-w-40"
+                <button (click)="openUpdateModal()" [disabled]="importDataLoader" [matTooltip]="'Update'" class="min-w-40"
                   mat-stroked-button mat-flat-button>
-                  <span class="px-2" *ngIf="!isStudentFormLoader">Import Data</span>
-                  <mat-progress-spinner *ngIf="isStudentFormLoader" [diameter]="24" [mode]="'indeterminate'">
+                  <span class="px-2" *ngIf="!importDataLoader">Import Data</span>
+                  <mat-progress-spinner *ngIf="importDataLoader" [diameter]="24" [mode]="'indeterminate'">
                   </mat-progress-spinner>
                 </button>
               </div>
@@ -403,6 +403,26 @@
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" tabindex="-1" role="dialog" #changeProfile>
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Remove Company Profile</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Uploading data here will update all users on this store, for this campus, with the data being uploaded.  This means any current approval contacts defined for users on thie store and campus will be overwritten with this new data.  This cannot be undone.  Are you sure you want to continue?.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="importData()">Yes</button>
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
         </div>
       </div>
     </div>
