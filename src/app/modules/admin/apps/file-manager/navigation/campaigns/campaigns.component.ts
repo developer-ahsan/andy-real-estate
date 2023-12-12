@@ -172,6 +172,23 @@ export class CampaignsComponent implements OnInit, OnDestroy {
       });
       return;
     }
+    if(shortDesc.length > 500) {
+      this._snackBar.open("Maximum length of Short Description should be 500", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      return
+    }
+
+    if(strategy.length > 3000 || results.length > 3000) {
+      this._snackBar.open("Maximum length of Strategy and Results should be 3000", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      return
+    }
     this.addNewCampaignLoader = true;
     let payload = {
       fk_storeID,
@@ -263,7 +280,7 @@ export class CampaignsComponent implements OnInit, OnDestroy {
       strategy: new FormControl(''),
       results: new FormControl(''),
       title: new FormControl(''),
-      shortDesc: new FormControl('', [Validators.maxLength(500)]),
+      shortDesc: new FormControl(''),
       blnFeature: new FormControl(false),
       blnActive: new FormControl(true),
       videoURL: new FormControl(''),
@@ -276,7 +293,7 @@ export class CampaignsComponent implements OnInit, OnDestroy {
       title: new FormControl(''),
       permalink: new FormControl(''),
       objective: new FormControl(''),
-      shortDesc: new FormControl('', [Validators.maxLength(500)]),
+      shortDesc: new FormControl(''),
       strategy: new FormControl(''),
       results: new FormControl(''),
       videoURL: new FormControl(''),
@@ -581,6 +598,15 @@ export class CampaignsComponent implements OnInit, OnDestroy {
         duration: 3500
       });
       return;
+    }
+
+    if(shortDesc.length > 500) {
+      this._snackBar.open("Maximum length should be 500", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      return
     }
     this.isCampaignUpdateLoader = true;
     let payload: updateCampaign = {
