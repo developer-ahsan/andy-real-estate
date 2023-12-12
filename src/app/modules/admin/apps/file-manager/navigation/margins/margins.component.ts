@@ -22,6 +22,27 @@ export class MarginsComponent implements OnInit, OnDestroy {
   dataSourceLoading = false;
   page: number = 1;
 
+  marginData = {
+    margin1: 'Margin 1',
+    margin2: 'Margin 2',
+    margin3: 'Margin 3',
+    margin4: 'Margin 4',
+    margin5: 'Margin 5',
+    margin6: 'Margin 6',
+    apparelMargin1: 'Apparel margin 1',
+    apparelMargin2: 'Apparel margin 2',
+    apparelMargin3: 'Apparel margin 3',
+    apparelMargin4: 'Apparel margin 4',
+    apparelMargin5: 'Apparel margin 5',
+    apparelMargin6: 'Apparel margin 6',
+    printMargin1: 'Print 1',
+    printMargin2: 'Print 2',
+    printMargin3: 'Print 3',
+    printMargin4: 'Print 4',
+    printMargin5: 'Print 5',
+    printMargin6: 'Print 6',
+  }
+
   keywordSearch: string = "";
   isKeywordSearch: boolean = false;
   mainScreen: string = "Margins";
@@ -226,8 +247,25 @@ export class MarginsComponent implements OnInit, OnDestroy {
     }
   };
 
+  checkForZeroValues(payload) {
+    for (const key in payload) {
+      if (Object.prototype.hasOwnProperty.call(payload, key)) {
+        if (payload[key] === '0.00') {
+          return {
+            key: key,
+            result: true
+          };
+        }
+      }
+    }
+    return {
+      key: null,
+      result: false
+    };
+  }
+
+
   updateDefaultMargin() {
-    this.defaultMarginLoader = true;
     const { pk_storeID } = this.selectedStore;
     const { margin1, margin2, margin3, margin4, margin5, margin6, apparel1, apparel2, apparel3, apparel4, apparel5, apparel6, print1, print2, print3, print4, print5, print6, store_id, update_default_margin } = this.defaultMarginForm.getRawValue();
     let payload = {
@@ -251,7 +289,19 @@ export class MarginsComponent implements OnInit, OnDestroy {
       printMargin6: (print6 / 100).toFixed(2),
       store_id, update_default_margin
     };
+
+    const result = this.checkForZeroValues(payload);
+    if (result.result) {
+      this._snackBar.open(`${this.marginData[result.key]} is not declared correctly`, '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      return;
+    }
     // Get the supplier products
+    this.defaultMarginLoader = true;
+
     this._storesManagerService.putStoresData(payload)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
