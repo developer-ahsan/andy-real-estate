@@ -244,6 +244,24 @@ export class CustomersListComponent implements OnInit, OnDestroy {
     return item.id || index;
   }
 
+  getFirstCompanyName(data): string {
+    if (Array.isArray(data)) {
+      return data[0];
+    } else {
+      return data;
+    }
+  }
+
+  getReminder(data) {
+    if (!data) {
+      return 'No reminders/alerts'
+    }
+    else {
+      const parts = data.split("::");
+      return `${parts[0]} on ${parts[1]}`
+    }
+  }
+
   editCustomer(customer) {
     this.isLoading = true;
     const { pk_userID } = customer;
