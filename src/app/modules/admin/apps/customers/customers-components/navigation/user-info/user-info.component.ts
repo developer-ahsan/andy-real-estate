@@ -76,7 +76,9 @@ export class UserInfoComponent implements OnInit {
       shippingZipCodeExt: new FormControl(''),
       billingStudentOrgName: new FormControl(''),
       billingStudentOrgCode: new FormControl(''),
-      designerNotes: new FormControl('')
+      designerNotes: new FormControl(''),
+      rutgersStudentType: new FormControl(''),
+      rutgersWorkflowOverride: new FormControl('')
     });
 
 
@@ -119,7 +121,7 @@ export class UserInfoComponent implements OnInit {
       shippingZipCodeExt,
       billingStudentOrgName,
       GovMVMTContractNumber,
-      billingStudentOrgCode, designerNotes } = this.selectedCustomerForm.getRawValue();
+      billingStudentOrgCode, designerNotes, rutgersStudentType, rutgersWorkflowOverride } = this.selectedCustomerForm.getRawValue();
 
     const payload = {
       update_user: true,
@@ -154,6 +156,7 @@ export class UserInfoComponent implements OnInit {
       shippingPhone: shippingDayPhone,
       designerNotes: designerNotes,
       GovMVMTContractNumber,
+      rutgersStudentType, rutgersWorkflowOverride,
       additionalEmails: this.emails.toString()
     };
 

@@ -13,7 +13,7 @@ export class UserLocationsComponent implements OnInit, OnDestroy {
   isLoading: boolean = false;
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
-  locations: [];
+  locations: any;
   available_locations: [];
   locationsLength: number = 0;
   availableLocationsLength: number = 0;
@@ -33,6 +33,11 @@ export class UserLocationsComponent implements OnInit, OnDestroy {
   updateLoader = false;
   initialForm = false;
 
+  departments: any;
+  isAddLocation: boolean = false;
+  ngDepartmentID = 0;
+  isLocationLoader: boolean = false;
+
   constructor(
     private _customerService: CustomersService,
     private _changeDetectorRef: ChangeDetectorRef
@@ -47,22 +52,87 @@ export class UserLocationsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response) => {
         this.selectedCustomer = response;
-        let params = {
-          location: true,
-          user_id: this.selectedCustomer.pk_userID
-        }
-        this._customerService.GetApiData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-          this.isLoading = false;
-          this._changeDetectorRef.markForCheck();
-        })).subscribe(locations => {
-          this.locations = locations["data"];
-          this.locationsLength = locations["totalRecords"];
-          this.getAvailableLoactions();
-        }, err => {
-          this.isLoading = false;
-          this._changeDetectorRef.markForCheck();
-        })
+        this.getLocations();
       });
+  }
+  getLocations() {
+    let params = {
+      view_user_locations: true,
+      user_id: this.selectedCustomer.pk_userID
+    }
+    this._customerService.GetApiData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe((locations: any) => {
+      this.locations = [];
+      if (locations["data"][0].qryUserLocations) {
+        const locationsData = locations["data"][0].qryUserLocations.split(',,');
+        locationsData.forEach(location => {
+          const [companyName, locationName, pk_locationID, departmentName, pk_departmentID, storeName] = location.split('::');
+          this.locations.push({ companyName, locationName, pk_locationID, departmentName, pk_departmentID, storeName });
+        });
+      } else {
+        this.isLocationLoader = true;
+        this.getAvailableDepartments();
+      }
+    }, err => {
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  getAvailableDepartments() {
+    let params = {
+      get_user_departments: true,
+      company_profile_id: this.selectedCustomer.companyProfileID
+    }
+    this._customerService.GetApiData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.isLocationLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe((deparmants: any) => {
+      this.departments = deparmants["data"];
+    }, err => {
+      this.isLocationLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  addLocationApi() {
+    this.isAddLocation = true;
+    let payload = {
+      departmentID: this.ngDepartmentID,
+      userID: this.selectedCustomer.pk_userID,
+      add_department_user: true
+    }
+    this._customerService.PostApiData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.isAddLocation = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      if (res["success"]) {
+        this._customerService.snackBar(res["message"]);
+        this.isLoading = true;
+        this.getAvailableLoactions();
+      }
+    }, err => {
+      this.isAddLocation = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  removeLocationApi(item) {
+    item.deleteLoader = true;
+    let payload = {
+      departmentID: this.ngDepartmentID,
+      userID: this.selectedCustomer.pk_userID,
+      delete_department_user: true
+    }
+    this._customerService.PutApiData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      item.deleteLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      if (res["success"]) {
+        this._customerService.snackBar(res["message"]);
+        this.isLoading = true;
+        this.getAvailableLoactions();
+      }
+    });
   }
   getAvailableLoactions() {
     let params = {

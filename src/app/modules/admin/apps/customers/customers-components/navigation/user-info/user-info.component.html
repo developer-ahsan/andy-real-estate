@@ -118,7 +118,24 @@
                             <mat-form-field class="w-full">
                                 <mat-label>Account/charge code</mat-label>
                                 <input matInput [formControlName]="'accountChargeCode'"
-                                    placeholder="Account/charge code">
+                                    placeholder="Account/charge code" maxlength="150">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-lg-4 col-6" *ngIf="selectedCustomer.storeID == 178">
+                            <mat-form-field class="w-full">
+                                <mat-label>Campus affiliation</mat-label>
+                                <input matInput [formControlName]="'rutgersStudentType'" maxlength="500"
+                                    placeholder="Campus affiliation">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-lg-4 col-6" *ngIf="selectedCustomer.storeID == 178">
+                            <mat-form-field class="w-full">
+                                <mat-label>Rutgers workflow override</mat-label>
+                                <mat-select matInput [formControlName]="'rutgersWorkflowOverride'">
+                                    <mat-option value="">Follow normal workflow</mat-option>
+                                    <mat-option value="student">Student</mat-option>
+                                    <mat-option value="faculty">Faculty</mat-option>
+                                </mat-select>
                             </mat-form-field>
                         </div>
                     </div>

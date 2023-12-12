@@ -1,117 +1,84 @@
-<div class="inset-0 min-w-50 overflow-hidden mt-5 bg-card dark:bg-transparent w-full" style="height: 50vh">
-    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading && secondaryLoader">
+<div class="inset-0 min-w-50 overflow-hidden p-6 mt-5 bg-card dark:bg-transparent w-full">
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
     </ngx-skeleton-loader>
-    <div *ngIf="!isLoading && !locationForm">
-        <div class="flex-auto">
-            <b class="text-2xl" style="color: #64748b; line-height: 2;">Locations</b>
-            <button class="ml-4 float-right" mat-stroked-button (click)="locationFormToggle()" *ngIf="!locationForm">
-                <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
-                <span class="ml-2 mr-1">Assign Location</span>
-            </button>
-        </div>
-        <div class="border p-3 mt-3 h-auto overflow-x-auto">
-            <b class="text-lg text-secondary">Current Locations</b>
-            <mat-divider></mat-divider>
-            <ng-container *ngIf="locationsLength > 0; else noLocations">
-                <table mat-table [dataSource]="locations" class="w-full min-w-auto table-hover">
-                    <!-- Store name Column -->
-                    <ng-container matColumnDef="storeName">
-                        <th mat-header-cell *matHeaderCellDef class="bg-light"> Store </th>
-                        <td mat-cell *matCellDef="let element"> {{element.storeName}} </td>
-                    </ng-container>
-
-                    <!-- Attribute Name Column -->
-                    <ng-container matColumnDef="attributeName">
-                        <th mat-header-cell *matHeaderCellDef class="bg-light"> Location Attribute </th>
-                        <td mat-cell *matCellDef="let element"
-                            style="cursor: pointer; text-decoration-line: underline; color: #959595">
-                            {{element.attributeName}} </td>
-                    </ng-container>
-
-                    <!-- Location Name Column -->
-                    <ng-container matColumnDef="locationName">
-                        <th mat-header-cell *matHeaderCellDef class="bg-light"> Location </th>
-                        <td mat-cell *matCellDef="let element"
-                            style="cursor: pointer; text-decoration-line: underline; color: #959595">
-                            {{element.locationName}} </td>
-                    </ng-container>
-
-                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-                </table>
-                <mat-paginator [length]="locationsLength" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
-                    (page)="pageEvent = $event" aria-label="Select page" class="mt-10 bg-light">
-                </mat-paginator>
-            </ng-container>
-            <ng-template #noLocations>
-                <div class="p-8 sm:p-16 text-2xl font-semibold not-found-color">
-                    <img src="assets/gifs/not-found.gif" class="rounded-circle" style="width: 250px;">
-                    No Locations Assigned!
-                </div>
-            </ng-template>
-        </div>
-    </div>
-    <div *ngIf="locationForm || !isLoading && initialForm">
-        <div class="flex-auto">
-            <b class="text-2xl" style="color: #64748b; line-height: 2;">Locations</b>
-            <button class="ml-4 float-right" mat-stroked-button (click)="locationFormToggle()">
-                <mat-icon [svgIcon]="'heroicons_outline:arrow-narrow-left'"></mat-icon>
-                <span class="ml-2 mr-1">Back</span>
-            </button>
-        </div>
-        <div class="border p-4 mt-3 h-60 overflow-x-auto">
-            <b class="text-lg text-secondary">Add User To New Location</b>
-            <mat-divider class="mb-2"></mat-divider>
-            <div class="row px-5 font-semibold text-danger" *ngIf="availableLocationsLength === 0">
-                <p>Oops! No available locations found for this customer</p>
+    <div *ngIf="!isLoading" class="mt-3">
+        <p class="font-bold text-2xl">Locations</p>
+        <div *ngIf="!selectedCustomer.companyProfileID">
+            <div class="alert alert-warning">
+                <mat-icon class="icon-size-4 mt-3" svgIcon="heroicons_outline:exclamation-circle"></mat-icon>
+                In order to assign this user to a location/department, you must first assign the user to a company
+                profile. Please go back to the customer's main profile screen and assign a company profile first.
             </div>
-            <div class="px-5" *ngIf="availableLocationsLength > 0">
-                <mat-grid-list cols="{{breakpoint}}" rowHeight="80px" (window:resize)="onResize($event)">
-                    <mat-grid-tile>
-                        <mat-form-field appearance="fill" class="w-full px-2">
-                            <mat-label>Select a store</mat-label>
-                            <mat-select>
-                                <mat-option disabled>Select a store</mat-option>
-                                <mat-option (click)="locationSelected(location.storeID)"
-                                    *ngFor="let location of available_locations" [value]="location.storeID">
-                                    {{location.storeName}}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </mat-grid-tile>
-                    <mat-grid-tile>
-                        <mat-form-field appearance="fill" class="w-full px-2" *ngIf="isLocationAttrField">
-                            <mat-label>Select a location attribute</mat-label>
-                            <mat-select>
-                                <mat-option disabled>Select a location attribute</mat-option>
-                                <mat-option (click)="locationAttrSelected(locationAttr.pk_attributeID)"
-                                    *ngFor="let locationAttr of locationAttributeFields"
-                                    [value]="locationAttr.pk_attributeID">
-                                    {{locationAttr.attributeName}}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </mat-grid-tile>
-                    <mat-grid-tile>
-                        <mat-form-field appearance="fill" class="w-full px-2" *ngIf="isLocationField">
-                            <mat-label>Select a location</mat-label>
-                            <mat-select>
-                                <mat-option disabled>Select a location</mat-option>
-                                <mat-option (click)="locationFinalSelected(locations)"
-                                    *ngFor="let locations of locationsField" [value]="locations.pk_locationID">
-                                    {{locations.attributeName}}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </mat-grid-tile>
-                    <mat-grid-tile>
-                        <button class="ml-4 mt-6 float-right" mat-flat-button (click)="addLocation()"
-                            [color]="'primary'" [disabled]="enableAddLocationButton">
-                            <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
-                            <span class="ml-2 mr-1">Add Location</span>
-                        </button>
-                    </mat-grid-tile>
-                </mat-grid-list>
+        </div>
+        <div *ngIf="selectedCustomer.companyProfileID">
+            <p class="text-lg font-bold">{{selectedCustomer?.firstName + ' ' + selectedCustomer?.lastName}}
+                Currently Assigned to Company
+                Profile: {{selectedCustomer?.companyProfileName}}</p>
+            <div *ngIf="locations">
+                <table *ngIf="locations.length > 0" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Store</th>
+                            <th>Location nam</th>
+                            <th>Department name</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let location of locations">
+                            <td>{{location.storeName}}</td>
+                            <td>{{location.locationName}}</td>
+                            <td>{{location.departmentName}}</td>
+                            <td>
+                                <mat-icon (click)="removeLocationApi(location)" *ngIf="!location.deleteLoader"
+                                    matTooltip="Remove" class="icon-size-6 cursor-pointer text-red-500"
+                                    svgIcon="heroicons_solid:trash">
+                                </mat-icon>
+                                <mat-progress-spinner *ngIf="location.deleteLoader" [diameter]="24"
+                                    [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="alert alert-warning" *ngIf="locations.length == 0">
+                    <mat-icon class="icon-size-4 mt-3" svgIcon="heroicons_outline:exclamation-circle"></mat-icon>
+                    This user is not assigned to any location/department within this company profile. You can assign
+                    them to a location/department below.
+                </div>
+                <div *ngIf="locations.length == 0">
+                    <p class="text-lg font-bold">Add user to new company profile location</p>
+                    <mat-label>Select a location</mat-label>
+                    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLocationLoader">
+                    </ngx-skeleton-loader>
+                    <div *ngIf="departments && !isLocationLoader">
+                        <div class="alert alert-warning" *ngIf="departments.length == 0">
+                            <mat-icon class="icon-size-4 mt-3"
+                                svgIcon="heroicons_outline:exclamation-circle"></mat-icon>
+                            No deparments were found for any locations in this company profile. Users must be
+                            assigned to a location &amp; department pair. Locations must have departments assigned
+                            to them in order to assign users to a location. Please make sure the locations under
+                            this company profile have departments assigned.
+                        </div>
+                        <div *ngIf="departments.length > 0">
+                            <mat-form-field class="w-full">
+                                <mat-select matInput [(ngModel)]="ngDepartmentID">
+                                    <mat-option [value]="0">SELECT LOCATION</mat-option>
+                                    <mat-option *ngFor="let department of departments"
+                                        [value]="department.pk_departmentID">{{department.locationName}} -
+                                        {{department.departmentName}}</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                            <br>
+                            <button mat-button mat-stroked-button class="min-w-40" [disabled]="isAddLocation"
+                                (click)="addLocationApi()">
+                                <span *ngIf="!isAddLocation">Add user to location</span>
+                                <mat-progress-spinner *ngIf="isAddLocation" [diameter]="24" [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

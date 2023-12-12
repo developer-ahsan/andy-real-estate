@@ -138,7 +138,7 @@ export class CampaignsComponent implements OnInit, OnDestroy {
     }
     let index;
     if (!this.isEditCampaign) {
-      index = this.selectedProducts.findIndex(item => item == ev.option.value);
+      index = this.selectedProducts.findIndex(item => item.fk_storeProductID == ev.option.value.pk_storeProductID);
     } else {
       index = this.selectedProducts.findIndex(item => item.fk_storeProductID == ev.option.value.pk_storeProductID);
     }
@@ -172,7 +172,7 @@ export class CampaignsComponent implements OnInit, OnDestroy {
       });
       return;
     }
-    if(shortDesc.length > 500) {
+    if (shortDesc.length > 500) {
       this._snackBar.open("Maximum length of Short Description should be 500", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
@@ -181,7 +181,7 @@ export class CampaignsComponent implements OnInit, OnDestroy {
       return
     }
 
-    if(strategy.length > 3000 || results.length > 3000) {
+    if (strategy.length > 3000 || results.length > 3000) {
       this._snackBar.open("Maximum length of Strategy and Results should be 3000", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
@@ -414,7 +414,7 @@ export class CampaignsComponent implements OnInit, OnDestroy {
       checkArray.push({ campaign_id: element.pk_campaignID, display_order: Number(element.listOrder) })
     });
     const hasNegativeDisplayOrder = checkArray?.some(item => item?.display_order < 0);
-    if(hasNegativeDisplayOrder) {
+    if (hasNegativeDisplayOrder) {
       this._snackBar.open("Only positive numbers are allowed", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
@@ -600,7 +600,7 @@ export class CampaignsComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if(shortDesc.length > 500) {
+    if (shortDesc.length > 500) {
       this._snackBar.open("Maximum length should be 500", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
@@ -618,7 +618,7 @@ export class CampaignsComponent implements OnInit, OnDestroy {
       shortDesc: shortDesc.replace(/'/g, "''"),
       blnFeature, blnActive, videoURL, permalink, update_campaign_list: true
     }
-    this._storeManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._storeManagerService.putStoresData(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         // if (this.imageValue) {
         //   this.imageValue.campaign_id = res["campaign_id"];

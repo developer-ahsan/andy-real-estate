@@ -116,7 +116,7 @@
                 </td>
                 <td>
                   <mat-form-field class="w-full">
-                    <textarea matInput [(ngModel)]="item.customerArtworkComment"></textarea>
+                    <textarea matInput rows="10" maxlength="300" [(ngModel)]="item.customerArtworkComment"></textarea>
                   </mat-form-field>
                   <button mat-button mat-flat-button color="primary" (click)="updateCartItems(item)"
                     [disabled]="item.updateLoader">
