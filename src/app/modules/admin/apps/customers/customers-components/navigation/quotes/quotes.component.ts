@@ -146,6 +146,7 @@ export class QuotesComponent implements OnInit, OnDestroy {
     }
     this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       imprint.proof = res["isFileExist"];
+      this._changeDetectorRef.markForCheck();
     })
   }
   updateCartItems(imprint) {
@@ -173,7 +174,6 @@ export class QuotesComponent implements OnInit, OnDestroy {
       remove_store_user_quote: true
     }
     this._customerService.PutApiData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-
       cart.removeLoader = false;
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {

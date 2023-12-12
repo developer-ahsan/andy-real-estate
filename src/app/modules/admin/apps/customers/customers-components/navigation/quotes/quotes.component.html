@@ -109,7 +109,7 @@
                 <td>{{item.decorationName}}</td>
                 <td>
                   <span *ngIf="item?.proof">
-                    <a href="https://assets.consolidus.com/artwork/Proof/Quotes/{{selectedCustomer.pk_userID}}/{{imprint.pk_cartID}}/{{imprint.pk_cartLineID}}/{{imprint.imprintID}}.jpg"
+                    <a href="https://assets.consolidus.com/artwork/Proof/Quotes/{{selectedCustomer.pk_userID}}/{{item?.pk_cartID}}/{{item?.pk_cartLineID}}/{{item?.imprintID}}.jpg"
                       target="_blank">View Proof</a>
                   </span>
                   <span *ngIf="!item?.proof">N/A</span>
