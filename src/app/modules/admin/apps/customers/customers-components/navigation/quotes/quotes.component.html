@@ -3,7 +3,8 @@
   </ngx-skeleton-loader>
   <div *ngIf="!isLoading">
     <div class="flex-auto">
-      <b class="text-2xl">Quotes</b>
+      <b class="text-2xl">User Quotes</b>
+      <p class="text-red-500">NOTE: Cart totals do NOT include shipping charges. </p>
     </div>
     <div class="mt-3 overflow-auto" *ngIf="!isArtworkDetails">
       <table class="table table-striped" *ngIf="quotesLength > 0; else noQuotes">
@@ -25,8 +26,8 @@
               <a [routerLink]="['/apps/quotes',element.pk_cartID,'quote-reports']"
                 target="_blank">{{element.pk_cartID}}</a>
             </td>
-            <td>{{element.dateCreated }}</td>
-            <td>{{element.dateModified }}</td>
+            <td>{{element.formattedDateCreated }}</td>
+            <td>{{element.formattedDateModified }}</td>
             <td>{{(element.IHD ) || '---'}}</td>
             <td>
               <div *ngFor="let item of element.items;let i=index">

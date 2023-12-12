@@ -27,11 +27,13 @@ export const navigations = [
         route: 'credit-terms',
         children: []
     },
-    // {
-    //     id: 5,
-    //     title: 'Credit Applications',
-    //     icon: 'mat_outline:settings_applications',
-    // },
+    {
+        id: 5,
+        title: 'Credit Applications',
+        icon: 'mat_outline:settings_applications',
+        route: 'credit-application',
+        children: []
+    },
     {
         id: 6,
         title: 'User Comments',
@@ -74,13 +76,13 @@ export const navigations = [
         route: 'order-history',
         children: []
     },
-    {
-        id: 11,
-        title: 'Fulfillment Orders',
-        icon: 'mat_outline:reorder',
-        route: 'fulfillment-orders',
-        children: []
-    },
+    // {
+    //     id: 11,
+    //     title: 'Fulfillment Orders',
+    //     icon: 'mat_outline:reorder',
+    //     route: 'fulfillment-orders',
+    //     children: []
+    // },
     {
         id: 12,
         title: 'Saved Carts',
