@@ -221,7 +221,7 @@
             <div class="col-12 border-b" *ngFor="let item of dataSource">
               <div class="row">
                 <div class="col-md-9 col-12">
-                  <p class="text-md">{{item.objective}}</p>
+                  <p class="text-md">{{item.title}}</p>
                 </div>
                 <div class="col-md-3 col-12">
                   <mat-form-field class="w-full">
@@ -283,9 +283,9 @@
                 <div class="col-12">
                   <div style="font-weight: 500">Short Description (500) *</div>
                   <quill-editor formControlName="shortDesc" [modules]="quillModules"> </quill-editor>
-                  <mat-error *ngIf="addCampaignForm.get('shortDesc').errors?.maxlength">
+                  <!-- <mat-error *ngIf="addCampaignForm.get('shortDesc').errors?.maxlength">
                     Maximum length exceeded (max 500 characters)
-                  </mat-error>
+                  </mat-error> -->
                 </div>
                 <div class="col-12 mt-5">
                   <div style="font-weight: 500">Strategy (3000) <span style="color: red">(Optional)</span></div>
@@ -414,9 +414,9 @@
                   <div class="col-12">
                     <div style="font-weight: 500">Short Description (500)*</div>
                     <quill-editor formControlName="shortDesc" [modules]="quillModules"> </quill-editor>
-                    <mat-error *ngIf="campaignForm.get('shortDesc').errors?.maxlength">
+                    <!-- <mat-error *ngIf="campaignForm.get('shortDesc').errors?.maxlength">
                       Maximum length exceeded (max 500 characters)
-                    </mat-error>
+                    </mat-error> -->
                   </div>
                   <div class="col-12 mt-5">
                     <div style="font-weight: 500">Strategy (3000)<span style="color: red">(Optional)</span></div>
