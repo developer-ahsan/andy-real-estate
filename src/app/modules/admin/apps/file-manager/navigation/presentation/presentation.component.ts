@@ -360,7 +360,8 @@ export class PresentationComponent implements OnInit, OnDestroy {
       this.addNewFeature = false;
       this.presentationScreen = screenName;
       if (screenName == "Site Color") {
-        this.getScreenData("color", screenName);
+        this.getSiteColor();
+        // this.getScreenData("presentation_color", screenName);
       } else if (screenName == "Social Media") {
         this.getScreenData("social_media", screenName);
       } else if (screenName == "News Feed") {
@@ -467,6 +468,41 @@ export class PresentationComponent implements OnInit, OnDestroy {
       this.getProductColors();
 
     }
+  }
+
+
+  getSiteColor() {
+    let params = {
+      store_id: this.selectedStore.pk_storeID,
+      presentation_color: true,
+    }
+    this.isPageLoading = true;
+
+    this._storeManagerService
+      .getPresentationData(params)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((res: any) => {
+        this.siteColorsForm.patchValue(
+          {
+            mainNav: `#${res.data[0].mainNav}`,
+            primaryHighlight: `#${res.data[0].primaryHighlight}`,
+            mainNavHover: `#${res.data[0].mainNavHover}`,
+            catMenuLink: `#${res.data[0].catMenuLink}`,
+            catMenuLinkHover: `#${res.data[0].catMenuLinkHover}`,
+            subCatMenuLink: `#${res.data[0].subCatMenuLink}`,
+            subCatMenuLinkHover: `#${res.data[0].subCatMenuLinkhover}`,
+            link: `#${res.data[0].link}`,
+            linkHover: `#${res.data[0].linkHover}`,
+            homeFeatureLink: `#${res.data[0].homeFeatureLink}`,
+            homeFeatureLinkHover: `#${res.data[0].homeFeatureLinkHover}`,
+            secondaryHighlight: `#${res.data[0].secondaryHighlight}`,
+            mainNavLinkColor: `#${res.data[0].mainNavLinkColor}`,
+            mainNavLinkColorHover: `#${res.data[0].mainNavLinkColorHover}`,
+          }
+        );
+        this.isPageLoading = false;
+        this._changeDetectorRef.markForCheck();
+      });
   }
 
 

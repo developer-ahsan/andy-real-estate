@@ -48,7 +48,31 @@ export class RapidbuildActionsComponent implements OnInit, OnDestroy {
     this._storeManagerService.getStoreProducts(pk_storeID, page)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
-        this.dataSource = response["data"];
+        // this.dataSource = response["data"];
+        // // console.log(this.dataSource);
+
+        // let extractedProducts = [];
+
+        // this.dataSource.forEach(item => {
+        //   let productsList = item.productsList.split(",,");
+
+        //   productsList.forEach(product => {
+        //     let productAttributes = product.split("==");
+        //     console.log(productAttributes)
+        //     let productObject = {
+        //       spid: productAttributes[0],
+        //       name: productAttributes[1],
+        //       brand: productAttributes[2],
+        //       // Add more properties as needed based on the index of attributes
+        //       // Example: category: productAttributes[3], timestamp: productAttributes[4], etc.
+        //     };
+        //     extractedProducts.push(productObject);
+        //   });
+        // });
+
+        // console.log(extractedProducts);
+
+
         this.dataSourceTotalRecord = response["totalRecords"];
         this.dataSourceLoading = false;
 
