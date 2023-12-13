@@ -644,7 +644,6 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
   }
   addApprovalContactGroup() {
     let { listOrder, firstName, lastName, email, storeUserID, fk_artApprovalGroupID, blnEmails, blnStoreUserApprovalContacts, blnRoyalties, add_artApproval_contact } = this.addContactGroupForm.getRawValue();
-    console.log(storeUserID);
     if (storeUserID == '' || listOrder == '' || firstName.trim() == '' || lastName.trim() == '' || email.trim() == '') {
       this._snackBar.open("Please fill out required fields", '', {
         horizontalPosition: 'center',
