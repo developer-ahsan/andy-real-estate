@@ -143,11 +143,11 @@ export class SimpleEmailBlastComponent implements OnInit, OnDestroy {
   sendEmail() {
     const { subject, message } = this.sendEmailForm.getRawValue();
     let messageData = message;
-    if (!subject || subject.trim()=== '') {
+    if (subject.trim()=== '') {
       this._fileManagerService.snackBar('Subject is required');
       return;
     }
-    if (!message || message.trim()) {
+    if (message.trim() === '') {
       this._fileManagerService.snackBar('Message is required');
       return;
     }
@@ -189,6 +189,7 @@ export class SimpleEmailBlastComponent implements OnInit, OnDestroy {
         this._fileManagerService.snackBar(res["message"]);
       }
       this.sendEmailForm.reset();
+      this.sendEmailForm.markAsUntouched();
       this.imageValue = null;
       this.file = null;
       this.emails = [];
