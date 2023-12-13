@@ -168,7 +168,7 @@ export class ImprintRunComponent implements OnInit, OnDestroy {
           this._changeDetectorRef.markForCheck();
           return;
         } else {
-          const errorLog = `${this.ngChargeCode} The following distributions containing ${intCharge} x (1-${roundedDiscount.toFixed(4)}) = ${chargeValue} were found. `;
+          const errorLog = `${chargeValue} The following distributions containing ${intCharge} x (1-${roundedDiscount.toFixed(4)}) = ${chargeValue} were found. `;
           this.errMsg = errorLog
         }
 

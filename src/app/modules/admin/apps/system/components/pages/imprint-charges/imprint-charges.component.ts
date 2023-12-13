@@ -99,8 +99,12 @@ export class ImprintChargesComponent implements OnInit, OnDestroy {
     });
   }
   getChargeData() {
-    if (this.ngChargeID == '') {
+    if (!this.ngChargeID) {
       this._systemService.snackBar('Please Enter Charge ID');
+      return;
+    }
+    if (Number(this.ngChargeID) < 0) {
+      this._systemService.snackBar('Charge ID should be positive');
       return;
     }
     this.isSearching = true;
