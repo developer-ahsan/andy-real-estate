@@ -585,7 +585,7 @@ export class InventoryService {
             params: {
                 imprint: true,
                 product_id: productId,
-                size: 100,
+                size: 20,
                 page: page
             }
         });
