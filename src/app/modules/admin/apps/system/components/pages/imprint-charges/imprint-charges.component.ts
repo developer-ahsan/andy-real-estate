@@ -189,23 +189,69 @@ export class ImprintChargesComponent implements OnInit, OnDestroy {
     });
   }
   // Update Charge
-  updateImprintCharge() {
+  async updateImprintCharge() {
+    this.isUpdateChargeLoader = true;
     let ChargeValue = [];
-    this.processQuantities.forEach((element, i) => {
-      if (element.value) {
-        element.quantitiesVal.forEach((item, j) => {
-          if (element.value && this.productQuantities[j].value) {
-            ChargeValue.push(
-              {
-                process_quantity: element.value,
-                product_quantity: this.productQuantities[j].value,
-                value: item.value
+    try {
+      for (const element of this.processQuantities) {
+        if (element.value >= 0) {
+          for (let j = 0; j < element.quantitiesVal.length; j++) {
+            const item = element.quantitiesVal[j];
+            if (item.value >= 0 && this.productQuantities[j].value >= 0) {
+              if (element.value && this.productQuantities[j].value) {
+                // Simulate an asynchronous operation with a delay
+                await this.delay(50);
+
+                ChargeValue.push({
+                  process_quantity: element.value,
+                  product_quantity: this.productQuantities[j].value,
+                  value: item.value
+                });
               }
-            )
+            } else {
+              this._systemService.snackBar('Values should not be negative');
+              this.isUpdateChargeLoader = false;
+              this._changeDetectorRef.markForCheck();
+              return;
+            }
           }
-        });
+        } else {
+          this._systemService.snackBar('Values should not be negative');
+          this.isUpdateChargeLoader = false;
+          this._changeDetectorRef.markForCheck();
+          return;
+        }
       }
-    });
+
+      // Call your function after the loop
+      this.updateChargeValues(ChargeValue);
+    } catch (error) {
+      console.error('An error occurred:', error);
+    }
+
+
+
+
+
+    // let ChargeValue = [];
+    // this.processQuantities.forEach((element, i) => {
+    //   if (element.value) {
+    //     element.quantitiesVal.forEach((item, j) => {
+    //       if (element.value && this.productQuantities[j].value) {
+    //         ChargeValue.push(
+    //           {
+    //             process_quantity: element.value,
+    //             product_quantity: this.productQuantities[j].value,
+    //             value: item.value
+    //           }
+    //         )
+    //       }
+    //     });
+    //   }
+    // });
+
+  }
+  updateChargeValues(ChargeValue) {
     let payload: UpdateCharge = {
       charge_id: Number(this.ngChargeID),
       charges: ChargeValue,
@@ -222,6 +268,9 @@ export class ImprintChargesComponent implements OnInit, OnDestroy {
       this.isUpdateChargeLoader = false;
       this._changeDetectorRef.markForCheck();
     });
+  }
+  delay(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
   backToList() {
     this.initCharges();

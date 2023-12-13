@@ -40,45 +40,47 @@
         </div>
     </div>
     <!-- Get Charges -->
-    <div class="col-12  d-flex overflow-x-auto" style="max-height: 500px;" *ngIf="chargesTableArray">
-        <div *ngIf="chargesTableArray.length == 0">{{errMsg}}</div>
-        <div *ngIf="chargesTableArray.length > 0"></div>
-        <div class="mx-5 shadow bg-card p-5 rounded-2xl p-5 my-5 border-2" *ngFor="let chargeData of chargesTableArray">
-            <div class="row">
-                <div class="col-12">
-                    <p class="bg-primary text-white text-center text-1xl font-semibold p-3">
-                        {{chargeData.chargeId}}
-                    </p>
+    <div class="col-12 overflow-x-auto" *ngIf="chargesTableArray">
+        <div class="text-red-500">{{errMsg}}</div>
+        <div class="d-flex">
+            <div class="mx-5 shadow bg-card  p-5 rounded-2xl p-5 my-5 border-2"
+                *ngFor="let chargeData of chargesTableArray">
+                <div class="row">
+                    <div class="col-12">
+                        <p class="bg-primary text-white text-center text-1xl font-semibold p-3">
+                            {{chargeData.chargeId}}
+                        </p>
+                    </div>
+                    <div class="col-12">
+                        <a href="" class="mx-2 text-sm" (click)="setRun($event,chargeData.chargeId)"> +
+                            Run</a>
+                    </div>
+                    <div class="col-12">
+                        <a href="" class="ml-2 text-sm" (click)="setSetup($event,chargeData.chargeId)"> +
+                            Setup</a>
+                    </div>
                 </div>
-                <div class="col-12">
-                    <a href="" class="mx-2 text-sm" (click)="setRun($event,chargeData.chargeId)"> +
-                        Run</a>
-                </div>
-                <div class="col-12">
-                    <a href="" class="ml-2 text-sm" (click)="setSetup($event,chargeData.chargeId)"> +
-                        Setup</a>
-                </div>
+                <table class="m-2 w-2/4">
+                    <col>
+                    <colgroup span="1"></colgroup>
+                    <colgroup span="1"></colgroup>
+                    <tr>
+                        <th scope="col" class="text-1xl font-semibold text-center bg-gray-100 p-3"></th>
+                        <th scope="col" class="text-1xl font-semibold text-center bg-gray-100 p-3 p-3"
+                            *ngFor="let productQuantity of chargeData.uniqueProductQuantities">
+                            {{productQuantity}}
+                        </th>
+                    </tr>
+                    <tr *ngFor="let rowFill of chargeData.rowsRendering">
+                        <th scope="row" class="text-1xl font-semibold text-center bg-gray-100 p-3 p-3">
+                            {{rowFill.verticalColumnName}}
+                        </th>
+                        <td class="p-3 bg-gray-50 text-center" *ngFor="let rowChargeValue of rowFill.renderedArray">
+                            {{rowChargeValue[2]}}
+                        </td>
+                    </tr>
+                </table>
             </div>
-            <table class="m-2 w-2/4">
-                <col>
-                <colgroup span="1"></colgroup>
-                <colgroup span="1"></colgroup>
-                <tr>
-                    <th scope="col" class="text-1xl font-semibold text-center bg-gray-100 p-3"></th>
-                    <th scope="col" class="text-1xl font-semibold text-center bg-gray-100 p-3 p-3"
-                        *ngFor="let productQuantity of chargeData.uniqueProductQuantities">
-                        {{productQuantity}}
-                    </th>
-                </tr>
-                <tr *ngFor="let rowFill of chargeData.rowsRendering">
-                    <th scope="row" class="text-1xl font-semibold text-center bg-gray-100 p-3 p-3">
-                        {{rowFill.verticalColumnName}}
-                    </th>
-                    <td class="p-3 bg-gray-50 text-center" *ngFor="let rowChargeValue of rowFill.renderedArray">
-                        {{rowChargeValue[2]}}
-                    </td>
-                </tr>
-            </table>
         </div>
     </div>
     <!-- Add New Charge -->
@@ -180,13 +182,80 @@
             </div>
         </div> -->
     </div>
-    <!-- <div class="col-12 shadow bg-card p-5 rounded-2xl">
+    <!-- Commonly Used -->
+    <div class="col-12 shadow bg-card p-5 rounded-2xl">
         <p class="text-xl font-bold pb-5">Commonly Used</p>
-        <div class="row">
-            <div class="col-2">Name</div>
-            <div class="col-2">Value</div>
-            <div class="col-2 cursor-pointer hover:text-green-500">Run</div>
-            <div class="col-2 cursor-pointer hover:text-red-500">Setup</div>
-        </div>
-    </div> -->
+        <table>
+            <tr>
+                <th>General</th>
+                <td>- Zero Distribution</td>
+                <td>
+                    <p class="text-green-600 cursor-pointer" (click)="commonRunSetup('run',17)">Run</p>
+                </td>
+                <td>
+                    <p class="text-red-600 cursor-pointer" (click)="commonRunSetup('setup',17)">Setup</p>
+                </td>
+            </tr>
+            <tr>
+                <th>Printed Matters</th>
+                <td>- Full Color Silk Screening</td>
+                <td>
+                    <p class="text-green-600 cursor-pointer" (click)="commonRunSetup('run',41)">Run</p>
+                </td>
+                <td>
+                    <p class="text-red-600 cursor-pointer" (click)="commonRunSetup('setup',42)">Setup</p>
+                </td>
+            </tr>
+            <tr>
+                <th></th>
+                <td>- Silk Screening</td>
+                <td>
+                    <p class="text-green-600 cursor-pointer" (click)="commonRunSetup('run',41)">Run</p>
+                </td>
+                <td>
+                    <p class="text-red-600 cursor-pointer" (click)="commonRunSetup('setup',43)">Setup</p>
+                </td>
+            </tr>
+            <tr>
+                <th>5Bs + ArtworkSource.com</th>
+                <td>- Embroidering 1</td>
+                <td>
+                    <p class="text-green-600 cursor-pointer" (click)="commonRunSetup('run',44)">Run</p>
+                </td>
+                <td>
+                    <p class="text-red-600 cursor-pointer" (click)="commonRunSetup('setup',161)">Setup</p>
+                </td>
+            </tr>
+            <tr>
+                <th></th>
+                <td>- Embroidering 2</td>
+                <td>
+                    <p class="text-green-600 cursor-pointer" (click)="commonRunSetup('run',45)">Run</p>
+                </td>
+                <td>
+                    <p class="text-red-600 cursor-pointer" (click)="commonRunSetup('setup',161)">Setup</p>
+                </td>
+            </tr>
+            <tr>
+                <th>Otto Cap</th>
+                <td>- Embroidering</td>
+                <td>
+                    <p class="text-green-600 cursor-pointer" (click)="commonRunSetup('run',52)">Run</p>
+                </td>
+                <td>
+                    <p class="text-red-600 cursor-pointer" (click)="commonRunSetup('setup',53)">Setup</p>
+                </td>
+            </tr>
+            <tr>
+                <th></th>
+                <td>- Screen Printing</td>
+                <td>
+                    <p class="text-green-600 cursor-pointer" (click)="commonRunSetup('run',54)">Run</p>
+                </td>
+                <td>
+                    <p class="text-red-600 cursor-pointer" (click)="commonRunSetup('setup',55)">Setup</p>
+                </td>
+            </tr>
+        </table>
+    </div>
 </div>

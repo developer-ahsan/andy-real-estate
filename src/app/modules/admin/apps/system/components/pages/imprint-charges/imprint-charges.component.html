@@ -5,7 +5,8 @@
         <div class="flex mt-2">
             <mat-form-field class="example-full-width w-full" appearance="fill">
                 <mat-label>View or Update</mat-label>
-                <input type="number" maxlength="100" matInput placeholder="Charge ID" [(ngModel)]="ngChargeID">
+                <input type="number" maxlength="100" matInput placeholder="Charge ID" (keyup.enter)="getChargeData()"
+                    [(ngModel)]="ngChargeID">
                 <button matSuffix mat-button mat-icon-button [matTooltip]="'Search'" (click)="getChargeData()">
                     <mat-icon svgIcon="heroicons_solid:search" *ngIf="!isSearching"></mat-icon>
                     <mat-progress-spinner *ngIf="isSearching" [diameter]="24" [mode]="'indeterminate'">

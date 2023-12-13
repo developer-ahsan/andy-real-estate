@@ -507,6 +507,11 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
 
   // Add New Imprint Method
   addNewStandardImprint() {
+    if (this.imprintName.trim() == '') {
+      this._systemService.snackBar("Imprint name is required");
+      return;
+    }
+
     if (!this.selectedMethod.pk_methodID && !this.method_name) {
       this._systemService.snackBar("New Method was not specified correctly");
       return;
@@ -516,7 +521,7 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
       return;
     }
     const { run, setup } = this.runSetup.getRawValue();
-    if (this.areaValue.trim() === "") {
+    if (!this.areaValue) {
       this._systemService.snackBar("Imprint AREA has not been defined correctly.");
       return;
     };
@@ -528,7 +533,7 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
       };
     };
 
-    if (run.trim() === "" || setup.trim() === "") {
+    if (run === "" || setup === "") {
       this._systemService.snackBar("Select a SETUP or RUN charge");
       return;
     };
@@ -597,7 +602,7 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
           this._changeDetectorRef.markForCheck();
         });
     } else {
-      this.addStandardImprintOBJ(payload);
+      this.addStandardImprintOBJ(this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload));
     }
   }
   addStandardImprintOBJ(payload) {
@@ -620,6 +625,10 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
   }
   // Update Imprint
   updateNewStandardImprint() {
+    if (this.imprintName.trim() == '') {
+      this._systemService.snackBar("Imprint name is required");
+      return;
+    }
     if (!this.selectedMethod.pk_methodID && !this.method_name) {
       this._systemService.snackBar("New Method was not specified correctly");
       return;
@@ -629,8 +638,8 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
       return;
     }
     const { run, setup } = this.runSetup.getRawValue();
-    if (this.areaValue === "") {
-      this._systemService.snackBar("Imprint AREA has not been defined correctly.");
+    if (!this.areaValue) {
+      this._systemService.snackBar("Imprint area has not been defined correctly.");
       return;
     };
 
@@ -699,6 +708,7 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
       pk_standardImprintID: this.imprintData.imprintData.pk_standardImprintID,
       update_standard_imprint: true
     }
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
     this.addImprintLoader = true;
     if (processMode == 0) {
       this._systemService.getMultiColorValue(second, third, fourth, fifth).pipe(takeUntil(this._unsubscribeAll))

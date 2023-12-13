@@ -65,23 +65,58 @@ export class ImprintRunComponent implements OnInit, OnDestroy {
       });
     }
   }
-  createObj() {
+  async createObj() {
     let array = [];
-    this.processQuantities.forEach((element, i) => {
-      if (element.value) {
-        element.quantitiesVal.forEach((item, j) => {
-          if (element.value && this.productQuantities[j].value) {
-            array.push(
-              {
-                process_quantity: element.value,
-                product_quantity: this.productQuantities[j].value,
-                charge: item.value * (1 - this.newChargeValue)
+    this.createNewChargeLoader = true;
+    try {
+      for (const element of this.processQuantities) {
+        if (element.value >= 0) {
+          for (let j = 0; j < element.quantitiesVal.length; j++) {
+            const item = element.quantitiesVal[j];
+            if (item.value >= 0 && this.productQuantities[j].value >= 0) {
+              if (element.value && this.productQuantities[j].value) {
+                // Simulate an asynchronous operation with a delay
+                await this.delay(100);
+
+                array.push({
+                  process_quantity: element.value,
+                  product_quantity: this.productQuantities[j].value,
+                  charge: item.value * (1 - this.newChargeValue),
+                });
               }
-            )
+            } else {
+              this._snackBar.open('Values should not be negative', '', {
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                duration: 3500,
+              });
+              this.createNewChargeLoader = false;
+              this._changeDetectorRef.markForCheck();
+              return;
+            }
           }
-        });
+        } else {
+          this._snackBar.open('Values should not be negative', '', {
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+            duration: 3500,
+          });
+          this.createNewChargeLoader = false;
+          this._changeDetectorRef.markForCheck();
+          return;
+        }
       }
-    });
+
+      // Call your function after the loop
+      this.addNewCharges(array);
+    } catch (error) {
+      console.error('An error occurred:', error);
+    }
+  }
+  delay(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+  addNewCharges(array) {
     let payload = {
       dist_code: this.newChargeValue,
       quantities: array,
@@ -117,6 +152,7 @@ export class ImprintRunComponent implements OnInit, OnDestroy {
     this.getChargesLoader = true;
     this._inventoryService.getChargeValue(chargeValue)
       .subscribe((charges) => {
+        console.log(charges);
         if (!charges["data"]?.length) {
           const errorLog = `No charges containing ${intCharge} x (1-${roundedDiscount}) = ${chargeValue} were found. Check your inputs or add a new charge.`;
           this.errMsg = errorLog
@@ -131,6 +167,9 @@ export class ImprintRunComponent implements OnInit, OnDestroy {
           // Mark for check
           this._changeDetectorRef.markForCheck();
           return;
+        } else {
+          const errorLog = `${this.ngChargeCode} The following distributions containing ${intCharge} x (1-${roundedDiscount.toFixed(4)}) = ${chargeValue} were found. `;
+          this.errMsg = errorLog
         }
 
         let chargeArray = [];
@@ -212,6 +251,13 @@ export class ImprintRunComponent implements OnInit, OnDestroy {
     this.currentChargeValue = null;
     this.chargesTableArray = [];
     this.isNewCharge = true;
+  }
+  commonRunSetup(type, value) {
+    if (type == 'run') {
+      this._inventoryService.run = value;
+    } else {
+      this._inventoryService.setup = value;
+    }
   }
   setRun(e, value) {
     e.preventDefault();

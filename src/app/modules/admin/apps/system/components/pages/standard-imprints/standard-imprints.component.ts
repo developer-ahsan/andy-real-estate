@@ -91,7 +91,6 @@ export class StandardImprintsComponent implements OnInit, OnDestroy {
         this.isAddGroupLoader = false;
         this.ngName = '';
         this.ngDesc = '';
-        this._systemService.snackBar('Method Added Successfully');
         this.mainScreen = 'Current Imprint Methods';
       }
       this.isLoading = false;
@@ -248,6 +247,7 @@ export class StandardImprintsComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       if (res["success"]) {
+        this._systemService.snackBar(res["message"]);
         this.getStandardGroup(1, 'add')
       } else {
         this.isAddGroupLoader = false;
@@ -301,7 +301,7 @@ export class StandardImprintsComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       element.updateLoader = false;
-      this._systemService.snackBar('Group Name Updated Successfully');
+      this._systemService.snackBar(res["message"]);
       this._changeDetectorRef.markForCheck();
     }, err => {
       element.updateLoader = false;
