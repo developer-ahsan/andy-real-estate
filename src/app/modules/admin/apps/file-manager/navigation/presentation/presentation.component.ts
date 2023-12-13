@@ -79,6 +79,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
     "Order Options",
     "Artwork tags",
     "Quick guides",
+    "Store Product Colors"
   ];
   checked = false;
 
@@ -172,6 +173,15 @@ export class PresentationComponent implements OnInit, OnDestroy {
   productBuilderSettings: any;
   productBuilderLoader: boolean = false;
   productBuilderMsg: boolean = false;
+
+  imprintArtworkOption: any = {
+    storeLogoBank: true,
+    customerLogoBank: true,
+    uploadingArtwork: true,
+    artworkOnFile: true,
+    followInstructions: true
+  };
+
 
   settings: any;
   isLogoBankNotesLoader: boolean = false;
