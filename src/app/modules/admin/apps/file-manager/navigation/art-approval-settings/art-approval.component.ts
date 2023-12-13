@@ -509,20 +509,16 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
     }, 300);
   }
   updateDefaulApprovalGroupContact() {
-    const { listOrder, firstName, lastName, email } = this.isEditDefaultContactForm.getRawValue();
-    if (listOrder.trim() == '' || firstName.trim() == '' || lastName.trim() == '' || email.trim() == '') {
+    const { listOrder, firstName, lastName, email, fk_storeUserID } = this.isEditDefaultContactForm.getRawValue();
+    if (listOrder == '' || firstName.trim() == '' || lastName.trim() == '' || email.trim() == '') {
       this._snackBar.open("Please fill out required fields", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
         duration: 3000
       });
     } else {
-      let val = [];
-      this.selectedItems.forEach(element => {
-        val.push(element.item_id);
-      });
       this.isEditDefaultContactForm.patchValue({
-        fk_storeUserID: val.toString()
+        fk_storeUserID: fk_storeUserID.toString()
       })
       this.isEditDefaultContactLoader = true;
       this._storeManagerService.putStoresData(this.isEditDefaultContactForm.value).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
