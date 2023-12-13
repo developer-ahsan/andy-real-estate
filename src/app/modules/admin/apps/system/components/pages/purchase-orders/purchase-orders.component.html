@@ -1,0 +1,97 @@
+<div class="w-full">
+    <div class="w-full">
+        <div class="px-2 pb-2">
+            <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen"
+                (change)="calledScreen(group.value)">
+                <mat-button-toggle value="Current">
+                    Current purchase order adjustments
+                </mat-button-toggle>
+                <mat-button-toggle value="Add">
+                    Add purchase order adjustment
+                </mat-button-toggle>
+            </mat-button-toggle-group>
+        </div>
+        <div class="px-5" *ngIf="mainScreen == 'Current' && isLoading">
+            <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+            </ngx-skeleton-loader>
+        </div>
+        <div *ngIf="mainScreen == 'Current' && !isLoading && purchaseOrders">
+            <div *ngIf="purchaseOrders.length > 0 ;else other_content">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Display Name</th>
+                            <th>Report Name</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of purchaseOrders">
+                            <td>
+                                <mat-form-field class="w-full">
+                                    <input matInput maxlength="500" [(ngModel)]="item.displayName">
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field class="w-full">
+                                    <input matInput maxlength="500" [(ngModel)]="item.reportName">
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <button type="button" class="btn bg-red-500 text-white border-red-500 rounded-md mr-1"
+                                    (click)="deletePurchase(item)" [disabled]="item.delLoader">
+                                    <mat-progress-spinner *ngIf="item?.delLoader" [diameter]="24"
+                                        [mode]="'indeterminate'"></mat-progress-spinner>
+                                    <span *ngIf="!item?.delLoader">Remove</span>
+                                </button>
+                                <button type="button" class="btn bg-green-500 text-white border-green-500 rounded-md"
+                                    (click)="updatePurchase(item)" [disabled]="item.updateLoader">
+                                    <mat-progress-spinner *ngIf="item?.updateLoader" [diameter]="24"
+                                        [mode]="'indeterminate'"></mat-progress-spinner>
+                                    <span *ngIf="!item?.updateLoader">Update</span>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- No Data Found -->
+            <ng-template #other_content>
+                <div class="text-secondary font-semibold p-5 text-center" *ngIf="!isUpdatePromo">
+                    There are no purchase order adjustments defined.
+                </div>
+            </ng-template>
+        </div>
+        <!-- Add Purchase Orders -->
+        <div *ngIf="mainScreen == 'Add'" class="p-6 ">
+            <div class="row" [formGroup]="addPurchaseForm">
+                <div class="col-12 col-md-6">
+                    <mat-label class="font-medium">Display Name*
+                        <mat-icon svgIcon="heroicons_solid:question-mark-circle" class="icon-size-4"
+                            matTooltip="This is how this adjustment will be displayed in the dropdown select list on purchase orders."></mat-icon></mat-label>
+                    <mat-form-field class="w-full">
+                        <input matInput maxlength="500" formControlName="displayName">
+                    </mat-form-field>
+                </div>
+                <div class="col-12 col-md-6">
+                    <mat-label class="font-medium">Report Name*
+                        <mat-icon svgIcon="heroicons_solid:question-mark-circle" class="icon-size-4"
+                            matTooltip="This is how this adjustment will be displayed on exported reports."></mat-icon></mat-label>
+                    <mat-form-field class="w-full">
+                        <input matInput maxlength="500" formControlName="reportName">
+                    </mat-form-field>
+                </div>
+
+                <div class="text-right col-12">
+                    <button [disabled]="isAddPurchaseLoader || !addPurchaseForm.valid" class="min-w-30"
+                        mat-stroked-button (click)="addNewPurchase()">
+                        <mat-icon svgIcon="heroicons_solid:plus" *ngIf="!isAddPurchaseLoader"></mat-icon>
+                        <span class="ml-2" *ngIf="!isAddPurchaseLoader"> Add </span>
+                        <mat-progress-spinner *ngIf="isAddPurchaseLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

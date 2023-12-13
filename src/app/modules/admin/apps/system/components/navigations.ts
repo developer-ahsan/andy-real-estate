@@ -100,6 +100,11 @@ export const navigations = [
                 title: 'Default Support Team',
                 icon: 'mat_outline:group',
                 route: 'support-team'
+            },
+            {
+                title: 'Purchase Orders',
+                icon: 'mat_outline:code',
+                route: 'purchase-orders'
             }
         ]
     },

@@ -23,6 +23,7 @@ import { AdminStructureComponent } from './components/pages/admin-structure/admi
 import { PermissionGroupsComponent } from './components/pages/permissions-groups/permissions-groups.component';
 import { UploadImagesComponent } from './components/pages/upload-images/upload-images.component';
 import { SimulatorComponent } from './components/pages/simulator/simulator.component';
+import { PurchaseOrdersAdjustmentsComponent } from './components/pages/purchase-orders/purchase-orders.component';
 
 export const systemRoutes: Route[] = [
 
@@ -61,6 +62,14 @@ export const systemRoutes: Route[] = [
                 data: {
                     title: 'Pack/Accessories',
                     url: 'pack-accessories'
+                }
+            },
+            {
+                path: 'purchase-orders',
+                component: PurchaseOrdersAdjustmentsComponent,
+                data: {
+                    title: 'Purchase Orders',
+                    url: 'purchase-orders'
                 }
             },
             {
