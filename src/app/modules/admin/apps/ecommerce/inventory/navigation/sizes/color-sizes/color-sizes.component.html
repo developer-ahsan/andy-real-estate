@@ -84,8 +84,13 @@
                             <th class="text-red-500">SIMPLE SUM</th>
                             <th *ngFor="let item of sizesList">{{item.sizeName}}</th>
                         </tr>
+                        <tr>
+                            <th class="text-red-500"></th>
+                            <th *ngFor="let item of sizesList">({{item.run | currency}})</th>
+                        </tr>
                         <tr *ngFor="let item of colorsList">
-                            <th>{{item.colorName}}</th>
+                            <td><span class="font-bold">{{item.colorName}}</span> <span class="ml-3">({{item.run |
+                                    currency}})</span></td>
                             <td *ngFor="let elem of sizesList">{{item.run | currency}}</td>
                         </tr>
                         <tr class="border-t">

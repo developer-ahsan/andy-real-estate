@@ -152,7 +152,6 @@ export class ImprintRunComponent implements OnInit, OnDestroy {
     this.getChargesLoader = true;
     this._inventoryService.getChargeValue(chargeValue)
       .subscribe((charges) => {
-        console.log(charges);
         if (!charges["data"]?.length) {
           const errorLog = `No charges containing ${intCharge} x (1-${roundedDiscount}) = ${chargeValue} were found. Check your inputs or add a new charge.`;
           this.errMsg = errorLog
