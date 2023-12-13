@@ -279,7 +279,7 @@ export class StoreProductsComponent implements OnInit, OnDestroy {
   generateDataSheet() {
 
     let params = {
-      store_products_per_store: true,
+      store_generate_report: true,
       store_id: this.selectedStore.pk_storeID,
       keyword: this.keyword,
       status: this.status,
