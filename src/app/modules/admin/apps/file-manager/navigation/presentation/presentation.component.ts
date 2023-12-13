@@ -56,6 +56,8 @@ export class PresentationComponent implements OnInit, OnDestroy {
       ["clean"],
     ],
   };
+  productColors: any;
+
   presentationButtons: string[] = [
     "Look & Feel",
     "Site Color",
@@ -174,15 +176,6 @@ export class PresentationComponent implements OnInit, OnDestroy {
   productBuilderLoader: boolean = false;
   productBuilderMsg: boolean = false;
 
-  imprintArtworkOption: any = {
-    storeLogoBank: true,
-    customerLogoBank: true,
-    uploadingArtwork: true,
-    artworkOnFile: true,
-    followInstructions: true
-  };
-
-
   settings: any;
   isLogoBankNotesLoader: boolean = false;
   addLogoBankForm: FormGroup;
@@ -204,6 +197,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
   favUploadLoader: boolean = false;
   logoBankScreens = 'Current Logos';
   isUpdateLogoDisplayLoader: boolean = false;
+  page: number = 1;
   constructor(
     private _storeManagerService: FileManagerService,
     private _commonService: DashboardsService,
@@ -390,6 +384,8 @@ export class PresentationComponent implements OnInit, OnDestroy {
         this.getScreenData("presentation_default_emails", screenName);
       } else if (screenName == 'Artwork tags') {
         this.getScreenData("artwork_tags_presentation", screenName);
+      } else if (screenName == 'Store Product Colors') {
+        this.getProductColors();
       } else if (screenName == 'Product Builder Settings') {
         this.getScreenData("product_builder_presentation", screenName);
       } else if (screenName == 'Quick guides') {
@@ -436,6 +432,43 @@ export class PresentationComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
       })
   }
+
+
+  getProductColors() {
+    let params = {
+      store_id: this.selectedStore.pk_storeID,
+      presentation_store_color: true,
+      page: this.page,
+      size: 100
+    }
+    this.isPageLoading = true;
+
+    this._storeManagerService
+      .getPresentationData(params)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((res: any) => {
+        this.productColors = res;
+
+        this.isPageLoading = false;
+        this._changeDetectorRef.markForCheck();
+      });
+
+
+  }
+
+
+  changePage(increment: boolean) {
+    if (increment && this.page <= Math.ceil(this.productColors.totalRecords / this.productColors.size)) {
+      this.page++;
+      this.getProductColors();
+    }
+    else if (!increment && this.page > 1) {
+      this.page--;
+      this.getProductColors();
+
+    }
+  }
+
 
   getScreenData(value, screen) {
     this.isPageLoading = true;
@@ -492,6 +525,8 @@ export class PresentationComponent implements OnInit, OnDestroy {
         } else if (screen == "Quick guides") {
           this.presentationData = res.data;
         } else if (screen == "Header Image") {
+          this.presentationData = res.data[0];
+        } else if (screen == 'Store Product Colors') {
           this.presentationData = res.data[0];
         }
         this.isPageLoading = false;
@@ -984,9 +1019,16 @@ export class PresentationComponent implements OnInit, OnDestroy {
   }
   updateProductBuilderSettings() {
     this.productBuilderLoader = true;
+
     let payload = {
       store_id: this.selectedStore.pk_storeID,
       blnAllowImprintColorSelection: this.productBuilderSettings.blnAllowImprintColorSelection,
+      blnProductBuilderArtInstructions: this.productBuilderSettings.blnProductBuilderArtInstructions,
+      blnProductBuilderCustomerLogoBank: this.productBuilderSettings.blnProductBuilderCustomerLogoBank,
+      blnProductBuilderOnFile: this.productBuilderSettings.blnProductBuilderOnFile,
+      blnProductBuilderStoreLogoBank: this.productBuilderSettings.blnProductBuilderStoreLogoBank,
+      blnProductBuilderUploadArt: this.productBuilderSettings.blnProductBuilderUploadArt,
+      blnSwitchArtworkOrder: this.productBuilderSettings.blnSwitchArtworkOrder,
       update_product_builder: true
     }
     this._storeManagerService.UpdateProductBuilder(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -996,9 +1038,12 @@ export class PresentationComponent implements OnInit, OnDestroy {
         this.productBuilderMsg = false;
         this._changeDetectorRef.markForCheck();
       }, 3000);
+      this._storeManagerService.snackBar('Product builder settings updated successfuly');
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.productBuilderLoader = false;
+      this._storeManagerService.snackBar('Error occured while updating product builder');
+
       this._changeDetectorRef.markForCheck();
     })
   }

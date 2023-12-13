@@ -602,7 +602,7 @@
               </button>
             </div>
             <div class="col-md-4 col-12" *ngFor="let item of logoBanks">
-              <div class="bg-card col-12 rounded-2xl shadow p-2">
+              <div *ngIf="!item.blnInternal" class="bg-card col-12 rounded-2xl shadow p-2">
                 <div class="font-bold text-lg">{{item.name}}</div>
                 <div class="flex justify-between">
                   <img class="w-20"
@@ -699,7 +699,7 @@
           <div class="col-12 mt-5">
             <mat-form-field appearance="fill" class="w-full">
               <mat-label>Allow selection from store logo bank:</mat-label>
-              <mat-select [(ngModel)]="imprintArtworkOption.storeLogoBank">
+              <mat-select [(ngModel)]="productBuilderSettings.blnProductBuilderStoreLogoBank">
                 <mat-option [value]="true">Yes</mat-option>
                 <mat-option [value]="false">No</mat-option>
               </mat-select>
@@ -709,7 +709,7 @@
           <div class="col-12 mt-5">
             <mat-form-field appearance="fill" class="w-full">
               <mat-label> Allow selection from customer logo bank: </mat-label>
-              <mat-select [(ngModel)]="imprintArtworkOption.customerLogoBank">
+              <mat-select [(ngModel)]="productBuilderSettings.blnProductBuilderCustomerLogoBank">
                 <mat-option [value]="true">Yes</mat-option>
                 <mat-option [value]="false">No</mat-option>
               </mat-select>
@@ -719,7 +719,7 @@
           <div class="col-12 mt-5">
             <mat-form-field appearance="fill" class="w-full">
               <mat-label> Allow uploading artwork: </mat-label>
-              <mat-select [(ngModel)]="imprintArtworkOption.uploadingArtwork">
+              <mat-select [(ngModel)]="productBuilderSettings.blnProductBuilderUploadArt">
                 <mat-option [value]="true">Yes</mat-option>
                 <mat-option [value]="false">No</mat-option>
               </mat-select>
@@ -729,7 +729,7 @@
           <div class="col-12 mt-5">
             <mat-form-field appearance="fill" class="w-full">
               <mat-label> Allow use artwork on file: </mat-label>
-              <mat-select [(ngModel)]="imprintArtworkOption.artworkOnFile">
+              <mat-select [(ngModel)]="productBuilderSettings.blnProductBuilderOnFile">
                 <mat-option [value]="true">Yes</mat-option>
                 <mat-option [value]="false">No</mat-option>
               </mat-select>
@@ -739,7 +739,7 @@
           <div class="col-12 mt-5">
             <mat-form-field appearance="fill" class="w-full">
               <mat-label> Allow follow instructions: </mat-label>
-              <mat-select [(ngModel)]="imprintArtworkOption.followInstructions">
+              <mat-select [(ngModel)]="productBuilderSettings.blnProductBuilderArtInstructions">
                 <mat-option [value]="true">Yes</mat-option>
                 <mat-option [value]="false">No</mat-option>
               </mat-select>
@@ -842,9 +842,62 @@
             <div class="mt-8 flow-root">
               <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                  <table class="min-w-full divide-y divide-gray-300">
+
+                  <div class="px-4 sm:px-6 lg:px-8">
+                    <div class="mt-8 flow-root">
+                      <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                        <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                          <table class="min-w-full divide-y divide-gray-300">
+
+                            <thead>
+                              <tr>
+                                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-white sm:pl-0">
+                                  #</th>
+                                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                                  COLORNAME</th>
+                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">PK_COLORID</th>
+                                 
+                              </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+
+                              <tr *ngFor="let item of productColors.data; let i=index">
+                                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">{{i + 1}}</td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{item.colorName}}</td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{item.pk_colorID}}</td>
+                              </tr>
+                             
+                            </tbody>
+                          </table>
+
+                          <nav class="flex items-center justify-end bg-white px-4 py-3 sm:px-6" aria-label="Pagination">
+                            <div class="hidden sm:block">
+                              <p class="text-sm text-gray-700">
+                                Showing
+                                <span class="font-medium">{{((productColors.page-1) * productColors.size) + 1}}</span>
+                                to
+                                <span class="font-medium">{{ +((productColors.page-1) * productColors.size) + +productColors.size }}</span>
+                                of
+                                <span class="font-medium">{{productColors.totalRecords}}</span>
+                                results
+                              </p>
+                            </div>
+                            <div class="flex flex-1 justify-end">
+                              <a (click)="changePage(false)" class="relative inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:outline-offset-0">Previous</a>
+                              <a (click)="changePage(true)" class="relative ml-3 inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:outline-offset-0">Next</a>
+                            </div>
+                          </nav>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+
+                  <!-- <table class="min-w-full divide-y divide-gray-300">
                     <thead>
                       <tr>
+                        <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-white sm:pl-0">
+                          #</th>
                         <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
                           COLORNAME</th>
                         <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">PK_COLORID</th>
@@ -852,12 +905,10 @@
                       </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200">
-                      <tr>
-                        <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">Blue</td>
-                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">1</td>
-                      </tr>
+                     
                     </tbody>
-                  </table>
+                    
+                  </table> -->
                 </div>
               </div>
             </div>
