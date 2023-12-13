@@ -8,6 +8,7 @@ import { debounceTime, distinctUntilChanged, filter, finalize, map, switchMap, t
 import { RapidBuildService } from '../../rapid-build.service';
 import { HideUnhideCart, bulkRemoveRapidBuildEntry, updateAttentionFlagOrder } from '../../rapid-build.types';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
+import { Sort } from '@angular/material/sort';
 @Component({
   selector: 'app-image-management',
   templateUrl: './image-management.component.html',
@@ -21,7 +22,7 @@ export class RapidImageManagementComponent implements OnInit, OnDestroy {
   isLoading: boolean = false;
   mainScreen = 'Artwork Approved';
   dataSource = [];
-  displayedColumns: string[] = ['ID', 'Status', 'SPID', 'PID', 'Product', 'Supplier', 'Store', 'proof', 'action'];
+  displayedColumns: string[] = ['pk_rapidBuildID', 'Status', 'age', 'fk_storeProductID', 'productNumber', 'productName', 'companyName', 'Store', 'proof', 'action'];
   totalRecords = 20;
   page = 1;
 
@@ -36,12 +37,15 @@ export class RapidImageManagementComponent implements OnInit, OnDestroy {
   ngKeyword = '';
   allStores: any = [];
   selectedStore: any;
+  sortOrder = '';
+  sortBy = '';
+  isSortingLoader: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _RapidBuildService: RapidBuildService,
     private router: Router,
     private _route: ActivatedRoute,
-    private _commonService: DashboardsService
+    private _commonService: DashboardsService,
 
   ) { }
   ngOnInit(): void {
@@ -96,18 +100,23 @@ export class RapidImageManagementComponent implements OnInit, OnDestroy {
       productName: productName,
       keyword: keyword,
       size: 20,
+      sort_order: this.sortOrder,
+      sort_by: this.sortBy,
       page: page,
       rapidbuild_list: true
     }
     this._RapidBuildService.getRapidBuildData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       res["data"].forEach(element => {
         element.isChecked = false;
+        element.Age = this._commonService.convertHoursToDays(element.AgeInHours);
       });
       this.dataSource = res["data"];
       this.totalRecords = res["totalRecords"];
       this.isLoading = false;
+      this.isSortingLoader = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
+      this.isSortingLoader = false;
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     });
@@ -121,6 +130,13 @@ export class RapidImageManagementComponent implements OnInit, OnDestroy {
     };
     this.getRapidBuildData(this.page);
   }
+  sortData(sort: Sort) {
+    this.isSortingLoader = true;
+    this.sortBy = sort.active,
+      this.sortOrder = sort.direction;
+    this.page = 1;
+    this.getRapidBuildData(1);
+  };
   goToDetailPage(item) {
     const queryParams: NavigationExtras = {
       queryParams: { fk_orderID: item.fk_orderID, pk_orderLineID: item.pk_orderLineID, store_id: item.pk_storeID }

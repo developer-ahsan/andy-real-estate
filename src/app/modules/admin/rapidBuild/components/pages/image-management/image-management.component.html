@@ -80,9 +80,16 @@
         </div>
         <div class="mt-2 overflow-x-auto" *ngIf="!isLoading">
             <ng-container *ngIf="totalRecords > 0; else noResult">
-                <table mat-table [dataSource]="dataSource" class="w-full border-t">
-                    <ng-container matColumnDef="ID">
-                        <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
+                <div class="m-5 text-center" *ngIf="isSortingLoader">
+                    <div class="spinner-grow"></div>
+                    <div class="spinner-grow"></div>
+                    <div class="spinner-grow"></div>
+                    <div class="spinner-grow"></div>
+                </div>
+                <table mat-table matSort [dataSource]="dataSource" [matSortDirection]="'desc'"
+                    (matSortChange)="sortData($event)" class="w-full border-t">
+                    <ng-container matColumnDef="pk_rapidBuildID">
+                        <th mat-header-cell mat-sort-header *matHeaderCellDef class="w-10 min-w-10 px-2">
                             ID
                         </th>
                         <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToDetailPage(element)">
@@ -97,40 +104,40 @@
                             {{element.statusName}}
                         </td>
                     </ng-container>
-                    <ng-container matColumnDef="Age">
-                        <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
+                    <ng-container matColumnDef="age">
+                        <th mat-header-cell mat-sort-header *matHeaderCellDef class="w-10 min-w-10 px-2">
                             Age
                         </th>
                         <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToDetailPage(element)">
-                            {{element.FIELD3}}
+                            {{element.Age}}
                         </td>
                     </ng-container>
-                    <ng-container matColumnDef="SPID">
-                        <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
+                    <ng-container matColumnDef="fk_storeProductID">
+                        <th mat-header-cell mat-sort-header *matHeaderCellDef class="w-10 min-w-10 px-2">
                             SPID
                         </th>
                         <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToDetailPage(element)">
                             {{element.fk_storeProductID}}
                         </td>
                     </ng-container>
-                    <ng-container matColumnDef="PID">
-                        <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 px-2">
-                            PID
+                    <ng-container matColumnDef="productNumber">
+                        <th mat-header-cell mat-sort-header *matHeaderCellDef class="w-10 min-w-10 px-2">
+                            ID
                         </th>
                         <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToDetailPage(element)">
-                            {{element.pk_productID}}
+                            {{element.productNumber}}
                         </td>
                     </ng-container>
-                    <ng-container matColumnDef="Product">
-                        <th mat-header-cell *matHeaderCellDef class="w-40 min-w-40 px-2">
+                    <ng-container matColumnDef="productName">
+                        <th mat-header-cell mat-sort-header *matHeaderCellDef class="w-40 min-w-40 px-2">
                             Product
                         </th>
                         <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToDetailPage(element)">
-                            {{element.productName}}
+                            <span [innerHTML]="element.productName"></span>
                         </td>
                     </ng-container>
-                    <ng-container matColumnDef="Supplier">
-                        <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20 px-2">
+                    <ng-container matColumnDef="companyName">
+                        <th mat-header-cell mat-sort-header *matHeaderCellDef class="w-20 min-w-20 px-2">
                             Supplier
                         </th>
                         <td mat-cell *matCellDef="let element" class="text-sm px-2" (click)="goToDetailPage(element)">

@@ -353,7 +353,7 @@ export class DashboardsService {
             return `${days} days`;
         } else {
             // Show in hours if less than 1 day
-            return `${hours} hours`;
+            return `${Math.floor(hours)} hours`;
         }
     }
     showConfirmation(message: string, callback: (confirmed: boolean) => void) {

@@ -392,14 +392,16 @@ export class GenerateReportComponent implements OnInit {
             element.DetailsData.forEach(order => {
                 FlpsOrders.push({ order_id: order.id, amountPaid: order.amount });
                 if (order.checked) {
-                    markPaidList.push({
-                        orderID: order.id,
-                        customer: order.customer,
-                        sale: order.sales,
-                        profit: order.profit,
-                        commission: order.comission,
-                        commissionPercent: order.commision_percentage
-                    })
+                    if (order.comission > 0) {
+                        markPaidList.push({
+                            orderID: order.id,
+                            customer: order.customer,
+                            sale: order.sales,
+                            profit: order.profit,
+                            commission: order.comission,
+                            commissionPercent: order.commision_percentage
+                        })
+                    }
                 }
             });
             reportSummary.push({
@@ -429,8 +431,6 @@ export class GenerateReportComponent implements OnInit {
             userTotalCommission: Number(userCommission), // totalCommission * Profit
             update_flps_report: true
         }
-        console.log(payload);
-        return;
         this._flpsService.UpdateFlpsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
             if (res["success"]) {
                 this._flpsService.snackBar(res["message"]);

@@ -91,7 +91,7 @@
                         <tr *ngFor="let item of colorsList">
                             <td><span class="font-bold">{{item.colorName}}</span> <span class="ml-3">({{item.run |
                                     currency}})</span></td>
-                            <td *ngFor="let elem of sizesList">{{item.run | currency}}</td>
+                            <td *ngFor="let elem of sizesList">{{(item.run + elem.run) | currency}}</td>
                         </tr>
                         <tr class="border-t">
                             <th class="text-red-500">+ Correction</th>
@@ -107,7 +107,7 @@
                         </tr>
                         <tr *ngFor="let correction of this.correctionsSumList">
                             <th>{{correction.colorName}}</th>
-                            <td *ngFor="let elem of correction.items">{{elem.amount | currency}}</td>
+                            <td *ngFor="let elem of correction.items">{{(elem.amount) | currency}}</td>
                         </tr>
                         <tr class="border-t">
                             <th class="text-red-500">+ FIRST COLUMN NET COST ({{productCost | currency}})</th>

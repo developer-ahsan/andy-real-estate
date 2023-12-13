@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, map, startWith, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
@@ -13,6 +13,7 @@ import { ImprintRunComponent } from './imprint-run/imprint-run.component';
 import { ScrollStrategy, ScrollStrategyOptions } from '@angular/cdk/overlay';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 import { DeleteProductImprint } from '../../inventory.types';
+import { MatPaginator } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-imprint',
@@ -213,7 +214,9 @@ export class ImprintComponent implements OnInit, OnDestroy {
 
   isContentLoading: boolean = false;
 
+  @ViewChild('paginator') paginator: MatPaginator;
 
+  imprintPage = 1;
 
   private _filter(value: string): string[] {
     const filterValue = value.toLowerCase();
@@ -840,9 +843,15 @@ export class ImprintComponent implements OnInit, OnDestroy {
       })
   }
 
-  getImprints(page?: number) {
+  getImprints(page) {
     const { pk_productID } = this.selectedProduct;
-    this._inventoryService.getImprints(pk_productID, page)
+    let params = {
+      imprint: true,
+      product_id: pk_productID,
+      size: 20,
+      page: page
+    }
+    this._inventoryService.getProductsData(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((imprint) => {
         if (!imprint["data"]?.length) {
@@ -1767,6 +1776,8 @@ export class ImprintComponent implements OnInit, OnDestroy {
   }
   showImprintList() {
     this.isEditImprintScreen = false;
+    this.page = 1;
+    this.getImprints(1);
   };
 
   updateImprint() {
@@ -1937,9 +1948,11 @@ export class ImprintComponent implements OnInit, OnDestroy {
     this.editImprintObj = null;
     this.isEditImprintScreen = false;
     this.isImprintDetails = false;
-    if (this._inventoryService.duplicateCheck) {
-      this.getImprints(1);
-    }
+    this.page = 1;
+    // if (this._inventoryService.duplicateCheck) {
+    //   this.page = 1;
+    this.getImprints(1);
+    // }
   }
   editImprint(imprint) {
     this._inventoryService.run = null;
