@@ -249,6 +249,7 @@ export class ExportDetailComponent implements OnInit, OnDestroy {
       { header: "storeProductID", key: "storeProductID", width: 20 },
       { header: "productName", key: "productName", width: 70 },
       { header: "productDescription", key: "productDescription", width: 100 },
+      { header: "productMiniDescription", key: "productMiniDescription", width: 100 },
       { header: "productMetaDescription", key: "storeProductMetaDescription", width: 50 },
       { header: "keywords", key: "keywords", width: 50 },
       { header: "storeProductPermalink", key: "storeProductPermalink", width: 50 },

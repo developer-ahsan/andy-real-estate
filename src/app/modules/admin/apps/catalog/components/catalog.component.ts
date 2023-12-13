@@ -168,7 +168,8 @@ export class CatalogComponent {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((supplier) => {
         this.allSuppliers.push({ pk_companyID: 0, companyName: 'All' });
-        this.allSuppliers = this.allSuppliers.concat(supplier["data"]);
+        const activeSuppliers = supplier["data"].filter(element => element.blnActiveVendor);
+        this.allSuppliers.push(...activeSuppliers);
         this.searchSupplierCtrl.setValue(this.allSuppliers[0].companyName);
         this.selectedSupplier = this.allSuppliers[0];
         this._changeDetectorRef.markForCheck();
@@ -294,9 +295,6 @@ export class CatalogComponent {
   }
   ngOnInit(): void {
     this.getSuppliers();
-    // this.getColors();
-    this.getSizes();
-    this.getImprints();
     this.getColorsDecorationSizes();
   }
   getColorsDecorationSizes() {

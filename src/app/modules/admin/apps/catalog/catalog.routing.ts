@@ -7,7 +7,12 @@ export const catalogRoutes: Route[] = [
     {
         path: '',
         component: CatalogComponent,
-        resolve: [AdminSuppliersResolver, ColorsResolver, SizesResolver, ImprintsResolver]
+        resolve: [
+            // AdminSuppliersResolver, 
+            // ColorsResolver, 
+            // SizesResolver, 
+            // ImprintsResolver
+        ]
     },
 
 ];
