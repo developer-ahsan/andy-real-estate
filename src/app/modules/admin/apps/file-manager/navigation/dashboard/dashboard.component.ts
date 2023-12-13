@@ -204,7 +204,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       yaxis: {
         labels: {
           formatter: function (val) {
-            return val.toFixed(0);
+            return `$${val.toFixed(2)}`;
           },
         },
       },
@@ -239,7 +239,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       yaxis: {
         labels: {
           formatter: function (val) {
-            return val.toFixed(0);
+            return `${val.toFixed(2)}%`;
           },
         },
       },
