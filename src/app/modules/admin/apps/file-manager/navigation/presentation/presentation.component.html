@@ -601,20 +601,22 @@
                 </mat-progress-spinner>
               </button>
             </div>
-            <div class="col-md-4 col-12" *ngFor="let item of logoBanks">
-              <div *ngIf="!item.blnInternal" class="bg-card col-12 rounded-2xl shadow p-2">
-                <div class="font-bold text-lg">{{item.name}}</div>
-                <div class="flex justify-between">
-                  <img class="w-20"
-                    src="https://assets.consolidus.com/globalAssets/Stores/LogoBank2/{{selectedStore.pk_storeID}}/Thumbs/{{item.pk_logoBankID}}.jpg"
-                    alt="img" />
-                  <mat-form-field appearance="fill">
-                    <mat-label> Display Order: </mat-label>
-                    <input [(ngModel)]="item.displayOrder" type="number" matInput />
-                  </mat-form-field>
+            <ng-container *ngFor="let item of logoBanks">
+              <div class="col-md-4 col-12" *ngIf="!item.blnInternal">
+                <div class="bg-card  rounded-2xl shadow p-2">
+                  <div class="font-bold text-lg">{{item.name}}</div>
+                  <div class="flex justify-between">
+                    <img class="w-20"
+                      src="https://assets.consolidus.com/globalAssets/Stores/LogoBank2/{{selectedStore.pk_storeID}}/Thumbs/{{item.pk_logoBankID}}.jpg"
+                      alt="img" />
+                    <mat-form-field appearance="fill">
+                      <mat-label> Display Order: </mat-label>
+                      <input [(ngModel)]="item.displayOrder" type="number" matInput />
+                    </mat-form-field>
+                  </div>
                 </div>
               </div>
-            </div>
+            </ng-container>
             <div class="col-12 flex justify-center cursor-pointer my-2"
               *ngIf="(logoBanksTotal > logoBanks.length) && !logoBanksLoader">
               <p *ngIf="!logoBanksLoadMore" class="text-lg font-bold" (click)="nextLogoBanks()">Load More</p>
@@ -851,22 +853,26 @@
 
                             <thead>
                               <tr>
-                                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-white sm:pl-0">
+                                <th scope="col"
+                                  class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-white sm:pl-0">
                                   #</th>
-                                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                                <th scope="col"
+                                  class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
                                   COLORNAME</th>
-                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">PK_COLORID</th>
-                                 
+                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                  PK_COLORID</th>
+
                               </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-200">
 
                               <tr *ngFor="let item of productColors.data; let i=index">
-                                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">{{i + 1}}</td>
+                                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
+                                  {{i + 1}}</td>
                                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{item.colorName}}</td>
                                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{item.pk_colorID}}</td>
                               </tr>
-                             
+
                             </tbody>
                           </table>
 
@@ -876,15 +882,18 @@
                                 Showing
                                 <span class="font-medium">{{((productColors.page-1) * productColors.size) + 1}}</span>
                                 to
-                                <span class="font-medium">{{ +((productColors.page-1) * productColors.size) + +productColors.size }}</span>
+                                <span class="font-medium">{{ +((productColors.page-1) * productColors.size) +
+                                  +productColors.size }}</span>
                                 of
                                 <span class="font-medium">{{productColors.totalRecords}}</span>
                                 results
                               </p>
                             </div>
                             <div class="flex flex-1 justify-end">
-                              <a (click)="changePage(false)" class="relative inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:outline-offset-0">Previous</a>
-                              <a (click)="changePage(true)" class="relative ml-3 inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:outline-offset-0">Next</a>
+                              <a (click)="changePage(false)"
+                                class="relative inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:outline-offset-0">Previous</a>
+                              <a (click)="changePage(true)"
+                                class="relative ml-3 inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:outline-offset-0">Next</a>
                             </div>
                           </nav>
                         </div>
