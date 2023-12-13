@@ -305,6 +305,7 @@ export class StoreProductsComponent implements OnInit, OnDestroy {
         { header: "blnStoreActive", key: "blnStoreActive", width: 30 },
         { header: "storeProductPermalink", key: "storeProductPermalink", width: 30 },
         { header: "productNumber", key: "productNumber", width: 30 },
+        { header: "productName", key: "productName", width: 30 },
         { header: "blnActive", key: "blnActive", width: 30 },
         { header: "permalink", key: "permalink", width: 10 },
         { header: "lastUpdatedDate", key: "lastUpdatedDate", width: 30 },
