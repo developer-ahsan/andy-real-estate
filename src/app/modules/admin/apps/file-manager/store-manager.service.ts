@@ -536,6 +536,11 @@ export class FileManagerService {
     const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
     return this._httpClient.put(environment.storeNewUrl, payload, { headers }).pipe(retry(3));
   }
+
+  putStoreProductsData(payload) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.put(environment.storeProducts, payload, { headers }).pipe(retry(3));
+  }
   postStoresData(payload) {
     const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
     return this._httpClient.post(environment.storeNewUrl, payload, { headers }).pipe(retry(3));

@@ -672,6 +672,81 @@
               </mat-select>
             </mat-form-field>
           </div>
+          <!-- <div class="col-12 flex justify-end mt-2">
+            <div class="flex items-center my-2">
+              <div class="flex items-center mr-4" *ngIf="productBuilderMsg">
+                <ng-container *ngIf="productBuilderMsg">
+                  <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                  <span class="ml-2">Product Builder Settings Updated Successfully</span>
+                </ng-container>
+              </div>
+              <button class="min-w-40" mat-stroked-button [matTooltip]="'Update'"
+                (click)="updateProductBuilderSettings()" [disabled]="productBuilderLoader">
+                <mat-progress-spinner *ngIf="productBuilderLoader" [diameter]="24" [mode]="'indeterminate'">
+                </mat-progress-spinner>
+                <mat-icon *ngIf="!productBuilderLoader" svgIcon="mode_edit_outline"></mat-icon>
+                <span class="px-2">Update</span>
+              </button>
+            </div>
+          </div> -->
+        </div>
+
+
+        <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow mb-3">
+          <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+            Imprint Artwork Options
+          </div>
+          <div class="col-12 mt-5">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label>Allow selection from store logo bank:</mat-label>
+              <mat-select [(ngModel)]="imprintArtworkOption.storeLogoBank">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="col-12 mt-5">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label> Allow selection from customer logo bank: </mat-label>
+              <mat-select [(ngModel)]="imprintArtworkOption.customerLogoBank">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="col-12 mt-5">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label> Allow uploading artwork: </mat-label>
+              <mat-select [(ngModel)]="imprintArtworkOption.uploadingArtwork">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="col-12 mt-5">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label> Allow use artwork on file: </mat-label>
+              <mat-select [(ngModel)]="imprintArtworkOption.artworkOnFile">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="col-12 mt-5">
+            <mat-form-field appearance="fill" class="w-full">
+              <mat-label> Allow follow instructions: </mat-label>
+              <mat-select [(ngModel)]="imprintArtworkOption.followInstructions">
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+
           <div class="col-12 flex justify-end mt-2">
             <div class="flex items-center my-2">
               <div class="flex items-center mr-4" *ngIf="productBuilderMsg">
@@ -690,6 +765,7 @@
             </div>
           </div>
         </div>
+
       </div>
     </div>
 
@@ -753,6 +829,41 @@
     <!------------- Quick Guides--------------->
     <div *ngIf="presentationScreen == 'Quick guides'">
       <app-quick-guides [selectedStore]="selectedStore" [screenData]="presentationData"></app-quick-guides>
+    </div>
+
+    <div *ngIf="presentationScreen == 'Store Product Colors'">
+      <div class="row">
+        <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
+          <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+            Define Store Colors
+          </div>
+
+          <div class="px-4 sm:px-6 lg:px-8">
+            <div class="mt-8 flow-root">
+              <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                  <table class="min-w-full divide-y divide-gray-300">
+                    <thead>
+                      <tr>
+                        <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                          COLORNAME</th>
+                        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">PK_COLORID</th>
+                         
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                      <tr>
+                        <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">Blue</td>
+                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">1</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

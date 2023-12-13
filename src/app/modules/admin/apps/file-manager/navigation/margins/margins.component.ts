@@ -22,6 +22,8 @@ export class MarginsComponent implements OnInit, OnDestroy {
   dataSourceTotalRecord: number;
   dataSourceLoading = false;
   page: number = 1;
+
+  updateMarginLoader : boolean = false;
   @ViewChild('changeProfile') changeProfile: ElementRef;
 
 
@@ -463,7 +465,7 @@ export class MarginsComponent implements OnInit, OnDestroy {
     let marginsToUpdate = [];
     let margin_group = [];
     let count = 0;
-    const { pk_storeID } = this.selectedStore;
+    const { pk_storeID, storeName } = this.selectedStore;
     if (this.marginDetailsData.margin1) {
       count = 1;
       marginsToUpdate.push(this.marginDetailsData.margin1);
@@ -496,23 +498,81 @@ export class MarginsComponent implements OnInit, OnDestroy {
     }
     let payload = {
       store_products_margin_bulk_update: true,
-      margin_group: `${margin_group.toString()}`,
+      margin_group: marginsToUpdate.toString(),
       store_id: pk_storeID,
       group_size: count,
-      margins_to_update: marginsToUpdate
+      margins_to_update: margin_group
     }
+
 
     $(this.changeProfile.nativeElement).modal('hide');
 
+    this.updateMarginLoader = true;
     this._storesManagerService.putStoresData(payload)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
+        let data = response['data'];
+        if (data?.length > 0) {
 
-        this._snackBar.open("Product margins updated successfuly.", '', {
-          horizontalPosition: 'center',
-          verticalPosition: 'bottom',
-          duration: 3500
-        });
+          const groupedData = data.reduce((acc: { [key: number]: any }, obj: any) => {
+            const storeProductID = obj.fk_storeProductID;
+            if (!acc[storeProductID]) {
+              acc[storeProductID] = [];
+            }
+            acc[storeProductID].push(obj);
+            return acc;
+          }, {});
+
+
+          const { storeName } = this.selectedStore;
+
+          const pricingStoreProductsArray = Object.keys(groupedData).map((key) => {
+            const storeProductID = parseInt(key, 10);
+
+            const pricesMargins = groupedData[storeProductID].map((item: any) => ({
+              quantity: item.quantity,
+              standard_cost: item.cost,
+              target_price: null,
+              margin: item.margin_to_update,
+              priceOverride: item.priceOverride,
+              tccdPrice: item.tccdprice,
+            }));
+
+            return { storeProductID, storeName, pricesMargins };
+          });
+
+          const payload = {
+            pricing_store_products: pricingStoreProductsArray,
+            product_id: this.marginDetailsData.counter,
+            update_pricing: true
+          }
+
+          this._storesManagerService.putStoreProductsData(payload)
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe(
+              (response: any) => {
+                this._snackBar.open("Product Margins updated successfuly.", '', {
+                  horizontalPosition: 'center',
+                  verticalPosition: 'bottom',
+                  duration: 3500
+                });
+                this.updateMarginLoader = false;
+                this._changeDetectorRef.markForCheck();
+                
+
+              },
+              (error: any) => {
+                this._snackBar.open("Error occured while updating product margins.", '', {
+                  horizontalPosition: 'center',
+                  verticalPosition: 'bottom',
+                  duration: 3500
+                });
+                this.updateMarginLoader = false;
+
+                this._changeDetectorRef.markForCheck();
+              }
+            );
+        }
 
         this._changeDetectorRef.markForCheck();
       }, err => {
@@ -521,6 +581,7 @@ export class MarginsComponent implements OnInit, OnDestroy {
           verticalPosition: 'bottom',
           duration: 3500
         });
+        this.updateMarginLoader = false;
         this._changeDetectorRef.markForCheck();
         this.defaultMarginLoader = false;
       });

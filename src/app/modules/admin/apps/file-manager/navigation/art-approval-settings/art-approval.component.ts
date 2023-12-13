@@ -81,7 +81,7 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
   isDefaultGroupData: any = [];
   isDefaultGroupDataTotal: any;
   isDefaultGroupPage = 1;
-  isDefaultGroupColumns: string[] = ['order', 'first', 'last', 'emails','email', 'user', 'royalities', 'ca', 'action'];
+  isDefaultGroupColumns: string[] = ['order', 'first', 'last', 'emails', 'email', 'user', 'royalities', 'ca', 'action'];
 
 
   locationsList: any;
@@ -340,7 +340,7 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
   }
   addProofEmail() {
     const { body, subject } = this.isAddEmailForm.getRawValue();
-    if (!body || subject == '') {
+    if ((body === null || body.trim() === '') || subject.trim() == '') {
       this._snackBar.open("Please fill out required fields", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
@@ -510,7 +510,7 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
   }
   updateDefaulApprovalGroupContact() {
     const { listOrder, firstName, lastName, email } = this.isEditDefaultContactForm.getRawValue();
-    if (listOrder == '' || firstName == '' || lastName == '' || email == '') {
+    if (listOrder.trim() == '' || firstName.trim() == '' || lastName.trim() == '' || email.trim() == '') {
       this._snackBar.open("Please fill out required fields", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
@@ -644,7 +644,7 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
   }
   addApprovalContactGroup() {
     let { listOrder, firstName, lastName, email, storeUserID, fk_artApprovalGroupID, blnEmails, blnStoreUserApprovalContacts, blnRoyalties, add_artApproval_contact } = this.addContactGroupForm.getRawValue();
-    if (listOrder == '' || firstName == '' || lastName == '' || email == '') {
+    if (storeUserID == '' || listOrder == '' || firstName.trim() == '' || lastName.trim() == '' || email.trim() == '') {
       this._snackBar.open("Please fill out required fields", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
@@ -656,8 +656,8 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
         val.push(element.item_id);
       });
       let payload = {
-        listOrder, firstName, lastName, email,
-        storeUserID: val.toString(),
+        listOrder: listOrder, firstName: firstName.trim(), lastName: lastName.trim(), email: email.trim(),
+        storeUserID: val,
         fk_artApprovalGroupID: this.selectedGroup,
         blnEmails, blnStoreUserApprovalContacts, blnRoyalties, add_artApproval_contact
       }
@@ -745,7 +745,7 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
 
   addContactGroup() {
     let { name, fk_storeID, fk_attributeID, fk_locationID, add_artContact_group } = this.addGroupForm.getRawValue();
-    if (name == '' || fk_attributeID == '') {
+    if (name.trim() == '' || fk_attributeID == '') {
       this._snackBar.open("Please fill out required fields", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
@@ -753,7 +753,7 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
       });
     } else {
 
-      let payload = { name, fk_storeID, fk_attributeID, fk_locationID, add_artContact_group }
+      let payload = { name: name.trim(), fk_storeID, fk_attributeID, fk_locationID, add_artContact_group }
       this.addGroupFormLoader = true;
       this._storeManagerService.postStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         this.getApprovalGroupList('add');
