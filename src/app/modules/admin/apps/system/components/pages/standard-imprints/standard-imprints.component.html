@@ -39,7 +39,7 @@
                             Name
                         </th>
                         <td mat-cell *matCellDef="let element">
-                            <input class="form-control text-sm" [(ngModel)]="element.name">
+                            <input class="form-control text-sm" maxlength="100" [(ngModel)]="element.name">
                         </td>
                     </ng-container>
                     <ng-container matColumnDef="action">
@@ -112,12 +112,18 @@
 
                                 <div class="p-5" *ngIf="!element.subLoader && element?.sub_imprints">
                                     <div class="row pb-4" *ngFor="let item of element.sub_imprints;let index=index">
-                                        <div class="col-4"> {{item.name}} </div>
-                                        <div class="col-2">{{item.locationName}}</div>
-                                        <div class="col-2">{{item.methodName}}</div>
+                                        <div class="col-4"> {{index + 1}} {{item.name}} </div>
+                                        <div class="col-2">{{item.locationName}} (ID: {{item.fk_locationID}})</div>
+                                        <div class="col-2">{{item.methodName}} (ID: {{item.fk_methodID}})</div>
                                         <div class="col-1">{{item.decoratorName}}</div>
-                                        <div class="col-1 text-center">{{item.fk_setupChargeID}}</div>
-                                        <div class="col-1 text-center">{{item.fk_runChargeID}}</div>
+                                        <div class="col-1">
+                                            <p>ID: {{item.fk_setupChargeID}}</p>
+                                            <p>Starting at: {{item.setupChargeValue | currency}}</p>
+                                        </div>
+                                        <div class="col-1">
+                                            <p>ID: {{item.fk_runChargeID}}</p>
+                                            <p>Starting at: {{item.runChargeValue | currency}}</p>
+                                        </div>
                                         <div class="col-1 flex justify-center">
                                             <mat-icon class="cursor-pointer" svgIcon="heroicons_outline:pencil-alt"
                                                 matTooltip="Edit Imprint"

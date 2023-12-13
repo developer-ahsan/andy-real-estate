@@ -31,7 +31,7 @@
                         <th mat-header-cell *matHeaderCellDef class="w-40 min-w-40">
                             Color
                         </th>
-                        <td mat-cell *matCellDef="let element">
+                        <td mat-cell *matCellDef="let element" (click)="updateColorToggle(element)">
                             {{element.colorName || not_available}}
                         </td>
                     </ng-container>
@@ -41,10 +41,10 @@
                             <div class="flex">
                                 <mat-icon svgIcon="heroicons_outline:pencil-alt" (click)="updateColorToggle(element)">
                                 </mat-icon>
-                                <mat-icon svgIcon="heroicons_outline:trash" (click)="deleteColor(element)"
+                                <!-- <mat-icon svgIcon="heroicons_outline:trash" (click)="deleteColor(element)"
                                     *ngIf="!element?.delLoader"></mat-icon>
                                 <mat-progress-spinner *ngIf="element?.delLoader" [diameter]="24"
-                                    [mode]="'indeterminate'" class="ml-2"></mat-progress-spinner>
+                                    [mode]="'indeterminate'" class="ml-2"></mat-progress-spinner> -->
                             </div>
                         </td>
                     </ng-container>
@@ -60,21 +60,95 @@
             </div>
             <!-- Update Color -->
             <div *ngIf="isUpdateColors" class="p-6">
-                <mat-form-field class="w-full">
-                    <mat-label>Update Color Name</mat-label>
-                    <input matInput [(ngModel)]="ngUpdateColorName">
-                </mat-form-field>
-                <div class="justify-end flex">
-                    <button [disabled]="isUpdateColorLoader" class="min-w-30 mr-2" mat-stroked-button
-                        [matTooltip]="'Back to list'" (click)="updateColorToggle(null)"> Cancel
-                    </button>
-                    <button [disabled]="isUpdateColorLoader" class="min-w-40" mat-stroked-button
-                        [matTooltip]="'Update Color Name'" (click)="updateColor()">
-                        <mat-icon svgIcon="heroicons_solid:pencil" *ngIf="!isUpdateColorLoader"></mat-icon>
-                        <span class="ml-2" *ngIf="!isUpdateColorLoader"> Update Color </span>
-                        <mat-progress-spinner *ngIf="isUpdateColorLoader" [diameter]="24" [mode]="'indeterminate'">
-                        </mat-progress-spinner>
-                    </button>
+                <div *ngIf="updateColorData.productLoader">
+                    <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+                    </ngx-skeleton-loader>
+                </div>
+                <div *ngIf="!updateColorData.productLoader">
+                    <mat-form-field class="w-full">
+                        <mat-label>Update Color Name</mat-label>
+                        <input matInput [(ngModel)]="ngUpdateColorName">
+                    </mat-form-field>
+                    <div class="justify-end flex">
+                        <button [disabled]="isUpdateColorLoader" class="min-w-30 mr-2" mat-stroked-button
+                            [matTooltip]="'Back to list'" (click)="updateColorToggle(null)"> Back to list
+                        </button>
+                        <button [disabled]="isUpdateColorLoader" class="min-w-40 mr-2" mat-stroked-button
+                            [matTooltip]="'Update Color Name'" (click)="updateColor()">
+                            <mat-icon svgIcon="heroicons_solid:pencil" *ngIf="!isUpdateColorLoader"></mat-icon>
+                            <span class="ml-2" *ngIf="!isUpdateColorLoader"> Update Color </span>
+                            <mat-progress-spinner *ngIf="isUpdateColorLoader" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                        </button>
+                        <button [disabled]="updateColorData.isDelColorLoader" class="min-w-40" mat-stroked-button
+                            [matTooltip]="'Delete Color'" (click)="deleteColor()"
+                            [disabled]="updateColorData?.colorProducts.length || updateColorData.isDelColorLoader">
+                            <mat-icon svgIcon="heroicons_solid:trash"
+                                *ngIf="!updateColorData.isDelColorLoader"></mat-icon>
+                            <span class="ml-2" *ngIf="!updateColorData.isDelColorLoader"> Delete Color </span>
+                            <mat-progress-spinner *ngIf="updateColorData.isDelColorLoader" [diameter]="24"
+                                [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                        </button>
+                    </div>
+                    <div class="mt-2">
+                        <div class="alert alert-info">
+                            <h2>The color " {{updateColorData.colorName}}" is used by
+                                {{updateColorData?.colorProducts?.length}} products.</h2>
+                        </div>
+                        <div class="my-2">
+                            <mat-form-field class="w-full" *ngIf="updateColorData?.colorFilterdProducts.length>0">
+                                <input matInput placeholder="Search by keyword" (keyup)="searchColorProducts($event)">
+                            </mat-form-field>
+                            <table class="table table-striped" *ngIf="updateColorData?.colorProducts.length > 0">
+                                <thead>
+                                    <tr>
+                                        <th (click)="sortColumn('pk_productID')" class="cursor-pointer">
+                                            ID
+                                            <mat-icon class="icon-size-4">{{ getSortingIcon('pk_productID')
+                                                }}</mat-icon>
+                                        </th>
+                                        <th (click)="sortColumn('productNumber')" class="cursor-pointer">
+                                            Number
+                                            <mat-icon class="icon-size-4">{{ getSortingIcon('productNumber')
+                                                }}</mat-icon>
+                                        </th>
+                                        <th (click)="sortColumn('productName')" class="cursor-pointer">
+                                            Name
+                                            <mat-icon class="icon-size-4">{{ getSortingIcon('productName') }}</mat-icon>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let product of updateColorData?.colorProducts">
+                                        <td>
+                                            <a target="_blank"
+                                                [routerLink]="['/apps/ecommerce/inventory', product.pk_productID]">
+                                                {{ product.pk_productID }}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <a target="_blank"
+                                                [routerLink]="['/apps/ecommerce/inventory', product.pk_productID]">
+                                                {{ product.productNumber }}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <a target="_blank"
+                                                [routerLink]="['/apps/ecommerce/inventory', product.pk_productID]">
+                                                <span [innerHTML]="product.productName"></span>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+
+                            <div class="alert alert-warning" *ngIf="updateColorData?.colorFilterdProducts.length == 0">
+                                This
+                                color is not currently associated with any products.</div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <!-- No color Found -->
@@ -84,6 +158,7 @@
                 </div>
             </ng-template>
         </div>
+        <!-- Add New Color -->
         <div *ngIf="mainScreen == 'Add New Color'" class="p-6">
             <mat-form-field class="example-chip-list w-full" appearance="fill">
                 <mat-label>Enter a list of new colors to add.</mat-label>

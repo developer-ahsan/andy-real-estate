@@ -8,6 +8,7 @@ import { SystemService } from '../../system.service';
 import { AddColor, AddImprintColor, AddImprintMethod, AddStandardImprintGroup, DeleteColor, DeleteImprintColor, DeleteStandardImprint, DeleteStandardImprintGroup, UpdateColor, UpdateImprintColor, UpdateImprintMethod, UpdateStandardImprintGroup } from '../../system.types';
 import { fuseAnimations } from '@fuse/animations';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-standard-imprints',
@@ -58,6 +59,7 @@ export class StandardImprintsComponent implements OnInit, OnDestroy {
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _systemService: SystemService,
+    private _commonService: DashboardsService,
     private _inventoryService: InventoryService,
   ) { }
 
@@ -65,13 +67,6 @@ export class StandardImprintsComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.getStandardGroup(1, 'get');
     this.getAllImprintMethods();
-
-    // forkJoin([
-    //   this.getAllImprintMethods(),
-    //   this.getAllImprintDigitizer(),
-    //   this.getAllImprintLocation(),
-    //   this.getAllDistributionCodes()
-    // ]);
   };
   calledScreen(value) {
     this.mainScreen = value;
@@ -240,7 +235,7 @@ export class StandardImprintsComponent implements OnInit, OnDestroy {
     });
   }
   addNewGroup() {
-    if (this.ngName == '') {
+    if (this.ngName.trim() == '') {
       this._systemService.snackBar('Imprint group name is required');
       return;
     }
@@ -249,7 +244,7 @@ export class StandardImprintsComponent implements OnInit, OnDestroy {
       add_standard_imprint_group: true
     }
     this.isAddGroupLoader = true;
-    this._systemService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._systemService.AddSystemData(this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       if (res["success"]) {
@@ -291,7 +286,7 @@ export class StandardImprintsComponent implements OnInit, OnDestroy {
     this.isUpdateMethod = !this.isUpdateMethod;
   }
   updateGroup(element) {
-    if (element.name == '') {
+    if (element.name.trim() == '') {
       this._systemService.snackBar('Imprint group name is required');
       return;
     }
@@ -301,7 +296,7 @@ export class StandardImprintsComponent implements OnInit, OnDestroy {
       update_standard_imprint_group: true
     }
     element.updateLoader = true;
-    this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._systemService.UpdateSystemData(this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       element.updateLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {

@@ -21,7 +21,7 @@ export class ColorsComponent implements OnInit, OnDestroy {
 
   dataSource = [];
   tempDataSource = [];
-  displayedColumns: string[] = ['name', 'action'];
+  displayedColumns: string[] = ['name'];
   totalUsers = 0;
   tempRecords = 0;
   page = 1;
@@ -174,19 +174,21 @@ export class ColorsComponent implements OnInit, OnDestroy {
     });
   }
   // Delete Color
-  deleteColor(item) {
-    item.delLoader = true;
+  deleteColor() {
+    this.updateColorData.isDelColorLoader = true;
     let payload: DeleteColor = {
-      color_id: item.pk_colorID,
+      color_id: this.updateColorData.pk_colorID,
       delete_color: true
     }
     this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-      item.delLoader = false
+      this.updateColorData.isDelColorLoader = false
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
-      this.dataSource = this.dataSource.filter(color => color.pk_colorID != item.pk_colorID);
+      this.dataSource = this.dataSource.filter(color => color.pk_colorID != this.updateColorData.pk_colorID);
       this.totalUsers--;
+      this.mainScreen = 'Current Colors';
       this._systemService.snackBar('Color Deleted Successfully');
+      this.updateColorToggle(null);
       this._changeDetectorRef.markForCheck();
     }, err => {
       this._systemService.snackBar('Something went wrong');
@@ -197,11 +199,14 @@ export class ColorsComponent implements OnInit, OnDestroy {
     if (item) {
       this.ngUpdateColorName = item.colorName;
       this.updateColorData = item;
+      if (!item.colorProducts) {
+        this.getColorProducts();
+      }
     }
     this.isUpdateColors = !this.isUpdateColors;
   }
   updateColor() {
-    if (this.ngUpdateColorName == '') {
+    if (this.ngUpdateColorName.trim() == '') {
       this._systemService.snackBar('Color name is required');
       return;
     }
@@ -210,6 +215,7 @@ export class ColorsComponent implements OnInit, OnDestroy {
       color_name: this.ngUpdateColorName,
       update_color: true
     }
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
     this.isUpdateColorLoader = true;
     this._systemService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this.isUpdateColorLoader = false
@@ -226,6 +232,74 @@ export class ColorsComponent implements OnInit, OnDestroy {
     }, err => {
       this._systemService.snackBar('Something went wrong');
     })
+  }
+
+  getColorProducts() {
+    this.updateColorData.productLoader = true;
+    let params = {
+      products_list_per_color: true,
+      color_id: this.updateColorData.pk_colorID
+    }
+    this._systemService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.updateColorData.colorProducts = [];
+      this.updateColorData.colorFilterdProducts = [];
+      if (res["data"][0].getColorProducts) {
+        const products = res["data"][0].getColorProducts.split(',,')
+        products.forEach(product => {
+          const [pk_productID, productNumber, productName] = product.split('::');
+          this.updateColorData.colorProducts.push({ pk_productID, productNumber, productName });
+          this.updateColorData.colorFilterdProducts.push({ pk_productID, productNumber, productName });
+        });
+      }
+      this.updateColorData.productLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  searchColorProducts(event: any) {
+    const searchTerm = event.target.value.toLowerCase();
+
+    this.updateColorData.colorProducts = this.updateColorData.colorFilterdProducts.filter((product) => {
+      const productNumberLower = product.productNumber.toLowerCase();
+      const productNameLower = product.productName.toLowerCase();
+
+      return productNumberLower.includes(searchTerm) || productNameLower.includes(searchTerm);
+    });
+  }
+
+  sortedColumn: string | null = null; // Track the currently sorted column
+  isAscending = true; // Track the sorting order
+
+  sortColumn(column: string) {
+    if (this.sortedColumn === column) {
+      // If the same column is clicked, reverse the sorting order
+      this.isAscending = !this.isAscending;
+    } else {
+      // If a different column is clicked, set the sorting order to ascending
+      this.sortedColumn = column;
+      this.isAscending = true;
+    }
+
+    // Sort the array based on the selected column
+    this.updateColorData.colorProducts.sort((a, b) => {
+      const valueA = a[column];
+      const valueB = b[column];
+
+      if (typeof valueA === 'string' && typeof valueB === 'string') {
+        // Case-insensitive string comparison
+        return this.isAscending ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
+      }
+
+      // Numeric or other types comparison
+      return this.isAscending ? valueA - valueB : valueB - valueA;
+    });
+  }
+
+  // Function to determine the sorting icon
+  getSortingIcon(column: string) {
+    if (this.sortedColumn === column) {
+      return this.isAscending ? 'arrow_upward' : 'arrow_downward';
+    }
+    return '';
   }
 
   /**

@@ -10,20 +10,17 @@
         </div>
         <!-- Decorator -->
         <div class="col-12">
-            <b>Decorator <span *ngIf="!suppliers.length"
-                    class="text-sm text-secondary font-semibold ml-2 cursor-pointer">
-                    (Fetch Decorators) </span> </b>
+            <b>Decorator</b>
         </div>
         <div class="col-12">
-            <!-- <mat-form-field class="w-full" appearance="fill">
-                <mat-select [(ngModel)]="selectedSupplier" name="supplier" [disabled]="suppliers.length ? false : true"
-                    (selectionChange)="changeSupplerSelection()">
+            <mat-form-field class="w-full" appearance="fill">
+                <mat-select [(ngModel)]="selectedSuppliers" name="supplier">
                     <mat-option *ngFor="let supplier of suppliers" [value]="supplier">
                         <small>{{supplier.companyName}}</small>
                     </mat-option>
                 </mat-select>
-            </mat-form-field> -->
-            <mat-form-field class="w-full">
+            </mat-form-field>
+            <!-- <mat-form-field class="w-full">
                 <input matInput placeholder="Search suppliers" matTooltip="Search suppliers by name"
                     [matAutocomplete]="auto" [formControl]="searchSuppliersCtrl">
                 <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelectedSuppliers($event)"
@@ -35,7 +32,7 @@
                         </mat-option>
                     </ng-container>
                 </mat-autocomplete>
-            </mat-form-field>
+            </mat-form-field> -->
         </div>
 
         <!-- Imprint Method -->
@@ -140,7 +137,7 @@
         </div>
         <div class="col-12">
             <mat-form-field appearance="fill" class="w-full">
-                <input matInput [(ngModel)]="areaValue">
+                <input matInput [(ngModel)]="areaValue" maxlength="80">
             </mat-form-field>
         </div>
 
@@ -184,25 +181,29 @@
                         <div class="col-2">
                             <mat-form-field appearance="fill" class="w-full">
                                 <mat-label>Two</mat-label>
-                                <input matInput type="number" min="1" value="1" [formControlName]="'twoColorQ'">
+                                <input matInput type="number" min="1" value="1"
+                                    (input)="_commonService.validateInput($event)" [formControlName]="'twoColorQ'">
                             </mat-form-field>
                         </div>
                         <div class="col-2">
                             <mat-form-field appearance="fill" class="w-full">
                                 <mat-label>Three</mat-label>
-                                <input matInput type="number" min="1" value="1" [formControlName]="'threeColorQ'">
+                                <input matInput type="number" min="1" value="1"
+                                    (input)="_commonService.validateInput($event)" [formControlName]="'threeColorQ'">
                             </mat-form-field>
                         </div>
                         <div class="col-2">
                             <mat-form-field appearance="fill" class="w-full">
                                 <mat-label>Four</mat-label>
-                                <input matInput type="number" min="1" value="1" [formControlName]="'fourColorQ'">
+                                <input matInput type="number" min="1" value="1"
+                                    (input)="_commonService.validateInput($event)" [formControlName]="'fourColorQ'">
                             </mat-form-field>
                         </div>
                         <div class="col-2">
                             <mat-form-field appearance="fill" class="w-full">
                                 <mat-label>Five</mat-label>
-                                <input matInput type="number" min="1" value="1" [formControlName]="'fiveColorQ'">
+                                <input matInput type="number" min="1" value="1"
+                                    (input)="_commonService.validateInput($event)" [formControlName]="'fiveColorQ'">
                             </mat-form-field>
                         </div>
                     </div>
@@ -380,7 +381,7 @@
         </div>
         <div class="col-12">
             <mat-form-field appearance="fill" class="w-full">
-                <input matInput [(ngModel)]="minQuantity" type="number">
+                <input matInput [(ngModel)]="minQuantity" (input)="_commonService.validateInput($event)" type="number">
             </mat-form-field>
         </div>
 
@@ -403,7 +404,8 @@
         </div>
         <div class="col-12">
             <mat-form-field appearance="fill" class="w-full">
-                <input matInput [(ngModel)]="addImprintDisplayOrderValue" type="number" min="1">
+                <input matInput [(ngModel)]="addImprintDisplayOrderValue" maxlength="10"
+                    (input)="_commonService.validateInput($event)" type="number" min="1">
             </mat-form-field>
         </div>
         <div class="col-12 text-right mb-5">

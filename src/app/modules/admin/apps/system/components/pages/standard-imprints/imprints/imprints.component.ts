@@ -14,6 +14,7 @@ import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inv
 import { MatDialog } from '@angular/material/dialog';
 import { ScrollStrategy, ScrollStrategyOptions } from '@angular/cdk/overlay';
 import { environment } from 'environments/environment';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-addEdit-imprints',
@@ -127,7 +128,8 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
     private _inventoryServcie: InventoryService,
     private _formBuilder: FormBuilder,
     public dialog: MatDialog,
-    private readonly sso: ScrollStrategyOptions
+    private readonly sso: ScrollStrategyOptions,
+    public _commonService: DashboardsService
   ) {
     this.scrollStrategy = this.sso.noop();
   }
@@ -314,66 +316,25 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
     return value?.companyName;
   }
   getSuppliers(data?: any) {
-    this._systemService.Suppliers$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.allSuppliers = this.allSuppliers.concat(res["data"]);
-      if (data) {
-        const { decoratorName, fk_decoratorID } = data;
-        this.searchSuppliersCtrl.setValue({ companyName: decoratorName, pk_companyID: fk_decoratorID });
-        this.selectedSuppliers = { companyName: decoratorName, pk_companyID: fk_decoratorID };
-      } else {
-        this.selectedSuppliers = this.allSuppliers[0];
-        this.searchSuppliersCtrl.setValue(this.selectedSuppliers);
-      }
-      this.isLoading = false;
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this.isLoading = false;
-      this._changeDetectorRef.markForCheck();
-    });
-    let params;
-    this.searchSuppliersCtrl.valueChanges.pipe(
-      filter((res: any) => {
-        params = {
-          supplier: true,
-          bln_active: 1,
-          keyword: res
-        }
-        return res !== null && res.length >= 2
-      }),
-      distinctUntilChanged(),
-      debounceTime(300),
-      tap(() => {
-        this.allSuppliers = [];
-        this.isSearchingSuppliers = true;
-        this._changeDetectorRef.markForCheck();
-      }),
-      switchMap(value => this._systemService.getSystemsData(params)
-        .pipe(
-          finalize(() => {
-            this.isSearchingSuppliers = false
-            this._changeDetectorRef.markForCheck();
-          }),
-        )
-      )
-    ).subscribe((data: any) => {
-      this.allSuppliers = data['data'];
-    });
-  }
-  getAllSuppliers(data?: any) {
-    this._systemService.Suppliers$
+    console.log(data);
+    this._commonService.suppliersData$
       .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((supplier) => {
-        this.suppliers = supplier["data"];
-        this.selectedSupplier = this.suppliers[0];
-
+      .subscribe((suppliers) => {
+        const activeSuppliers = suppliers["data"].filter(element => element.blnActiveVendor);
+        this.suppliers.push({ pk_companyID: 0, companyName: 'Select a decorator' });
+        this.suppliers.push(...activeSuppliers);
+        this.selectedSuppliers = this.suppliers[0];
         if (data) {
-          const { fk_decoratorID } = data
-          this.selectedSupplier = this.suppliers.find(x => x.pk_companyID === fk_decoratorID) || this.suppliers[2];
+          const { decoratorName, fk_decoratorID } = data;
+          this.selectedSuppliers = this.suppliers.find(x => x.pk_companyID === fk_decoratorID);
+        } else {
+          this.selectedSuppliers = this.suppliers[0];
         }
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
   }
+
   getAddImprintDigitizers(data?: any) {
     this._systemService.imprintDigitizer$
       .pipe(takeUntil(this._unsubscribeAll))
@@ -555,7 +516,7 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
       return;
     }
     const { run, setup } = this.runSetup.getRawValue();
-    if (this.areaValue === "") {
+    if (this.areaValue.trim() === "") {
       this._systemService.snackBar("Imprint AREA has not been defined correctly.");
       return;
     };
@@ -567,7 +528,7 @@ export class AddEditImprintsComponent implements OnInit, OnDestroy {
       };
     };
 
-    if (run === "" || setup === "") {
+    if (run.trim() === "" || setup.trim() === "") {
       this._systemService.snackBar("Select a SETUP or RUN charge");
       return;
     };

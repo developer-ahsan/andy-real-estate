@@ -29,6 +29,7 @@ export class ApprovalContactsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    this.isLoading = true;
     this.addForm = {
       listOrder: 1,
       firstName: '',
@@ -39,7 +40,6 @@ export class ApprovalContactsComponent implements OnInit, OnDestroy {
       blnEmails: false,
       blnRoyalties: false,
     }
-    this.getStores();
     this.getCustomer();
   }
   getCustomer() {
@@ -47,20 +47,25 @@ export class ApprovalContactsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response) => {
         this.selectedCustomer = response;
+        this.getStores();
       });
   }
   getStores() {
-    this._commonService.storesData$
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe(res => {
-        this.allStores.push({ storeName: 'Select a store', pk_storeID: 0 });
-        const activeStores = res["data"].filter(element => element.blnActive);
-        this.allStores.push(...activeStores);
-        this.selectedStore = this.allStores[0];
-      });
+    let params = {
+      approval_contact: true,
+      user_id: this.selectedCustomer.pk_userID,
+    }
+    this._customerService.GetApiData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.allStores.push({ storeName: 'Select a store', storeID: 0 });
+      const activeStores = res["data"];
+      this.allStores.push(...activeStores);
+      this.selectedStore = this.allStores[0];
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    });
   }
   getApprovalContacts() {
-    if (this.selectedStore.pk_storeID != 0) {
+    if (this.selectedStore.storeID != 0) {
       this.addForm = {
         listOrder: 1,
         firstName: '',
@@ -76,7 +81,7 @@ export class ApprovalContactsComponent implements OnInit, OnDestroy {
       let params = {
         approval_contact: true,
         user_id: this.selectedCustomer.pk_userID,
-        store_id: this.selectedStore.pk_storeID
+        store_id: this.selectedStore.storeID
       }
       this._customerService.GetApiData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
         this.isGetContactsLoader = false;
@@ -128,7 +133,7 @@ export class ApprovalContactsComponent implements OnInit, OnDestroy {
       last_name: lastName,
       email,
       bln_emails: blnEmails,
-      store_id: Number(this.selectedStore.pk_storeID),
+      store_id: Number(this.selectedStore.storeID),
       student_org_code: studentOrgCode,
       student_org_name: studentOrgName,
       bln_royalties: blnRoyalties,
