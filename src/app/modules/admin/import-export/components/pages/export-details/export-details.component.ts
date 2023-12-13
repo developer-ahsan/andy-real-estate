@@ -79,22 +79,20 @@ export class ExportDetailComponent implements OnInit, OnDestroy {
     this.getCategories(this.categorypage);
   };
   getCategoriesExportData() {
-    this.isExportLoader = true;
+    // this.isExportLoader = true;
     let catList = [];
     let excludeSubCatID = [];
 
     this.allCategories.forEach(element => {
-      if (element.checked || element.subCats.some(subCat => subCat.isChecked)) {
+      if (element.checked) {
         catList.push(element.pk_categoryID);
+        element.subCats.forEach(subCat => {
+          if (!subCat.isChecked) {
+            excludeSubCatID.push(subCat.pk_subCategoryID);
+          }
+        });
       }
-
-      element.subCats.forEach(subCat => {
-        if (!subCat.isChecked) {
-          excludeSubCatID.push(subCat.pk_subCategoryID);
-        }
-      });
     });
-
     let params = {
       export_categories: true,
       categories_id_list: catList.toString(),
@@ -141,6 +139,11 @@ export class ExportDetailComponent implements OnInit, OnDestroy {
       } else {
         this.selectedCategories[index].isChecked = true;
       }
+      this.allCategories.filter(cat => {
+        if (cat.pk_categoryID == item.pk_categoryID) {
+          cat.checked = true;
+        }
+      })
     } else {
       const index = this.selectedCategories.findIndex(val => val.subcategory_id == item.pk_subCategoryID);
       if (index > -1) {
@@ -169,7 +172,22 @@ export class ExportDetailComponent implements OnInit, OnDestroy {
       element.subCategoryID = 0;
       element.subCategoryName = '';
       element.subCategoryPermalink = '';
-      data.push(element);
+      data.push(
+        {
+          fk_storeID: element.fk_storeID,
+          pk_categoryID: element.pk_categoryID,
+          subCategoryID: 0,
+          categoryName: element.categoryName,
+          subCategoryName: '',
+          categoryPermalink: element.permalink,
+          subCategoryPermalink: '',
+          categoryDescription: element.categoryDesc,
+          subCategoryDescription: '',
+          categoryMetaDescription: element.metaDesc,
+          subCategoryMetaDescription: '',
+          categoryBrowserTitle: element.browserTitle,
+          subCategoryBrowserTitle: ''
+        });
       if (element.subCategories) {
         let subCat = element.subCategories.split(',,');
         subCat.forEach(sub => {
@@ -181,18 +199,20 @@ export class ExportDetailComponent implements OnInit, OnDestroy {
               subCategoryID: pk_subCategoryID,
               categoryName: element.categoryName,
               subCategoryName: subCategoryName,
-              categoryPermalink: element.permalink,
+              categoryPermalink: '',
               subCategoryPermalink: permalink,
-              categoryDescription: element.categoryDesc,
+              categoryDescription: '',
               subCategoryDescription: subCategoryDesc != 'N/A' ? subCategoryDesc : '',
-              categoryMetaDescription: element.metaDesc,
+              categoryMetaDescription: '',
               subCategoryMetaDescription: metaDesc != 'N/A' ? metaDesc : '',
-              categoryBrowserTitle: element.browserTitle,
+              categoryBrowserTitle: '',
               subCategoryBrowserTitle: browserTitle != 'N/A' ? browserTitle : ''
             });
         });
       }
     });
+    // console.log(data);
+    // return;
     const fileName = `Categories_Export-${this.paramsData.storeName}-${moment(new Date()).format('MM-DD-yy-hh-mm-ss')}`;
     const workbook = new Excel.Workbook();
     const worksheet = workbook.addWorksheet("Categories_Export");
