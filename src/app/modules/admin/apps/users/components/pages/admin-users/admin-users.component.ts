@@ -149,7 +149,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
 
   calledScreen(value) {
     this.mainScreen = value;
-    if (this.mainScreen == 'Current Users') {
+    if (this.mainScreen == 'Admin Users') {
       this.dataSource = this.tempDataSource;
       this.page = 1;
       this._changeDetectorRef.markForCheck();
@@ -200,7 +200,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
       // });
       if (this.parentPermissionData.length == 0) {
         this.permissionLoader = true;
-        this.getParentPermissions(1);
+        this.getParentPermissions();
       }
     }
   }
@@ -299,6 +299,13 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
       if (this.permissionGroup.length == 0) {
         this.permissionGroupLoader = true;
         this.getPermissionGroups();
+      }
+    } else {
+      this.dataSource = this.tempDataSource;
+      this.page = 1;
+      this._changeDetectorRef.markForCheck();
+      if (this.dataSource.length == 0) {
+        this.getAdminUsers(1, 'get');
       }
     }
 
@@ -491,7 +498,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
-  getParentPermissions(page) {
+  getParentPermissions() {
     let params = {
       employee_permissions: true,
       user_id: this.updateUserData.pk_userID,
@@ -531,44 +538,47 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
 
   updatePermissions() {
     let selectedPermissions = [];
-    let unselectedPermissions = [];
-    this.parentPermissionData.forEach(permission => {
-      if (permission.blnChecked) {
-        selectedPermissions.push(permission.pk_sectionID);
-      } else {
-        unselectedPermissions.push(permission.pk_sectionID);
-      }
-      permission.children.forEach(child => {
-        if (child.blnChecked) {
+    if (this.ngSelectedGroup == 0) {
+      this.parentPermissionData.forEach(permission => {
+        if (permission.blnChecked) {
           selectedPermissions.push(permission.pk_sectionID);
-        } else {
-          unselectedPermissions.push(permission.pk_sectionID);
         }
+        permission.children.forEach(child => {
+          if (child.blnChecked) {
+            selectedPermissions.push(permission.pk_sectionID);
+          }
+        });
       });
-    });
-    let payload: RootPermissions = {
-      user_id: this.updateUserData.pk_userID,
-      add_permissions: selectedPermissions,
-      remove_permissions: unselectedPermissions,
-      update_permissions_group: true
+    } else {
+      const group = this.permissionGroup.filter((item) => item.pk_groupID == this.ngSelectedGroup);
+      selectedPermissions = group[0].sectionIDs.split(',');
     }
-    console.log(payload);
-    // this.isUpdateAdminPermissions = true;
-    // this._UsersService.UpdateAdminsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-    //   if (res["success"]) {
-    //     this.isUpdateAdminPermissions = false;
-    //     this._UsersService.snackBar('User Permissions Updated Successfully');
-    //     this._changeDetectorRef.markForCheck();
-    //   } else {
-    //     this._UsersService.snackBar(res["message"]);
-    //     this.isUpdateAdminPermissions = false;
-    //     this._changeDetectorRef.markForCheck();
-    //   }
-    // }, err => {
-    //   this._UsersService.snackBar('Something went wrong');
-    //   this.isUpdateAdminPermissions = false;
-    //   this._changeDetectorRef.markForCheck();
-    // });
+
+    let payload = {
+      user_id: this.updateUserData.pk_userID,
+      permissions: selectedPermissions,
+      update_user_permissions: true
+    }
+    this.isUpdateAdminPermissions = true;
+    this._UsersService.UpdateAdminsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this.isUpdateAdminPermissions = false;
+        this._UsersService.snackBar(res["message"]);
+        this.permissionLoader = true;
+        this.ngSelectedGroup = 0;
+        this.parentPermissionData = [];
+        this.getParentPermissions();
+        this._changeDetectorRef.markForCheck();
+      } else {
+        this._UsersService.snackBar(res["message"]);
+        this.isUpdateAdminPermissions = false;
+        this._changeDetectorRef.markForCheck();
+      }
+    }, err => {
+      this._UsersService.snackBar('Something went wrong');
+      this.isUpdateAdminPermissions = false;
+      this._changeDetectorRef.markForCheck();
+    });
   }
 
   removeAdminUser() {
