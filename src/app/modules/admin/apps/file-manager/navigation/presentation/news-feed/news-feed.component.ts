@@ -106,6 +106,7 @@ export class PresentationNewsFeedComponent implements OnInit {
           verticalPosition: 'bottom',
           duration: 3000
         });
+        this.newsFeedAddForm.reset();
         this._changeDetectorRef.markForCheck();
       }, err => {
         this._snackBar.open("Error occured while adding news feed", '', {
