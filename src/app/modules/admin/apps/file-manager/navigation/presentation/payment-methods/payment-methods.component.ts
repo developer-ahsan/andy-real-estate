@@ -126,6 +126,14 @@ export class PresentationPaymentMethodsComponent implements OnInit {
       });
       return;
     } 
+    if(payment.some(item => item.displayOrder < 0)) {
+      this._snackBar.open("Display order must have positive numbers", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      return;
+    }
     payment.forEach((item : any) => {
       item = this.replaceSingleQuotesWithDoubleSingleQuotes(item)
     })

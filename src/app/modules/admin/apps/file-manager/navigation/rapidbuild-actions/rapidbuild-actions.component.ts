@@ -2,6 +2,7 @@ import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, OnDe
 import { Subject } from 'rxjs';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import { takeUntil } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 /**
  * @title Basic use of `<table mat-table>`
@@ -25,7 +26,8 @@ export class RapidbuildActionsComponent implements OnInit, OnDestroy {
 
   constructor(
     private _storeManagerService: FileManagerService,
-    private _changeDetectorRef: ChangeDetectorRef
+    private _changeDetectorRef: ChangeDetectorRef,
+    private router: Router,
   ) { }
 
   ngOnInit(): void {
@@ -48,31 +50,35 @@ export class RapidbuildActionsComponent implements OnInit, OnDestroy {
     this._storeManagerService.getStoreProducts(pk_storeID, page)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
-        // this.dataSource = response["data"];
-        // // console.log(this.dataSource);
+        this.dataSource = response["data"];
 
-        // let extractedProducts = [];
+        let extractedProducts = [];
 
-        // this.dataSource.forEach(item => {
-        //   let productsList = item.productsList.split(",,");
+        this.dataSource.forEach(item => {
+          let productsList = item.productsList.split(",,");
 
-        //   productsList.forEach(product => {
-        //     let productAttributes = product.split("==");
-        //     console.log(productAttributes)
-        //     let productObject = {
-        //       spid: productAttributes[0],
-        //       name: productAttributes[1],
-        //       brand: productAttributes[2],
-        //       // Add more properties as needed based on the index of attributes
-        //       // Example: category: productAttributes[3], timestamp: productAttributes[4], etc.
-        //     };
-        //     extractedProducts.push(productObject);
-        //   });
-        // });
+          productsList.forEach(product => {
+            let productAttributes = product.split("==");
+            let productObject = {
+              pk_storeProductID: productAttributes[0],
+              productName: productAttributes[1],
+              companyName: productAttributes[2],
+              vendorRelation: productAttributes[3],
+              lastUpdatedDate: productAttributes[4],
+              blnActive: productAttributes[5],
+              blnStoreActive: productAttributes[6],
+              specialDescriptionExists: productAttributes[7],
+              someValue1: productAttributes[8],
+              videoExists: productAttributes[9],
+              productColorExists: productAttributes[10],
+              technoLogoExists: productAttributes[11],
+              orderExists: productAttributes[12],
+            }
+            extractedProducts.push(productObject);
+          });
+        });
 
-        // console.log(extractedProducts);
-
-
+        this.dataSource = extractedProducts;
         this.dataSourceTotalRecord = response["totalRecords"];
         this.dataSourceLoading = false;
 
@@ -80,6 +86,10 @@ export class RapidbuildActionsComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
       });
   };
+
+  fileExists(item) {
+    return true;
+  }
 
   getNextData(event) {
     const { previousPageIndex, pageIndex } = event;
@@ -91,6 +101,12 @@ export class RapidbuildActionsComponent implements OnInit, OnDestroy {
     };
     this.getMainStoreCall(this.page);
   };
+
+  navigate(data) {
+    this.router.navigateByUrl(`/apps/ecommerce/inventory/storeProduct/${data.pk_storeProductID}/pricing`);
+  }
+
+
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions
     this._unsubscribeAll.next();

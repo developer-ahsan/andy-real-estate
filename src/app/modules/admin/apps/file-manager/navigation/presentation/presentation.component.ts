@@ -683,7 +683,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
   // Special Offers
   UpdateTypeKit() {
     if(this.ngTypeKit.trim() === '') {
-      this._snackBar.open("Typekit updated successfuly", '', {
+      this._snackBar.open("Please fill required fields", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
         duration: 3000

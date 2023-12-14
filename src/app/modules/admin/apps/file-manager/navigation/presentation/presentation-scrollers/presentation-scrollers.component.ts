@@ -292,7 +292,7 @@ hasNegativeDisplayOrder(arr) {
     }
     
       this.addTestimonialLoader = true;
-      this._fileManagerService.AddTestimonial(this.addTestimonialForm.value).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._fileManagerService.AddTestimonial(this.replaceSingleQuotesWithDoubleSingleQuotes(this.addTestimonialForm.value)).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         if (res["success"]) {
           this.getScreenData('presentation_scroller_testimonials', this.mainScreen, 'add');
           this._changeDetectorRef.markForCheck();
