@@ -100,6 +100,19 @@ export class ProductColorSizesComponent implements OnInit, OnDestroy {
           }
         });
       });
+
+      this.correctionsSumList.forEach(element => {
+        this.sizesList.forEach(size => {
+          element.items.forEach(item => {
+            if (item.fk_sizeID == size.fk_sizeID) {
+              item.amount += size.run;
+            }
+          });
+        });
+      });
+
+      console.log(this.correctionsSumList);
+      console.log(this.sizesList);
       const newFinalCostList = JSON.parse(JSON.stringify(this.correctionsSumList));
       newFinalCostList.forEach(element => {
         element.items.forEach(size => {

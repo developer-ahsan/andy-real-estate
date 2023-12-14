@@ -409,6 +409,7 @@ export class CatalogComponent {
   };
 
   getCatalogs(page) {
+
     if (this.selectedSupplier) {
       this.catalogFilter.company_search = this.selectedSupplier.pk_companyID;
     } else {
@@ -470,6 +471,7 @@ export class CatalogComponent {
         this.isPageLoading = false;
         this._changeDetectorRef.markForCheck();
       });
+
   }
   onPageChange(ev) {
     this.catalogFilter.perPage = ev.value;

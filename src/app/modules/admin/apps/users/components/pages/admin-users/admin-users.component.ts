@@ -114,7 +114,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
       firstName: new FormControl('', Validators.required),
       lastName: new FormControl('', Validators.required),
       blnActive: new FormControl(false),
-      blnMaster: new FormControl(false),
+      blnMasterAccount: new FormControl(false),
       blnManager: new FormControl(false),
       pk_userID: new FormControl(0),
       update_admin_user: new FormControl(true)
@@ -367,13 +367,13 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
     });
   }
   updateUser() {
-    const { userName, password, email, firstName, lastName, blnManager, blnMaster, blnActive, pk_userID, update_admin_user } = this.updateUserForm.getRawValue();
+    const { userName, password, email, firstName, lastName, blnManager, blnMasterAccount, blnActive, pk_userID, update_admin_user } = this.updateUserForm.getRawValue();
     if (!this._commonService.isValidEmail(email)) {
       this._UsersService.snackBar('Please enter a valid email');
       return;
     }
     let payload: UpdateAdminUser = {
-      userName, password, email, firstName, lastName, blnActive, blnMaster, blnManager, update_admin_user, user_id: pk_userID
+      userName, password, email, firstName, lastName, blnActive, blnMaster: blnMasterAccount, blnManager, update_admin_user, user_id: pk_userID
     }
     // Use utility functions for replacing single quotes and null spaces
     payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
@@ -392,7 +392,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
         let arr = [];
         this.updateUserData.firstName = firstName;
         this.updateUserData.lastName = lastName;
-        this.updateUserData.blnMaster = blnMaster;
+        this.updateUserData.blnMaster = blnMasterAccount;
         this.updateUserData.blnManager = blnManager;
         this.updateUserData.pk_userID = pk_userID;
         this.updateUserData.userName = userName;

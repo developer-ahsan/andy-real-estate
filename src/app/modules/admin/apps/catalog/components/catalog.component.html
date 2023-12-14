@@ -191,6 +191,7 @@
                         </div>
                     </div>
                     <div class="col-12" *ngIf="!isPageLoading && !isFilterLoader">
+                        <b class="mt-2" *ngIf="dataSource.length > 0">Total Products {{total}}</b>
                         <pagination-controls *ngIf="dataSource.length > 0" previousLabel="Prev" nextLabel="Next"
                             (pageChange)="getNextCatalogData($event)">
                         </pagination-controls>
@@ -200,17 +201,33 @@
                                 currentPage: page,
                                 totalItems: total
                               }; let i = index">
-                                <div class="font-bold my-2">Total Products: {{total}}</div>
                                 <div class="mb-12 p-8 rounded-2xl shadow bg-card">
                                     <div class="flex justify-between align-items-center">
                                         <div>
-                                            <h2 class="my-0 font-semibold">{{item.productName}} -
-                                                ({{item.pk_productID}})</h2>
-                                            <div class="font-semibold text-md text-secondary">{{item?.companyName}}
+                                            <a [routerLink]="['/apps/ecommerce/inventory',item.pk_productID]"
+                                                target="_blank">
+                                                <h2 class="my-0 font-semibold">{{item.productNumber}}: <span
+                                                        [innerHTML]="item.productName"></span> </h2>
+                                            </a>
+                                            <h2 class="my-0 font-semibold">ID: {{item.pk_productID}}</h2>
+                                            <div class="font-semibold flex align-items-center text-md text-secondary">
+                                                <p
+                                                    [ngClass]="{'text-green-700': item.vendorRelation == 3,'text-yellow-500': item.vendorRelation == 2}">
+                                                    {{item?.companyName}}</p>
+                                                <div class="mt-1">
+                                                    <mat-icon class="icon-size-4 text-green-700"
+                                                        svgIcon="heroicons_solid:star" *ngIf="item.vendorRelation == 3">
+                                                    </mat-icon>
+                                                    <mat-icon class="icon-size-4 text-yellow-500"
+                                                        svgIcon="heroicons_solid:check-circle"
+                                                        *ngIf="item.vendorRelation == 2">
+                                                    </mat-icon>
+                                                </div>
                                             </div>
                                         </div>
-                                        <img class="w-20 h-20 m-0"
-                                            src="https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg">
+                                        <img class="w-30 h-30 m-0"
+                                            [src]="'https://assets.consolidus.com/globalAssets/Products/HiRes/{{item.storeProductIDs}}.jpg'"
+                                            onError="this.src='https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'">
                                     </div>
                                     <div class="col-12">
                                         <span
@@ -287,6 +304,13 @@
                                         class="inline-flex bg-default rounded px-3 py-1 text-secondary font-bold">Imprints</span>
                                     <div *ngFor="let imprint of item.Imprint" class="pt-1">
                                         <li>{{imprint.locationName+'/'+imprint.IM[0].methodName }}</li>
+                                    </div>
+                                    <div class="col-12">
+                                        <button class="rounded-md" color="primary" mat-flat-button>
+                                            <a class=" hover:text-light-500"
+                                                [routerLink]="['/apps/ecommerce/inventory',item.pk_productID,'store-versions']"
+                                                target="_blank">Add to Store</a>
+                                        </button>
                                     </div>
                                 </div>
                             </ng-container>

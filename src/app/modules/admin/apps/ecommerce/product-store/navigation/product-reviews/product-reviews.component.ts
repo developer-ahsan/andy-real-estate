@@ -25,6 +25,10 @@ export class ProductReviewsComponent implements OnInit, OnDestroy {
   reviewColumns: string[] = ['name', 'date', 'rating', 'status', 'action'];
   reviewData = [];
   reviewTotal: number = 0;
+
+  tempReviewData = [];
+  tempReviewTotal: number = 0;
+
   reviewPage: number = 1;
   isEditReview: boolean = false;
   editReviewData: any;
@@ -104,12 +108,31 @@ export class ProductReviewsComponent implements OnInit, OnDestroy {
     this.editData = data;
     this.updateProductReviewForm.patchValue(data);
     this.isEditReview = !this.isEditReview;
+    if (!this.isEditReview) {
+      if (this.reviewData.length > 0) {
+        this.reviewPage = 1;
+        this.reviewData = this.tempReviewData;
+        this.reviewTotal = this.tempReviewTotal;
+      }
+    }
   }
   backToReviews() {
     this.isEditReview = false;
+    if (this.reviewData.length > 0) {
+      this.reviewPage = 1;
+      this.reviewData = this.tempReviewData;
+      this.reviewTotal = this.tempReviewTotal;
+    }
   }
   calledScreen(value) {
     this.mainScreen = value;
+    if (value == 'Current Reviews') {
+      if (this.reviewData.length > 0) {
+        this.reviewPage = 1;
+        this.reviewData = this.tempReviewData;
+        this.reviewTotal = this.tempReviewTotal;
+      }
+    }
     if (value == 'Send Product Review') {
       const userData = JSON.parse(localStorage.getItem('userDetails'));
       this.productReviewForm.patchValue({
@@ -127,6 +150,10 @@ export class ProductReviewsComponent implements OnInit, OnDestroy {
     this._storeService.commonGetCalls(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.reviewData = res["data"];
       this.reviewTotal = res["totalRecords"];
+      if (this.reviewPage == 1) {
+        this.tempReviewData = res["data"];
+        this.tempReviewTotal = res["totalRecords"];
+      }
       this.isLoading = false;
       this.mainScreen = 'Current Reviews';
       this.isLoadingChange.emit(false);
@@ -217,12 +244,10 @@ export class ProductReviewsComponent implements OnInit, OnDestroy {
   }
   addProductReview() {
     const { name, date, rating, comment, company } = this.productAddReviewForm.getRawValue();
-
     if (name.trim() === '' || company.trim() === '') {
       this._storeService.snackBar('Please fill all required fields');
       return;
     }
-
     let payload: AddReview = {
       name: name.trim(),
       date,
