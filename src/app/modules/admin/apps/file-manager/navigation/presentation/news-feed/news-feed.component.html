@@ -89,7 +89,7 @@
         <form [formGroup]="newsFeedAddForm">
           <mat-form-field class="w-full">
             <mat-label>Title *</mat-label>
-            <input matInput placeholder="Title" formControlName="title">
+            <input maxlength="100" matInput placeholder="Title" formControlName="title">
           </mat-form-field>
           <mat-form-field class="w-full">
             <mat-label>Date *</mat-label>
@@ -140,7 +140,7 @@
         <form [formGroup]="newsFeedUpdateForm">
           <mat-form-field class="w-full">
             <mat-label>Title *</mat-label>
-            <input matInput placeholder="Title" formControlName="title">
+            <input maxlength="100" matInput placeholder="Title" formControlName="title">
           </mat-form-field>
           <mat-form-field class="w-full">
             <mat-label>Date *</mat-label>

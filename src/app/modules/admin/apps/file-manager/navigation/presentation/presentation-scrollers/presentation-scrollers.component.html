@@ -29,25 +29,25 @@
       <div class="col-md-2 col-12">
         <mat-form-field class="w-full">
           <mat-label>Order *</mat-label>
-          <input type="number" matInput formControlName="displayOrder">
+          <input min="0" type="number" matInput formControlName="displayOrder">
         </mat-form-field>
       </div>
       <div class="col-md-4 col-12">
         <mat-form-field class="w-full">
           <mat-label>Testimonial *</mat-label>
-          <input type="text" matInput formControlName="testimonial">
+          <input maxlength="315" type="text" matInput formControlName="testimonial">
         </mat-form-field>
       </div>
       <div class="col-md-3 col-12">
         <mat-form-field class="w-full">
           <mat-label>Name *</mat-label>
-          <input type="text" matInput formControlName="name">
+          <input maxlength="50" type="text" matInput formControlName="name">
         </mat-form-field>
       </div>
       <div class="col-md-3 col-12">
         <mat-form-field class="w-full">
           <mat-label>Title *</mat-label>
-          <input type="text" matInput formControlName="title">
+          <input maxlength="50" type="text" matInput formControlName="title">
         </mat-form-field>
       </div>
       <div class="col-12 flex justify-end mt-2">
@@ -78,7 +78,7 @@
           </th>
           <td mat-cell *matCellDef="let element" class="p-2">
             <mat-form-field class="w-full">
-              <input matInput [(ngModel)]="element.displayOrder">
+              <input min="0" type="number" matInput [(ngModel)]="element.displayOrder">
             </mat-form-field>
           </td>
         </ng-container>
@@ -90,7 +90,7 @@
           </th>
           <td mat-cell *matCellDef="let element" class="p-2">
             <mat-form-field class="w-full">
-              <input matInput [(ngModel)]="element.testimonial">
+              <input maxlength="315" matInput [(ngModel)]="element.testimonial">
             </mat-form-field>
           </td>
         </ng-container>
@@ -102,7 +102,7 @@
           </th>
           <td mat-cell *matCellDef="let element" class="p-2">
             <mat-form-field class="w-full">
-              <input matInput [(ngModel)]="element.name">
+              <input maxlength="50" matInput [(ngModel)]="element.name">
             </mat-form-field>
           </td>
         </ng-container>
@@ -114,7 +114,7 @@
           </th>
           <td mat-cell *matCellDef="let element" class="p-2">
             <mat-form-field class="w-full">
-              <input matInput [(ngModel)]="element.title">
+              <input maxlength="50" matInput [(ngModel)]="element.title">
             </mat-form-field>
           </td>
         </ng-container>
@@ -225,7 +225,7 @@
           <div class="col-6" *ngFor="let item of defaultScrollersData">
             <mat-form-field class="w-full">
               <mat-label>{{item.title}} *</mat-label>
-              <input type="number" matInput [(ngModel)]="item.displayOrder">
+              <input min="0" type="number" matInput [(ngModel)]="item.displayOrder">
             </mat-form-field>
           </div>
           <div class="col-12 flex justify-end mt-2">
@@ -271,14 +271,14 @@
           <div class="col-12">
             <mat-form-field class="w-full" *ngIf="!updateScroller">
               <mat-label>Scroller Title *</mat-label>
-              <input type="text" matInput [(ngModel)]="scrollerTitle">
+              <input maxlength="50" type="text" matInput [(ngModel)]="scrollerTitle">
             </mat-form-field>
 
             <div class="row" *ngIf="updateScroller">
               <div class="col-md-8 col-12">
                 <mat-form-field class="w-full">
                   <mat-label>Scroller Title *</mat-label>
-                  <input type="text" matInput [(ngModel)]="scrollerTitle">
+                  <input maxlength="50" type="text" matInput [(ngModel)]="scrollerTitle">
                 </mat-form-field>
               </div>
               <div class="col-md-4 col-12">

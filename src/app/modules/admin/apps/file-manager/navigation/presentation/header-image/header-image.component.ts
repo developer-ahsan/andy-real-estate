@@ -20,7 +20,7 @@ export class PresentationHeaderImageComponent implements OnInit {
   headerImage: string = '';
   imageCheck: boolean = true;
   imageValue: any;
-  url: any;
+  url: any ='';
   constructor(
     private _storeManagerService: FileManagerService,
     private _snackBar: MatSnackBar,
@@ -38,13 +38,22 @@ export class PresentationHeaderImageComponent implements OnInit {
     if (this.imageValue) {
       this.uploadMedia();
     }
-    this.updateLoader = true;
+    console.log(this.url);
+    if(this.url.trim() === '') {
+      this._snackBar.open("Please fill the required fields", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
+      return;
+    }
     let payload = {
       store_id: this.selectedStore.pk_storeID,
       blnImage: true,
       link: this.url,
       update_header_image: true,
     }
+    this.updateLoader = true;
     this._storeManagerService.UpdateHeaderImage(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.updateLoader = false;
       this._snackBar.open("Header image updated successfully", '', {
@@ -54,6 +63,11 @@ export class PresentationHeaderImageComponent implements OnInit {
       });
       this._changeDetectorRef.markForCheck();
     }, err => {
+      this._snackBar.open("Error occured while updating header image.", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
       this.updateLoader = false;
       this._changeDetectorRef.markForCheck();
     })

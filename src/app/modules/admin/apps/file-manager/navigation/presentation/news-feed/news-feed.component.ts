@@ -67,9 +67,19 @@ export class PresentationNewsFeedComponent implements OnInit {
       this.newsFeedUpdateForm.patchValue(obj);
     }
   }
+
+  replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
+    for (const key in obj) {
+        if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+            obj[key] = obj[key]?.replace(/'/g, "''");
+        }
+    }
+    return obj;
+}
+
   AddNewsFeed() {
     const { fk_storeID, title, date, news, add_news_feed } = this.newsFeedAddForm.getRawValue();
-    if (title == '' || date == '' || news == '') {
+    if (title.trim() == ''|| news.trim() == '') {
       this._snackBar.open("Please fill out required fields", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
@@ -81,7 +91,7 @@ export class PresentationNewsFeedComponent implements OnInit {
         news, add_news_feed
       }
       this.newsFeedAddLoader = true;
-      this._storeManagerService.AddNewsFeed(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._storeManagerService.AddNewsFeed(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         this.newsFeedAddLoader = false;
         if (res["success"]) {
           this.getScreenData("news_feed");
@@ -91,8 +101,18 @@ export class PresentationNewsFeedComponent implements OnInit {
             this._changeDetectorRef.markForCheck();
           }, 3000);
         }
+        this._snackBar.open("News feed added successfuly", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3000
+        });
         this._changeDetectorRef.markForCheck();
       }, err => {
+        this._snackBar.open("Error occured while adding news feed", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3000
+        });
         this.newsFeedAddLoader = false;
         this._changeDetectorRef.markForCheck();
       });
@@ -100,7 +120,7 @@ export class PresentationNewsFeedComponent implements OnInit {
   }
   UpdateNewsFeed() {
     const { fk_storeID, title, date, news, update_news_feed, pk_newsFeedID } = this.newsFeedUpdateForm.getRawValue();
-    if (title == '' || date == '' || news == '') {
+    if (title.trim() == '' || news.trim() == '') {
       this._snackBar.open("Please fill out required fields", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
@@ -112,7 +132,7 @@ export class PresentationNewsFeedComponent implements OnInit {
         news, update_news_feed, pk_newsFeedID
       }
       this.newsFeedUpdateLoader = true;
-      this._storeManagerService.UpdateNewsFeed(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._storeManagerService.UpdateNewsFeed(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         this.newsFeedUpdateLoader = false;
         if (res["success"]) {
           this.getScreenData("news_feed");
@@ -122,8 +142,18 @@ export class PresentationNewsFeedComponent implements OnInit {
             this._changeDetectorRef.markForCheck();
           }, 3000);
         }
+        this._snackBar.open("News Feed updated successfuly", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3000
+        });
         this._changeDetectorRef.markForCheck();
       }, err => {
+        this._snackBar.open("Error occured while updating news feed", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3000
+        });
         this.newsFeedUpdateLoader = false;
         this._changeDetectorRef.markForCheck();
       });
