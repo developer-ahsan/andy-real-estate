@@ -79,7 +79,7 @@ export class ProductReviewsComponent implements OnInit, OnDestroy {
       blnActive: new FormControl('', Validators.required),
       name: new FormControl('', Validators.required),
       company: new FormControl('', Validators.required),
-      date: new FormControl(moment().format("MM/DD/YYYY")),
+      FormattedDate: new FormControl(),
       rating: new FormControl(1, Validators.required),
       comment: new FormControl(''),
       response: new FormControl('')
@@ -170,23 +170,23 @@ export class ProductReviewsComponent implements OnInit, OnDestroy {
       });
   }
   updateProductReview() {
-    const { name, date, rating, comment, response, blnActive, pk_reviewID } = this.updateProductReviewForm.getRawValue();
+    const { name, FormattedDate, rating, comment, response, blnActive, pk_reviewID } = this.updateProductReviewForm.getRawValue();
 
     if (name.trim() === '') {
       this._storeService.snackBar('Please fill all required fields');
       return;
     }
-    if (!date) {
+    if (!FormattedDate) {
       this._storeService.snackBar('Please fill all required fields');
       return;
     }
 
     let payload: UpdateReview = {
       name: name.trim(),
-      date,
+      date: FormattedDate,
       rating,
       comment: comment.trim(),
-      response: response.trim(),
+      response: response,
       blnActive,
       pk_reviewID,
       storeProductId:
@@ -197,13 +197,14 @@ export class ProductReviewsComponent implements OnInit, OnDestroy {
     this.isUpdateLoader = true;
     this._storeService.putStoresData(this.replaceSingleQuotesWithDoubleSingleQuotes(payload))
       .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((response: any) => {
-        if (response["success"] === true) {
+      .subscribe((responses: any) => {
+        if (responses["success"] === true) {
           this._storeService.snackBar('Review Updated Successfully');
         }
         this.isUpdateLoader = false;
         this.editData.name = name;
-        this.editData.date = date;
+        this.editData.FormattedDate = FormattedDate;
+        this.editData.date = FormattedDate;
         this.editData.rating = rating;
         this.editData.comment = comment;
         this.editData.response = response;
@@ -227,8 +228,7 @@ export class ProductReviewsComponent implements OnInit, OnDestroy {
       date,
       rating,
       comment: comment.trim(),
-      storeProductId:
-        this.selectedProduct.pk_storeProductID,
+      storeProductId: this.selectedProduct.pk_storeProductID,
       add_review: true
     };
     this.isAddLoader = true;
