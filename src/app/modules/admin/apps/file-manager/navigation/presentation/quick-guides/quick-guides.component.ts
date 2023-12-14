@@ -77,8 +77,18 @@ export class PresentationQuickGuidesComponent implements OnInit {
       this._changeDetectorRef.markForCheck();
     })
   }
+
+  replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
+    for (const key in obj) {
+        if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+            obj[key] = obj[key]?.replace(/'/g, "''");
+        }
+    }
+    return obj;
+}
+
   addQuickGuides() {
-    if (!this.quickGuideName) {
+    if (this.quickGuideName.trim() === '') {
       this._snackBar.open("Please fill out the required fields", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
@@ -95,12 +105,12 @@ export class PresentationQuickGuidesComponent implements OnInit {
       return;
     }
     this.addQuickGuideLoader = true;
-    let paylaod = {
+    let payload = {
       fk_storeID: this.selectedStore.pk_storeID,
       add_quick_guide: true,
-      name: this.quickGuideName
+      name: this.quickGuideName.trim()
     }
-    this._storeManagerService.AddQuickGuide(paylaod).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._storeManagerService.AddQuickGuide(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.quickMediaId = res["quickMediaId"];
       this.uploadQuickMediaCampaign('pdf');
       this.getQuickGuides();

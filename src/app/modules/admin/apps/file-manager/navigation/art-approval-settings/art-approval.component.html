@@ -67,7 +67,7 @@
             <div class="col-12 col-md-4">
               <mat-form-field class="w-full">
                 <mat-label>Name: *</mat-label>
-                <input matInput formControlName="name">
+                <input maxlength="50" matInput formControlName="name">
               </mat-form-field>
             </div>
             <div class="col-12 col-md-4">
@@ -353,19 +353,19 @@
                 <div class="col-12 col-md-4">
                   <mat-form-field class="w-full">
                     <mat-label>Order: *</mat-label>
-                    <input matInput type="number" formControlName="listOrder">
+                    <input min="0" matInput type="number" formControlName="listOrder">
                   </mat-form-field>
                 </div>
                 <div class="col-12 col-md-4">
                   <mat-form-field class="w-full">
                     <mat-label>First Name: *</mat-label>
-                    <input matInput formControlName="firstName">
+                    <input maxlength="50" matInput formControlName="firstName">
                   </mat-form-field>
                 </div>
                 <div class="col-12 col-md-4">
                   <mat-form-field class="w-full">
                     <mat-label>Last Name: *</mat-label>
-                    <input matInput formControlName="lastName">
+                    <input maxlength="50" matInput formControlName="lastName">
                   </mat-form-field>
                 </div>
                 <div class="col-12 col-md-4">
