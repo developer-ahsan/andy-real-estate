@@ -398,10 +398,14 @@
                         <div class="my-2">
                             <mat-form-field class="w-full">
                                 <mat-label>Enter Your Password:</mat-label>
-                                <input matInput type="password" maxlength="15">
+                                <input matInput type="password" [(ngModel)]="userPassword" maxlength="15">
                             </mat-form-field>
-                            <button class=" bg-red-500 text-white px-4 py-2 rounded">
-                                Delete
+                            <button class="bg-red-500 text-white px-4 py-2 rounded"
+                                [disabled]="updateUserData.deleteLoader" (click)="removeAdminUser()">
+                                <span *ngIf="!updateUserData.deleteLoader">Delete</span>
+                                <mat-progress-spinner *ngIf="updateUserData.deleteLoader" [diameter]="24"
+                                    [mode]="'indeterminate'">
+                                </mat-progress-spinner>
                             </button>
 
                         </div>
@@ -461,17 +465,6 @@
                             <mat-form-field class="w-full">
                                 <mat-label>Apply permission group <span *ngIf="permissionGroupLoader">
                                         (Fetching...)</span></mat-label>
-                                <!-- <input matInput placeholder="Search Group" [matAutocomplete]="auto"
-                                    [formControl]="permissionGrpCtrl">
-                                <mat-autocomplete class="w-full" #auto="matAutocomplete"
-                                    (optionSelected)="addOnSelected($event)" [displayWith]="addDisplayWith">
-                                    <mat-option *ngIf="permissionLoader" class="is-loading">Loading...</mat-option>
-                                    <ng-container *ngIf="!permissionLoader">
-                                        <mat-option *ngFor="let item of permissionGroup" [value]="item">
-                                            <span>{{item.groupName}}</span>
-                                        </mat-option>
-                                    </ng-container>
-                                </mat-autocomplete> -->
                                 <mat-select matInput [disabled]="permissionGroupLoader" [(ngModel)]="ngSelectedGroup">
                                     <mat-option *ngFor="let item of permissionGroup" [value]="item.pk_groupID">
                                         <span>{{item.groupName}}</span>
@@ -497,42 +490,21 @@
                               }">
                             </ngx-skeleton-loader>
                         </div>
-                        <div class="col-6 mb-3" *ngFor="let item of parentPermissionData">
-                            <mat-expansion-panel (opened)="loadMoreChildPermissions(item)">
+
+                        <div class="col-12 col-md-6 mb-2" *ngFor="let permission of parentPermissionData">
+                            <mat-expansion-panel>
                                 <mat-expansion-panel-header>
                                     <mat-panel-title>
-                                        <mat-checkbox (click)="$event.stopPropagation();"
-                                            [(ngModel)]="item.isParentAdmitted"
-                                            (change)="changeCheckbox(item,$event.checked)">
-                                            {{item.name}}
-                                        </mat-checkbox>
+                                        <mat-checkbox [(ngModel)]="permission.blnChecked"
+                                            (change)="changeParentCheckbox(permission,$event.checked)">{{permission.name}}</mat-checkbox>
                                     </mat-panel-title>
                                 </mat-expansion-panel-header>
                                 <div class="row">
-                                    <mat-checkbox class="col-6 text-sm" *ngFor="let child of item.Child"
-                                        [(ngModel)]="child.isPermitted"
+                                    <mat-checkbox class="col-6 text-sm" *ngFor="let child of permission.children"
+                                        [(ngModel)]="child.blnChecked"
                                         (change)="changeCheckbox(child,$event.checked)">{{child.name}}</mat-checkbox>
-                                    <!-- <div class="col-12 flex justify-end"
-                                        *ngIf="item.childTotal > item.childPermission.length">
-                                        <span class="text-gray-500 hover:text-gray-900 cursor-pointer"
-                                            *ngIf="!item.childLoader" (click)="loadMoreChildPermissions(item)"> Load
-                                            More </span>
-                                    </div> -->
-                                    <!-- <div class="col-12" *ngIf="item.childLoader">
-                                        <ngx-skeleton-loader count="4" appearance="line" animation="pulse" [theme]="{ 
-                                                'background-color': '#dedede'
-                                              }">
-                                        </ngx-skeleton-loader>
-                                    </div> -->
                                 </div>
                             </mat-expansion-panel>
-                        </div>
-                        <div class="flex col-12 justify-end"
-                            *ngIf="parentTotalPermissions > parentPermissionData.length">
-                            <span class="text-gray-500 hover:text-gray-900 cursor-pointer" *ngIf="!isLoadingPermission"
-                                (click)="getNextPermissionParentData()"> Load More </span>
-                            <mat-progress-spinner *ngIf="isLoadingPermission" [diameter]="24" [mode]="'indeterminate'">
-                            </mat-progress-spinner>
                         </div>
                     </div>
                 </div>

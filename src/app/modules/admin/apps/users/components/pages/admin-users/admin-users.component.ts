@@ -85,6 +85,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
   isUpdateAdminPermissions: boolean = false;
 
   sessionUser: any;
+  userPassword = '';
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _UsersService: UsersService,
@@ -496,175 +497,84 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
     let permissionsData = [];
     this._UsersService.getAdminsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["data"][0].qryPermissions) {
-        const permissions = res["data"][0].qryPermissions.split('|||');
-        permissions.forEach(permission => {
+        const permissionsData = res["data"][0].qryPermissions.split('|||').map(permission => {
           const [parents, children] = permission.split('#_#');
           const [parent_pk_sectionID, name, blnChecked] = parents.split('###');
-          let admin_checked = false;
-          if (blnChecked == '1') {
-            admin_checked = true;
-          }
-          let childrenData = [];
-          const Children = children.split(',,');
-          Children.forEach(child => {
+          const admin_checked = blnChecked === '1';
+
+          const childrenData = children.split(',,').map(child => {
             const [pk_sectionID, name, blnChecked] = child.split('::');
-            let checked = false;
-            if (blnChecked == '1') {
-              checked = true;
-            }
-            childrenData.push({ pk_sectionID: Number(pk_sectionID), parent_pk_sectionID: Number(parent_pk_sectionID), name, blnChecked: checked });
+            const checked = blnChecked === '1';
+            return { pk_sectionID: Number(pk_sectionID), parent_pk_sectionID: Number(parent_pk_sectionID), name, blnChecked: checked };
           });
-          permissionsData.push({ pk_sectionID: Number(parent_pk_sectionID), name, blnChecked: admin_checked, children: childrenData });
+
+          return { pk_sectionID: Number(parent_pk_sectionID), name, blnChecked: admin_checked, children: childrenData };
         });
-        console.log(permissionsData);
+
+        this.parentPermissionData = permissionsData;
       }
 
-      // res["data"].forEach(element => {
-      //   element.Child = JSON.parse(element.Child);
-      //   if (element.isParentAdmitted) {
-      //     this.selectedPermissions.push(element.pk_sectionID);
-      //     element.Child.forEach(item => {
-      //       if (item.isPermitted) {
-      //         this.selectedPermissions.push(item.pk_sectionID);
-      //       }
-      //     });
-      //   }
-      //   this.parentPermissionData.push(element);
-      // });
-      // this.parentTotalPermissions = res["totalRecords"];
-      this.isLoadingPermission = false;
       this.permissionLoader = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
-      this.isLoadingPermission = false;
       this.permissionLoader = false;
       this._changeDetectorRef.markForCheck();
     });
   }
-  getNextPermissionParentData() {
-    this.isLoadingPermission = true;
-    this.parentPermissionPage++;
-    this.getParentPermissions(this.parentPermissionPage);
-  };
-  changeCheckbox(item, checked) {
-    if (item.fk_parentID == 0) {
-      if (checked) {
-        const remove_index = this.removedPermissions.findIndex(val => val == item.pk_sectionID);
-        if (remove_index > -1) {
-          this.removedPermissions.splice(remove_index, 1);
-        }
-        const index = this.selectedPermissions.findIndex(val => val == item.pk_sectionID);
-        if (index < 0) {
-          this.selectedPermissions.push(item.pk_sectionID);
-        }
-        item["Child"].forEach(element => {
-          element.isPermitted = 1;
-          const remove_index = this.removedPermissions.findIndex(val => val == element.pk_sectionID);
-          if (remove_index > -1) {
-            this.removedPermissions.splice(remove_index, 1);
-          }
-          const index = this.selectedPermissions.findIndex(val => val == element.pk_sectionID);
-          if (index < 0) {
-            this.selectedPermissions.push(element.pk_sectionID);
-          }
-        });
-      } else {
-        const remove_index = this.selectedPermissions.findIndex(val => val == item.pk_sectionID);
-        if (remove_index > -1) {
-          this.selectedPermissions.splice(remove_index, 1);
-        }
-        const index = this.removedPermissions.findIndex(val => val == item.pk_sectionID);
-        if (index < 0) {
-          this.removedPermissions.push(item.pk_sectionID);
-        }
-        item["Child"].forEach(element => {
-          if (element.isPermitted == 1) {
-            const remove_index = this.selectedPermissions.findIndex(val => val == element.pk_sectionID);
-            if (remove_index > -1) {
-              this.selectedPermissions.splice(remove_index, 1);
-            }
-            const index = this.removedPermissions.findIndex(val => val == element.pk_sectionID);
-            if (index < 0) {
-              this.removedPermissions.push(element.pk_sectionID);
-            }
-          }
-          element.isPermitted = 0;
-        });
-      }
-    } else {
-      if (checked) {
-        const remove_index = this.removedPermissions.findIndex(val => val == item.pk_sectionID);
-        if (remove_index > -1) {
-          this.removedPermissions.splice(remove_index, 1);
-        }
-        const index = this.selectedPermissions.findIndex(val => val == item.pk_sectionID);
-        if (index < 0) {
-          this.selectedPermissions.push(item.pk_sectionID);
-        }
-      } else {
-        const remove_index = this.selectedPermissions.findIndex(val => val == item.pk_sectionID);
-        if (remove_index > -1) {
-          this.selectedPermissions.splice(remove_index, 1);
-        }
-        const index = this.removedPermissions.findIndex(val => val == item.pk_sectionID);
-        if (index < 0) {
-          this.removedPermissions.push(item.pk_sectionID);
-        }
-      }
-    }
-  }
-  getChildPermissions(item) {
-    let params = {
-      child_permission_groups: true,
-      parent_id: item.pk_sectionID,
-      page: item.childPage,
-      size: 10
-    }
-    let permission = item.childPermission;
-    this._UsersService.getAdminsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      item.childPermission = permission.concat(res["data"]);
-      item.childTotal = res["totalRecords"];
-      item.childLoader = false;
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      item.childLoader = false;
-      this._changeDetectorRef.markForCheck();
+  changeParentCheckbox(item, checked) {
+    item.children.forEach(element => {
+      element.blnChecked = checked;
     });
   }
-  loadMoreChildPermissions(item) {
-    if (!item.childPermission) {
-      item.childPermission = [];
-      item.childPage = 1;
-      item.childTotal = 0;
-      item.childLoader = true;
-    } else {
-      item.childPage++;
-      item.childLoader = true;
-    }
-    this.getChildPermissions(item);
-  }
+
   updatePermissions() {
-    let payload: RootPermissions = {
-      user_id: this.updateUserData.pk_userID,
-      add_permissions: this.selectedPermissions,
-      remove_permissions: this.removedPermissions,
-      update_permissions_group: true
+    console.log(this.parentPermissionData);
+    // let payload: RootPermissions = {
+    //   user_id: this.updateUserData.pk_userID,
+    //   add_permissions: this.selectedPermissions,
+    //   remove_permissions: this.removedPermissions,
+    //   update_permissions_group: true
+    // }
+    // this.isUpdateAdminPermissions = true;
+    // this._UsersService.UpdateAdminsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    //   if (res["success"]) {
+    //     this.isUpdateAdminPermissions = false;
+    //     this._UsersService.snackBar('User Permissions Updated Successfully');
+    //     this._changeDetectorRef.markForCheck();
+    //   } else {
+    //     this._UsersService.snackBar(res["message"]);
+    //     this.isUpdateAdminPermissions = false;
+    //     this._changeDetectorRef.markForCheck();
+    //   }
+    // }, err => {
+    //   this._UsersService.snackBar('Something went wrong');
+    //   this.isUpdateAdminPermissions = false;
+    //   this._changeDetectorRef.markForCheck();
+    // });
+  }
+
+  removeAdminUser() {
+    if (this.userPassword.trim() == '') {
+      this._UsersService.snackBar('Password is required to delete admin users');
+      return;
     }
-    this.isUpdateAdminPermissions = true;
-    this._UsersService.UpdateAdminsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      if (res["success"]) {
-        this.isUpdateAdminPermissions = false;
-        this._UsersService.snackBar('User Permissions Updated Successfully');
-        this._changeDetectorRef.markForCheck();
-      } else {
-        this._UsersService.snackBar(res["message"]);
-        this.isUpdateAdminPermissions = false;
-        this._changeDetectorRef.markForCheck();
-      }
-    }, err => {
-      this._UsersService.snackBar('Something went wrong');
-      this.isUpdateAdminPermissions = false;
+    this.updateUserData.deleteLoader = true;
+    let payload = {
+      user_id: Number(this.updateUserData.pk_userID),
+      remove_admin_user: true
+    }
+    this._UsersService.UpdateAdminsData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.updateUserData.deleteLoader = false;
       this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      if (res["success"]) {
+        this._UsersService.snackBar(res["message"]);
+        this.page = 1;
+        this.userPassword = '';
+        this.isLoading = true;
+        this.toggleUpdateUserData(null, false);
+        this.getAdminUsers(1, 'get');
+      }
     });
   }
   /**
