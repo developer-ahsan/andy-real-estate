@@ -71,8 +71,38 @@ export class PresentationPaymentMethodsComponent implements OnInit {
     this.thirdPartyForm.patchValue(this.screenData[2]);
     this.creditTermsForm.patchValue(this.screenData[3]);
   }
+
+  hasEmptyTitleOrDescription(arr) {
+    for (let i = 0; i < arr.length; i++) {
+      const { title, description } = arr[i];
+      if (title.trim() === '' || description.trim() === '') {
+        return true; // Returns true if title or description is empty or contains only whitespace
+      }
+    }
+    return false; // Returns false if no title or description is empty or contains only whitespace
+  }
+  // replaceSingleQuotesWithDoubleSingleQuotes(obj) {
+  //   const updatedObj = { ...obj }; 
+
+  //   for (const key in updatedObj) {
+  //     if (updatedObj.hasOwnProperty(key) && typeof updatedObj[key] === 'string') {
+  //       updatedObj[key] = updatedObj[key]?.replace(/'/g, "''");
+  //     }
+  //   }
+
+  //   return updatedObj;
+  // }
+
+  replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+        obj[key] = obj[key]?.replace(/'/g, "''");
+      }
+    }
+    return obj;
+  }
+
   UpdatepaymentMethods() {
-    this.updateLoader = true;
     let payment = [];
     for (let index = 0; index < 4; index++) {
       if (index == 0) {
@@ -88,11 +118,24 @@ export class PresentationPaymentMethodsComponent implements OnInit {
         title, displayOrder, description, blnPrimary, blnActive, fk_paymentMethodID: fk_paymentMethoDID
       })
     }
+    if (this.hasEmptyTitleOrDescription(payment)) {
+      this._snackBar.open("Please fill the required fields", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      return;
+    } 
+    payment.forEach((item : any) => {
+      item = this.replaceSingleQuotesWithDoubleSingleQuotes(item)
+    })
     let payload = {
       store_id: this.selectedStore.pk_storeID,
       payment_methods: payment,
       update_payment_method: true
     }
+    this.updateLoader = true;
+
     this._storeManagerService.UpdatePaymentMethod(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.updateLoader = false;
       if (res["success"]) {
@@ -102,8 +145,18 @@ export class PresentationPaymentMethodsComponent implements OnInit {
           this._changeDetectorRef.markForCheck();
         }, 3000);
       }
+      this._snackBar.open("Payment methods updated successfuly", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
       this._changeDetectorRef.markForCheck();
     }, err => {
+      this._snackBar.open("Error occured while updating payment method", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
       this.updateLoader = false;
       this._changeDetectorRef.markForCheck();
     })

@@ -4,6 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { FileManagerService } from '../../../store-manager.service';
+import { SupportTicketService } from 'app/modules/admin/support-tickets/components/support-tickets.service';
 @Component({
   selector: 'app-dashboard-emails',
   templateUrl: './dashboard-emails.component.html',
@@ -32,6 +33,7 @@ export class PresentationDashboardEmailsComponent implements OnInit {
     private _storeManagerService: FileManagerService,
     private _snackBar: MatSnackBar,
     private _changeDetectorRef: ChangeDetectorRef,
+    private _supportService: SupportTicketService,
   ) { }
 
 
@@ -55,8 +57,13 @@ export class PresentationDashboardEmailsComponent implements OnInit {
     this.dashboardEmailsForm.patchValue(this.screenData);
   }
   DefaultEmailUpdate() {
+    if(this.dashboardEmailsForm.value.quoteEmailSubject.trim() === '' || this.dashboardEmailsForm.value.surveyEmailSubject.trim() === '') {
+      this._supportService.snackBar("Please fill the required fields"); 
+      return;
+    }
     this.dashboardEmailLoader = true;
-    this._storeManagerService.DefaultEmailUpdate(this.dashboardEmailsForm.value).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+
+    this._storeManagerService.DefaultEmailUpdate(this.replaceSingleQuotesWithDoubleSingleQuotes(this.dashboardEmailsForm.value)).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.dashboardEmailLoader = false;
       if (res["success"]) {
         this.dashboardEmailMsg = true;
@@ -65,10 +72,24 @@ export class PresentationDashboardEmailsComponent implements OnInit {
           this._changeDetectorRef.markForCheck();
         }, 3000);
       }
+      this._supportService.snackBar("Default email updated successfuly");
       this._changeDetectorRef.markForCheck();
     }, err => {
+      this._supportService.snackBar("Error occured while updating default email");
+
       this.dashboardEmailLoader = false;
       this._changeDetectorRef.markForCheck();
     });
   }
+
+
+  replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
+    for (const key in obj) {
+        if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+            obj[key] = obj[key]?.replace(/'/g, "''");
+        }
+    }
+    return obj;
+}
+
 }

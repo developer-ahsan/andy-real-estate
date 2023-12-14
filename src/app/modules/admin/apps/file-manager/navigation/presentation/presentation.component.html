@@ -269,7 +269,7 @@
             <div class="mt-4 col-12">
               <mat-form-field appearance="fill" class="w-full">
                 <mat-label> ID: </mat-label>
-                <input [(ngModel)]="ngTypeKit" matInput />
+                <input maxlength="100" [(ngModel)]="ngTypeKit" matInput />
               </mat-form-field>
             </div>
             <div class="col-12 flex justify-end mt-2">
@@ -410,19 +410,19 @@
           <div class="mt-4 col-12">
             <mat-form-field appearance="fill" class="w-full">
               <mat-label>Logo name:</mat-label>
-              <input matInput formControlName="name" />
+              <input maxlength="50" matInput formControlName="name" />
             </mat-form-field>
           </div>
           <div class="mt-4 col-12">
             <mat-form-field appearance="fill" class="w-full">
               <mat-label>Description(500):</mat-label>
-              <textarea matInput formControlName="description"></textarea>
+              <textarea maxlength="500" matInput formControlName="description"></textarea>
             </mat-form-field>
           </div>
           <div class="mt-4 col-12">
             <mat-form-field appearance="fill" class="w-full">
               <mat-label>Imprint colors: (800, optional, comma-separated list of color names or PMS colors):</mat-label>
-              <textarea matInput formControlName="color_list"></textarea>
+              <textarea maxlength="800" matInput formControlName="color_list"></textarea>
             </mat-form-field>
           </div>
           <div class="col-12 col-md-6">
@@ -443,7 +443,7 @@
           <div class="col-12 col-md-6">
             <mat-form-field appearance="fill" class="w-full">
               <mat-label>Display order:</mat-label>
-              <input matInput formControlName="displayOrder" type="number">
+              <input min="0" matInput formControlName="displayOrder" type="number">
             </mat-form-field>
           </div>
 
