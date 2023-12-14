@@ -229,6 +229,10 @@ this.setChartOptions();
 
     this.isLoadingChange.emit(false);
     this.initialize();
+
+    this.getDashboardGraphsData("sales_average_margin");
+    this.getDashboardGraphsData("ytd_month");
+
     // Get the stores
     this._fileManagerService.stores$
       .pipe(takeUntil(this._unsubscribeAll))
@@ -355,12 +359,7 @@ this.setChartOptions();
   }
 
   getDashboardData() {
-
-    this.setChartOptions();
     this.getDashboardGraphsData("historical_store_sales");
-    this.getDashboardGraphsData("sales_average_margin");
-    this.getDashboardGraphsData("ytd_month");
-
     setTimeout(() => {
       this.getDashboardGraphsData("top_customer");
     }, 5000);
