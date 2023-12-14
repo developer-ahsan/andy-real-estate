@@ -452,8 +452,7 @@ export class MarginsComponent implements OnInit, OnDestroy {
 
   updateMarginProducts() {
     const { margin1, margin2, margin3, margin4, margin5, margin6 } = this.marginDetailForm.getRawValue();
-
-    if (margin1 < 15 || margin2 < 15 || margin3 < 15 || margin4 < 15 || margin5 < 15 || margin6 < 15) {
+    if ((margin1 != 0.0000 && margin1 < 15) || (margin2 != 0.0000 && margin2 < 15) || (margin3 != 0.0000 && margin3 < 15) || (margin4 != 0.0000 && margin4 < 15) || (margin5 != 0.0000 && margin5 < 15) || (margin6 != 0.0000 && margin6 < 15)) {
       this._snackBar.open("Margins less than 15 are not currently allowed.", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
