@@ -45,48 +45,60 @@
                         <th>Image</th>
                         <th>
                             <div class="mt-5">
-                                <mat-checkbox></mat-checkbox>
+                                <mat-checkbox [(ngModel)]="isMasterCheckboxChecked" (change)="toggleAllCheckboxes()"></mat-checkbox>
                             </div>
                         </th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let item of dataSource" class="clickable">
-                        <td (click)="navigate(item)" class="align-middle cursor-pointer undeline">
-                            <a [ngClass]="{'disabled': !(item.blnActive && item.blnStoreActive)}">
-                                {{item.pk_storeProductID}}
-                            </a>
-                        </td>
-                        <td (click)="navigate(item)" class="align-middle cursor-pointer undeline">
-                            <a [ngClass]="{'disabled': !(item.blnActive && item.blnStoreActive)}">
-                                {{item.productNumber}} {{item.productName}}
-                            </a>
-                        </td>
-                        <td class="align-middle">
-                            <span [ngClass]="{'active': item.blnActive, 'disabled': !item.blnActive}">
-                                {{item.blnActive ? 'Active' : 'Disabled'}}
-                            </span>
-                        </td>
-                        <td class="align-middle">
-                            <span [ngClass]="{'active': item.blnStoreActive, 'disabled': !item.blnStoreActive}">
-                                {{item.blnStoreActive ? 'Online' : 'Offline'}}
-                            </span>
-                        </td>
-                        <td class="align-middle">
-                            <span
-                                [ngClass]="{'fa': true, 'fa-check': fileExists(item.storeProductImage),
-                                'fa-times': !fileExists(item.storeProductImage),
-                                'fa-lg': true, 'active': fileExists(item.storeProductImage), 'disabled': !fileExists(item.storeProductImage)}"
-                                [title]="fileExists(item.storeProductImage) ? 'Image' : 'No Image'">
-                            </span>
-                        </td>
-                        <td class="align-middle">
-                            <div class="mt-5">
-                                <mat-checkbox [name]="'updateList'" [value]="item.pk_storeProductID"
-                                    [id]="'updateList_' + item.pk_storeProductID"></mat-checkbox>
-                            </div>
-                        </td>
-                    </tr>
+                    
+                    <ng-container *ngFor="let item of dataSource" class="clickable">
+                        <ng-container>
+                            <tr>
+                                <td colspan="6">
+                                    <div class="h-10 flex justify-center items-center w-full">
+                                        {{item.categoryName}}
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-container>
+                        <tr *ngFor="let data of item.splittedData">
+                            <td (click)="navigate(data)" class="align-middle cursor-pointer undeline">
+                                <a [ngClass]="{'disabled': !(data.blnActive && data.blnStoreActive)}">
+                                    {{data.pk_storeProductID}}
+                                </a>
+                            </td>
+                            <td (click)="navigate(data)" class="align-middle cursor-pointer undeline">
+                                <a [ngClass]="{'disabled': !(data.blnActive && data.blnStoreActive)}">
+                                    {{data.productNumber}} {{data.productName}}
+                                </a>
+                            </td>
+                            <td class="align-middle">
+                                <span [ngClass]="{'active': data.blnActive, 'disabled': !data.blnActive}">
+                                    {{data.blnActive ? 'Active' : 'Disabled'}}
+                                </span>
+                            </td>
+                            <td class="align-middle">
+                                <span [ngClass]="{'active': data.blnStoreActive, 'disabled': !data.blnStoreActive}">
+                                    {{data.blnStoreActive ? 'Online' : 'Offline'}}
+                                </span>
+                            </td>
+                            <td class="align-middle">
+                                <span
+                                    [ngClass]="{'fa': true, 'fa-check': fileExists(data),
+                                    'fa-times': !fileExists(data.storeProductImage),
+                                    'fa-lg': true, 'active': fileExists(data.storeProductImage), 'disabled': !fileExists(data.storeProductImage)}"
+                                    [title]="fileExists(data.storeProductImage) ? 'Image' : 'No Image'">
+                                </span>
+                            </td>
+                            <td class="align-middle">
+                                <div class="mt-5">
+                                    <mat-checkbox [(ngModel)]="item.isChecked"[value]="data.pk_storeProductID"></mat-checkbox>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                    </ng-container>
 
                 </tbody>
 
