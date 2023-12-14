@@ -335,6 +335,41 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
+  updateFlagStatus() {
+    let blnStatusUpdate = false;
+    if (this.buildDetails.pk_statusID != 1) {
+      blnStatusUpdate = true;
+    }
+    let status = this.allStatus.filter(item => item.pk_statusID == this.buildDetails.pk_statusID);
+    this.buildDetails.isUpdateLoader = true;
+    let payload: updateStatus = {
+      rbid: this.buildDetails.pk_rapidBuildID,
+      imageStatusID: 1,
+      blnLeaveComment: true,
+      blnAdmin: this.userData.blnMaster,
+      blnStatusUpdate: blnStatusUpdate,
+      comments: this.buildDetails.proofComments,
+      statusName: status[0].statusName,
+      rapidbuild_userId: this.userData.pk_userID,
+      rapidbuild_username: this.userData.userName,
+      user_full_name: '',
+      update_status: true
+    };
+    this._rapidService.UpdateAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.allStatus.forEach(element => {
+        if (element.pk_statusID == 1) {
+          this.buildDetails.statusName = element.statusName;
+        }
+      });
+      this._rapidService.snackBar(res["message"]);
+      this.buildDetails.pk_statusID = 1;
+      this.buildDetails.isUpdateLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.buildDetails.isUpdateLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
   checkProof(ev) {
     this.ngProofCheck = false;
     this._changeDetectorRef.markForCheck();

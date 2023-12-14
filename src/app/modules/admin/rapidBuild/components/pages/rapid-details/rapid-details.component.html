@@ -300,8 +300,14 @@
                                     </tbody>
                                 </table>
                                 <div class="text-right">
-                                    <button class="min-w-60 btn buttonComment hover:bg-gray-200">Flag this
-                                        product for review</button>
+                                    <button class="min-w-60 btn buttonComment hover:bg-gray-200"
+                                        [disabled]="buildDetails.isUpdateLoader" (click)="updateFlagStatus()">
+                                        <span *ngIf="!buildDetails.isUpdateLoader">Flag this
+                                            product for review</span>
+                                        <mat-progress-spinner *ngIf="buildDetails.isUpdateLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                    </button>
                                 </div>
                             </div>
                         </mat-expansion-panel>
