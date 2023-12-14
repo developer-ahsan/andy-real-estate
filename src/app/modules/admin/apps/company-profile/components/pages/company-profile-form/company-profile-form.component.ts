@@ -354,6 +354,12 @@ export class CompanyProfileFormComponent implements OnInit, OnDestroy {
       })
   };
 
+  navigate(location:boolean) {
+    location?
+    this.router.navigateByUrl('/apps/companies/company-location')
+    :this.router.navigateByUrl('/apps/companies/company-logo');
+  }
+
   /**
      * On destroy
      */
