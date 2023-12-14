@@ -262,6 +262,7 @@
           </button>
         </div>
         <div [innerHtml]="previewData"></div>
+        <div [innerHtml]="this.product_templete"></div>
         <div class="text-right w-full py-5" *ngIf="previewData">
           <button class="ml-4 min-w-40" mat-flat-button [color]="'primary'" [disabled]="sendEmailLoader"
             [matTooltip]="'Send an Email'" (click)="sendEmail()">

@@ -91,6 +91,7 @@ export class SimpleEmailBlastComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((items: any) => {
         this.selectedStore = items["data"][0];
+        this.sendEmailForm.get('message').setValue(`<br /><br /><br /><br />If you would like to stop receiving emails from ${this.selectedStore.storeName}. <a href="https://www.${this.selectedStore.storeName}/unsubscribe">click here to unsubscribe.`)
       });
   }
   add(event: MatChipInputEvent): void {
