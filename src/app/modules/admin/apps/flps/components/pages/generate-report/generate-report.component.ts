@@ -435,6 +435,7 @@ export class GenerateReportComponent implements OnInit {
             if (res["success"]) {
                 this._flpsService.snackBar(res["message"]);
             }
+            $(this.updateCommissionAlert.nativeElement).modal('hide');
             this.isGenerateReport = false;
             setTimeout(() => {
                 this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });

@@ -76,11 +76,12 @@ import { VendorStatusGuard } from './vendor-status.guard';
 import { VendorsProfileComponent } from './components/pages/vendor-profile/vendor-profile.component';
 import { DesignerNotesComponent } from './components/pages/designer-notes/designer-notes.component';
 import { OpenPurchaseOrdersComponent } from './components/pages/open-purchase-orders/open-purchase-orders.component';
+import { VendorImprintProductComponent } from './components/pages/vendor-imprint-colors/product-imprints/product-imprint.component';
 
 @NgModule({
     declarations: [
         VendorsComponent, VendorsListComponent, NewVendorsComponent, VendorsDisabledListComponent, VendorsDownloadComponent, VendorsEmailComponent, VendorsDetailsComponent, VendorsInfoComponent, SystemImprintRunComponent, ImprintChargesComponent, StandardImprintsComponent, AddEditImprintsComponent, VendorTopOrderComponent, VendorSettingsComponent, VendorProductsComponent, VendorCoreProductsComponent, VendorProductsSummaryComponent, VendorFOBLocationComponent,
-        VendorProductsStoreComponent, VendorBlanketComponent, VendorSizingChartComponent, VendorVideosComponent, VendorCoopComponent, VendorBlanketCoopComponent, VendorCommentsComponent, VendorOrdersComponent, VendorApplicationComponent, VendorImprintColorsComponent, VendorBlanketColorsComponent, VendorRunChargesComponent, VendorSetupChargesComponent, VendorUsersComponent, VendorStatusComponent, VendorsProfileComponent, DesignerNotesComponent, OpenPurchaseOrdersComponent
+        VendorProductsStoreComponent, VendorBlanketComponent, VendorSizingChartComponent, VendorVideosComponent, VendorCoopComponent, VendorBlanketCoopComponent, VendorCommentsComponent, VendorOrdersComponent, VendorApplicationComponent, VendorImprintColorsComponent, VendorBlanketColorsComponent, VendorRunChargesComponent, VendorSetupChargesComponent, VendorUsersComponent, VendorStatusComponent, VendorsProfileComponent, DesignerNotesComponent, OpenPurchaseOrdersComponent, VendorImprintProductComponent
     ],
     imports: [
         RouterModule.forChild(vendorsRoutes),

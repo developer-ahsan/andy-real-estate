@@ -1,20 +1,18 @@
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
-import { VendorsService } from '../../vendors.service';
-import { AddColor, AddImprintColor, DeleteColor, DeleteImprintColor, UpdateColor, UpdateImprintColor } from '../../vendors.types';
-declare var $: any;
+import { VendorsService } from '../../../vendors.service';
+import { AddColor, AddImprintColor, DeleteColor, DeleteImprintColor, UpdateColor, UpdateImprintColor } from '../../../vendors.types';
+
 @Component({
-  selector: 'app-imprint-colors',
-  templateUrl: './imprint-colors.component.html',
+  selector: 'app-product-color-imprint',
+  templateUrl: './product-imprint.component.html',
   styles: [".mat-paginator {border-radius: 16px !important}"]
 })
-export class VendorImprintColorsComponent implements OnInit, OnDestroy {
-  @ViewChild('colorModal') colorModal: ElementRef;
-
+export class VendorImprintProductComponent implements OnInit, OnDestroy {
   @ViewChild('paginator') paginator: MatPaginator;
   @Input() isLoading: boolean;
   @Output() isLoadingChange = new EventEmitter<boolean>();
@@ -46,11 +44,6 @@ export class VendorImprintColorsComponent implements OnInit, OnDestroy {
   ngRGBUpdate = '';
 
   imprintProducts = false;
-
-  addColorsForm = [];
-
-  supplierData: any;
-  collectionsData: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _VendorsService: VendorsService
@@ -59,37 +52,7 @@ export class VendorImprintColorsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.isLoading = true;
     this.getColors(1, 'get');
-    this.getVendorsData();
   };
-  getVendorsData() {
-    this._VendorsService.Single_Suppliers$.pipe(takeUntil(this._unsubscribeAll)).subscribe(supplier => {
-      this.supplierData = supplier["data"][0];
-      this.getCollectionData();
-    });
-  }
-  getCollectionData() {
-    let paramas = {
-      view_vendor_collections: true,
-      supplier_id: this.supplierData.pk_companyID
-    }
-    this._VendorsService.getVendorsData(paramas).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-      this.isLoading = false;
-      this._changeDetectorRef.markForCheck();
-    })).subscribe(res => {
-      res["data"].forEach(element => {
-        element.colorsData = [];
-        if (element.Colors) {
-          const colors = element.Colors.split(',,');
-          colors.forEach(color => {
-            const [id, name, rgb] = color.split('::')
-            element.colorsData.push({ id, name, rgb, rgbValue: '#' + rgb });
-          });
-        }
-      });
-      this.collectionsData = res["data"];
-      console.log(res);
-    })
-  }
   calledScreen(value) {
     this.mainScreen = value;
   }
@@ -245,42 +208,9 @@ export class VendorImprintColorsComponent implements OnInit, OnDestroy {
       this._VendorsService.snackBar('Something went wrong');
     })
   }
-  openColorModal() {
-    for (let index = 0; index < 6; index++) {
-      this.addColorsForm[index] = { colorName: '', rgb: '' };
-    }
-    $(this.colorModal.nativeElement).modal('show');
-  }
-  addNewColors() {
-    console.log(this.addColorsForm);
-    const data = this.validateColors(this.addColorsForm);
-    console.log("Colors are valid:", data);
-  }
-  validateColors(colors: any[]): any {
-    let msg = '';
-    let value;
-    for (const color of colors) {
-      const { colorName, rgb } = color;
 
-      if (colorName === "" && rgb !== "") {
-        msg = "Color name is required when RGB is provided.";
-        value = false;
-      }
-      if (colorName !== "" && rgb === "") {
-        msg = "RGB value is required when color name is provided.";
-        value = false;
-      }
-      if (colorName !== "" && rgb !== "" && rgb.length !== 6) {
-        msg = "RGB value must be 6 characters long.";
-        value = false;
-      }
-    }
-    let data = { value, msg }
-    return data;
-  }
-  imprintColorProductsToggle(collection, check) {
-    this.imprintProducts = check;
-    this._changeDetectorRef.markForCheck();
+  imprintColorProductsToggle() {
+    this.imprintProducts = !this.imprintProducts;
   }
   /**
      * On destroy
