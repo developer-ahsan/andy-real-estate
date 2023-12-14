@@ -72,19 +72,19 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.addNewMemberForm = new FormGroup({
       role_name: new FormControl(''),
-      name: new FormControl(''),
-      description: new FormControl(''),
+      name: new FormControl('', Validators.required),
+      description: new FormControl('', Validators.required),
       email: new FormControl('', [Validators.email, Validators.required]),
-      phone: new FormControl(''),
+      phone: new FormControl('', Validators.required),
       role_type: new FormControl(''),
     });
     this.updateMemberForm = new FormGroup({
       pk_ID: new FormControl(''),
       roleName: new FormControl(''),
-      name: new FormControl(''),
-      description: new FormControl(''),
+      name: new FormControl('', Validators.required),
+      description: new FormControl('', Validators.required),
       email: new FormControl('', [Validators.email, Validators.required]),
-      phone: new FormControl(''),
+      phone: new FormControl('', Validators.required),
       roleType: new FormControl(''),
     });
     this.isLoading = true;
@@ -235,7 +235,7 @@ export class SupportTeamComponent implements OnInit, OnDestroy {
     this.teamMemberFeature = false;
     if (item) {
       this.updateMemberId = item.pk_ID;
-      item= {...item, description:item.description.slice(0, 400)}
+      item = { ...item, description: item.description.slice(0, 400) }
       this.updateMemberForm.patchValue(item);
       this.getMemberFeatures(item.pk_ID);
       this.checkImageExist()
