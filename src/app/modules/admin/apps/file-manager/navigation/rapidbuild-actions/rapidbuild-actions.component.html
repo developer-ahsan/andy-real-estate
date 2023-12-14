@@ -50,6 +50,46 @@
                         </th>
                     </tr>
                 </thead>
+                <tbody>
+                    <tr *ngFor="let item of dataSource" class="clickable">
+                        <td (click)="navigate(item)" class="align-middle cursor-pointer undeline">
+                            <a [ngClass]="{'disabled': !(item.blnActive && item.blnStoreActive)}">
+                                {{item.pk_storeProductID}}
+                            </a>
+                        </td>
+                        <td (click)="navigate(item)" class="align-middle cursor-pointer undeline">
+                            <a [ngClass]="{'disabled': !(item.blnActive && item.blnStoreActive)}">
+                                {{item.productNumber}} {{item.productName}}
+                            </a>
+                        </td>
+                        <td class="align-middle">
+                            <span [ngClass]="{'active': item.blnActive, 'disabled': !item.blnActive}">
+                                {{item.blnActive ? 'Active' : 'Disabled'}}
+                            </span>
+                        </td>
+                        <td class="align-middle">
+                            <span [ngClass]="{'active': item.blnStoreActive, 'disabled': !item.blnStoreActive}">
+                                {{item.blnStoreActive ? 'Online' : 'Offline'}}
+                            </span>
+                        </td>
+                        <td class="align-middle">
+                            <span
+                                [ngClass]="{'fa': true, 'fa-check': fileExists(item.storeProductImage),
+                                'fa-times': !fileExists(item.storeProductImage),
+                                'fa-lg': true, 'active': fileExists(item.storeProductImage), 'disabled': !fileExists(item.storeProductImage)}"
+                                [title]="fileExists(item.storeProductImage) ? 'Image' : 'No Image'">
+                            </span>
+                        </td>
+                        <td class="align-middle">
+                            <div class="mt-5">
+                                <mat-checkbox [name]="'updateList'" [value]="item.pk_storeProductID"
+                                    [id]="'updateList_' + item.pk_storeProductID"></mat-checkbox>
+                            </div>
+                        </td>
+                    </tr>
+
+                </tbody>
+
             </table>
         </div>
     </div>
