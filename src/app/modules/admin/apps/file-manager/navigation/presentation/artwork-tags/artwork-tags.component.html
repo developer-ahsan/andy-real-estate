@@ -15,13 +15,13 @@
       <div class="col-12 ">
         <mat-form-field class="w-full">
           <mat-label>Name</mat-label>
-          <input matInput [(ngModel)]="item.name">
+          <input maxlength="50" matInput [(ngModel)]="item.name">
         </mat-form-field>
       </div>
       <div class="col-12">
         <mat-form-field class="w-full">
           <mat-label>Description</mat-label>
-          <textarea matInput [(ngModel)]="item.description" rows="2"></textarea>
+          <textarea maxlength="500" matInput [(ngModel)]="item.description" rows="2"></textarea>
         </mat-form-field>
       </div>
       <div class="w-full flex justify-end mt-2">
@@ -62,7 +62,7 @@
       <div class="col-12 col-md-6">
         <mat-form-field class="w-full">
           <mat-label>Name *</mat-label>
-          <input matInput [(ngModel)]="addArtworkTag.name">
+          <input maxlength="50" matInput [(ngModel)]="addArtworkTag.name">
         </mat-form-field>
       </div>
       <div class="col-12 col-md-6">
@@ -74,7 +74,7 @@
       <div class="col-12">
         <mat-form-field class="w-full">
           <mat-label>Description *</mat-label>
-          <textarea matInput rows="2" [(ngModel)]="addArtworkTag.description"></textarea>
+          <textarea maxlength="500" matInput rows="2" [(ngModel)]="addArtworkTag.description"></textarea>
         </mat-form-field>
       </div>
       <div class="col-12">
