@@ -113,7 +113,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   isPageLoadingYTD: boolean = false;
   isPageLoadingSales: boolean = false;
   isPageLoadingCustomers: boolean = true;
-  selectedYear: any = "2017";
+  selectedYear: any = (new Date().getFullYear() - 5).toString();
   yearArray: any;
 
   topCustomers: any = [];
@@ -131,6 +131,114 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private _changeDetectorRef: ChangeDetectorRef,
     private currencyPipe: CurrencyPipe
   ) {
+    
+this.setChartOptions();
+    this.chartOptionsBar = {
+      series: [],
+      chart: {
+        type: "bar",
+        height: 350,
+        toolbar: {
+          show: false,
+        },
+      },
+      dataLabels: {
+        enabled: false,
+      },
+      xaxis: {
+        categories: [],
+      },
+      yaxis: {
+        labels: {
+          formatter: function (val) {
+            return '$' + `${val.toLocaleString()}`;
+          },
+        },
+      },
+    };
+
+    this.chartOptions = {
+      series: [
+        {
+          name: "",
+          data: [],
+        },
+        {
+          name: "",
+          data: [],
+        },
+      ],
+      chart: {
+        animations: {
+          speed: 400,
+          animateGradually: {
+            enabled: false
+          }
+        },
+        fontFamily: 'inherit',
+        foreColor: 'inherit',
+        width: '100%',
+        height: '350',
+        type: 'area',
+        toolbar: {
+          show: false
+        },
+        zoom: {
+          enabled: false
+        }
+      },
+      colors: ['#818CF8'],
+      stroke: {
+        width: 2
+      },
+      grid: {
+        borderColor: "#e7e7e7",
+        show: true
+      },
+      markers: {
+        size: 2,
+      },
+      xaxis: {
+        categories: [],
+      },
+      dataLabels: {
+        enabled: false
+      },
+      yaxis: {
+        labels: {
+          formatter: function (val) {
+            return '$' + `${val.toLocaleString()}`;
+          },
+        },
+        axisTicks: {
+          show: false
+        },
+        axisBorder: {
+          show: false
+        },
+        tickAmount: 5,
+        show: true
+      }
+    };
+  }
+
+  ngOnInit(): void {
+    this.isPageLoadingHistory = true;
+    this.isPageLoadingSales = true;
+    this.isPageLoadingYTD = true;
+
+    this.isLoadingChange.emit(false);
+    this.initialize();
+    // Get the stores
+    this._fileManagerService.stores$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((items: any) => {
+        // console.log(items)
+      });
+    this.getDashboardData()
+  }
+
+  setChartOptions() {
     this.chartOptionsOne = {
       series: [
         {
@@ -244,109 +352,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
         },
       },
     };
-
-    this.chartOptionsBar = {
-      series: [],
-      chart: {
-        type: "bar",
-        height: 350,
-        toolbar: {
-          show: false,
-        },
-      },
-      dataLabels: {
-        enabled: false,
-      },
-      xaxis: {
-        categories: [],
-      },
-      yaxis: {
-        labels: {
-          formatter: function (val) {
-            return '$' + `${val.toLocaleString()}`;
-          },
-        },
-      },
-    };
-
-    this.chartOptions = {
-      series: [
-        {
-          name: "",
-          data: [],
-        },
-        {
-          name: "",
-          data: [],
-        },
-      ],
-      chart: {
-        animations: {
-          speed: 400,
-          animateGradually: {
-            enabled: false
-          }
-        },
-        fontFamily: 'inherit',
-        foreColor: 'inherit',
-        width: '100%',
-        height: '350',
-        type: 'area',
-        toolbar: {
-          show: false
-        },
-        zoom: {
-          enabled: false
-        }
-      },
-      colors: ['#818CF8'],
-      stroke: {
-        width: 2
-      },
-      grid: {
-        borderColor: "#e7e7e7",
-        show: true
-      },
-      markers: {
-        size: 2,
-      },
-      xaxis: {
-        categories: [],
-      },
-      dataLabels: {
-        enabled: false
-      },
-      yaxis: {
-        labels: {
-          formatter: function (val) {
-            return '$' + `${val.toLocaleString()}`;
-          },
-        },
-        axisTicks: {
-          show: false
-        },
-        axisBorder: {
-          show: false
-        },
-        tickAmount: 5,
-        show: true
-      }
-    };
   }
 
-  ngOnInit(): void {
-    this.isPageLoadingHistory = true;
-    this.isPageLoadingSales = true;
-    this.isPageLoadingYTD = true;
+  getDashboardData() {
 
-    this.isLoadingChange.emit(false);
-    this.initialize();
-    // Get the stores
-    this._fileManagerService.stores$
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((items: any) => {
-        // console.log(items)
-      });
+    this.setChartOptions();
     this.getDashboardGraphsData("historical_store_sales");
     this.getDashboardGraphsData("sales_average_margin");
     this.getDashboardGraphsData("ytd_month");
@@ -355,6 +365,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.getDashboardGraphsData("top_customer");
     }, 5000);
   }
+
   initialize() {
     this.yearArray = [];
     for (let index = new Date().getFullYear(); index > 2005; index--) {
@@ -382,6 +393,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     } else if (value == "top_customer") {
       this.isPageLoadingCustomers = true;
     }
+
     let params = {
       dashboard: true,
       [value]: true,
