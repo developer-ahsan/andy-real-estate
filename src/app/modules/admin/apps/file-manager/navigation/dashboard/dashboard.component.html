@@ -19,7 +19,7 @@
       </div>
       <div>
         <mat-form-field appearance="fill" class="w-full">
-          <mat-select [(ngModel)]="selectedYear" (selectionChange)="getDashboardGraphsData('historical_store_sales')">
+          <mat-select [(ngModel)]="selectedYear" (selectionChange)="getDashboardData()">
             <mat-option *ngFor="let item of yearArray" value="{{ item }}">
               {{ item }}
             </mat-option>
