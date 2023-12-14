@@ -25,7 +25,7 @@ export class VendorImprintColorsComponent implements OnInit, OnDestroy {
   tempRecords = 0;
   page = 1;
 
-  mainScreen: string = 'Current Colors';
+  mainScreen: string = 'Current Collections';
   keyword = '';
   not_available = 'N/A';
 

@@ -162,7 +162,8 @@
                                             <td valign="top"><b>Store:</b></td>
                                             <td valign="top">
                                                 <span>
-                                                    <a class="text-blue-500" href="{{buildDetails?.storeProdURL}}"
+                                                    <a class="text-blue-500"
+                                                        href="{{buildDetails?.protocol + buildDetails?.storeURL}}"
                                                         target="_blank">{{buildDetails?.storeName}}</a>
                                                 </span>
                                             </td>
@@ -411,7 +412,7 @@
                             </div>
                         </mat-expansion-panel>
                         <!-- Instructions -->
-                        <mat-expansion-panel [expanded]="true" *ngIf="userData.blnMaster">
+                        <mat-expansion-panel [expanded]="true" *ngIf="!userData.blnMaster">
                             <mat-expansion-panel-header>
                                 <mat-panel-title>
                                     Instructions
@@ -421,7 +422,7 @@
                                 <a href="https://admin.consolidus.com/ssadm/controller/view/system/images/rapidBuild/instructions.jpg"
                                     target="_blank">
                                     <img src="https://admin.consolidus.com/ssadm/controller/view/system/images/rapidBuild/instructions.jpg"
-                                        class="rapidBuildFinalImage w-60" />
+                                        class="rapidBuildFinalImage" />
                                 </a>
                             </div>
                         </mat-expansion-panel>

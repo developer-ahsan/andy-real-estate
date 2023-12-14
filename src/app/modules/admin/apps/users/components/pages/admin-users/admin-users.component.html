@@ -33,7 +33,8 @@
                         <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15">
                             ID
                         </th>
-                        <td mat-cell *matCellDef="let element" class="text-sm">
+                        <td mat-cell *matCellDef="let element" class="text-sm"
+                            (click)="toggleUpdateUserData(element, true)">
                             {{element.pk_userID || not_available}}
                         </td>
                     </ng-container>
@@ -41,7 +42,8 @@
                         <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30">
                             Full Name
                         </th>
-                        <td mat-cell *matCellDef="let element" class="text-sm">
+                        <td mat-cell *matCellDef="let element" class="text-sm"
+                            (click)="toggleUpdateUserData(element, true)">
                             {{element.firstName + ' ' + element.lastName}}
                         </td>
                     </ng-container>
@@ -49,7 +51,8 @@
                         <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30 ">
                             Company
                         </th>
-                        <td mat-cell *matCellDef="let element" class="text-sm">
+                        <td mat-cell *matCellDef="let element" class="text-sm"
+                            (click)="toggleUpdateUserData(element, true)">
                             {{element.companyName}}
                         </td>
                     </ng-container>
@@ -193,6 +196,7 @@
                 </div>
             </div>
         </div>
+        <!-- Disabled Users -->
         <div class="mt-5" *ngIf="mainScreen == 'View Disabled Users' && !isUpdateUser">
             <div class="px-5" *ngIf="isDisabledLoading">
                 <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
@@ -206,7 +210,8 @@
                         <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15">
                             ID
                         </th>
-                        <td mat-cell *matCellDef="let element" class="text-sm">
+                        <td mat-cell *matCellDef="let element" class="text-sm"
+                            (click)="toggleUpdateUserData(element, true)">
                             {{element.pk_userID || not_available}}
                         </td>
                     </ng-container>
@@ -214,7 +219,8 @@
                         <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30">
                             Full Name
                         </th>
-                        <td mat-cell *matCellDef="let element" class="text-sm">
+                        <td mat-cell *matCellDef="let element" class="text-sm"
+                            (click)="toggleUpdateUserData(element, true)">
                             {{element.firstName + ' ' + element.lastName}}
                         </td>
                     </ng-container>
@@ -222,7 +228,8 @@
                         <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30 ">
                             Company
                         </th>
-                        <td mat-cell *matCellDef="let element" class="text-sm">
+                        <td mat-cell *matCellDef="let element" class="text-sm"
+                            (click)="toggleUpdateUserData(element, true)">
                             {{element.companyName}}
                         </td>
                     </ng-container>
@@ -230,8 +237,8 @@
                         <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30 text-center">
                             Last LoggedIn
                         </th>
-                        <td mat-cell *matCellDef="let element" class="text-center text-sm">
-                            {{(element.lastLogged | date: 'MM-dd-yyyy hh:mm:ss') || 'N/A'}}
+                        <td mat-cell *matCellDef="let element" class="text-sm">
+                            {{element.lastLogged || 'N/A'}}
                         </td>
                     </ng-container>
                     <ng-container matColumnDef="active">
@@ -391,10 +398,9 @@
                         <div class="my-2">
                             <mat-form-field class="w-full">
                                 <mat-label>Enter Your Password:</mat-label>
-                                <input matInput type="password" maxlength="15" formControlName="password">
+                                <input matInput type="password" maxlength="15">
                             </mat-form-field>
-                            <button 
-                                class=" bg-red-500 text-white px-4 py-2 rounded">
+                            <button class=" bg-red-500 text-white px-4 py-2 rounded">
                                 Delete
                             </button>
 

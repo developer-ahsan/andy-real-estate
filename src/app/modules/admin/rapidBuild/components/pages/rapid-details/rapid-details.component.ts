@@ -174,6 +174,12 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
       }
       this.ngStatus = this.buildDetails.pk_statusID;
       this.brandGuideExist = res["brandGuide"];
+      this.buildDetails.blnAllHexColors = 1;
+      if (this.buildDetails.allHexColors) {
+        if (this.buildDetails.allHexColors.includes("N/A")) {
+          this.buildDetails.blnAllHexColors = 0;
+        }
+      }
       this.checkColorQryImages();
       this.getImprintData(this.buildDetails.pk_productID);
     }, err => {
@@ -191,10 +197,12 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
     this._commonService.getFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["data"].length) {
         this.buildDetails.qryColorImages = true;
+        this._changeDetectorRef.markForCheck();
       } else {
         this.buildDetails.qryColorImages = false;
+        this._changeDetectorRef.markForCheck();
       }
-    })
+    });
   }
 
   SEOFilter(name: string): string {

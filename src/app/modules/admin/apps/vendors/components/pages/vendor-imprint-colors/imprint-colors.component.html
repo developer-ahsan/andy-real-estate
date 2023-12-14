@@ -3,19 +3,26 @@
         <div class="px-2 pb-2">
             <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen"
                 (change)="calledScreen(group.value)">
-                <mat-button-toggle value="Current Colors">
-                    Current Colors
+                <mat-button-toggle value="Current Collections">
+                    Current Collections
                 </mat-button-toggle>
-                <mat-button-toggle value="Add New Color">
-                    Add New Color
+                <mat-button-toggle value="Add New Collections">
+                    Add New Collections
                 </mat-button-toggle>
             </mat-button-toggle-group>
         </div>
-        <div class="px-5" *ngIf="mainScreen == 'Current Colors' && isLoading">
+        <div class="px-5" *ngIf="mainScreen == 'Current Collections' && isLoading">
             <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
             </ngx-skeleton-loader>
         </div>
-        <div *ngIf="mainScreen == 'Current Colors' && !isLoading">
+        <div *ngIf="mainScreen == 'Current Collections' && !isLoading">
+            <div class="row">
+                <div class="col-12 col-md">
+                    <div class="bg-card rounded-2xl shadow-lg p-5">
+                        <p class="text-lg font-bold">(475) BLACK & WHITE</p>
+                    </div>
+                </div>
+            </div>
             <div class="px-3" *ngIf="!isUpdateColors">
                 <mat-form-field class="w-full">
                     <input matInput placeholder="Search Keyword" [disabled]="isSearching" [(ngModel)]="keyword"
@@ -97,7 +104,7 @@
                 </div>
             </ng-template>
         </div>
-        <div *ngIf="mainScreen == 'Add New Color'" class="p-6 row">
+        <div *ngIf="mainScreen == 'Add New Collections'" class="p-6 row">
             <div class="col-12">
                 <mat-form-field class="example-chip-list w-full" appearance="fill">
                     <mat-label>Name</mat-label>

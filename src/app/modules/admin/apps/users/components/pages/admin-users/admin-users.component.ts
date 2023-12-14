@@ -19,14 +19,14 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
 
   dataSource = [];
   tempDataSource = [];
-  displayedColumns: string[] = ['id', 'name', 'company', 'lastLogged', 'active', 'master', 'action'];
+  displayedColumns: string[] = ['id', 'name', 'company', 'lastLogged', 'active', 'master'];
   totalUsers = 0;
   tempRecords = 0;
   page = 1;
 
   disabledDataSource = [];
   temdisabledDataSource = [];
-  disabledDisplayedColumns: string[] = ['id', 'f_name', 'l_name', 'admin', 'action'];
+  disabledDisplayedColumns: string[] = ['id', 'f_name', 'l_name', 'admin'];
   distabledTotalUsers = 0;
   tempdistabledTotalUsers = 0;
   disabledPage = 1;
@@ -139,15 +139,9 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
   };
 
   onSelected() {
-    if (this.selectedCompany == 0) {
-      this.dataSource = this.tempDataSource;
-      this.page = 1;
-      this.totalUsers = this.tempRecords;
-      this._changeDetectorRef.markForCheck();
-    } else {
-      this.isLoading = true;
-      this.getAdminUsers(1, 'get');
-    }
+    this.page = 1;
+    this.isLoading = true;
+    this.getAdminUsers(1, 'get');
   }
 
   calledScreen(value) {
@@ -497,28 +491,47 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
   getParentPermissions(page) {
     let params = {
       employee_permissions: true,
-      page: page,
       user_id: this.updateUserData.pk_userID,
-      size: 20
     }
-    let permission = [];
-    if (this.parentPermissionData) {
-      permission = this.parentPermissionData;
-    }
+    let permissionsData = [];
     this._UsersService.getAdminsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      res["data"].forEach(element => {
-        element.Child = JSON.parse(element.Child);
-        if (element.isParentAdmitted) {
-          this.selectedPermissions.push(element.pk_sectionID);
-          element.Child.forEach(item => {
-            if (item.isPermitted) {
-              this.selectedPermissions.push(item.pk_sectionID);
+      if (res["data"][0].qryPermissions) {
+        const permissions = res["data"][0].qryPermissions.split('|||');
+        permissions.forEach(permission => {
+          const [parents, children] = permission.split('#_#');
+          const [parent_pk_sectionID, name, blnChecked] = parents.split('###');
+          let admin_checked = false;
+          if (blnChecked == '1') {
+            admin_checked = true;
+          }
+          let childrenData = [];
+          const Children = children.split(',,');
+          Children.forEach(child => {
+            const [pk_sectionID, name, blnChecked] = child.split('::');
+            let checked = false;
+            if (blnChecked == '1') {
+              checked = true;
             }
+            childrenData.push({ pk_sectionID: Number(pk_sectionID), parent_pk_sectionID: Number(parent_pk_sectionID), name, blnChecked: checked });
           });
-        }
-        this.parentPermissionData.push(element);
-      });
-      this.parentTotalPermissions = res["totalRecords"];
+          permissionsData.push({ pk_sectionID: Number(parent_pk_sectionID), name, blnChecked: admin_checked, children: childrenData });
+        });
+        console.log(permissionsData);
+      }
+
+      // res["data"].forEach(element => {
+      //   element.Child = JSON.parse(element.Child);
+      //   if (element.isParentAdmitted) {
+      //     this.selectedPermissions.push(element.pk_sectionID);
+      //     element.Child.forEach(item => {
+      //       if (item.isPermitted) {
+      //         this.selectedPermissions.push(item.pk_sectionID);
+      //       }
+      //     });
+      //   }
+      //   this.parentPermissionData.push(element);
+      // });
+      // this.parentTotalPermissions = res["totalRecords"];
       this.isLoadingPermission = false;
       this.permissionLoader = false;
       this._changeDetectorRef.markForCheck();

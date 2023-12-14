@@ -13,7 +13,8 @@ export const smartartRoutes: Route[] = [
         path: '',
         component: RapidBuildComponent,
         resolve: {
-            RapidBuildStoresResolver, RapidBuildStatusesResolver
+            // RapidBuildStoresResolver, 
+            RapidBuildStatusesResolver
         },
         children: [
             {
