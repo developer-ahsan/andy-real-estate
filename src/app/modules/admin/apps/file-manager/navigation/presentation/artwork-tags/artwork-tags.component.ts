@@ -64,9 +64,19 @@ export class PresentationArtworkTagsComponent implements OnInit {
         this._changeDetectorRef.markForCheck();
       });
   }
+
+  replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
+    for (const key in obj) {
+        if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+            obj[key] = obj[key]?.replace(/'/g, "''");
+        }
+    }
+    return obj;
+}
+
   AddArtwork() {
     const { name, description, display_order } = this.addArtworkTag;
-    if (name == '' || description == '' || display_order == '') {
+    if (name.trim() == '' || description.trim() == '') {
       this._snackBar.open("Please fill out required fields", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
@@ -77,30 +87,49 @@ export class PresentationArtworkTagsComponent implements OnInit {
     this.addTagLoader = true;
     let payload = {
       store_id: this.selectedStore.pk_storeID,
-      name,
-      description,
-      display_order,
+      name:name.trim(),
+      description:description.trim(),
+      display_order:display_order,
       add_artwork_presentation: true
     }
-    this._storeManagerService.AddArtwork(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._storeManagerService.AddArtwork(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.getArtWork();
+      this._snackBar.open("Artwork added successfuly", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
       this._changeDetectorRef.markForCheck();
     }, err => {
+      this._snackBar.open("Error occured while adding artwork", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
       this.addTagLoader = false;
       this._changeDetectorRef.markForCheck();
     })
   }
   UpdateArtwork(item) {
     item.updateLoader = true;
+    if(item.name.trim() === '' || item.description.trim() === '') {
+      this._snackBar.open("Please fill the required fields", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      return;
+    }
+
     let payload = {
-      name: item.name,
-      description: item.description,
+      name: item.name.trim(),
+      description: item.description.trim(),
       extension: item.extension,
       displayOrder: item.displayOrder,
       pk_artworkTagID: item.pk_artworkTagID,
       update_artwork_tag: true
     }
-    this._storeManagerService.UpdateArtwork(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._storeManagerService.UpdateArtwork(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       item.updateLoader = false;
       this._snackBar.open("Artwork updated successfully", '', {
         horizontalPosition: 'center',

@@ -81,7 +81,7 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
   isDefaultGroupData: any = [];
   isDefaultGroupDataTotal: any;
   isDefaultGroupPage = 1;
-  isDefaultGroupColumns: string[] = ['order', 'first', 'last',  'email', 'user','emails', 'royalities', 'ca', 'action'];
+  isDefaultGroupColumns: string[] = ['order', 'first', 'last', 'email', 'user', 'emails', 'royalities', 'ca', 'action'];
 
 
   locationsList: any;
@@ -329,11 +329,21 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
   updateProofEmail() {
     this.isEditEmailLoader = true;
     let payload = this.isEditEmailForm.value;
-    this._storeManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._storeManagerService.putStoresData(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this.getAdditionalEmails(1, 'update');
       }
+      this._snackBar.open("Additional proof email updated successfuly", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
     }, err => {
+      this._snackBar.open("Error while updating Additional proof email", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
       this.isEditEmailLoader = false;
       this._changeDetectorRef.markForCheck();
     })
@@ -638,34 +648,63 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
     this.selectedGroupItem = this.approvalGroupList.filter(item => item.pk_artApprovalGroupID == val)[0];
     this.getContactGroups(1, 'get', val);
   }
+
+  isValidEmail(email) {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(email);
+  }
+
   addApprovalContactGroup() {
     let { listOrder, firstName, lastName, email, storeUserID, fk_artApprovalGroupID, blnEmails, blnStoreUserApprovalContacts, blnRoyalties, add_artApproval_contact } = this.addContactGroupForm.getRawValue();
+
+
+
     if (storeUserID == '' || listOrder == '' || firstName.trim() == '' || lastName.trim() == '' || email.trim() == '') {
       this._snackBar.open("Please fill out required fields", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
         duration: 3000
       });
-    } else {
-      let val = [];
-      storeUserID.forEach(element => {
-        val.push(element.item_id);
-      });
-      let payload = {
-        listOrder: listOrder, firstName: firstName.trim(), lastName: lastName.trim(), email: email.trim(),
-        storeUserID: val,
-        fk_artApprovalGroupID: this.selectedGroup,
-        blnEmails, blnStoreUserApprovalContacts, blnRoyalties, add_artApproval_contact
-      }
-      this.isAddApprovalLoader = true;
-      this._storeManagerService.postStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-        this.getContactGroups(1, 'add', this.selectedGroup);
-        this._changeDetectorRef.markForCheck();
-      }, err => {
-        this.isAddApprovalLoader = false;
-        this._changeDetectorRef.markForCheck();
-      })
+      return;
     }
+
+    if (listOrder < 0) {
+      this._snackBar.open("List order should be a positive number", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
+      return;
+    }
+
+    if (!this.isValidEmail(email)) {
+      this._snackBar.open("Invalid email format", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
+      return;
+    }
+
+    let val = [];
+    storeUserID.forEach(element => {
+      val.push(element.item_id);
+    });
+    let payload = {
+      listOrder: listOrder, firstName: firstName.trim(), lastName: lastName.trim(), email: email.trim(),
+      storeUserID: val,
+      fk_artApprovalGroupID: this.selectedGroup,
+      blnEmails, blnStoreUserApprovalContacts, blnRoyalties, add_artApproval_contact
+    }
+    this.isAddApprovalLoader = true;
+    this._storeManagerService.postStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.getContactGroups(1, 'add', this.selectedGroup);
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isAddApprovalLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
+
   }
 
   getContactGroups(page, type, id) {

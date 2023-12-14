@@ -1083,6 +1083,16 @@ export class PresentationComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     })
   }
+
+  replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
+    for (const key in obj) {
+        if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+            obj[key] = obj[key]?.replace(/'/g, "''");
+        }
+    }
+    return obj;
+}
+
   updateLogoBankNotes() {
     if (!this.settings.logoBankNotes) {
       this._storeManagerService.snackBar('Please add some notes');
@@ -1094,7 +1104,8 @@ export class PresentationComponent implements OnInit, OnDestroy {
       update_logo_bank_notes: true
     }
     this.isLogoBankNotesLoader = true;
-    this._storeManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    console.log(payload);
+    this._storeManagerService.putStoresData(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this._storeManagerService.snackBar(res["message"]);
       }
@@ -1262,7 +1273,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
       update_store_logoBank: true
     }
     item.updateLoader = true;
-    this._storeManagerService.putStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._storeManagerService.putStoresData(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this._storeManagerService.snackBar(res["message"]);
       }

@@ -538,16 +538,16 @@
                 <p class="font-bold">ID: {{item.pk_logoBankID}}</p>
                 <mat-form-field appearance="fill" class="w-full">
                   <mat-label> Name: </mat-label>
-                  <input [(ngModel)]="item.name" matInput />
+                  <input maxlength="50" [(ngModel)]="item.name" matInput />
                 </mat-form-field>
                 <mat-form-field appearance="fill" class="w-full">
                   <mat-label> Description(500): </mat-label>
-                  <textarea [(ngModel)]="item.description" matInput></textarea>
+                  <textarea maxlength="500" [(ngModel)]="item.description" matInput></textarea>
                 </mat-form-field>
                 <mat-form-field appearance="fill" class="w-full">
                   <mat-label> Imprint colors: (800, optional, comma-separated list of color names or PMS colors)
                   </mat-label>
-                  <textarea [(ngModel)]="item.color_list" matInput></textarea>
+                  <textarea maxlength="800" [(ngModel)]="item.color_list" matInput></textarea>
                 </mat-form-field>
                 <a class="mt-3" target="_blank"
                   href="https://assets.consolidus.com/globalAssets/Stores/LogoBank2/{{selectedStore.pk_storeID}}/{{item.pk_logoBankID}}.{{item.extension}}"><u>View
@@ -868,7 +868,7 @@
 
                               <tr *ngFor="let item of productColors.data; let i=index">
                                 <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
-                                  {{i + 1}}</td>
+                                  {{i + 1 + ((productColors.page-1) * productColors.size)}}</td>
                                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{item.colorName}}</td>
                                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{item.pk_colorID}}</td>
                               </tr>
