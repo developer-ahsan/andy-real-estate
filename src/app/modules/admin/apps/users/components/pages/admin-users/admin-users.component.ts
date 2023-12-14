@@ -86,6 +86,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
 
   sessionUser: any;
   userPassword = '';
+  userDetails: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _UsersService: UsersService,
@@ -130,6 +131,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
     }
   }
   ngOnInit(): void {
+    this.userDetails = JSON.parse(localStorage.getItem('userDetails'));
     this._UsersService.getIPAddress().subscribe(res => {
       this.ipAddress = res["ip"];
     });
@@ -528,13 +530,29 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
   }
 
   updatePermissions() {
-    console.log(this.parentPermissionData);
-    // let payload: RootPermissions = {
-    //   user_id: this.updateUserData.pk_userID,
-    //   add_permissions: this.selectedPermissions,
-    //   remove_permissions: this.removedPermissions,
-    //   update_permissions_group: true
-    // }
+    let selectedPermissions = [];
+    let unselectedPermissions = [];
+    this.parentPermissionData.forEach(permission => {
+      if (permission.blnChecked) {
+        selectedPermissions.push(permission.pk_sectionID);
+      } else {
+        unselectedPermissions.push(permission.pk_sectionID);
+      }
+      permission.children.forEach(child => {
+        if (child.blnChecked) {
+          selectedPermissions.push(permission.pk_sectionID);
+        } else {
+          unselectedPermissions.push(permission.pk_sectionID);
+        }
+      });
+    });
+    let payload: RootPermissions = {
+      user_id: this.updateUserData.pk_userID,
+      add_permissions: selectedPermissions,
+      remove_permissions: unselectedPermissions,
+      update_permissions_group: true
+    }
+    console.log(payload);
     // this.isUpdateAdminPermissions = true;
     // this._UsersService.UpdateAdminsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
     //   if (res["success"]) {
@@ -561,6 +579,8 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
     this.updateUserData.deleteLoader = true;
     let payload = {
       user_id: Number(this.updateUserData.pk_userID),
+      main_login_pk_userID: Number(this.userDetails.pk_userID),
+      password: this.userPassword,
       remove_admin_user: true
     }
     this._UsersService.UpdateAdminsData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
@@ -574,6 +594,8 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
         this.isLoading = true;
         this.toggleUpdateUserData(null, false);
         this.getAdminUsers(1, 'get');
+      } else {
+        this._UsersService.snackBar(res["message"]);
       }
     });
   }
