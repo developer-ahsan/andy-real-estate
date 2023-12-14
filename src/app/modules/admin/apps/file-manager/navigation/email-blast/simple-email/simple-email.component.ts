@@ -91,7 +91,7 @@ export class SimpleEmailBlastComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((items: any) => {
         this.selectedStore = items["data"][0];
-        this.sendEmailForm.get('message').setValue(`<br /><br /><br /><br />If you would like to stop receiving emails from ${this.selectedStore.storeName}. <a href="https://www.${this.selectedStore.storeName}/unsubscribe">click here to unsubscribe.`)
+        this.sendEmailForm.get('message').setValue(`<br /><br /><br /><br />If you would like to stop receiving emails from ${this.selectedStore.storeName}. <a href="${this.selectedStore.protocol}www.${this.selectedStore.storeName}/unsubscribe">click here to unsubscribe.`)
       });
   }
   add(event: MatChipInputEvent): void {
@@ -101,7 +101,9 @@ export class SimpleEmailBlastComponent implements OnInit, OnDestroy {
     if (valid) {
       this.emails.push(value);
     } else {
-      this._fileManagerService.snackBar('Please enter a valid email');
+      if (this.emails?.length < 1) {
+        this._fileManagerService.snackBar('Please enter a valid email');
+      }
     }
     // Clear the input value
     event.chipInput!.clear();
@@ -144,7 +146,7 @@ export class SimpleEmailBlastComponent implements OnInit, OnDestroy {
   sendEmail() {
     const { subject, message } = this.sendEmailForm.getRawValue();
     let messageData = message;
-    if (subject.trim()=== '') {
+    if (subject.trim() === '') {
       this._fileManagerService.snackBar('Subject is required');
       return;
     }
@@ -208,7 +210,6 @@ export class SimpleEmailBlastComponent implements OnInit, OnDestroy {
   // }
   toDataURL(url, callback) {
     let u: any = this.sanitizer.bypassSecurityTrustHtml(url)
-    // console.log(url);
     var xhr = new XMLHttpRequest();
     xhr.onload = function () {
       var reader = new FileReader();

@@ -23,6 +23,7 @@ export class RapidbuildActionsComponent implements OnInit, OnDestroy {
   dataSourceTotalRecord: number;
   dataSourceLoading = false;
   page: number = 1;
+  isMasterCheckboxChecked: boolean = false;
 
   constructor(
     private _storeManagerService: FileManagerService,
@@ -43,6 +44,13 @@ export class RapidbuildActionsComponent implements OnInit, OnDestroy {
       });
   }
 
+
+  toggleAllCheckboxes() {
+    this.dataSource.forEach(item => {
+      item.isChecked = this.isMasterCheckboxChecked;
+    });
+  }
+
   getMainStoreCall(page) {
     const { pk_storeID } = this.selectedStore;
 
@@ -51,12 +59,10 @@ export class RapidbuildActionsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.dataSource = response["data"];
-
         let extractedProducts = [];
 
         this.dataSource.forEach(item => {
           let productsList = item.productsList.split(",,");
-
           productsList.forEach(product => {
             let productAttributes = product.split("==");
             let productObject = {
@@ -76,18 +82,37 @@ export class RapidbuildActionsComponent implements OnInit, OnDestroy {
             }
             extractedProducts.push(productObject);
           });
+          item['splittedData'] = extractedProducts
+          item['isChecked'] = false;
+          extractedProducts = [];
         });
-
-        this.dataSource = extractedProducts;
-        this.dataSourceTotalRecord = response["totalRecords"];
         this.dataSourceLoading = false;
-
         // Mark for check
         this._changeDetectorRef.markForCheck();
       });
   };
 
+
+
   fileExists(item) {
+    // console.log(item?.pk_storeProductID);
+    // if (item?.pk_storeProductID) {
+    //   console.log('hello')
+    //   const url = `https://assets.consolidus.com/globalAssets/Products/Thumbnails/${item?.pk_storeProductID}.jpg`
+    //   const img = new Image();
+    //   img.src = url;
+    //   img.onload = () => {
+    //     return true;
+    //     // this.isImageExists = true;
+    //     // this._changeDetectorRef.markForCheck();
+    //   };
+    //   img.onerror = () => {
+    //     return false
+    //     // this.isImageExists = false;
+    //     // this._changeDetectorRef.markForCheck();
+    //   };
+    // } else 
+
     return true;
   }
 
