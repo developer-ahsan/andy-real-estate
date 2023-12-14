@@ -10,6 +10,7 @@ import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUn
 import { RapidBuildService } from '../../rapid-build.service';
 import { removeRapidBuildEntry, sendAutoRequest, UpdateArtworkTgas, updateProof, UpdateQuoteOptions, updateQuotePurchaseOrderComment, updateReorderNumber, updateStatus, uploadProof } from '../../rapid-build.types';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
+import { environment } from 'environments/environment';
 
 
 @Component({
@@ -120,6 +121,8 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
   @ViewChild('fileInput') fileInput: ElementRef;
   removeProofLoader: boolean;
 
+  assetsUrl = environment.assetsURL;
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _authService: AuthService,
@@ -164,16 +167,36 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
             this.buildDetails.storeProdURL = `${this.buildDetails.protocol}${this.buildDetails.storeURL}/${catLink}/${subCatLink}/${this.buildDetails.permalink}`;
           }
         }
-
+      }
+      this.buildDetails.virtualProofIDs = [];
+      if (this.buildDetails.qryVirtualProof) {
+        this.buildDetails.virtualProofIDs = this.buildDetails.qryVirtualProof.split(',');
       }
       this.ngStatus = this.buildDetails.pk_statusID;
       this.brandGuideExist = res["brandGuide"];
+      this.checkColorQryImages();
       this.getImprintData(this.buildDetails.pk_productID);
     }, err => {
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     });
   }
+
+  checkColorQryImages() {
+    const path = `/globalAssets/Products/Colors/${this.buildDetails.pk_productID}/`;
+    let payload = {
+      files_fetch: true,
+      path: path
+    }
+    this._commonService.getFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["data"].length) {
+        this.buildDetails.qryColorImages = true;
+      } else {
+        this.buildDetails.qryColorImages = false;
+      }
+    })
+  }
+
   SEOFilter(name: string): string {
     name = name.replace(/'/g, '');
     name = name.replace(/"/g, '');
@@ -220,6 +243,11 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
       size: 50
     }
     this._rapidService.getRapidBuildData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (this.userData.blnMaster) {
+        res["data"].forEach(element => {
+          this.checkIfImageExists(element);
+        });
+      }
       this.colorsData = res["data"];
       this.isLogoBankLoader = true;
       this.isLoading = false;
@@ -442,6 +470,25 @@ export class RapidBuildDetailsComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
       })
   }
+  checkIfImageExists(item) {
+    const img = new Image();
+    img.src = `${this.assetsUrl}globalAssets/Products/Colors/${this.buildDetails.pk_productID}/${item.fk_colorID}.jpg`;
+    if (img.complete) {
+
+    } else {
+      img.onload = () => {
+        item.colorImage = true;
+        this._changeDetectorRef.markForCheck();
+        return true;
+      };
+
+      img.onerror = () => {
+        item.colorImage = false;
+        this._changeDetectorRef.markForCheck();
+        return false;
+      };
+    }
+  };
   /**
      * On destroy
      */

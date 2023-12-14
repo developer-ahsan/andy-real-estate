@@ -48,7 +48,8 @@
                             </div>
                         </mat-expansion-panel>
 
-                        <mat-expansion-panel [expanded]="true" *ngIf="storeProductImage && !ngProofCheck">
+                        <mat-expansion-panel [expanded]="true"
+                            *ngIf="storeProductImage && !ngProofCheck;else currentProof">
                             <mat-expansion-panel-header>
                                 <mat-panel-title>
                                     Final Image
@@ -57,37 +58,39 @@
                             <div>
                                 <div class="py-2">
                                     <img *ngIf="storeProductImage"
-                                        src="https://assets.consolidus.com/globalAssets/Products/HiRes/{{buildDetails.fk_storeProductID}}.jpg?{{date}}"
+                                        src="{{assetsUrl}}globalAssets/Products/HiRes/{{buildDetails.fk_storeProductID}}.jpg?{{date}}"
                                         class="w-full" (error)="checkStoreImages($event)">
                                 </div>
                             </div>
                         </mat-expansion-panel>
-
-                        <mat-expansion-panel [expanded]="true" *ngIf="ngProofCheck">
-                            <mat-expansion-panel-header>
-                                <mat-panel-title>
-                                    Current Proof
-                                </mat-panel-title>
-                            </mat-expansion-panel-header>
-                            <div>
-                                <div class="py-2">
-                                    <img *ngIf="ngProofCheck"
-                                        src="https://assets.consolidus.com/globalAssets/rapidBuild/{{buildDetails.pk_rapidBuildID}}.jpg?{{date}}"
-                                        class="w-full" (error)="checkProof($event)">
-                                    <button *ngIf="ngProofCheck" class="min-w-20 mt-2 btn buttonDanger hover:bg-red-200"
-                                        [disabled]="removeProofLoader" (click)="removeProof()">
-                                        <span *ngIf="!removeProofLoader">Remove Proof</span>
-                                        <mat-progress-spinner *ngIf="removeProofLoader" [diameter]="24"
-                                            [mode]="'indeterminate'">
-                                        </mat-progress-spinner>
-                                    </button>
-                                    <fuse-alert *ngIf="!ngProofCheck" class="my-2" [appearance]="'soft'"
-                                        [type]="'warning'" [showIcon]="false">
-                                        This product does not yet have a proof.
-                                    </fuse-alert>
+                        <ng-template #currentProof>
+                            <mat-expansion-panel [expanded]="true">
+                                <mat-expansion-panel-header>
+                                    <mat-panel-title>
+                                        Current Proof
+                                    </mat-panel-title>
+                                </mat-expansion-panel-header>
+                                <div>
+                                    <div class="py-2">
+                                        <img *ngIf="ngProofCheck"
+                                            src="{{assetsUrl}}globalAssets/rapidBuild/{{buildDetails.pk_rapidBuildID}}.jpg?{{date}}"
+                                            class="w-full" (error)="checkProof($event)">
+                                        <button *ngIf="ngProofCheck"
+                                            class="min-w-20 mt-2 btn buttonDanger hover:bg-red-200"
+                                            [disabled]="removeProofLoader" (click)="removeProof()">
+                                            <span *ngIf="!removeProofLoader">Remove Proof</span>
+                                            <mat-progress-spinner *ngIf="removeProofLoader" [diameter]="24"
+                                                [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                        <fuse-alert *ngIf="!ngProofCheck" class="my-2" [appearance]="'soft'"
+                                            [type]="'warning'" [showIcon]="false">
+                                            This product does not yet have a proof.
+                                        </fuse-alert>
+                                    </div>
                                 </div>
-                            </div>
-                        </mat-expansion-panel>
+                            </mat-expansion-panel>
+                        </ng-template>
                         <mat-expansion-panel [expanded]="true">
                             <mat-expansion-panel-header>
                                 <mat-panel-title>
@@ -226,9 +229,9 @@
                                         <tr>
                                             <td valign="top"><b>Imprint details:</b></td>
                                             <td valign="top">
-                                                <div class="max-h-40 overflow-y-auto" *ngIf="imprintDetails.length > 0">
+                                                <div class="" *ngIf="imprintDetails.length > 0">
                                                     <p *ngFor="let item of imprintDetails">
-                                                        {{item.methodName}}/{{item.locationName}}
+                                                        {{item.methodName}}/{{item.locationName}} ({{item.area}})
                                                     </p>
                                                 </div>
                                                 <p *ngIf="imprintDetails.length == 0">N/A</p>
@@ -251,18 +254,23 @@
                                                     class="fa fa-question-circle fa-md clickable"></span>
                                             </td>
                                             <td valign="top">
-                                                <span class="text-red-600"
-                                                    *ngIf="buildDetails.additionalColorsCount > 0 || buildDetails.blnAllHexColors">
+                                                <span class="text-red-600 flex font-bold"
+                                                    *ngIf="buildDetails.qryColorImages || buildDetails.blnAllHexColors;else noDataFound">
+                                                    <mat-icon svgIcon="mat_outline:close"
+                                                        class="text-red-600 icon-size-6"></mat-icon>
                                                     No</span>
-                                                <span class="text-green-600"
-                                                    *ngIf="buildDetails.additionalColorsCount == 0 && !buildDetails.blnAllHexColors">
-                                                    Yes</span>
+                                                <ng-template #noDataFound>
+                                                    <span class="text-green-600 flex font-bold">
+                                                        <mat-icon class="text-green-600 icon-size-6"
+                                                            svgIcon="mat_outline:check"></mat-icon>
+                                                        Yes</span>
+                                                </ng-template>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td valign="top"><b>Categories:</b></td>
                                             <td valign="top">
-                                                <span>{{buildDetails.productCategories || 'None assigned'}}</span>
+                                                <span>{{buildDetails.qrySubCategories || 'None assigned'}}</span>
                                             </td>
                                         </tr>
                                         <tr *ngIf="artWorkDetails.length > 0">
@@ -270,7 +278,7 @@
                                             <td valign="top">
                                                 <div *ngFor="let item of artWorkDetails">
                                                     <a target="_blank"
-                                                        href="https://assets.consolidus.com/globalAssets/Products/artworkTemplates/{{item.fk_productID}}/{{item.pk_artworkTemplateID}}.{{item.extension}}">ArtworkTemplate</a>
+                                                        href="{{assetsUrl}}globalAssets/Products/artworkTemplates/{{item.fk_productID}}/{{item.pk_artworkTemplateID}}.{{item.extension}}">ArtworkTemplate</a>
                                                 </div>
                                             </td>
                                         </tr>
@@ -279,10 +287,10 @@
                                             <td valign="top">
                                                 <div *ngIf="!colorsData.length > 0" class="row">
                                                     <span class="mb-1 col-6 col-md-2" *ngFor="let item of colorsData">
-                                                        <a href="https://assets.consolidus.com/globalAssets/Products/Colors/{{buildDetails.pk_productID}}/{{item.fk_colorID}}.jpg"
+                                                        <a href="{{assetsUrl}}globalAssets/Products/Colors/{{buildDetails.pk_productID}}/{{item.fk_colorID}}.jpg"
                                                             target="_blank">
                                                             <img class="w-20"
-                                                                src="https://assets.consolidus.com/globalAssets/Products/Colors/{{buildDetails.pk_productID}}/{{item.fk_colorID}}.jpg">
+                                                                src="{{assetsUrl}}globalAssets/Products/Colors/{{buildDetails.pk_productID}}/{{item.fk_colorID}}.jpg">
                                                         </a>
                                                     </span>
                                                 </div>
@@ -296,6 +304,58 @@
                                 </div>
                             </div>
                         </mat-expansion-panel>
+
+                        <!-- Design Notes -->
+                        <mat-expansion-panel [expanded]="true">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    Design/color notes
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <div>
+                                <div class="py-2">
+                                    <p [innerHTML]="buildDetails?.designer_color_notes"></p>
+                                </div>
+                            </div>
+                        </mat-expansion-panel>
+                        <!-- qryVirtualProof -->
+                        <mat-expansion-panel *ngIf="!userData.blnMaster && buildDetails.virtualProofIDs.length > 0"
+                            [expanded]="true">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    Customer Examples
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <div class="row">
+                                <div class="col-1" *ngFor="let virtualProofID of buildDetails.virtualProofIDs">
+                                    <a href="{{assetsUrl}}StoreProducts/VirtualProofs/{{buildDetails.fk_storeProductID}}/{{virtualProofID}}.jpg"
+                                        target="_blank">
+                                        <img class="w-full"
+                                            src="{{assetsUrl}}StoreProducts/VirtualProofs/{{buildDetails.fk_storeProductID}}/{{virtualProofID}}.jpg"
+                                            style="border:1px solid #000; margin: 0 0 10px 0;">
+                                    </a>
+                                </div>
+                            </div>
+                        </mat-expansion-panel>
+                        <!-- Blank Color Images -->
+                        <mat-expansion-panel *ngIf="!userData.blnMaster && colorsData.length > 0" [expanded]="true">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    Blank Color Images
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <div class="row">
+                                <div class="col-1" *ngFor="let color of colorsData">
+                                    <a *ngIf="color.colorImage"
+                                        href="{{assetsUrl}}globalAssets/Products/Colors/{{buildDetails.pk_productID}}/{{color.fk_colorID}}.jpg"
+                                        target="_blank">
+                                        <img class="w-full"
+                                            src="{{assetsUrl}}globalAssets/Products/Colors/{{buildDetails.pk_productID}}/{{color.fk_colorID}}.jpg"
+                                            style="border:1px solid #000; margin: 0 0 10px 0;">
+                                    </a>
+                                </div>
+                            </div>
+                        </mat-expansion-panel>
                         <!-- Brand Guide -->
                         <mat-expansion-panel [expanded]="true" *ngIf="brandGuideExist">
                             <mat-expansion-panel-header>
@@ -304,7 +364,7 @@
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                             <div>
-                                <a href="https://assets.consolidus.com/globalAssets/Stores/BrandGuide/{{buildDetails.pk_storeID}}.pdf"
+                                <a href="{{assetsUrl}}globalAssets/Stores/BrandGuide/{{buildDetails.pk_storeID}}.pdf"
                                     target="_blank" style="text-decoration: none;">
                                     <div class="alert alert-success no-bottom-margin add-padding-sm"
                                         style="font-size: 16px; font-weight: bold;">
@@ -320,19 +380,6 @@
                                         </div>
                                     </div>
                                 </a>
-                            </div>
-                        </mat-expansion-panel>
-                        <!-- Design Notes -->
-                        <mat-expansion-panel [expanded]="true">
-                            <mat-expansion-panel-header>
-                                <mat-panel-title>
-                                    Design/color notes
-                                </mat-panel-title>
-                            </mat-expansion-panel-header>
-                            <div>
-                                <div class="py-2">
-                                    <p [innerHTML]="buildDetails?.designer_color_notes"></p>
-                                </div>
                             </div>
                         </mat-expansion-panel>
                         <!-- Logo Bank -->
@@ -352,10 +399,10 @@
                                 <div class="py-2" *ngIf="!isLogoBankLoader">
                                     <div class="row">
                                         <div class="col-1" *ngFor="let item of logoData">
-                                            <a href="https://assets.consolidus.com/globalAssets/Stores/logoBank2/{{item.fk_storeID}}/{{item.pk_logoBankID}}.{{item.extension}}"
+                                            <a href="{{assetsUrl}}globalAssets/Stores/logoBank2/{{item.fk_storeID}}/{{item.pk_logoBankID}}.{{item.extension}}"
                                                 target="_blank" [matTooltip]="item.name + '-' + item.description">
                                                 <img class="w-full"
-                                                    src="https://assets.consolidus.com/globalAssets/Stores/logoBank2/{{item.fk_storeID}}/Thumbs/{{item.pk_logoBankID}}.jpg"
+                                                    src="{{assetsUrl}}globalAssets/Stores/logoBank2/{{item.fk_storeID}}/Thumbs/{{item.pk_logoBankID}}.jpg"
                                                     style="border:1px solid #000; margin: 0 0 10px 0;">
                                             </a>
                                         </div>

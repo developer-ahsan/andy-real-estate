@@ -45,7 +45,7 @@ export class RapidImageManagementComponent implements OnInit, OnDestroy {
     private _RapidBuildService: RapidBuildService,
     private router: Router,
     private _route: ActivatedRoute,
-    private _commonService: DashboardsService,
+    public _commonService: DashboardsService,
 
   ) { }
   ngOnInit(): void {
@@ -132,8 +132,11 @@ export class RapidImageManagementComponent implements OnInit, OnDestroy {
   }
   sortData(sort: Sort) {
     this.isSortingLoader = true;
-    this.sortBy = sort.active,
-      this.sortOrder = sort.direction;
+    this.sortBy = sort.active;
+    if (sort.direction == '') {
+      sort.direction = 'asc';
+    }
+    this.sortOrder = sort.direction;
     this.page = 1;
     this.getRapidBuildData(1);
   };
