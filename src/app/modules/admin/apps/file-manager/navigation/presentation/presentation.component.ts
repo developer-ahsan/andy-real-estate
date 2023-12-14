@@ -682,13 +682,21 @@ export class PresentationComponent implements OnInit, OnDestroy {
   }
   // Special Offers
   UpdateTypeKit() {
+    if(this.ngTypeKit.trim() === '') {
+      this._snackBar.open("Typekit updated successfuly", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
+      return;
+    }
     let payload = {
       typeKitID: this.ngTypeKit,
       fk_storeID: this.selectedStore.pk_storeID,
       update_typekit: true
     }
     this.typekitLoader = true;
-    this._storeManagerService.UpdateTypeKit(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._storeManagerService.UpdateTypeKit(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.typekitLoader = false;
       if (res["success"]) {
         this.typekitMsg = true;
@@ -717,7 +725,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
   }
   AddNewsFeed() {
     const { fk_storeID, title, date, news, add_news_feed } = this.newsFeedAddForm.getRawValue();
-    if (title == '' || date == '' || news == '') {
+    if (title.trim() == '' || news.trim() == '') {
       this._snackBar.open("Please fill out required fields", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
@@ -729,7 +737,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
         news, add_news_feed
       }
       this.newsFeedAddLoader = true;
-      this._storeManagerService.AddNewsFeed(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._storeManagerService.AddNewsFeed(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         this.newsFeedAddLoader = false;
         if (res["success"]) {
           this.getScreenData("news_feed", this.presentationScreen);
@@ -1124,6 +1132,11 @@ export class PresentationComponent implements OnInit, OnDestroy {
     const { imageUpload, type } = this.logoBankImageValue;
     const base64 = imageUpload.split(",")[1];
     const { name, description, displayOrder, bank_type, color_list } = this.addLogoBankForm.getRawValue();
+    if(name.trim() === '' || description.trim() === '') {
+      this._storeManagerService.snackBar('Please fill the required fields');
+
+      return;
+    }
     let payload: addStoreLogoBank = {
       store_id: this.selectedStore.pk_storeID,
       name: name,
@@ -1136,7 +1149,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
       add_store_logoBank: true
     }
     this.isAddLogoBankLoader = true;
-    this._storeManagerService.postStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._storeManagerService.postStoresData(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this._storeManagerService.snackBar(res["message"]);
         this.uploadMediaLogoBankVector(res["newId"], base64);

@@ -180,8 +180,30 @@ export class PresentationScrollersComponent implements OnInit {
       this._fileManagerService.getStoreSetting(this.selectedStore.pk_storeID).pipe(takeUntil(this._unsubscribeAll)).subscribe();
     })
   }
+
+  hasEmptyKeys(arr) {
+    for (let i = 0; i < arr.length; i++) {
+        const obj = arr[i];
+        for (const key in obj) {
+            if (!obj[key]) {
+                return true;
+            }
+        }
+    }
+    return false; 
+}
+
+hasNegativeDisplayOrder(arr) {
+  for (let i = 0; i < arr.length; i++) {
+      if (arr[i].displayOrder < 0) {
+          return true;
+      }
+  }
+  return false; 
+}
+
+
   UpdateTestimonials() {
-    this.updateTestimonialLoader = true;
     let testimonials = [];
     this.testimonialsData.forEach(element => {
       testimonials.push({
@@ -192,9 +214,26 @@ export class PresentationScrollersComponent implements OnInit {
         pk_testimonialID: Number(element.pk_testimonialID)
       });
     });
+    if(this.hasEmptyKeys(testimonials)) {
+      this._snackBar.open("Please fill the required fields", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
+      return;
+    }
+    if(this.hasNegativeDisplayOrder(testimonials)){
+      this._snackBar.open("All display orders should have a positive value", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
+      return;
+    }
     let payload = {
       testimonials, update_testimonials: true
     }
+    this.updateTestimonialLoader = true;
     this._fileManagerService.UpdateTestimonials(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this.updateTestimonialLoader = false;
@@ -235,13 +274,23 @@ export class PresentationScrollersComponent implements OnInit {
   }
   AddTestimonial() {
     const { name, title, testimonial, displayOrder } = this.addTestimonialForm.getRawValue();
-    if (name == '' || title == '' || testimonial == '' || displayOrder == '') {
+    if (name.trim() == '' || title.trim() == '' || testimonial.trim() == '') {
       this._snackBar.open("Please fill out the required fields", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
         duration: 3000
       });
-    } else {
+      return;
+    } 
+    if(displayOrder < 0) {
+      this._snackBar.open("Display order must be a positive number", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
+      return;
+    }
+    
       this.addTestimonialLoader = true;
       this._fileManagerService.AddTestimonial(this.addTestimonialForm.value).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         if (res["success"]) {
@@ -252,7 +301,7 @@ export class PresentationScrollersComponent implements OnInit {
         this.addTestimonialLoader = false;
         this._changeDetectorRef.markForCheck();
       })
-    }
+    
   }
   // Default Scrollers
   UpdateDefaultScroller() {
@@ -283,7 +332,6 @@ export class PresentationScrollersComponent implements OnInit {
     })
   }
   UpdateScrollerOrder() {
-    this.defaultScrollerOrderLoader = true;
     let scrollers = [];
     this.defaultScrollersData.forEach(element => {
       let order = 1;
@@ -295,9 +343,20 @@ export class PresentationScrollersComponent implements OnInit {
         scroller_id: Number(element.pk_scrollerID)
       });
     });
+
+    if(this.hasNegativeDisplayOrder(scrollers)) {
+      this._snackBar.open("All the fields must have a positive number", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
+      return;
+    }
     let payload = {
       scrollers, update_scroller_order: true
     }
+    this.defaultScrollerOrderLoader = true;
+
     this._fileManagerService.UpdateScrollerOrder(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this.defaultScrollerOrderLoader = false;
@@ -306,16 +365,34 @@ export class PresentationScrollersComponent implements OnInit {
           this.defaultScrollerOrderMsg = false;
           this._changeDetectorRef.markForCheck();
         }, 2000);
+        this._snackBar.open("Scroller display order updated successfuly", '', {
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          duration: 3000
+        });
         this._changeDetectorRef.markForCheck();
       }
     }, err => {
+      this._snackBar.open("Error occured while updating Scroller display order", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
       this.defaultScrollerOrderLoader = false;
       this._changeDetectorRef.markForCheck();
     })
   }
+  replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
+    for (const key in obj) {
+        if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+            obj[key] = obj[key]?.replace(/'/g, "''");
+        }
+    }
+    return obj;
+}
   // Scrollers
   AddScroller() {
-    if (this.scrollerTitle == '') {
+    if (this.scrollerTitle.trim() === '') {
       this._snackBar.open("Please fill out the required fields", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
@@ -324,9 +401,9 @@ export class PresentationScrollersComponent implements OnInit {
     } else {
       this.scrollersLoader = true;
       let payload = {
-        fk_storeID: this.selectedStore.pk_storeID, add_scroller: true, title: this.scrollerTitle
+        fk_storeID: this.selectedStore.pk_storeID, add_scroller: true, title: this.scrollerTitle.trim()
       }
-      this._fileManagerService.AddScroller(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._fileManagerService.AddScroller(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         if (res["success"]) {
           this.scrollersLoader = false;
           this.scrollersMsg = true;
@@ -400,13 +477,24 @@ export class PresentationScrollersComponent implements OnInit {
     })
   }
   UpdateScroller() {
-    this.updateScrollerLoader = true;
+
+    if(this.scrollerTitle.trim() === '') {
+      this._snackBar.open("Please fill out the required fields", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
+      return;
+    }
+
     let payload = {
       title: this.scrollerTitle,
       update_scroller: true,
       blnActive: this.updateScrollerData.blnActive,
       scroller_id: this.updateScrollerData.pk_scrollerID
     }
+    this.updateScrollerLoader = true;
+
     this._fileManagerService.UpdateScroller(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this.getScreenData('scroller', 'Scrollers', 'update');

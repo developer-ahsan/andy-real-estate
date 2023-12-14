@@ -38,8 +38,28 @@ export class PresentationSocialMediaComponent implements OnInit {
     });
     this.socialMediaForm.patchValue(this.screenData);
   }
+
+  replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
+    for (const key in obj) {
+        if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+            obj[key] = obj[key]?.replace(/'/g, "''");
+        }
+    }
+    return obj;
+}
+
   UpdateSocialMedia() {
     const { facebookPage, twitterPage, linkedInPage, instagramPage } = this.socialMediaForm.getRawValue();
+
+    if(facebookPage.trim() === '' || twitterPage.trim() === '' || linkedInPage.trim()==='' || instagramPage.trim() === '') {
+      this._snackBar.open("Please fill out required fields", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
+      return;
+    }
+
     let payload = {
       facebook_url: facebookPage,
       twitter_url: twitterPage,
@@ -48,7 +68,7 @@ export class PresentationSocialMediaComponent implements OnInit {
       store_id: this.selectedStore.pk_storeID
     }
     this.updateLoader = true;
-    this._storeManagerService.UpdateSocialMedia(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._storeManagerService.UpdateSocialMedia(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.updateLoader = false;
       this.socialUpdateMsg = true;
       setTimeout(() => {

@@ -68,7 +68,7 @@
       <div class="col-12 col-md-6">
         <mat-form-field class="w-full">
           <mat-label>Display Order *</mat-label>
-          <input matInput type="number" [(ngModel)]="addArtworkTag.display_order">
+          <input min="0" matInput type="number" [(ngModel)]="addArtworkTag.display_order">
         </mat-form-field>
       </div>
       <div class="col-12">
@@ -108,7 +108,7 @@
           </div>
           <mat-form-field class="w-full">
             <mat-label>Display Order *</mat-label>
-            <input matInput type="number" [(ngModel)]="item.displayOrder">
+            <input min="0" matInput type="number" [(ngModel)]="item.displayOrder">
           </mat-form-field>
           <button class="min-w-40 mr-2" mat-flat-button [matTooltip]="'View PDF'">
             <mat-icon svgIcon="mat_solid:picture_as_pdf"></mat-icon>

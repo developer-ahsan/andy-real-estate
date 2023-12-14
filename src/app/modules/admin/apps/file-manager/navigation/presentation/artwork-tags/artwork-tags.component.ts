@@ -84,6 +84,14 @@ export class PresentationArtworkTagsComponent implements OnInit {
       });
       return;
     }
+    if(display_order < 0) {
+      this._snackBar.open("Display order should be a positive number", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
+      return;
+    }
     this.addTagLoader = true;
     let payload = {
       store_id: this.selectedStore.pk_storeID,
@@ -162,8 +170,16 @@ export class PresentationArtworkTagsComponent implements OnInit {
       this._changeDetectorRef.markForCheck();
     })
   }
+
+  hasNegativeDisplayOrder(tags) {
+    for (let i = 0; i < tags.length; i++) {
+        if (tags[i].displayOrder < 0) {
+            return true;
+        }
+    }
+    return false;
+}
   UpdateArtworkDisplayOrder() {
-    this.displayOrderLoader = true;
     let artworks = [];
     this.screenData.forEach(element => {
       artworks.push({
@@ -171,10 +187,19 @@ export class PresentationArtworkTagsComponent implements OnInit {
         displayOrder: element.displayOrder
       })
     });
+   if(this.hasNegativeDisplayOrder(artworks)) {
+    this._snackBar.open("Please fill positive values", '', {
+      horizontalPosition: 'center',
+      verticalPosition: 'bottom',
+      duration: 3500
+    });
+    return;
+   }
     let payload = {
       artworks: artworks,
       update_artwork_order: true
     }
+    this.displayOrderLoader = true;
     this._storeManagerService.UpdateArtworkDisplayOrder(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.displayOrderLoader = false;
       if (res["success"]) {
@@ -184,8 +209,18 @@ export class PresentationArtworkTagsComponent implements OnInit {
           this._changeDetectorRef.markForCheck();
         }, 3000);
       }
+      this._snackBar.open("Artwork display order updated successfully", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
       this._changeDetectorRef.markForCheck();
     }, err => {
+      this._snackBar.open("Error occured while updating Artwork display order", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3500
+      });
       this.displayOrderLoader = false;
       this._changeDetectorRef.markForCheck();
     })
