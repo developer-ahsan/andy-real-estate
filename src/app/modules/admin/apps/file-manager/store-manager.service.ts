@@ -239,6 +239,10 @@ export class FileManagerService {
     });
   }
 
+  getStoreProductsEmailBlast(params): Observable<any[]> {
+    return this._httpClient.get<any[]>(environment.storeProducts, { params });
+  }
+
   getExtendedListStoreProducts(storeID, pageNo): Observable<any[]> {
     return this._httpClient.get<any[]>(environment.storeNewUrl, {
       params: {

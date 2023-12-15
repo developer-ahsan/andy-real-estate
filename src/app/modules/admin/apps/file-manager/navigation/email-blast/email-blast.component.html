@@ -133,122 +133,385 @@
         <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="viewCampaignsLoader">
         </ngx-skeleton-loader>
 
-        <form [formGroup]="sendEmailForm" *ngIf="!viewCampaignsLoader">
-          <div class="row mb-3">
+        <div *ngIf="this.selectedTemplate.name === 'Featured Products V2'">
+          <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="storeProductLoader">
+          </ngx-skeleton-loader>
+          <div *ngIf="!storeProductLoader">
+            <div class="font-bold py-2 border-b">
+              New Featured Products Email
+            </div>
+            <div class="my-3 flex flex-col gap-y-2">
+              <mat-form-field appearance="fill" class="w-full">
+                <mat-label>
+                  <span class="font-bold">Feature Product:</span>
+                </mat-label>
+                <mat-select disableRipple>
+                  <ng-container *ngFor="let product of productsData">
+                    <mat-option [value]="0" class="font-bold">
+                      {{product.companyName}}
+                    </mat-option>
+                    <mat-option (click)="setProduct(item, 'featureProduct')" [value]="item"
+                      *ngFor="let item of product.splittedData">
+                      {{ item.productName }}
+                    </mat-option>
+                  </ng-container>
+                </mat-select>
+              </mat-form-field>
 
-            <div class="col-12 hidden">
-              <div class="text-right">
-                <div class="text-md font-semibold cursor-pointer underline text-green-700 hover:text-green-900"
-                  (click)="getEmailTemplatePreview()">
-                  Preview Template
+
+              <mat-form-field appearance="fill" class="w-full">
+                <mat-label>
+                  <span class="font-bold">Sub Product 1:</span>
+                </mat-label>
+                <mat-select disableRipple>
+                  <ng-container *ngFor="let product of productsData">
+                    <mat-option [value]="0" class="font-bold">
+                      {{product.companyName}}
+                    </mat-option>
+                    <mat-option (click)="setProduct(item, 'subProductOne')" [value]="item"
+                      *ngFor="let item of product.splittedData">
+                      {{ item.productName }}
+                    </mat-option>
+                  </ng-container>
+                </mat-select>
+              </mat-form-field>
+
+
+
+              <mat-form-field appearance="fill" class="w-full">
+                <mat-label>
+                  <span class="font-bold">Sub Product 2:</span>
+                </mat-label>
+                <mat-select disableRipple>
+                  <ng-container *ngFor="let product of productsData">
+                    <mat-option [value]="0" class="font-bold">
+                      {{product.companyName}}
+                    </mat-option>
+                    <mat-option (click)="setProduct(item, 'subProductTwo')" [value]="item"
+                      *ngFor="let item of product.splittedData">
+                      {{ item.productName }}
+                    </mat-option>
+                  </ng-container>
+                </mat-select>
+              </mat-form-field>
+
+
+              <mat-form-field appearance="fill" class="w-full">
+                <mat-label>
+                  <span class="font-bold">Sub Product 3:</span>
+                </mat-label>
+                <mat-select disableRipple>
+                  <ng-container *ngFor="let product of productsData">
+                    <mat-option [value]="0" class="font-bold">
+                      {{product.companyName}}
+                    </mat-option>
+                    <mat-option (click)="setProduct(item, 'subProductThree')" [value]="item"
+                      *ngFor="let item of product.splittedData">
+                      {{ item.productName }}
+                    </mat-option>
+                  </ng-container>
+                </mat-select>
+              </mat-form-field>
+
+
+              <mat-form-field appearance="fill" class="w-full">
+                <mat-label>
+                  <span class="font-bold">Sub Product 4:</span>
+                </mat-label>
+                <mat-select disableRipple>
+                  <ng-container *ngFor="let product of productsData">
+                    <mat-option [value]="0" class="font-bold">
+                      {{product.companyName}}
+                    </mat-option>
+                    <mat-option (click)="setProduct(item, 'subProductFour')" [value]="item"
+                      *ngFor="let item of product.splittedData">
+                      {{ item.productName }}
+                    </mat-option>
+                  </ng-container>
+                </mat-select>
+              </mat-form-field>
+
+
+              <mat-form-field appearance="fill" class="w-full">
+                <mat-label>
+                  <span class="font-bold">Sub Product 5:</span>
+                </mat-label>
+                <mat-select disableRipple>
+                  <ng-container *ngFor="let product of productsData">
+                    <mat-option [value]="0" class="font-bold">
+                      {{product.companyName}}
+                    </mat-option>
+                    <mat-option (click)="setProduct(item, 'subProductFive')" [value]="item"
+                      *ngFor="let item of product.splittedData">
+                      {{ item.productName }}
+                    </mat-option>
+                  </ng-container>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" class="w-full">
+                <mat-label>
+                  <span class="font-bold">Sub Product 6:</span>
+                </mat-label>
+                <mat-select disableRipple>
+                  <ng-container *ngFor="let product of productsData">
+                    <mat-option [value]="0" class="font-bold">
+                      {{product.companyName}}
+                    </mat-option>
+                    <mat-option (click)="setProduct(item, 'subProductSix')" [value]="item"
+                      *ngFor="let item of product.splittedData">
+                      {{ item.productName }}
+                    </mat-option>
+                  </ng-container>
+                </mat-select>
+              </mat-form-field>
+
+
+              <mat-form-field appearance="fill" class="w-full">
+                <mat-label class="font-bold">Action Title (HTML OK, 80 chars max):</mat-label>
+                <input maxlength="80" [(ngModel)]="featureSelectedProducts.actionTitle" matInput />
+              </mat-form-field>
+
+              <div class="w-full">
+                <span class="font-bold">Action Text (HTML OK, 1400 max):</span>
+                <ckeditor [(ngModel)]="featureSelectedProducts.actionText" [config]="editorConfig"></ckeditor>
+              </div>
+
+            </div>
+
+            <button class="ml-4 min-w-40" mat-flat-button [color]="'primary'" [matTooltip]="'Create Email'"
+              (click)="createEmail()">
+              <span class="ml-2 mr-1">Create Email</span>
+            </button>
+          </div>
+        </div>
+
+
+
+
+        <div *ngIf="this.selectedTemplate.name === ''">
+          <form [formGroup]="sendEmailForm" *ngIf="!viewCampaignsLoader">
+            <div class="row mb-3">
+
+              <div class="col-12 hidden">
+                <div class="text-right">
+                  <div class="text-md font-semibold cursor-pointer underline text-green-700 hover:text-green-900"
+                    (click)="getEmailTemplatePreview()">
+                    Preview Template
+                  </div>
                 </div>
               </div>
+
+
+
+
+
+              <div class="col-lg-6 col-12">
+                <mat-form-field appearance="fill" class="w-full">
+                  <mat-label>Subject</mat-label>
+                  <input matInput [formControlName]="'heading'" />
+                  <mat-error>Please add subject</mat-error>
+                </mat-form-field>
+              </div>
+
+
+              <div class="col-12">
+                <div class="text-right">
+                  <div class="text-md font-semibold cursor-pointer underline text-green-700 hover:text-green-900">
+                    <input class="hidden" #file type="file" accept=".xlsx,.csv,.excel" (change)="incomingfile($event)">
+                    <label class="cursor-pointer" (click)="file.click()">Import emails from excel file</label>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12">
+                <mat-radio-group formControlName="selectedRecipientValue" aria-labelledby="example-radio-group-label"
+                  class="example-radio-group" (change)="changeEmailCheckBox($event)">
+                  <mat-radio-button class="example-radio-button" value="email">
+                    Email
+                  </mat-radio-button>
+                  <mat-form-field class="example-chip-list w-full" appearance="fill">
+                    <mat-label>Emails Recipients(Comma-separated)</mat-label>
+                    <mat-chip-list class="pt-1 max-h-40 overflow-y-auto overflow-x-hidden min-h-12" #chipList1>
+                      <mat-chip [removable]="true" [selectable]="true" *ngFor="let email of emailsData"
+                        (removed)="remove(email)">
+                        {{email}}
+                        <mat-icon class="icon-size-5" matChipRemove
+                          [svgIcon]="'heroicons_solid:minus-circle'"></mat-icon>
+                      </mat-chip>
+                      <input #chipList [matChipInputFor]="chipList1" placeholder="Add Emails"
+                        [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="addOnBlur"
+                        (matChipInputTokenEnd)="add($event)">
+                    </mat-chip-list>
+                  </mat-form-field>
+                  <mat-radio-button class="example-radio-button text-red-500" value="optIn">
+                    EVERYONE NOT OPTED OUT ({{optInData.qryAllOptInEmailsCount}} emails)
+                  </mat-radio-button>
+                  <div class="px-8">
+                    <ul>
+                      <li>1.Any uploaded database</li>
+                      <li>2.All registered users</li>
+                      <li>3.Anyone opted in to the site</li>
+                      <li>4.Any emails collected from referrals</li>
+                      <li>5.Any emails from an order on this store</li>
+                      <li>6.All customers/active registered users</li>
+                    </ul>
+                  </div>
+                  <mat-radio-button class="example-radio-button text-green-500" value="customers">
+                    ALL ACTIVE CUSTOMERS ({{optInData.getAllActiveUsersEmailsCount}} emails)
+                  </mat-radio-button>
+                  <div class="px-8">
+                    <ul>
+                      <li>1.All active registered users on this store</li>
+                      <li>2.All active customers that have placed orders on this store</li>
+                    </ul>
+                  </div>
+                </mat-radio-group>
+                <!-- <mat-checkbox [(ngModel)]="ngEmailOptIn" [ngModelOptions]="{standalone: true}"
+                (change)="changeEmailCheckBox($event)">Opt-In
+                Emails</mat-checkbox> -->
+              </div>
             </div>
+          </form>
+
+          <div class="flex justify-between" *ngIf="!viewCampaignsLoader">
+            <button class="ml-4" mat-stroked-button [disabled]="sendEmailLoader" [matTooltip]="'View Templates List'"
+              (click)="viewTemplateType()">
+              <span class="ml-2 mr-1">Back</span>
+            </button>
+            <!-- (click)="sendEmail()" -->
+          
+            <button [disabled]="storeProductLoader" class="ml-4 min-w-40" mat-flat-button [color]="'primary'" [matTooltip]="'Send an Email'"
+              (click)="sendProductFeatureEmail()">
+              <mat-progress-spinner *ngIf="storeProductLoader" [diameter]="24" [mode]="'indeterminate'">
+              </mat-progress-spinner>
+              <span *ngIf="!storeProductLoader" class="ml-2 mr-1">Send Email</span>
+            </button>
+          </div>
+        </div>
+
+
+        <div *ngIf="this.selectedTemplate.name !== 'Featured Products V2' && this.selectedTemplate.name !== ''">
+          <form [formGroup]="sendEmailForm" *ngIf="!viewCampaignsLoader">
+            <div class="row mb-3">
+
+              <div class="col-12 hidden">
+                <div class="text-right">
+                  <div class="text-md font-semibold cursor-pointer underline text-green-700 hover:text-green-900"
+                    (click)="getEmailTemplatePreview()">
+                    Preview Template
+                  </div>
+                </div>
+              </div>
 
 
 
-            <div class="col-lg-6 col-12">
-              <mat-form-field appearance="fill" class="w-full">
-                <mat-label>Select Campaign</mat-label>
-                <mat-select [formControlName]="'campaign'">
-                  <mat-option *ngFor="let campaign of campaignsList" [value]="campaign">
-                    <span class="text-xs">{{campaign.title}}</span>
-                  </mat-option>
-                </mat-select>
-                <mat-error>Please select campaign</mat-error>
-              </mat-form-field>
-            </div>
+              <div class="col-lg-6 col-12">
+                <mat-form-field appearance="fill" class="w-full">
+                  <mat-label>Select Campaign</mat-label>
+                  <mat-select [formControlName]="'campaign'">
+                    <mat-option *ngFor="let campaign of campaignsList" [value]="campaign">
+                      <span class="text-xs">{{campaign.title}}</span>
+                    </mat-option>
+                  </mat-select>
+                  <mat-error>Please select campaign</mat-error>
+                </mat-form-field>
+              </div>
 
-            <div class="col-lg-6 col-12">
-              <mat-form-field appearance="fill" class="w-full">
-                <mat-label>Subject</mat-label>
-                <input matInput [formControlName]="'heading'" />
-                <mat-error>Please add subject</mat-error>
-              </mat-form-field>
-            </div>
+              <div class="col-lg-6 col-12">
+                <mat-form-field appearance="fill" class="w-full">
+                  <mat-label>Subject</mat-label>
+                  <input matInput [formControlName]="'heading'" />
+                  <mat-error>Please add subject</mat-error>
+                </mat-form-field>
+              </div>
 
-            <!-- <div class="col-12">
+              <!-- <div class="col-12">
               <mat-form-field appearance="fill" class="w-full">
                 <mat-label>Emails</mat-label>
                 <input matInput type="email" [formControlName]="'email_list'" />
                 <mat-error>Emails are required</mat-error>
               </mat-form-field>
             </div> -->
-            <div class="col-12">
-              <mat-form-field appearance="fill" class="w-full">
-                <mat-label>Message</mat-label>
-                <input matInput [formControlName]="'message'" />
-                <mat-error>Please add message</mat-error>
-              </mat-form-field>
-            </div>
-            <div class="col-12">
-              <div class="text-right">
-                <div class="text-md font-semibold cursor-pointer underline text-green-700 hover:text-green-900">
-                  <input class="hidden" #file type="file" accept=".xlsx,.csv,.excel" (change)="incomingfile($event)">
-                  <label class="cursor-pointer" (click)="file.click()">Import emails from excel file</label>
+              <div class="col-12">
+                <mat-form-field appearance="fill" class="w-full">
+                  <mat-label>Message</mat-label>
+                  <input matInput [formControlName]="'message'" />
+                  <mat-error>Please add message</mat-error>
+                </mat-form-field>
+              </div>
+              <div class="col-12">
+                <div class="text-right">
+                  <div class="text-md font-semibold cursor-pointer underline text-green-700 hover:text-green-900">
+                    <input class="hidden" #file type="file" accept=".xlsx,.csv,.excel" (change)="incomingfile($event)">
+                    <label class="cursor-pointer" (click)="file.click()">Import emails from excel file</label>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div class="col-12">
-              <mat-radio-group formControlName="selectedRecipientValue" aria-labelledby="example-radio-group-label"
-                class="example-radio-group" (change)="changeEmailCheckBox($event)">
-                <mat-radio-button class="example-radio-button" value="email">
-                  Email
-                </mat-radio-button>
-                <mat-form-field class="example-chip-list w-full" appearance="fill">
-                  <mat-label>Emails Recipients(Comma-separated)</mat-label>
-                  <mat-chip-list class="pt-1 max-h-40 overflow-y-auto overflow-x-hidden min-h-12" #chipList1>
-                    <mat-chip [removable]="true" [selectable]="true" *ngFor="let email of emailsData"
-                      (removed)="remove(email)">
-                      {{email}}
-                      <mat-icon class="icon-size-5" matChipRemove [svgIcon]="'heroicons_solid:minus-circle'"></mat-icon>
-                    </mat-chip>
-                    <input #chipList [matChipInputFor]="chipList1" placeholder="Add Emails"
-                      [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="addOnBlur"
-                      (matChipInputTokenEnd)="add($event)">
-                  </mat-chip-list>
-                </mat-form-field>
-                <mat-radio-button class="example-radio-button text-red-500" value="optIn">
-                  EVERYONE NOT OPTED OUT ({{optInData.qryAllOptInEmailsCount}} emails)
-                </mat-radio-button>
-                <div class="px-8">
-                  <ul>
-                    <li>1.Any uploaded database</li>
-                    <li>2.All registered users</li>
-                    <li>3.Anyone opted in to the site</li>
-                    <li>4.Any emails collected from referrals</li>
-                    <li>5.Any emails from an order on this store</li>
-                    <li>6.All customers/active registered users</li>
-                  </ul>
-                </div>
-                <mat-radio-button class="example-radio-button text-green-500" value="customers">
-                  ALL ACTIVE CUSTOMERS ({{optInData.getAllActiveUsersEmailsCount}} emails)
-                </mat-radio-button>
-                <div class="px-8">
-                  <ul>
-                    <li>1.All active registered users on this store</li>
-                    <li>2.All active customers that have placed orders on this store</li>
-                  </ul>
-                </div>
-              </mat-radio-group>
-              <!-- <mat-checkbox [(ngModel)]="ngEmailOptIn" [ngModelOptions]="{standalone: true}"
+              <div class="col-12">
+                <mat-radio-group formControlName="selectedRecipientValue" aria-labelledby="example-radio-group-label"
+                  class="example-radio-group" (change)="changeEmailCheckBox($event)">
+                  <mat-radio-button class="example-radio-button" value="email">
+                    Email
+                  </mat-radio-button>
+                  <mat-form-field class="example-chip-list w-full" appearance="fill">
+                    <mat-label>Emails Recipients(Comma-separated)</mat-label>
+                    <mat-chip-list class="pt-1 max-h-40 overflow-y-auto overflow-x-hidden min-h-12" #chipList1>
+                      <mat-chip [removable]="true" [selectable]="true" *ngFor="let email of emailsData"
+                        (removed)="remove(email)">
+                        {{email}}
+                        <mat-icon class="icon-size-5" matChipRemove
+                          [svgIcon]="'heroicons_solid:minus-circle'"></mat-icon>
+                      </mat-chip>
+                      <input #chipList [matChipInputFor]="chipList1" placeholder="Add Emails"
+                        [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="addOnBlur"
+                        (matChipInputTokenEnd)="add($event)">
+                    </mat-chip-list>
+                  </mat-form-field>
+                  <mat-radio-button class="example-radio-button text-red-500" value="optIn">
+                    EVERYONE NOT OPTED OUT ({{optInData.qryAllOptInEmailsCount}} emails)
+                  </mat-radio-button>
+                  <div class="px-8">
+                    <ul>
+                      <li>1.Any uploaded database</li>
+                      <li>2.All registered users</li>
+                      <li>3.Anyone opted in to the site</li>
+                      <li>4.Any emails collected from referrals</li>
+                      <li>5.Any emails from an order on this store</li>
+                      <li>6.All customers/active registered users</li>
+                    </ul>
+                  </div>
+                  <mat-radio-button class="example-radio-button text-green-500" value="customers">
+                    ALL ACTIVE CUSTOMERS ({{optInData.getAllActiveUsersEmailsCount}} emails)
+                  </mat-radio-button>
+                  <div class="px-8">
+                    <ul>
+                      <li>1.All active registered users on this store</li>
+                      <li>2.All active customers that have placed orders on this store</li>
+                    </ul>
+                  </div>
+                </mat-radio-group>
+                <!-- <mat-checkbox [(ngModel)]="ngEmailOptIn" [ngModelOptions]="{standalone: true}"
                 (change)="changeEmailCheckBox($event)">Opt-In
                 Emails</mat-checkbox> -->
+              </div>
             </div>
-          </div>
-        </form>
+          </form>
 
-        <div class="flex justify-between" *ngIf="!viewCampaignsLoader">
-          <button class="ml-4" mat-stroked-button [disabled]="sendEmailLoader" [matTooltip]="'View Templates List'"
-            (click)="viewTemplateType()">
-            <span class="ml-2 mr-1">Back</span>
-          </button>
-          <!-- (click)="sendEmail()" -->
-          <button class="ml-4 min-w-40" mat-flat-button [color]="'primary'" [matTooltip]="'Preview & Send an Email'"
-            (click)="getEmailTemplatePreview()">
-            <span class="ml-2 mr-1">Preview & Send Email</span>
-          </button>
+          <div class="flex justify-between" *ngIf="!viewCampaignsLoader">
+            <button class="ml-4" mat-stroked-button [disabled]="sendEmailLoader" [matTooltip]="'View Templates List'"
+              (click)="viewTemplateType()">
+              <span class="ml-2 mr-1">Back</span>
+            </button>
+            <!-- (click)="sendEmail()" -->
+            <button class="ml-4 min-w-40" mat-flat-button [color]="'primary'" [matTooltip]="'Preview & Send an Email'"
+              (click)="getEmailTemplatePreview()">
+              <span class="ml-2 mr-1">Preview & Send Email</span>
+            </button>
+          </div>
         </div>
+
+
+
       </div>
 
       <div class="col-12 p-10 pt-0" *ngIf="presentationScreen == 'Preview'">

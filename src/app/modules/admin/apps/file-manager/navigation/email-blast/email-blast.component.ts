@@ -2,7 +2,7 @@ import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, OnDe
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { retry, takeUntil } from 'rxjs/operators';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import moment from "moment";
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
@@ -42,6 +42,8 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
     "Opt-In Email",
     "Segmented target files",
   ];
+  storeProductLoader: boolean = false;
+  selectedProduct:any='3M Promotional Markets Dept';
   checked = false;
   drawerOpened: boolean = false;
   selectedIndex: any;
@@ -86,6 +88,45 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
   addOnBlur = true;
   readonly separatorKeysCodes = [ENTER, COMMA] as const;
   emailsData = [];
+  productsData: any;
+
+  featureSelectedProducts: any = {
+    subProductSix: {},
+    subProductFive: {},
+    subProductFour: {},
+    subProductThree: {},
+    subProductTwo: {},
+    subProductOne: {},
+    featureProduct: {},
+    actionTitle: '',
+    actionText: ''
+  };
+
+  editorConfig = {
+    toolbar: [
+      { name: 'clipboard', items: ['Undo', 'Redo'] },
+      { name: 'styles', items: ['Format'] },
+      { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike'] },
+      { name: 'align', items: ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'] },
+      { name: 'links', items: ['Link', 'Unlink'] },
+      { name: 'insert', items: ['Image', 'Table'] },
+      { name: 'tools', items: ['Maximize'] },
+    ],
+    extraPlugins: 'uploadimage,image2',
+    uploadUrl:
+      'https://ckeditor.com/apps/ckfinder/3.4.5/core/connector/php/connector.php?command=QuickUpload&type=Files&responseType=json',
+    filebrowserUploadMethod: 'base64',
+    // Configure your file manager integration. This example uses CKFinder 3 for PHP.
+    filebrowserBrowseUrl:
+      'https://ckeditor.com/apps/ckfinder/3.4.5/ckfinder.html',
+    filebrowserImageBrowseUrl:
+      'https://ckeditor.com/apps/ckfinder/3.4.5/ckfinder.html?type=Images',
+    filebrowserUploadUrl:
+      'https://ckeditor.com/apps/ckfinder/3.4.5/core/connector/php/connector.php?command=QuickUpload&type=Files',
+    filebrowserImageUploadUrl:
+      'https://ckeditor.com/apps/ckfinder/3.4.5/core/connector/php/connector.php?command=QuickUpload&type=Images'
+    // other options
+  };
 
   mainScreen = 'blast';
   emailActivity: any = [];
@@ -183,8 +224,185 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
 
   }
 
+  setProduct(data, key) {
+    this.featureSelectedProducts[key] = data
+  }
+  isEmpty(obj) {
+    return Object.entries(obj).length === 0;
+  }
+
+  sendProductFeatureEmail() {
+
+    // return;
+    const { pk_storeID, storeName, storeURL } = this.selectedStore;
+    const { heading } = this.sendEmailForm.getRawValue();
+    if (!heading) {
+      this._snackBar.open("Subject is required", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
+      return;
+    }
+    if (!this.emailsData.length) {
+      this._snackBar.open("Emails are needed", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
+      return;
+    };
+
+
+
+    this.previewData = null;
+    // this.presentationScreen = 'Preview';
+    let payload = {
+      dynamic_email: true,
+      email_list: this.emailsData,
+      template_id: this.selectedTemplate.id,
+      store_name: storeName,
+      template: {
+        store_name: storeName,
+        subject: heading,
+        title: this.featureSelectedProducts.actionTitle,
+        text: this.featureSelectedProducts.actionText.replace(/<\/?p>/g, ''),
+        banner: pk_storeID,
+        featured_product: {
+          title: this.featureSelectedProducts.featureProduct.productName,
+          store_product_id: this.featureSelectedProducts.featureProduct.productId,
+          sub_title: `${this.featureSelectedProducts.featureProduct.price}`,
+          description: this.featureSelectedProducts.featureProduct.description,
+          url: `${storeURL}${this.featureSelectedProducts.featureProduct.permalink}`,
+          image_url: ""
+        },
+        product_1: {
+          title: this.isEmpty(this.featureSelectedProducts.subProductOne) ? null : this.featureSelectedProducts.subProductOne.productName,
+          store_product_id: this.isEmpty(this.featureSelectedProducts.subProductOne) ? null : this.featureSelectedProducts.subProductOne.productId,
+          sub_title: this.isEmpty(this.featureSelectedProducts.subProductOne) ? null : `${this.featureSelectedProducts.subProductOne.price}`,
+          description: this.isEmpty(this.featureSelectedProducts.subProductOne) ? null : this.featureSelectedProducts.subProductOne.description,
+          url: this.isEmpty(this.featureSelectedProducts.subProductOne) ? null : `${storeURL}${this.featureSelectedProducts.subProductOne.permalink}`,
+          image_url: this.isEmpty(this.featureSelectedProducts.subProductOne) ? null : ""
+        },
+        product_2: {
+          title: this.isEmpty(this.featureSelectedProducts.subProductTwo) ? null : this.featureSelectedProducts.subProductTwo.productName,
+          store_product_id: this.isEmpty(this.featureSelectedProducts.subProductTwo) ? null : this.featureSelectedProducts.subProductTwo.productId,
+          sub_title: this.isEmpty(this.featureSelectedProducts.subProductTwo) ? null : `${this.featureSelectedProducts.subProductTwo.price}`,
+          description: this.isEmpty(this.featureSelectedProducts.subProductTwo) ? null : this.featureSelectedProducts.subProductTwo.description,
+          url: this.isEmpty(this.featureSelectedProducts.subProductTwo) ? null : `${storeURL}${this.featureSelectedProducts.subProductTwo.permalink}`,
+          image_url: this.isEmpty(this.featureSelectedProducts.subProductTwo) ? null : ""
+        },
+        product_3: {
+          title: this.isEmpty(this.featureSelectedProducts.subProductThree) ? null : this.featureSelectedProducts.subProductThree.productName,
+          store_product_id: this.isEmpty(this.featureSelectedProducts.subProductThree) ? null : this.featureSelectedProducts.subProductThree.productId,
+          sub_title: this.isEmpty(this.featureSelectedProducts.subProductThree) ? null : `${this.featureSelectedProducts.subProductThree.price}`,
+          description: this.isEmpty(this.featureSelectedProducts.subProductThree) ? null : this.featureSelectedProducts.subProductThree.description,
+          url: this.isEmpty(this.featureSelectedProducts.subProductOne) ? null : `${storeURL}${this.featureSelectedProducts.subProductThree.permalink}`,
+          image_url: this.isEmpty(this.featureSelectedProducts.subProductThree) ? null : ""
+        },
+        product_4: {
+          title: this.isEmpty(this.featureSelectedProducts.subProductFour) ? null : this.featureSelectedProducts.subProductFour.productName,
+          store_product_id: this.isEmpty(this.featureSelectedProducts.subProductFour) ? null : this.featureSelectedProducts.subProductFour.productId,
+          sub_title: this.isEmpty(this.featureSelectedProducts.subProductFour) ? null : `${this.featureSelectedProducts.subProductFour.price}`,
+          description: this.isEmpty(this.featureSelectedProducts.subProductFour) ? null : this.featureSelectedProducts.subProductFour.description,
+          url: this.isEmpty(this.featureSelectedProducts.subProductFour) ? null : `${storeURL}${this.featureSelectedProducts.subProductFour.permalink}`,
+          image_url: this.isEmpty(this.featureSelectedProducts.subProductFour) ? null : ""
+        },
+        product_5: {
+          title: this.isEmpty(this.featureSelectedProducts.subProductFive) ? null : this.featureSelectedProducts.subProductFive.productName,
+          store_product_id: this.isEmpty(this.featureSelectedProducts.subProductFive) ? null : this.featureSelectedProducts.subProductFive.productId,
+          sub_title: this.isEmpty(this.featureSelectedProducts.subProductFive) ? null : `${this.featureSelectedProducts.subProductFive.price}`,
+          description: this.isEmpty(this.featureSelectedProducts.subProductFive) ? null : this.featureSelectedProducts.subProductFive.description,
+          url: this.isEmpty(this.featureSelectedProducts.subProductFive) ? null : `${storeURL}${this.featureSelectedProducts.subProductFive.permalink}`,
+          image_url: this.isEmpty(this.featureSelectedProducts.subProductFive) ? null : ""
+        },
+        product_6: {
+          title: this.isEmpty(this.featureSelectedProducts.subProductSix) ? null : this.featureSelectedProducts.subProductSix.productName,
+          store_product_id: this.isEmpty(this.featureSelectedProducts.subProductSix) ? null : this.featureSelectedProducts.subProductSix.productId,
+          sub_title: this.isEmpty(this.featureSelectedProducts.subProductSix) ? null : `${this.featureSelectedProducts.subProductSix.price}`,
+          description: this.isEmpty(this.featureSelectedProducts.subProductSix) ? null : this.featureSelectedProducts.subProductSix.description,
+          url: this.isEmpty(this.featureSelectedProducts.subProductSix) ? null : `${storeURL}${this.featureSelectedProducts.subProductSix.permalink}`,
+          image_url: this.isEmpty(this.featureSelectedProducts.subProductSix) ? null : ""
+        }
+      }
+    }
+    this.storeProductLoader = true;
+    this._fileManagerService.postStoresData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe((res: any) => {
+      this._snackBar.open("Email sent successfuly", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
+      this.storeProductLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this._snackBar.open("Error occured while sending email", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
+      this.storeProductLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
+
+
+  createEmail() {
+    let tempActionText = this.featureSelectedProducts.actionText.replace(/&nbsp;/g, '')
+    tempActionText = tempActionText.replace(/<\/?p>/g, '');
+    if (this.isEmpty(this.featureSelectedProducts.featureProduct)
+      || this.featureSelectedProducts.actionTitle.trim() === ''
+      || tempActionText.trim() == '') {
+      this._snackBar.open("Please fill the required fields", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
+      return;
+    }
+    this.selectedTemplate.name = ''
+  }
+  
   seeCampaigns(): void {
     this.presentationScreen = "Form Screen";
+    if (this.selectedTemplate.name == 'Featured Products V2') {
+
+      let params = {
+        emails: true,
+        template_id: this.selectedTemplate.id
+      }
+
+      // this._fileManagerService.getStoresData(params)
+      //   .pipe(takeUntil(this._unsubscribeAll))
+      //   .subscribe((res: any) => {
+
+      //     this._changeDetectorRef.markForCheck();
+      //   }, err => {
+      //     this.mainDataLoader = false;
+      //     this._changeDetectorRef.markForCheck();
+      //   })
+      const { pk_storeID } = this.selectedStore;
+      let storeProductPayload = {
+        supplier_based: true,
+        store_id: pk_storeID
+      }
+      this.storeProductLoader = true;
+      this._fileManagerService.getStoreProductsEmailBlast(storeProductPayload)
+        .pipe(takeUntil(this._unsubscribeAll), retry(3))
+        .subscribe((response: any) => {
+          this.productsData = this.splitProductsData(response['data'][0]);
+          this._changeDetectorRef.markForCheck();
+          this.storeProductLoader = false;
+        }, err => {
+          this.storeProductLoader = false;
+          this._changeDetectorRef.markForCheck();
+        });
+
+
+
+
+      return;
+    }
     if (!this.campaignsList.length) {
       const { pk_storeID } = this.selectedStore;
       this.viewCampaignsLoader = true;
@@ -206,6 +424,32 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
         });
     }
   }
+
+
+
+
+  splitProductsData(array) {
+    array.forEach(item => {
+      const productsArray = item.products.split(",,");
+      const splittedData = productsArray
+        .filter(product => product.trim().length > 0)
+        .map(product => {
+          const productInfo = product.split("::");
+          return {
+            productId: productInfo[0],
+            productName: productInfo[1],
+            price: parseFloat(productInfo[2]),
+            description: productInfo[3],
+            link: productInfo[4],
+            permalink: productInfo[5]
+          };
+        });
+      item.splittedData = splittedData;
+    });
+
+    return array;
+  }
+
   calledScreens(screenName) {
     this.mainScreen = screenName;
     if (screenName == 'actvity') {
@@ -430,6 +674,9 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
       })
   }
+
+
+
   getEmailTemplatePreview() {
     const { pk_storeID, storeName } = this.selectedStore;
     const { heading, campaign, message } = this.sendEmailForm.getRawValue();
@@ -490,7 +737,6 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((res: any) => {
         this.previewData = res.data;
-        console.log(this.previewData);
         this.product_templete = res.products_template;
         // Mark for check
         this._changeDetectorRef.markForCheck();
