@@ -457,10 +457,11 @@ export class CatalogComponent {
         this.dataSource = this.dataSource.map((product) => {
           return {
             ...product,
+            splittedImprintDetails: this.splitImprintDetails(product.imprintDetails),
             splittedCostDetails: this.splitCostDetails(product.costDetails)
           };
         });
-
+        console.log(this.dataSource);
         this.isLoading = false;
         this.isFilterLoader = false;
         this.isPageLoading = false;
@@ -552,9 +553,22 @@ export class CatalogComponent {
   }
 
   splitCostDetails(costDetails: string) {
-    return costDetails.split("::").map((item) => {
+    if (!costDetails) {
+      return []; // or an appropriate fallback value
+    }
+    return costDetails?.split("::").map((item) => {
       const [quantity, cost] = item.split(",");
       return { quantity: parseInt(quantity), cost: parseFloat(cost) };
+    });
+  }
+  splitImprintDetails(imprintDetails: string) {
+    if (!imprintDetails) {
+      return []; // or an appropriate fallback value
+    }
+
+    return imprintDetails.split(",,").map((item) => {
+      const [imprint, cost] = item.split(":");
+      return { imprint, cost: parseFloat(cost) };
     });
   }
   /**

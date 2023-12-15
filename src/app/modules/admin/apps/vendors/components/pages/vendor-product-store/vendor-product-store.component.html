@@ -21,26 +21,22 @@
                 </mat-progress-spinner>
             </fuse-alert>
             <div *ngFor="let item of dataSource; let i=index">
-                <div *ngIf="i==0" class="bg-gray-300 p-5 rounded-lg cursor-pointer hover:text-blue-900">
-                    <a [routerLink]="['/apps/stores/',item.fk_storeID]" target="_blank">
+                <div class="bg-gray-300 p-5 rounded-lg cursor-pointer hover:text-blue-900">
+                    <a [routerLink]="['/apps/stores/',item.pk_storeID]" target="_blank">
                         <b>{{item.storeName}}</b>
                     </a>
                 </div>
-                <div *ngIf="i > 0">
-                    <div class="bg-gray-300  p-5 rounded-lg  mt-2 cursor-pointer hover:text-blue-900"
-                        *ngIf="item.storeName != dataSource[i-1].storeName">
-                        <a [routerLink]="['/apps/stores/',item.fk_storeID]" target="_blank">
-                            <b>{{item.storeName}}</b>
+                <ng-container *ngFor="let product of item.productsData">
+                    <div class="px-5 mt-2 cursor-pointer hover:text-blue-900"
+                        [ngClass]="{'text-red-600': !product?.blnStoreActive}">
+                        <a [routerLink]="['/apps/ecommerce/inventory/storeProduct',product?.pk_storeProductID]"
+                            target="_blank">
+                            ({{product?.productNumber}}) <span [innerHtml]="product?.productName"></span> <span
+                                *ngIf="!product?.blnStoreActive">
+                                (OFFLINE)</span>
                         </a>
                     </div>
-                </div>
-                <div class="px-5 mt-2 cursor-pointer hover:text-blue-900" [ngClass]="{'text-red-600': !item.blnActive}">
-                    <a [routerLink]="['/apps/ecommerce/inventory/storeProduct',item.pk_storeProductID]" target="_blank"
-                        [ngClass]="{'text-red-500': !item.blnStoreActive}">
-                        ({{item.productNumber}}) {{item.productName}} <span *ngIf="!item.blnStoreActive">
-                            (OFFLINE)</span>
-                    </a>
-                </div>
+                </ng-container>
             </div>
             <div class="flex justify-center" *ngIf="dataSource.length < totalUsers">
                 <p class="cursor-pointer text-gray-600 hover:text-gray-900" (click)="getNextData()" *ngIf="!isLoadMore">

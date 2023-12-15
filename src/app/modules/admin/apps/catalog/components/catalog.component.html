@@ -287,10 +287,12 @@
                                             <div class="underline cursor-pointer">Imprints</div>
 
                                             <div *ngIf="activeTooltip === 'tooltip-' + i +'imprint'">
-                                                <div class="absolute bg-yellow-100  top-5 -left-30 -right-40 p-2 z-10 rounded-lg shadow-md"
+                                                <div class="absolute bg-yellow-100  top-5 -left-30 -right-60 p-2 z-10 rounded-lg shadow-md"
                                                     style="max-width: max-content; ">
                                                     <div class="font-medium text-xs">
-                                                        {{item.imprintDetails}}
+                                                        <p
+                                                            *ngFor="let imprint of item.splittedImprintDetails;let i=index">
+                                                            {{i+1 +').'+ imprint.imprint}}</p>
                                                     </div>
 
                                                 </div>
@@ -318,11 +320,6 @@
 
                                     </div>
                                     <hr class="mt-2">
-                                    <span *ngIf="item.Imprint"
-                                        class="inline-flex bg-default rounded px-3 py-1 text-secondary font-bold">Imprints</span>
-                                    <div *ngFor="let imprint of item.Imprint" class="pt-1">
-                                        <li>{{imprint.locationName+'/'+imprint.IM[0].methodName }}</li>
-                                    </div>
                                     <div class="col-12">
                                         <button class="rounded-md" color="primary" mat-flat-button
                                             [routerLink]="['/apps/ecommerce/inventory',item.pk_productID,'store-versions']"
