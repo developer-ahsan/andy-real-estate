@@ -190,6 +190,13 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
         this.paginator.pageIndex = 0;
       }
     }
+    let filter_field = '2';
+
+    if (this.paramsData.filterField == 0) {
+      filter_field = '';
+    } else {
+      filter_field = this.paramsData.filterField;
+    }
     let params = {
       smart_art_userID: this.smartArtUser.pk_userID,
       // smartart_list: true,
@@ -198,7 +205,7 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
       size: 20,
       store_id: this.paramsData.store ? this.paramsData?.store : '',
       designerID: this.paramsData.designer ? this.paramsData.designer : '',
-      filter_field: this.paramsData.filterField ? this.paramsData.filterField : '2',
+      filter_field: filter_field,
       search_field: this.paramsData.search ? this.paramsData.search : '',
       user_search_field: this.paramsData.customer ? this.paramsData.customer : '',
       product_search: this.paramsData.product ? this.paramsData.product : '',
