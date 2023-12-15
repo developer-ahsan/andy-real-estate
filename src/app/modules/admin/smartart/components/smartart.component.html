@@ -7,11 +7,16 @@
             <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
         </div>
         <div class="flex justify-between">
-            <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
-                SmartArt / <span *ngIf="ngDashboardCheck == 1">Quote Dashboard</span> <span
-                    *ngIf="ngDashboardCheck == 0">Order Dashboard</span>
-                <p class="text-seconday"></p>
-            </h2>
+            <div>
+                <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                    SmartArt / <span *ngIf="ngDashboardCheck == 1">Quote Dashboard</span> <span
+                        *ngIf="ngDashboardCheck == 0">Order Dashboard</span>
+                </h2>
+                <div class="alert alert-warning" *ngIf="ngDashboardCheck == 0 && dataCounts && loginCheck">There are
+                    currently
+                    {{dataCounts?.poSentCount}} order entries marked as
+                    PO Sent.</div>
+            </div>
             <div *ngIf="loginCheck">
                 <!-- <button (click)="drawer.toggle()" class="min-w-30 mr-2" mat-stroked-button mat-button>Filter</button> -->
                 <button *ngIf="loginCheck" (click)="logout()" class="min-w-30" mat-flat-button color="primary"

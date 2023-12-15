@@ -90,6 +90,7 @@ export class SmartArtComponent {
     ngFilterField = 2;
 
     ngDashboardCheck = 0;
+    dataCounts: any;
 
     /**
      * Constructor
@@ -124,6 +125,7 @@ export class SmartArtComponent {
     ngOnInit(): void {
         if (this.loginCheck) {
             this.checkDashboard();
+            this.getdashboardCounts();
         }
         this.searchableFields();
         this.isLoading = false;
@@ -151,6 +153,14 @@ export class SmartArtComponent {
         } else {
             this.ngDashboardCheck = 1;
         }
+    }
+    getdashboardCounts() {
+        let params = {
+            po_sent_count: true
+        }
+        this._smartartService.getSmartArtData(params).subscribe(res => {
+            this.dataCounts = res["data"][0];
+        })
     }
     searchableFields() {
         this._commonService.storesData$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -249,6 +259,7 @@ export class SmartArtComponent {
         this._smartartService.AddSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll),
             finalize(() => {
                 this.checkDashboard();
+                this.getdashboardCounts();
                 this.isLoginLoader = false;
                 this._changeDetectorRef.markForCheck();
             })).subscribe(res => {

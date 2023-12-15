@@ -383,16 +383,32 @@ export class GenerateReportComponent implements OnInit {
         $(this.updateCommissionAlert.nativeElement).modal('show');
     }
     updateFlPSCommission() {
-        this.isUpdateCommissionLoader = true;
         let FlpsOrders = [];
         let reportSummary = [];
         let markPaidList = [];
-
+        let grandCommission = 0;
+        let totalNumSales = 0;
         this.reportSummaryData.forEach(element => {
             element.DetailsData.forEach(order => {
                 FlpsOrders.push({ order_id: order.id, amountPaid: order.amount });
                 if (order.checked) {
                     if (order.comission > 0) {
+                        grandCommission += Number(order.comission);
+                        totalNumSales += 1;
+                        const index = reportSummary.findIndex(store => store.fk_storeID == element.fk_storeID);
+                        if (index < 0) {
+                            reportSummary.push({
+                                fk_storeID: element.fk_storeID,
+                                storeName: element.storeName,
+                                sales: element.Sales,
+                                num_sales: 1,
+                                profit: element.Profit,
+                                commission: Number(order.comission)
+                            });
+                        } else {
+                            reportSummary[index].num_sales += 1;
+                            reportSummary[index].commission += Number(order.comission);
+                        }
                         markPaidList.push({
                             orderID: order.id,
                             customer: order.customer,
@@ -404,16 +420,16 @@ export class GenerateReportComponent implements OnInit {
                     }
                 }
             });
-            reportSummary.push({
-                storeName: element.storeName,
-                sales: element.Sales,
-                num_sales: element.Num_Sales,
-                profit: element.Profit,
-                commission: element.Commission
-            });
+            // reportSummary.push({
+            //     storeName: element.storeName,
+            //     sales: element.Sales,
+            //     num_sales: element.Num_Sales,
+            //     profit: element.Profit,
+            //     commission: element.Commission
+            // });
         });
-        let userCommission = (this.storeTotals.orderCommission * this.storeTotals.EST_Profit).toFixed(2);
-        let grandCommission = (this.storeTotals.orderCommission).toFixed(2);
+        let userCommission = (grandCommission * this.storeTotals.EST_Profit).toFixed(2);
+        // let grandCommission = (this.storeTotals.orderCommission).toFixed(2);
         let payload: updateReport = {
             flps_userID: this.selectedEmployee.pk_userID,
             flpsName: this.selectedEmployee.fullName,
@@ -425,12 +441,13 @@ export class GenerateReportComponent implements OnInit {
             markPaidList: markPaidList,
             reportSummary: reportSummary,
             grandSalesTotal: this.storeTotals.Sales,
-            grandNumSalesTotal: this.storeTotals.Num_Sales,
+            grandNumSalesTotal: totalNumSales,
             grandEstimatedProfitTotal: this.storeTotals.EST_Profit,
             grandCommissionTotal: Number(grandCommission),
             userTotalCommission: Number(userCommission), // totalCommission * Profit
             update_flps_report: true
         }
+        this.isUpdateCommissionLoader = true;
         this._flpsService.UpdateFlpsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
             if (res["success"]) {
                 this._flpsService.snackBar(res["message"]);
