@@ -31,13 +31,24 @@
           <!-- <quill-editor [modules]="quillModules" [formControlName]="'message'"> </quill-editor> -->
           <!-- <mat-error>Please add message</mat-error> -->
         </div>
-        <div class="col-12 text-right my-2">
+        <div class="w-full flex justify-end gap-x-2 mt-3">
+            <button (click)="preview()" class="ml-4 min-w-40" mat-flat-button [color]="'primary'"
+            [matTooltip]="'Send an Email'">
+            <span class="ml-2 mr-1">Preview Email</span>
+          </button>
           <button (click)="sendEmail()" [disabled]="isEmailLoader" class="ml-4 min-w-40" mat-flat-button
             [color]="'primary'" [matTooltip]="'Send an Email'">
             <span class="ml-2 mr-1" *ngIf="!isEmailLoader">Send Email</span>
             <mat-progress-spinner *ngIf="isEmailLoader" [diameter]="24" [mode]="'indeterminate'">
             </mat-progress-spinner>
           </button>
+        </div>
+
+        <div *ngIf="previewEmail" class="my-4 w-full mx-4">
+          <div><span class="font-bold">Subject : </span> {{ sendEmailForm.get('subject').value }}</div>
+          <div><span class="font-bold">Body :</span>
+            <div [innerHTML]="sendEmailForm.get('message').value"></div>
+          </div>
         </div>
       </div>
     </form>

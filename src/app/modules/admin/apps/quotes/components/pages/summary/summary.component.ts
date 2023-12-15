@@ -18,7 +18,19 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
   @Input() isLoading: boolean;
   // @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
+
+
   selectedQuoteDetail: any;
+  imprintStatuses: any;
+  strReturn = {
+    errorCode: 0,
+    message: '',
+    statusID: 0,
+    statusName: '',
+    statusDescription: ''
+  };
+
+
   not_available = 'N/A';
   currentComment: any = [];
   ngStatus = 0;
@@ -41,6 +53,9 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((quote) => {
         this.selectedQuoteDetail = quote["data"][0];
+        this.imprintStatuses = quote['imprintStatuses']
+        this.setQuoteTrackerData();
+
         if (this.selectedQuoteDetail.artworkStatus.includes('7') || this.selectedQuoteDetail.artworkStatus.includes('9')) {
           this.selectedQuoteDetail.statusName = 'All artwork approved';
           this.selectedQuoteDetail.statusColor = 'text-green-600';
@@ -65,6 +80,31 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
       });
   }
+
+  checkStatus() {
+    return this.imprintStatuses.some(obj => obj["fk_statusID"] === 7 || obj["fk_statusID"] === 9);
+  }
+
+  setQuoteTrackerData() {
+    console.log(this.selectedQuoteDetail)
+    if (this.selectedQuoteDetail.blnEProcurement) {
+      let blnApproved = true;
+
+      if (this.checkStatus()) {
+        blnApproved = false;
+      }
+
+      if (blnApproved) {
+        this.strReturn.statusID = 4;
+        this.strReturn.statusName = 'Secondary Approvals(s) Received - Ready For Punchout';
+        this.strReturn.statusDescription = '<b>All Approvals Have Been Received!</b><br />All approvals have been received and you can now load your quote and punchout.';
+        return;
+      }
+
+    }
+  }
+
+
   getQuoteComments() {
     this._quoteService.qoutesComments$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.currentComment = res["data"];
