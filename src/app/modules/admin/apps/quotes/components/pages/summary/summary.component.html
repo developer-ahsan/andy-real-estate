@@ -11,7 +11,7 @@
                     </mat-progress-spinner>
                 </button>
             </div>
-            <div class="col-lg-4 col-md-6 col-12 my-2">
+            <div (click)="navigateToArtworkDetails()" class="col-lg-4 col-md-6 col-12 my-2 cursor-pointer">
                 <div class="rounded-2xl shadow bg-card flex items-center  w-full p-6 filter-info  "
                     style="height: 8rem;">
                     <mat-icon role="img" class="icon-size-10 mr-6 {{selectedQuoteDetail.statusColor}}"
@@ -186,7 +186,7 @@
                                             <h2>
                                                 <mat-icon svgIcon="mat_solid:email"></mat-icon>
                                             </h2>
-                                            <h2 class="ml-2">{{selectedQuoteDetail?.billingEmail || not_available}}
+                                            <h2 class="ml-2">{{selectedQuoteDetail?.email || not_available}}
                                             </h2>
                                         </span>
                                         <span class="flex mt-1">
@@ -209,16 +209,30 @@
                                                 Address:
                                             </h2>
                                             <h2 class="ml-2">{{(selectedQuoteDetail?.billingAddress + ', ' +
-                                                selectedQuoteDetail?.billingCity + ', '
-                                                +selectedQuoteDetail?.billingState + ' '
-                                                +selectedQuoteDetail?.billingZip) || not_available}}
+                                                selectedQuoteDetail?.customerCity + ', '
+                                                +selectedQuoteDetail?.customerState.trim() + ' '
+                                                +selectedQuoteDetail?.customerZipCode) || not_available}}
                                             </h2>
                                         </span>
                                         <span class="flex  mt-1">
                                             <h2 class="font-bold">
-                                                Account Charge Code:
+                                                Account Charge Code: <span class="fa fa-question-circle fa-lg" matTooltip="This is the account/charge code on the customer's account, and not representative of whether there is an account/charge code entered for the order.  For the order, see below."></span>
                                             </h2>
                                             <h2 class="ml-2">{{selectedQuoteDetail?.accountChargeCode || not_available}}
+                                            </h2>
+                                        </span>
+                                        <span class="flex  mt-1">
+                                            <h2 class="font-bold">
+                                                Fax:
+                                            </h2>
+                                            <h2 class="ml-2">{{selectedQuoteDetail?.customerDayFax|| not_available}}
+                                            </h2>
+                                        </span>
+                                        <span class="flex  mt-1">
+                                            <h2 class="font-bold">
+                                                Credit terms:
+                                            </h2>
+                                            <h2 class="ml-2">{{selectedQuoteDetail?.customerCreditTermDesc || not_available}}
                                             </h2>
                                         </span>
                                     </div>
@@ -275,7 +289,7 @@
                                         <div class="col-lg-6 col-md-6 col-12 my-1">
                                             <div class="row">
                                                 <div class="col-12">
-                                                    <b>Account/charge Code</b>
+                                                    <b>Account/charge Code</b> <span class="fa fa-question-circle fa-lg" matTooltip="This is the account/charge code entered for the order, if any"></span>
                                                 </div>
                                                 <div class="col-12">
                                                     N/A
@@ -290,7 +304,7 @@
                                                 <div class="col-12">
                                                     {{(selectedQuoteDetail?.shippingCarrierName + '/' +
                                                     selectedQuoteDetail?.shippingServiceName) || not_available}}
-                                                    {{selectedQuoteDetail?.shippingCustomerAccountNumber}}
+                                                    ACCT#: {{selectedQuoteDetail?.shippingCustomerAccountNumber || 'NONE'}}
                                                 </div>
                                             </div>
                                         </div>
