@@ -38,12 +38,6 @@
                     </div>
                 </ng-container>
             </div>
-            <div class="flex justify-center" *ngIf="dataSource.length < totalUsers">
-                <p class="cursor-pointer text-gray-600 hover:text-gray-900" (click)="getNextData()" *ngIf="!isLoadMore">
-                    View More</p>
-                <mat-progress-spinner *ngIf="isLoadMore" [diameter]="24" [mode]="'indeterminate'">
-                </mat-progress-spinner>
-            </div>
         </div>
     </div>
 </div>

@@ -560,7 +560,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
             }
             this.totalStoreSummary.N_DIFF = Math.abs((this.totalStoreSummary?.PYNS - this.totalStoreSummary?.NS));
             this.totalStoreSummary.AVG = this.totalStoreSummary.SALES / this.totalStoreSummary.NS;
-            this.totalStoreSummary.MARGIN = Math.ceil(((this.totalStoreSummary.PRICE - this.totalStoreSummary.COST) / this.totalStoreSummary.PRICE) * 10000) / 100;
+            this.totalStoreSummary.MARGIN = Math.floor(((this.totalStoreSummary.PRICE - this.totalStoreSummary.COST) / this.totalStoreSummary.PRICE) * 10000) / 100;
             // this.totalStoreSummary.DIFF = this.totalStoreSummary.SALES - this.totalStoreSummary.PY;
             this.yourPerformanceData.allStoresGraphLoader = false;
             this._changeDetectorRef.markForCheck();
