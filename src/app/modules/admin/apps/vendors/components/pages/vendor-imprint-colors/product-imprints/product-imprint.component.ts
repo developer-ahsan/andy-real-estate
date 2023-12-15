@@ -18,7 +18,7 @@ export class VendorImprintProductComponent implements OnInit, OnDestroy {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   imprintProducts: any;
   @Input() selectedCollection: any;
-
+  supplierData: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _VendorsService: VendorsService
@@ -27,8 +27,14 @@ export class VendorImprintProductComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.isLoading = true;
     console.log(this.selectedCollection)
+    this.getVendorsData();
     this.getProducts();
   };
+  getVendorsData() {
+    this._VendorsService.Single_Suppliers$.pipe(takeUntil(this._unsubscribeAll)).subscribe(supplier => {
+      this.supplierData = supplier["data"][0];
+    });
+  }
   getProducts() {
     let params = {
       view_imprint_products: true,

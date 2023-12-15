@@ -26,14 +26,24 @@
                 <div class="bg-card rounded-2xl shadow-lg p-5">
                     <p class="text-lg font-bold mb-2">({{collection.pk_collectionID}}) {{collection.collectionName}}</p>
                     <div class="border h-50 overflow-y-auto p-5">
-                        <table *ngFor="let color of collection.colorsData">
-                            <tr>
-                                <td>{{color.name}}</td>
-                                <td class="text-right">
-                                    <hr class="w-10 h-3 p-0 m-0" [ngStyle]="{'background-color': color.rgbValue}">
+                        <div class="row" *ngFor="let color of collection.colorsData">
+                            <div class="col-6 font-bold">{{color.name}}</div>
+                            <div class="col-6" style="text-align:-webkit-right">
+                                <hr class="w-20 mx-5 h-3 p-0 m-0 border"
+                                    [ngStyle]="{'background-color': color.rgbValue}">
+                            </div>
+                        </div>
+                        <!-- <table>
+                            <tr *ngFor="let color of collection.colorsData">
+                                <td class="font-bold">{{color.name}}</td>
+                                <td>
+                                    <div class="text-right">
+                                        <hr class="w-20 mx-5 h-3 p-0 m-0 border"
+                                            [ngStyle]="{'background-color': color.rgbValue}">
+                                    </div>
                                 </td>
                             </tr>
-                        </table>
+                        </table> -->
                     </div>
                     <div class="space-x-2 my-2">
                         <button class="bg-blue-500 text-white px-4 py-2 rounded"
@@ -57,41 +67,44 @@
                 (click)="imprintCollectionEditToggle(null,false)">
                 Back to Collections
             </button>
-            <div class="col-12">
-                <mat-form-field class="w-full" appearance="fill">
-                    <mat-label>Collection Name</mat-label>
-                    <input matInput [(ngModel)]="updatedCollectionData.collectionName" maxlength="50">
-                </mat-form-field>
-            </div>
-            <div class="col-12 flex justify-end">
-                <button class="min-w-30 mr-2" mat-flat-button color="primary" [matTooltip]="'Add Color'"
-                    (click)="openColorModal()">
-                    <span> Add Color </span>
-                </button>
-                <button [disabled]="updatedCollectionData.isUpdateCollectionLoader" class="min-w-50" mat-stroked-button
-                    [matTooltip]="'Update Collection'" (click)="updateCollection()">
-                    <mat-icon svgIcon="heroicons_solid:plus"
-                        *ngIf="!updatedCollectionData.isUpdateCollectionLoader"></mat-icon>
-                    <span class="ml-2" *ngIf="!updatedCollectionData.isUpdateCollectionLoader"> Update Collection
-                    </span>
-                    <mat-progress-spinner *ngIf="updatedCollectionData.isUpdateCollectionLoader" [diameter]="24"
-                        [mode]="'indeterminate'">
-                    </mat-progress-spinner>
-                </button>
-
-            </div>
-            <div class="col-12 border mx-3 p-3 my-2">
-                <div class="row">
-                    <div class="col-12" *ngIf="updatedCollectionData.isImprintLoader">
-                        <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
-                        </ngx-skeleton-loader>
-                    </div>
-                    <ng-container *ngIf="!updatedCollectionData.isImprintLoader">
-                        <div class="col-6 col-md-3 flex" *ngFor="let color of updatedCollectionData.imprintColors">
-                            <hr class="h-6 w-4 mr-2 m-0 p-0" [ngStyle]="{'background-color': color.rgbValue}">
-                            <mat-checkbox [(ngModel)]="color.checked">{{color.name}} ({{color.rgb}})</mat-checkbox>
+            <div class="row">
+                <div class="col-8">
+                    <mat-form-field class="w-full" appearance="fill">
+                        <mat-label>Collection Name</mat-label>
+                        <input matInput [(ngModel)]="updatedCollectionData.collectionName" maxlength="50">
+                    </mat-form-field>
+                </div>
+                <div class="col-3 mt-6">
+                    <button [disabled]="updatedCollectionData.isUpdateCollectionLoader" class="w-full rounded-md"
+                        mat-flat-button color="primary" [matTooltip]="'Update Collection'" (click)="updateCollection()">
+                        <mat-icon svgIcon="heroicons_solid:plus"
+                            *ngIf="!updatedCollectionData.isUpdateCollectionLoader"></mat-icon>
+                        <span class="ml-2" *ngIf="!updatedCollectionData.isUpdateCollectionLoader"> Update Collection
+                        </span>
+                        <mat-progress-spinner *ngIf="updatedCollectionData.isUpdateCollectionLoader" [diameter]="24"
+                            [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                    </button>
+                </div>
+                <div class="col-12 flex justify-end">
+                    <button class="min-w-30 mr-2" mat-flat-button color="primary" [matTooltip]="'Add Color'"
+                        (click)="openColorModal()">
+                        <span> Add Color </span>
+                    </button>
+                </div>
+                <div class="col-12 border mx-3 p-3 my-2">
+                    <div class="row">
+                        <div class="col-12" *ngIf="updatedCollectionData.isImprintLoader">
+                            <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+                            </ngx-skeleton-loader>
                         </div>
-                    </ng-container>
+                        <ng-container *ngIf="!updatedCollectionData.isImprintLoader">
+                            <div class="col-6 col-md-3 flex" *ngFor="let color of updatedCollectionData.imprintColors">
+                                <hr class="h-6 w-4 mr-2 m-0 p-0" [ngStyle]="{'background-color': color.rgbValue}">
+                                <mat-checkbox [(ngModel)]="color.checked">{{color.name}} ({{color.rgb}})</mat-checkbox>
+                            </div>
+                        </ng-container>
+                    </div>
                 </div>
             </div>
         </div>
@@ -104,39 +117,42 @@
         <app-product-color-imprint [selectedCollection]="selectedCollection"></app-product-color-imprint>
     </div>
     <!-- Add New Collection -->
-    <div *ngIf="mainScreen == 'Add New Collections'" class="p-6 row">
-        <div class="col-12">
-            <mat-form-field class="w-full" appearance="fill">
-                <mat-label>Collection Name</mat-label>
-                <input matInput [(ngModel)]="ngCollectionName" maxlength="50">
-            </mat-form-field>
-        </div>
-        <div class="col-12 flex justify-end">
-            <button class="min-w-30 mr-2" mat-flat-button color="primary" [matTooltip]="'Add Color'"
-                (click)="openColorModal()">
-                <span> Add Color </span>
-            </button>
-            <button [disabled]="isAddCollectionLoader" class="min-w-50" mat-stroked-button
-                [matTooltip]="'Create Collection'" (click)="addNewCollection()">
-                <mat-icon svgIcon="heroicons_solid:plus" *ngIf="!isAddCollectionLoader"></mat-icon>
-                <span class="ml-2" *ngIf="!isAddCollectionLoader"> Create Collection </span>
-                <mat-progress-spinner *ngIf="isAddCollectionLoader" [diameter]="24" [mode]="'indeterminate'">
-                </mat-progress-spinner>
-            </button>
-
-        </div>
-        <div class="col-12 border mx-3 p-3 my-2">
-            <div class="row">
-                <div class="col-12" *ngIf="isImprintLoader">
-                    <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
-                    </ngx-skeleton-loader>
-                </div>
-                <ng-container *ngIf="!isImprintLoader">
-                    <div class="col-6 col-md-3 flex" *ngFor="let color of imprintColors">
-                        <hr class="h-6 w-4 mr-2 m-0 p-0" [ngStyle]="{'background-color': color.rgbValue}">
-                        <mat-checkbox [(ngModel)]="color.checked">{{color.name}} ({{color.rgb}})</mat-checkbox>
+    <div *ngIf="mainScreen == 'Add New Collections'" class="p-6">
+        <div class="row">
+            <div class="col-8">
+                <mat-form-field class="w-full" appearance="fill">
+                    <mat-label>Collection Name</mat-label>
+                    <input matInput [(ngModel)]="ngCollectionName" maxlength="50">
+                </mat-form-field>
+            </div>
+            <div class="col-2 mt-6">
+                <button [disabled]="isAddCollectionLoader" class="w-full rounded-md" mat-flat-button color="primary"
+                    [matTooltip]="'Create Collection'" (click)="addNewCollection()">
+                    <mat-icon svgIcon="heroicons_solid:plus" *ngIf="!isAddCollectionLoader"></mat-icon>
+                    <span class="ml-2" *ngIf="!isAddCollectionLoader"> Create Collection </span>
+                    <mat-progress-spinner *ngIf="isAddCollectionLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                </button>
+            </div>
+            <div class="col-12 flex justify-end">
+                <button class="min-w-30 mr-2" mat-flat-button color="primary" [matTooltip]="'Add Color'"
+                    (click)="openColorModal()">
+                    <span> Add Color </span>
+                </button>
+            </div>
+            <div class="col-12 border mx-3 p-3 my-2">
+                <div class="row">
+                    <div class="col-12" *ngIf="isImprintLoader">
+                        <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+                        </ngx-skeleton-loader>
                     </div>
-                </ng-container>
+                    <ng-container *ngIf="!isImprintLoader">
+                        <div class="col-6 col-md-3 flex" *ngFor="let color of imprintColors">
+                            <hr class="h-6 w-4 mr-2 m-0 p-0" [ngStyle]="{'background-color': color.rgbValue}">
+                            <mat-checkbox [(ngModel)]="color.checked">{{color.name}} ({{color.rgb}})</mat-checkbox>
+                        </div>
+                    </ng-container>
+                </div>
             </div>
         </div>
     </div>

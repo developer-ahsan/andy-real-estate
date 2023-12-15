@@ -5,7 +5,7 @@
     </div>
     <div *ngIf="!isLoading">
         <div class="font-bold border-b p-3 text-lg">
-            Products/Imprints With Black & White Color Collection From 365Wholesale.com
+            Products/Imprints With Black & White Color Collection From {{supplierData?.companyName}}
         </div>
         <table class="table table-striped" *ngIf="imprintProducts.length > 0">
             <thead>

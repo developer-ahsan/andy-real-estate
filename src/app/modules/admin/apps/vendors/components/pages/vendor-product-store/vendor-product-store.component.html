@@ -9,23 +9,36 @@
                 have any products.</fuse-alert>
         </div>
         <div *ngIf="dataSource.length > 0" class="px-8 pb-8">
+            <fuse-alert class="my-2" [appearance]="'soft'" [type]="'success'" [showIcon]="false">
+                <a class="cursor-pointer" (click)="downloadProductsExcelWorkSheet()" *ngIf="!isLoadingExcel">
+                    <div class="flex alig-items-center">
+                        <mat-icon svgIcon="mat_outline:download"></mat-icon>
+                        <span>Click here to download Excel store
+                            product report</span>
+                    </div>
+                </a>
+                <mat-progress-spinner *ngIf="isLoadingExcel" [diameter]="24" [mode]="'indeterminate'">
+                </mat-progress-spinner>
+            </fuse-alert>
             <div *ngFor="let item of dataSource; let i=index">
                 <div *ngIf="i==0" class="bg-gray-300 p-5 rounded-lg cursor-pointer hover:text-blue-900">
                     <a [routerLink]="['/apps/stores/',item.fk_storeID]" target="_blank">
-                        <b>{{item.productNumber}} {{item.storeName}}</b>
+                        <b>{{item.storeName}}</b>
                     </a>
                 </div>
                 <div *ngIf="i > 0">
                     <div class="bg-gray-300  p-5 rounded-lg  mt-2 cursor-pointer hover:text-blue-900"
                         *ngIf="item.storeName != dataSource[i-1].storeName">
                         <a [routerLink]="['/apps/stores/',item.fk_storeID]" target="_blank">
-                            <b>{{item.productNumber}} {{item.storeName}}</b>
+                            <b>{{item.storeName}}</b>
                         </a>
                     </div>
                 </div>
                 <div class="px-5 mt-2 cursor-pointer hover:text-blue-900" [ngClass]="{'text-red-600': !item.blnActive}">
-                    <a [routerLink]="['/apps/ecommerce/inventory/storeProduct',item.pk_storeProductID]" target="_blank">
-                        {{item.productNumber}} {{item.productName}}
+                    <a [routerLink]="['/apps/ecommerce/inventory/storeProduct',item.pk_storeProductID]" target="_blank"
+                        [ngClass]="{'text-red-500': !item.blnStoreActive}">
+                        ({{item.productNumber}}) {{item.productName}} <span *ngIf="!item.blnStoreActive">
+                            (OFFLINE)</span>
                     </a>
                 </div>
             </div>
