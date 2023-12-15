@@ -86,22 +86,112 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
   }
 
   setQuoteTrackerData() {
-    console.log(this.selectedQuoteDetail)
-    if (this.selectedQuoteDetail.blnEProcurement) {
-      let blnApproved = true;
+    // if (this.selectedQuoteDetail.blnEProcurement) {
+    //   let blnApproved = true;
 
-      if (this.checkStatus()) {
-        blnApproved = false;
-      }
+    //   if (this.checkStatus()) {
+    //     blnApproved = false;
+    //   }
 
-      if (blnApproved) {
-        this.strReturn.statusID = 4;
-        this.strReturn.statusName = 'Secondary Approvals(s) Received - Ready For Punchout';
-        this.strReturn.statusDescription = '<b>All Approvals Have Been Received!</b><br />All approvals have been received and you can now load your quote and punchout.';
-        return;
-      }
+    //   if (blnApproved) {
+    //     this.strReturn.statusID = 4;
+    //     this.strReturn.statusName = 'Secondary Approvals(s) Received - Ready For Punchout';
+    //     this.strReturn.statusDescription = '<b>All Approvals Have Been Received!</b><br />All approvals have been received and you can now load your quote and punchout.';
+    //     return;
+    //   } else {
+    //     if (objCartLine.qryCartLineImprints.recordcount) {
+    //       for (let i = 0; i < objCartLine.qryCartLineImprints.recordcount; i++) {
+    //         objCartLine.getCartLineImprintStatusLink(cartLineID, objCartLine.qryCartLineImprints.imprintID);
 
-    }
+    //         if ((['3', '4', '13'].includes(objCartLine.qryOneCartLineImprintStatusLink.fk_statusID.toString())) &&
+    //           (Number.isInteger(objCartLine.qryOneCartLineImprintStatusLink.fk_artApprovalContactID) ||
+    //             Number.isInteger(objCartLine.qryCartLineImprintStatusLink.fk_storeUserApprovalContactID))) {
+    //           strReturn.statusID = 3;
+    //           strReturn.statusName = 'Your Art Approval Received';
+    //           strReturn.statusDescription = '<b>Your artwork approval has been received!</b><br />We are now waiting for any additional approval required.';
+    //           return strReturn;
+    //         } else if ((['3', '4', '13'].includes(objCartLine.qryOneCartLineImprintStatusLink.fk_statusID.toString())) &&
+    //           (!Number.isInteger(objCartLine.qryOneCartLineImprintStatusLink.fk_artApprovalContactID) &&
+    //             !Number.isInteger(objCartLine.qryOneCartLineImprintStatusLink.fk_storeUserApprovalContactID))) {
+    //           strReturn.statusID = 2;
+    //           strReturn.statusName = 'Proof Is Awaiting Your Approval';
+    //           strReturn.statusDescription = '<b>Artwork Proofing Process Has Begun!</b><br />We are now waiting for your proof approval.';
+    //           return strReturn;
+    //         }
+    //       }
+    //     }
+
+    //     let blnNew = true;
+
+    //     if (objCartLine.qryCartLineImprints.recordcount) {
+    //       for (let i = 0; i < objCartLine.qryCartLineImprints.recordcount; i++) {
+    //         objCartLine.getCartLineImprintStatusLink(cartLineID, objCartLine.qryCartLineImprints.imprintID);
+
+    //         if (objCartLine.qryOneCartLineImprintStatusLink.fk_statusID !== 1 &&
+    //           objCartLine.qryOneCartLineImprintStatusLink.fk_statusID !== 2) {
+    //           blnNew = false;
+    //         }
+    //       }
+    //     }
+
+    //     if (!blnNew) {
+    //       this.strReturn.statusID = 3;
+    //       this.strReturn.statusName = 'Your Art Approval Received';
+    //       this.strReturn.statusDescription = '<b>Your artwork approval has been received!</b><br />We are now waiting for any additional approval required.';
+    //       return;
+    //     } else {
+    //       this.strReturn.statusID = 1;
+    //       this.strReturn.statusName = 'Quote Generated';
+    //       this.strReturn.statusDescription = '<b>Your Quote Has Been Created!</b><br />You will receive artwork proof(s) within 24 hours.';
+    //       return;
+    //     }
+    //   }
+
+
+    // } else {
+    //   let blnApproved = true;
+
+    //   if (objCartLine.qryCartLineImprints.recordcount) {
+    //     for (let i = 0; i < objCartLine.qryCartLineImprints.recordcount; i++) {
+    //       objCartLine.getCartLineImprintStatusLink(cartLineID, objCartLine.qryCartLineImprints.imprintID);
+
+    //       if (!['7', '9'].includes(objCartLine.qryOneCartLineImprintStatusLink.fk_statusID.toString())) {
+    //         blnApproved = false;
+    //       }
+    //     }
+    //   }
+
+    //   if (blnApproved) {
+    //     this.strReturn.statusID = 4;
+    //     this.strReturn.statusName = 'All Approvals Received';
+    //     this.strReturn.statusDescription = '<b>All approvals have been received!</b><br />All approvals have been received and we are ready to send to production as long as payment has been arranged.';
+    //     return strReturn;
+    //   } else {
+    //     let blnNew = true;
+
+    //     if (objCartLine.qryCartLineImprints.recordcount) {
+    //       for (let i = 0; i < objCartLine.qryCartLineImprints.recordcount; i++) {
+    //         objCartLine.getCartLineImprintStatusLink(cartLineID, objCartLine.qryCartLineImprints.imprintID);
+
+    //         if (objCartLine.qryOneCartLineImprintStatusLink.fk_statusID !== 1) {
+    //           blnNew = false;
+    //         }
+    //       }
+    //     }
+
+    //     if (!blnNew) {
+    //       this.strReturn.statusID = 3;
+    //       this.strReturn.statusName = 'Your Art Approval Received';
+    //       this.strReturn.statusDescription = '<b>Your artwork approval has been received!</b><br />We are now waiting for any additional approval required.';
+    //       return
+    //     } else {
+    //       this.strReturn.statusID = 2;
+    //       this.strReturn.statusName = 'Proofing';
+    //       this.strReturn.statusDescription = '<b>An art proof has been sent!</b><br />The artwork approval process is underway';
+    //       return;
+    //     }
+    //   }
+    // }
   }
 
 

@@ -62,20 +62,20 @@
                         <ng-container>
                             <tr>
                                 <td colspan="6">
-                                    <div class="h-10 flex justify-center items-center w-full">
+                                    <div class="h-10 flex justify-center items-center w-full font-bold">
                                         {{item.categoryName}}
                                     </div>
                                 </td>
                             </tr>
                         </ng-container>
                         <tr *ngFor="let data of item.splittedData">
-                            <td (click)="navigate(data)" class="align-middle cursor-pointer undeline">
-                                <a [ngClass]="{'disabled': !(data.blnActive && data.blnStoreActive)}">
+                            <td  class="align-middle cursor-pointer undeline">
+                                <a class="underline" [routerLink]="['/apps/ecommerce/inventory/storeProduct',data.pk_storeProductID,'pricing']" target="_blank" [ngClass]="{'disabled': !(data.blnActive && data.blnStoreActive)}">
                                     {{data.pk_storeProductID}}
                                 </a>
                             </td>
-                            <td (click)="navigate(data)" class="align-middle cursor-pointer undeline">
-                                <a [ngClass]="{'disabled': !(data.blnActive && data.blnStoreActive)}">
+                            <td  class="align-middle cursor-pointer undeline">
+                                <a class="underline" [routerLink]="['/apps/ecommerce/inventory/storeProduct',data.pk_storeProductID,'pricing']" target="_blank" [ngClass]="{'disabled': !(data.blnActive && data.blnStoreActive)}">
                                     {{data.productNumber}} {{data.productName}}
                                 </a>
                             </td>
