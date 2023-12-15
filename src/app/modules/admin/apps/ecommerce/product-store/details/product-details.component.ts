@@ -94,9 +94,9 @@ export class StoreProductDetailsComponent implements OnInit, OnDestroy {
           }
         } else {
           if (this.selectedProduct.blnEProcurement) {
-            this.selectedProduct["siteLink"] = `https://${this.selectedProduct.storeName}/dspProductDetails.cfm/${this.selectedProduct.fk_productID}/${this.selectedProduct.pk_storeProductID}`;
+            this.selectedProduct["siteLink"] = `https://${this.selectedProduct.storeName}/dspProductDetails.cfm/pID/${this.selectedProduct.pk_storeProductID}`;
           } else {
-            this.selectedProduct["siteLink"] = `http://${this.selectedProduct.storeName}/dspProductDetails.cfm/${this.selectedProduct.fk_productID}/${this.selectedProduct.pk_storeProductID}`;
+            this.selectedProduct["siteLink"] = `http://${this.selectedProduct.storeName}/dspProductDetails.cfm/pID/${this.selectedProduct.pk_storeProductID}`;
           }
         }
         if (!this.selectedProduct["blnStoreActive"]) {

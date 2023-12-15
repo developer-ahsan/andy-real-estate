@@ -60,59 +60,65 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-2 w-full">
                             <!-- First Row -->
                             <div class="flex flex-row gap-x-2">
-                              <b class="text-secondary text-sm">PID</b>
-                              <p class="float-right text-sm">{{ selectedProduct?.pk_productID || 'not_available' }}</p>
+                                <b class="text-secondary text-sm">PID</b>
+                                <p class="float-right text-sm">{{ selectedProduct?.pk_productID || not_available }}</p>
                             </div>
                             <div class="flex flex-row gap-x-2">
-                              <b class="text-secondary text-sm">Supplier</b>
-                              <span>
-                                <a class="text-sm" [routerLink]="['/apps/vendors', selectedProduct?.fk_supplierID]" target="_blank">
-                                  {{ selectedProduct?.companyName || 'not_available' }}
-                                </a>
-                                <a class="text-sm ml-1" href="{{ selectedProduct?.websiteURL }}" target="_blank">
-                                  (Go to Site)
-                                </a>
-                              </span>
+                                <b class="text-secondary text-sm">Supplier</b>
+                                <span>
+                                    <a class="text-sm" [routerLink]="['/apps/vendors', selectedProduct?.fk_supplierID]"
+                                        target="_blank">
+                                        {{ selectedProduct?.companyName || not_available }}
+                                    </a>
+                                    <a class="text-sm ml-1" href="{{ selectedProduct?.websiteURL }}" target="_blank">
+                                        (Go to Site)
+                                    </a>
+                                </span>
                             </div>
                             <div class="flex flex-row gap-x-2" *ngIf="selectedProduct?.supplierLink">
-                              <b class="text-secondary text-sm">Product Link</b>
-                              <a class="float-right text-sm" href="{{ selectedProduct?.supplierLink }}" target="_blank">Click Here</a>
+                                <b class="text-secondary text-sm">Product Link</b>
+                                <a class="float-right text-sm" href="{{ selectedProduct?.supplierLink }}"
+                                    target="_blank">Click Here</a>
                             </div>
-                          
+
                             <!-- Second Row -->
                             <div class="flex flex-row gap-x-2" *ngIf="selectedProduct?.vendorRelation !== 1">
-                              <b class="text-secondary text-sm">Supplier Relationship</b>
-                              <p class="float-right text-sm" *ngIf="selectedProduct?.vendorRelation === 2" style="color: #7b8404">
-                                Preferred
-                              </p>
-                              <p class="float-right text-sm" *ngIf="selectedProduct?.vendorRelation === 3" style="color: #0ecd0e">
-                                Partner
-                              </p>
+                                <b class="text-secondary text-sm">Supplier Relationship</b>
+                                <p class="float-right text-sm" *ngIf="selectedProduct?.vendorRelation === 2"
+                                    style="color: #7b8404">
+                                    Preferred
+                                </p>
+                                <p class="float-right text-sm" *ngIf="selectedProduct?.vendorRelation === 3"
+                                    style="color: #0ecd0e">
+                                    Partner
+                                </p>
                             </div>
                             <div class="flex flex-row gap-x-2">
-                              <b class="text-secondary text-sm">Last Updated</b>
-                              <p class="float-right text-sm" *ngIf="selectedProduct.lastUpdatedDateOnly">
-                                {{ (selectedProduct.lastUpdatedDateOnly | date: 'MM/dd/yyyy') || 'not_available' }}
-                                <span *ngIf="selectedProduct.lastUpdatedBy"> by {{ selectedProduct.lastUpdatedBy || 'not_available' }}</span>
-                              </p>
-                              <p *ngIf="!selectedProduct.lastUpdatedDateOnly" class="float-right text-sm">not_available</p>
+                                <b class="text-secondary text-sm">Last Updated</b>
+                                <p class="float-right text-sm" *ngIf="selectedProduct.lastUpdatedDateOnly">
+                                    {{ (selectedProduct.lastUpdatedDateOnly | date: 'MM/dd/yyyy') || not_available }}
+                                    <span *ngIf="selectedProduct.lastUpdatedBy"> by {{ selectedProduct.lastUpdatedBy ||
+                                        not_available }}</span>
+                                </p>
+                                <p *ngIf="!selectedProduct.lastUpdatedDateOnly" class="float-right text-sm">
+                                    not_available</p>
                             </div>
                             <div class="flex flex-row gap-x-2">
-                              <b class="text-secondary text-sm">Last Ordered On</b>
-                              <p class="float-right text-sm">{{ selectedProduct?.qryLastOrdered || 'NONE' }}</p>
+                                <b class="text-secondary text-sm">Last Ordered On</b>
+                                <p class="float-right text-sm">{{ selectedProduct?.qryLastOrdered || 'NONE' }}</p>
                             </div>
-                          
+
                             <!-- Third Row -->
                             <div class="flex flex-row gap-x-2">
-                              <b class="text-secondary text-sm">Current Co-Op Program</b>
-                              <p class="float-right text-sm">{{ selectedProduct?.fk_coopID || 'NONE' }}</p>
+                                <b class="text-secondary text-sm">Current Co-Op Program</b>
+                                <p class="float-right text-sm">{{ selectedProduct?.fk_coopID || 'NONE' }}</p>
                             </div>
                             <div class="flex flex-row gap-x-2">
-                              <b class="text-secondary text-sm">Core Product</b>
-                              <p class="float-right text-sm">{{ selectedProduct?.blnCore ? 'YES' : 'NO' }}</p>
+                                <b class="text-secondary text-sm">Core Product</b>
+                                <p class="float-right text-sm">{{ selectedProduct?.blnCore ? 'YES' : 'NO' }}</p>
                             </div>
-                          </div>
-                          
+                        </div>
+
 
                         <div *ngIf="isImageExists" class="w-24 h-24">
                             <img src="https://assets.consolidus.com/globalAssets/Products/HiRes/{{ selectedProduct.pk_storeProductID }}.jpg"
