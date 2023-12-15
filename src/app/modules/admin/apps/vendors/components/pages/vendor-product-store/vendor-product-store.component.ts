@@ -43,7 +43,9 @@ export class VendorProductsStoreComponent implements OnInit, OnDestroy {
   getProductsData(page) {
     let params = {
       products_by_store: true,
-      company_id: this.supplierData.pk_companyID
+      company_id: this.supplierData.pk_companyID,
+      page: page,
+      size: 10
     }
     this._vendorService.getVendorsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       res["data"].forEach(store => {
@@ -80,10 +82,10 @@ export class VendorProductsStoreComponent implements OnInit, OnDestroy {
   };
   downloadProductsExcelWorkSheet(): void {
     this.isLoadingExcel = true;
-
     const params = {
       products_by_store: true,
-      company_id: this.supplierData.pk_companyID
+      company_id: this.supplierData.pk_companyID,
+      size: this.totalUsers
     };
 
     this._vendorService
