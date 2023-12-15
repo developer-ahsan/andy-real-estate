@@ -545,6 +545,12 @@ export class FileManagerService {
     const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
     return this._httpClient.post(environment.storeNewUrl, payload, { headers }).pipe(retry(3));
   }
+
+  postProductData(payload) {
+    const headers = { 'Authorization': `Bearer ${this._authService.accessToken}` };
+    return this._httpClient.post(environment.storeProducts, payload, { headers }).pipe(retry(3));
+  }
+
   getRapidData(params) {
     return this._httpClient
       .get<any[]>(environment.storeNewUrlRapidBuild, { params: params })

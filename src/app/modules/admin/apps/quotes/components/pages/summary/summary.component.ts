@@ -110,6 +110,11 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
       })
   }
+
+  navigateToArtworkDetails() {
+    this._router.navigate([`/apps/quotes/${this.selectedQuoteDetail.pk_cartID}/artwork-details`]);
+  }
+
   /**
      * On destroy
      */

@@ -12,13 +12,18 @@
                 <p>Total products: 1198</p>
                 <div class="flex space-x-2">
                     <mat-form-field class="min-w-200">
-                        <mat-select matInput>
+                        <mat-select [(ngModel)]="selectedAction" matInput>
                             <mat-option [value]="0">Select an action</mat-option>
                             <mat-option [value]="'delete'">Remove current image and add to rapidBuild</mat-option>
                             <mat-option [value]="'rapidBuild'">Keep current image and add to rapidBuild</mat-option>
                         </mat-select>
                     </mat-form-field>
-                    <button class="min-w-50 rounded-md" mat-flat-button color="primary">Update</button>
+                    <button [disabled]="updateLoader" (click)="update()" class="min-w-50 rounded-md" mat-flat-button
+                        color="primary">
+                        <span *ngIf="!updateLoader">Update</span>
+                        <mat-progress-spinner *ngIf="updateLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                    </button>
                 </div>
             </div>
         </div>
@@ -45,13 +50,14 @@
                         <th>Image</th>
                         <th>
                             <div class="mt-5">
-                                <mat-checkbox [(ngModel)]="isMasterCheckboxChecked" (change)="toggleAllCheckboxes()"></mat-checkbox>
+                                <mat-checkbox [(ngModel)]="isMasterCheckboxChecked"
+                                    (change)="toggleAllCheckboxes()"></mat-checkbox>
                             </div>
                         </th>
                     </tr>
                 </thead>
                 <tbody>
-                    
+
                     <ng-container *ngFor="let item of dataSource" class="clickable">
                         <ng-container>
                             <tr>
@@ -84,20 +90,38 @@
                                 </span>
                             </td>
                             <td class="align-middle">
-                                <span
-                                    [ngClass]="{'fa': true, 'fa-check': fileExists(data),
-                                    'fa-times': !fileExists(data.storeProductImage),
-                                    'fa-lg': true, 'active': fileExists(data.storeProductImage), 'disabled': !fileExists(data.storeProductImage)}"
-                                    [title]="fileExists(data.storeProductImage) ? 'Image' : 'No Image'">
+
+                                <img class="w-10 h-10"
+                                    onError="this.src='https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'"
+                                    [src]="'https://assets.consolidus.com/globalAssets/Products/Thumbnails/' + (data?.pk_storeProductID || '') + '.jpg?' + getRandom()"
+                                    alt="">
+
+
+
+
+                                <!-- <span *ngIf="data.imageExit"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                        fill="currentColor" class="w-6 h-6">
+                                        <path fill-rule="evenodd"
+                                            d="M19.916 4.626a.75.75 0 01.208 1.04l-9 13.5a.75.75 0 01-1.154.114l-6-6a.75.75 0 011.06-1.06l5.353 5.353 8.493-12.739a.75.75 0 011.04-.208z"
+                                            clip-rule="evenodd" />
+                                    </svg>
                                 </span>
+
+                                <span *ngIf="!data.imageExit"><svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </span> -->
+
                             </td>
                             <td class="align-middle">
                                 <div class="mt-5">
-                                    <mat-checkbox [(ngModel)]="item.isChecked"[value]="data.pk_storeProductID"></mat-checkbox>
+                                    <mat-checkbox [(ngModel)]="data.isChecked" (change)="toggleCheckbox(data)"
+                                        [value]="data.pk_storeProductID"></mat-checkbox>
                                 </div>
                             </td>
                         </tr>
-                        
+
                     </ng-container>
 
                 </tbody>

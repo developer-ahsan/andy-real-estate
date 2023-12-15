@@ -3,6 +3,9 @@ import { Subject } from 'rxjs';
 import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-manager.service';
 import { takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { CustomersService } from '../../../ecommerce/customers/customers.service';
+import { FormsModule } from '@angular/forms';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 /**
  * @title Basic use of `<table mat-table>`
@@ -24,11 +27,18 @@ export class RapidbuildActionsComponent implements OnInit, OnDestroy {
   dataSourceLoading = false;
   page: number = 1;
   isMasterCheckboxChecked: boolean = false;
+  selectedProduct: any = []
+  selectedAction: any = 0;
+  updateLoader: boolean = false;
+  finalProducts: any;
 
   constructor(
     private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
+    private _customerService: CustomersService,
     private router: Router,
+    private _commonService: DashboardsService,
+
   ) { }
 
   ngOnInit(): void {
@@ -39,7 +49,6 @@ export class RapidbuildActionsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((items: any) => {
         this.selectedStore = items["data"][0];
-        this.dataSourceLoading = true;
         this.getMainStoreCall(this.page);
       });
   }
@@ -55,6 +64,7 @@ export class RapidbuildActionsComponent implements OnInit, OnDestroy {
     const { pk_storeID } = this.selectedStore;
 
     // Get the offline products
+    this.dataSourceLoading = true;
     this._storeManagerService.getStoreProducts(pk_storeID, page)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
@@ -79,41 +89,38 @@ export class RapidbuildActionsComponent implements OnInit, OnDestroy {
               productColorExists: productAttributes[10],
               technoLogoExists: productAttributes[11],
               orderExists: productAttributes[12],
+              isChecked: false
             }
+            // this.fileExists(productObject)
             extractedProducts.push(productObject);
+
           });
           item['splittedData'] = extractedProducts
-          item['isChecked'] = false;
           extractedProducts = [];
         });
         this.dataSourceLoading = false;
-        // Mark for check
         this._changeDetectorRef.markForCheck();
       });
   };
 
-
+  getRandom() {
+    return Math.random();
+  }
 
   fileExists(item) {
-    // console.log(item?.pk_storeProductID);
-    // if (item?.pk_storeProductID) {
-    //   console.log('hello')
-    //   const url = `https://assets.consolidus.com/globalAssets/Products/Thumbnails/${item?.pk_storeProductID}.jpg`
-    //   const img = new Image();
-    //   img.src = url;
-    //   img.onload = () => {
-    //     return true;
-    //     // this.isImageExists = true;
-    //     // this._changeDetectorRef.markForCheck();
-    //   };
-    //   img.onerror = () => {
-    //     return false
-    //     // this.isImageExists = false;
-    //     // this._changeDetectorRef.markForCheck();
-    //   };
-    // } else 
-
-    return true;
+    if (item?.pk_storeProductID) {
+      const url = `https://assets.consolidus.com/globalAssets/Products/Thumbnails/${item?.pk_storeProductID}.jpg`
+      const img = new Image();
+      img.src = url;
+      img.onload = () => {
+        item.imageExit = true;
+        this._changeDetectorRef.markForCheck()
+      };
+      img.onerror = () => {
+        item.imageExit = false;
+        this._changeDetectorRef.markForCheck()
+      };
+    }
   }
 
   getNextData(event) {
@@ -128,7 +135,72 @@ export class RapidbuildActionsComponent implements OnInit, OnDestroy {
   };
 
   navigate(data) {
-    this.router.navigateByUrl(`/apps/ecommerce/inventory/storeProduct/${data.pk_storeProductID}/pricing`);
+    // this.router.navigateByUrl(`/apps/ecommerce/inventory/storeProduct/${data.pk_storeProductID}/pricing`);
+  }
+
+  toggleCheckbox(item: any) {
+    const index = this.selectedProduct.indexOf(item);
+    if (index === -1) {
+      this.selectedProduct.push(item);
+    } else {
+      this.selectedProduct.splice(index, 1);
+    }
+  }
+  update() {
+
+    if (this.selectedProduct?.length < 1) {
+      this._customerService.snackBar('Please select products to update');
+      return;
+    }
+    if (this.selectedAction == 0) {
+      this._customerService.snackBar('Please select an action');
+      return;
+    }
+    this.finalProducts = this.selectedProduct.map(item => {
+      return { storeProductID: item.pk_storeProductID };
+    });
+    const payload = {
+      rapid_build_store_products: this.finalProducts,
+      image_status_id: this.selectedAction == 'delete' ? 1 : 0,
+      add_rapidBuild_storeProduct_bulk: true
+    }
+    this.updateLoader = true;
+    this._storeManagerService.postProductData(payload)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((response: any) => {
+        this._customerService.snackBar('Products updated successfuly');
+        if(this.selectedAction === 'delete') {
+          this.removeFiles();
+          this.getMainStoreCall(this.page)
+        }
+        this._changeDetectorRef.markForCheck();
+        this.updateLoader = false;
+      }), err => {
+        this.updateLoader = false;
+        this._customerService.snackBar('Error occured while updating product');
+        this._changeDetectorRef.markForCheck();
+      }
+
+  }
+
+  removeFiles() {
+    const tempImages = this.finalProducts
+      .map(item => `/globalAssets/Products/Thumbnails/${item.storeProductID}.jpg`);
+    if (tempImages.length > 0) {
+      let payload = {
+        files: tempImages,
+        delete_multiple_files: true
+      }
+      this._commonService.removeMediaFiles(payload)
+        .subscribe((response) => {
+          this._customerService.snackBar('Products updated successfuly');
+          this._changeDetectorRef.markForCheck();
+        }, err => {
+          this._changeDetectorRef.markForCheck();
+        })
+    } else {
+      this._changeDetectorRef.markForCheck();
+    }
   }
 
 
