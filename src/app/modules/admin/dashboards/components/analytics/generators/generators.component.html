@@ -134,20 +134,38 @@
                             </td>
                             <td>
                                 <div class="flex space-x-1 align-items-center">
-                                    <mat-button-toggle (click)="openOrderDetailsModal(item)">
+                                    <button mat-button mat-flat-button class="rounded-md p-2"
+                                        (click)="openOrderDetailsModal(item)" matTooltip="Artwork Details">
+                                        <mat-icon svgIcon="mat_outline:brush"></mat-icon>
+                                    </button>
+                                    <!-- <mat-button-toggle (click)="openOrderDetailsModal(item)">
                                         <mat-icon svgIcon="mat_outline:brush" matTooltip="Artwork Details"></mat-icon>
-                                    </mat-button-toggle>
-                                    <mat-button-toggle (click)="openEmailDetailsModal(item,'quotes')">
+                                    </mat-button-toggle> -->
+                                    <button mat-button mat-flat-button class="rounded-md p-2"
+                                        (click)="openEmailDetailsModal(item,'quotes')"
+                                        matTooltip="Send an email to customer">
+                                        <mat-icon svgIcon="mat_outline:email"></mat-icon>
+                                    </button>
+
+                                    <!-- <mat-button-toggle (click)="openEmailDetailsModal(item,'quotes')">
                                         <mat-icon svgIcon="mat_outline:email"
                                             matTooltip="Send an email to customer"></mat-icon>
-                                    </mat-button-toggle>
-                                    <mat-button-toggle>
+                                    </mat-button-toggle> -->
+                                    <button mat-button mat-flat-button class="rounded-md p-2">
                                         <mat-progress-spinner *ngIf="item?.delLoader" [diameter]="24"
                                             [mode]="'indeterminate'">
                                         </mat-progress-spinner>
                                         <mat-icon *ngIf="!item?.delLoader" svgIcon="mat_outline:delete"
                                             matTooltip="Remove" (click)="removeQuotes(item)"></mat-icon>
-                                    </mat-button-toggle>
+                                    </button>
+
+                                    <!-- <mat-button-toggle>
+                                        <mat-progress-spinner *ngIf="item?.delLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                        <mat-icon *ngIf="!item?.delLoader" svgIcon="mat_outline:delete"
+                                            matTooltip="Remove" (click)="removeQuotes(item)"></mat-icon>
+                                    </mat-button-toggle> -->
 
                                 </div>
                             </td>
@@ -250,30 +268,33 @@
                             </td>
                             <td>
                                 <div class="flex space-x-1 align-items-center">
-                                    <mat-button-toggle>
-                                        <mat-icon svgIcon="mat_outline:comment" (click)="openSampleCommentModal(item)"
-                                            matTooltip="Sample Comments"></mat-icon>
-                                    </mat-button-toggle>
-
-                                    <mat-button-toggle (click)="openEmailDetailsModal(item,'sample')">
-                                        <mat-icon svgIcon="mat_outline:email"
-                                            matTooltip="Send an email to customer"></mat-icon>
-                                    </mat-button-toggle>
-                                    <mat-button-toggle>
+                                    <button mat-button mat-flat-button class="rounded-md p-2"
+                                        (click)="openSampleCommentModal(item)" matTooltip="Sample Comments">
+                                        <mat-icon svgIcon="mat_outline:comment"></mat-icon>
+                                    </button>
+                                    <button mat-button mat-flat-button class="rounded-md p-2"
+                                        (click)="openEmailDetailsModal(item,'sample')"
+                                        matTooltip="Send an email to customer">
+                                        <mat-icon svgIcon="mat_outline:email"></mat-icon>
+                                    </button>
+                                    <button mat-button mat-flat-button class="rounded-md p-2"
+                                        (click)="markOrderAsSample(item)" [disabled]="item?.sampleLoader"
+                                        matTooltip="Mark this sample order as converted">
                                         <mat-progress-spinner *ngIf="item?.sampleLoader" [diameter]="24"
                                             [mode]="'indeterminate'">
                                         </mat-progress-spinner>
                                         <mat-icon *ngIf="!item?.sampleLoader" svgIcon="mat_outline:check"
                                             matTooltip="Mark this sample order as converted"
                                             (click)="markOrderAsSample(item)"></mat-icon>
-                                    </mat-button-toggle>
-                                    <mat-button-toggle>
+                                    </button>
+                                    <button mat-button mat-flat-button class="rounded-md p-2"
+                                        (click)="removeOrders(item,'blnSample')" [disabled]="item?.delLoader">
                                         <mat-progress-spinner *ngIf="item?.delLoader" [diameter]="24"
                                             [mode]="'indeterminate'">
                                         </mat-progress-spinner>
                                         <mat-icon *ngIf="!item?.delLoader" svgIcon="mat_outline:delete"
                                             matTooltip="Remove" (click)="removeOrders(item,'blnSample')"></mat-icon>
-                                    </mat-button-toggle>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -930,7 +951,7 @@
                         </div>
                         <div class="col-12" *ngIf="emailModalContent?.text" [innerHTML]="emailModalContent.text"></div>
                         <div class="col-12 my-2">
-                            <div>
+                            <!-- <div>
                                 <ng-container *ngIf="emailModalContent.type != 'quotes' ">
                                     <mat-checkbox>Include images?</mat-checkbox>
                                     <br>
@@ -940,7 +961,7 @@
                                 <mat-checkbox *ngIf="emailModalContent.type == 'quotes'"
                                     matTooltip="Include a PDF copy of the invoice as an attachment on the email.">Include
                                     PDF invoice as attachment?</mat-checkbox>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                 </div>

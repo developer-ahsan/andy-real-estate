@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inpu
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import moment from 'moment';
 import { fromEvent, of, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, finalize, map, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, finalize, map, skipWhile, switchMap, takeUntil, tap, take } from 'rxjs/operators';
 import { FLPSService } from '../../flps.service';
 import * as Excel from 'exceljs/dist/exceljs.min.js';
 import { updateReport } from '../../flps.types';
@@ -258,7 +258,7 @@ export class GenerateReportComponent implements OnInit {
             this.reportParams.end_date = moment(this.ngRangeEnd).format('yyyy-MM-DD');
             this.report_type = 'Range Sales';
         }
-        this._flpsService.getFlpsData(this.reportParams).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+        this._flpsService.getFlpsData(this.reportParams).pipe(skipWhile(obj => !obj), take(1)).subscribe(res => {
             if (res["data"].length == 0) {
                 this.groupByStoresData = null;
                 this.generateReportLoader = false;

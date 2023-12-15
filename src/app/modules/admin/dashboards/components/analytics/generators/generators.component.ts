@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { DashboardsService } from '../../../dashboard.service';
-import { finalize, map, takeUntil } from 'rxjs/operators';
+import { finalize, map, skipWhile, take, takeUntil } from 'rxjs/operators';
 import { Subject, forkJoin, of } from 'rxjs';
 import { environment } from 'environments/environment';
 import CryptoJS from 'crypto-js';
@@ -116,13 +116,23 @@ export class GeneratorsComponent implements OnInit {
       user_id: userDetails.pk_userID,
       flpsUserID: userDetails.FLPSUserID
     }
-    this._dashboardService.getDashboardData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._dashboardService.getDashboardData(params).pipe(skipWhile(obj => !obj), take(1), finalize(() => {
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
-      this.processQuotes(res);
-      this.processSampleOrders(res);
-      this.processKeywords(res);
+      if (res["pendingQuotes"]) {
+        this.pendingQuotes = res["pendingQuotes"]?.pendingQuotesResponse;
+        this.tempPendingQuotes = res["pendingQuotes"]?.pendingQuotesResponse;
+        this.pendingStores = res["pendingQuotes"]?.pendingStores;
+      }
+
+      // Sample Orders
+      if (res["sampleOrders"]) {
+        this.sampleStatus = res["sampleOrders"]?.sampleOrdersResponse;
+        this.tempSampleStatus = res["sampleOrders"]?.sampleOrdersResponse;
+        this.sampleStores = res["sampleOrders"]?.sampleOrdersStores;
+      }
+      this.keywordsData = res["keywords"];
       // Other Generators
       this.getOtherOrderStatus();
       this._changeDetectorRef.markForCheck();
@@ -143,10 +153,11 @@ export class GeneratorsComponent implements OnInit {
       user_id: userDetails.pk_userID,
       flpsUserID: userDetails.FLPSUserID
     }
-    this._dashboardService.getDashboardData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._dashboardService.getDashboardData(params).pipe(skipWhile(obj => !obj), take(1), finalize(() => {
       this.isOtherGeneratorLoader = false;
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
+      console.log("Report Data", res)
       this.ordersThisYear = res["data"][0];
       this.ordersThisYear.forEach(element => {
         if (element.customerLastYearPriority > 0) {
@@ -191,151 +202,7 @@ export class GeneratorsComponent implements OnInit {
       this.tempActivityData = this.activityData;
     });
   }
-  private processQuotes(res: any): void {
-    const getQuotes = res?.data?.[0]?.[0]?.getQuotes || '';
-    if (getQuotes) {
-      const quotes = getQuotes.split(',,');
-      this.pendingQuotes = quotes.map(quote => {
-        const [
-          cartID, cartDate, inHandsDate, storeID, blnReorder,
-          storeUserID, price, tax, firstName, lastName,
-          phone, companyName, locationName, storeCode, storeName,
-          followUp, priority
-        ] = quote.split('::');
 
-        let priorityChecked = false;
-        if (Number(priority) > 0) {
-          priorityChecked = true;
-        }
-
-        const existingStoreIndex = this.pendingStores.findIndex(store => store.store === storeName);
-
-        if (existingStoreIndex > -1) {
-          // Store already exists, add data to existing store
-          this.pendingStores[existingStoreIndex].data.push({
-            cartID: Number(cartID),
-            cartDate,
-            blnReorder: Number(blnReorder),
-            inHandsDate,
-            storeCode,
-            storeName,
-            storeUserID: Number(storeUserID),
-            storeID: Number(storeID),
-            firstName,
-            lastName,
-            locationName,
-            companyName,
-            followUp,
-            price: Number(price),
-            tax: Number(tax),
-            phone,
-            priority,
-            priorityChecked
-          });
-        } else {
-          // Store does not exist, add a new store
-          this.pendingStores.push({
-            store: storeName,
-            data: [{
-              cartID: Number(cartID),
-              cartDate,
-              blnReorder: Number(blnReorder),
-              inHandsDate,
-              storeCode,
-              storeName,
-              storeUserID: Number(storeUserID),
-              storeID: Number(storeID),
-              firstName,
-              lastName,
-              locationName,
-              companyName,
-              followUp,
-              price: Number(price),
-              tax: Number(tax),
-              phone,
-              priority,
-              priorityChecked
-            }]
-          });
-        }
-
-        return {
-          cartID: Number(cartID),
-          cartDate,
-          blnReorder: Number(blnReorder),
-          inHandsDate,
-          storeCode,
-          storeName,
-          storeUserID: Number(storeUserID),
-          storeID: Number(storeID),
-          firstName,
-          lastName,
-          locationName,
-          companyName,
-          followUp,
-          price: Number(price),
-          tax: Number(tax),
-          phone,
-          priority,
-          priorityChecked
-        };
-      });
-    }
-    this.tempPendingQuotes = this.pendingQuotes;
-  }
-
-  private processSampleOrders(res: any): void {
-    const getSampleOrders = res?.data?.[1]?.[0]?.getSampleOrders || '';
-    if (getSampleOrders) {
-      const samples = getSampleOrders.split(',,');
-      this.sampleStatus = samples.map(sample => {
-        const [
-          orderID, cost, firstName, lastName, companyName,
-          locationName, orderDate, storeCode, storeName,
-          storeID, storeUserID, blnSampleConverted, sampleComment,
-          days, priority
-        ] = sample.split('::');
-        let priorityChecked = false;
-        if (Number(priority) > 0) {
-          priorityChecked = true;
-        }
-        const existingStoreIndex = this.sampleStores.findIndex(store => store.store === storeName);
-
-        if (existingStoreIndex > -1) {
-          // Store already exists, add data to existing store
-          this.sampleStores[existingStoreIndex].data.push({
-            orderID: Number(orderID), orderDate, storeCode, storeName,
-            storeUserID: Number(storeUserID), storeID: Number(storeID),
-            firstName, lastName, locationName, companyName, blnSampleConverted,
-            cost: Number(cost), days, priority, sampleComment, priorityChecked
-          });
-        } else {
-          // Store does not exist, add a new store
-          this.sampleStores.push({
-            store: storeName,
-            data: [{
-              orderID: Number(orderID), orderDate, storeCode, storeName,
-              storeUserID: Number(storeUserID), storeID: Number(storeID),
-              firstName, lastName, locationName, companyName, blnSampleConverted,
-              cost: Number(cost), days, priority, sampleComment, priorityChecked
-            }]
-          });
-        }
-        return {
-          orderID: Number(orderID), orderDate, storeCode, storeName,
-          storeUserID: Number(storeUserID), storeID: Number(storeID),
-          firstName, lastName, locationName, companyName, blnSampleConverted,
-          cost: Number(cost), days, priority, sampleComment, priorityChecked
-        };
-      });
-    }
-
-    this.tempSampleStatus = this.sampleStatus;
-  }
-
-  private processKeywords(res: any): void {
-    this.keywordsData = res?.data?.[2];
-  }
   // Update Priority
   updateQuotePriority(quote, type) {
     const { cartID, priorityChecked } = quote;
@@ -705,7 +572,6 @@ export class GeneratorsComponent implements OnInit {
             </div>`
         }
       } else if (type == 'quotes') {
-        console.log('here');
         greeting = 'Hello';
         // Body 
         if (res["qryStoreDefaultEmails"][0].quoteEmail) {
@@ -722,7 +588,7 @@ export class GeneratorsComponent implements OnInit {
                 526 S. Main Street, ##804 Akron, Ohio 44311<br />
                 (d) ${res["data"].localPhone} | (p) 866.PromoHelp<br />
                 (e) <a href="mailto:${res["data"].localEmail}">${res["data"].localEmail}</a><br /><br />
-                <img class="w-50" src="${environment.assetsURL}globalAssets/Stores/mastheads/${this.emailModalContent.fk_storeID}.gif" />
+                <img class="w-50" src="${environment.assetsURL}globalAssets/Stores/mastheads/${this.emailModalContent.storeID}.gif" />
               </div>
             </div>`
         }
