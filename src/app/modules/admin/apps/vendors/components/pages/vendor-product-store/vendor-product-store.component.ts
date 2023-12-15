@@ -43,8 +43,6 @@ export class VendorProductsStoreComponent implements OnInit, OnDestroy {
   getProductsData(page) {
     let params = {
       products_by_store: true,
-      page: page,
-      size: 20,
       company_id: this.supplierData.pk_companyID
     }
     this._vendorService.getVendorsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -85,7 +83,6 @@ export class VendorProductsStoreComponent implements OnInit, OnDestroy {
 
     const params = {
       products_by_store: true,
-      size: this.totalUsers,
       company_id: this.supplierData.pk_companyID
     };
 
