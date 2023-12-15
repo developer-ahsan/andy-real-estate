@@ -434,7 +434,7 @@ export class CatalogComponent {
       size: this.catalogFilter.perPage || 10,
       sort_by: this.catalogFilter.sort_by || `pk_productID`,
       sort_order: this.catalogFilter.sort_order || "DESC",
-      bln_active: this.catalogFilter.bln_active || 1,
+      bln_active: this.catalogFilter.bln_active,
       keyword: this.keyWord || '',
       company_id: this.SelectedVendor.length > 0 ? this.SelectedVendor.map(item => item.pk_companyID)[0] : '',
       method_search: this.selectedMethod !== undefined ? this.selectedMethod.map(item => item.id).join(',') : '',

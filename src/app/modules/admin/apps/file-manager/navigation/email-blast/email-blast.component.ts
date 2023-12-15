@@ -65,7 +65,7 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
   OptInEmails: any;
   OptOutEmails: any;
   customerEmails: any;
-  product_templete:any;
+  product_templete: any;
 
   previewData: any;
 
@@ -491,7 +491,7 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
       .subscribe((res: any) => {
         this.previewData = res.data;
         console.log(this.previewData);
-        this.product_templete=res.products_template;
+        this.product_templete = res.products_template;
         // Mark for check
         this._changeDetectorRef.markForCheck();
       }, err => {
