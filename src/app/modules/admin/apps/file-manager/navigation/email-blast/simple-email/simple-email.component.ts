@@ -69,6 +69,7 @@ export class SimpleEmailBlastComponent implements OnInit, OnDestroy {
       'https://ckeditor.com/apps/ckfinder/3.4.5/core/connector/php/connector.php?command=QuickUpload&type=Images'
     // other options
   };
+  previewEmail: any;
 
   constructor(
     private _fileManagerService: FileManagerService,
@@ -221,6 +222,10 @@ export class SimpleEmailBlastComponent implements OnInit, OnDestroy {
     xhr.open('GET', u);
     xhr.responseType = 'blob';
     xhr.send();
+  }
+
+  preview() {
+    this.previewEmail= true;
   }
 
   ngOnDestroy(): void {
