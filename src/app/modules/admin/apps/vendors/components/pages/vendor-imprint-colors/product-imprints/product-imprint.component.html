@@ -1,24 +1,45 @@
 <div class="w-full my-5">
-    <div class="font-bold border-b p-3 text-lg">
-        Products/Imprints With Black & White Color Collection From 365Wholesale.com
+    <div *ngIf="isLoading">
+        <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+        </ngx-skeleton-loader>
     </div>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>PID</th>
-                <th>PRODUCT</th>
-                <th>IMPRINT</th>
-                <th>DECORATOR</th>
-            </tr>
-        </thead>
-        <tbody>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tbody>
-    </table>
-    <div class="alert alert-warning">
-        There are no products or imprints with this color collection.
+    <div *ngIf="!isLoading">
+        <div class="font-bold border-b p-3 text-lg">
+            Products/Imprints With Black & White Color Collection From 365Wholesale.com
+        </div>
+        <table class="table table-striped" *ngIf="imprintProducts.length > 0">
+            <thead>
+                <tr>
+                    <th>PID</th>
+                    <th>PRODUCT</th>
+                    <th>IMPRINT</th>
+                    <th>DECORATOR</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let product of imprintProducts">
+                    <td><a [routerLink]="['/apps/ecommerce/inventory',product.pk_productID]" target="_blank">
+                            <span>{{product.pk_productID}}</span>
+                        </a>
+                    </td>
+                    <td>
+                        <a [routerLink]="['/apps/ecommerce/inventory',product.pk_productID,'imprints']" target="_blank">
+                            <span [innerHTML]="product.productName"></span>
+                        </a>
+                    </td>
+                    <td>
+                        <a [routerLink]="['/apps/ecommerce/inventory',product.pk_productID,'imprints']" target="_blank">
+                            <span>{{product.location}}</span>
+                        </a>
+                    </td>
+                    <td>
+                        {{product.companyName}}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="alert alert-warning" *ngIf="imprintProducts.length == 0">
+            There are no products or imprints with this color collection.
+        </div>
     </div>
 </div>

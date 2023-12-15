@@ -1,88 +1,66 @@
 <div class="w-full">
-    <div class="w-full">
-        <div class="px-2 pb-2" *ngIf="!imprintProducts">
-            <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen"
-                (change)="calledScreen(group.value)">
-                <mat-button-toggle value="Current Collections">
-                    Current Collections
-                </mat-button-toggle>
-                <mat-button-toggle value="Add New Collections">
-                    Add New Collections
-                </mat-button-toggle>
-            </mat-button-toggle-group>
-        </div>
-        <div class="px-5" *ngIf="mainScreen == 'Current Collections' && isLoading">
-            <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
-            </ngx-skeleton-loader>
-        </div>
-        <div *ngIf="mainScreen == 'Current Collections' && !isLoading && !imprintProducts && collectionsData">
-            <div class="p-5" *ngIf="collectionsData.length == 0">
-                <div class="alert alert-warning">
-                    This supplier has no imprint color collections.
-                </div>
+    <div class="px-2 pb-2" *ngIf="!imprintProducts">
+        <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen"
+            (change)="calledScreen(group.value)">
+            <mat-button-toggle value="Current Collections">
+                Current Collections
+            </mat-button-toggle>
+            <mat-button-toggle value="Add New Collections">
+                Add New Collections
+            </mat-button-toggle>
+        </mat-button-toggle-group>
+    </div>
+    <!-- Current Collections -->
+    <div class="px-5" *ngIf="mainScreen == 'Current Collections' && isLoading">
+        <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+        </ngx-skeleton-loader>
+    </div>
+    <div *ngIf="mainScreen == 'Current Collections' && !isLoading && !imprintProducts && collectionsData">
+        <div class="p-5" *ngIf="collectionsData.length == 0 && !isEditCollectionToggle">
+            <div class="alert alert-warning">
+                This supplier has no imprint color collections.
             </div>
-            <div class="row p-5">
-                <div class="col-12 col-md-6" *ngFor="let collection of collectionsData">
-                    <div class="bg-card rounded-2xl shadow-lg p-5">
-                        <p class="text-lg font-bold">({{collection.pk_collectionID}}) {{collection.collectionName}}</p>
-                        <div class="border h-50 overflow-y-auto p-5">
-                            <table *ngFor="let color of collection.colorsData">
-                                <tr>
-                                    <td>{{color.name}}</td>
-                                    <td>
-                                        <hr class="w-10 h-3 p-0 m-0" [ngStyle]="{'background-color': color.rgbValue}">
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                        <div class="space-x-2 my-2">
-                            <button class="bg-blue-500 text-white px-4 py-2 rounded">Edit</button>
-                            <button class="bg-blue-500 text-white px-4 py-2 rounded"
-                                (click)="imprintColorProductsToggle('data',true)">View Product Imprints</button>
-                            <button class="bg-red-500 text-white px-4 py-2 rounded">Delete</button>
-                        </div>
+        </div>
+        <div class="row p-5" *ngIf="!isEditCollectionToggle">
+            <div class="col-12 col-md-6" *ngFor="let collection of collectionsData">
+                <div class="bg-card rounded-2xl shadow-lg p-5">
+                    <p class="text-lg font-bold mb-2">({{collection.pk_collectionID}}) {{collection.collectionName}}</p>
+                    <div class="border h-50 overflow-y-auto p-5">
+                        <table *ngFor="let color of collection.colorsData">
+                            <tr>
+                                <td>{{color.name}}</td>
+                                <td class="text-right">
+                                    <hr class="w-10 h-3 p-0 m-0" [ngStyle]="{'background-color': color.rgbValue}">
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="space-x-2 my-2">
+                        <button class="bg-blue-500 text-white px-4 py-2 rounded"
+                            (click)="imprintCollectionEditToggle(collection,true)">Edit</button>
+                        <button class="bg-blue-500 text-white px-4 py-2 rounded"
+                            (click)="imprintColorProductsToggle(collection,true)">View Product Imprints</button>
+                        <button class="bg-red-500 text-white px-4 py-2 rounded" (click)="deleteCollection(collection)">
+                            <mat-progress-spinner *ngIf="collection.isDelLoader" [diameter]="24"
+                                [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                            <span *ngIf="!collection.isDelLoader">Delete</span>
+                        </button>
                     </div>
                 </div>
             </div>
-
-            <!-- Update Color -->
-            <div *ngIf="isUpdateColors" class="p-6">
-                <mat-form-field class="w-full">
-                    <mat-label>Name</mat-label>
-                    <input matInput [(ngModel)]="updateColorData.imprintColorName">
-                </mat-form-field>
-                <mat-form-field class="w-full">
-                    <mat-label>RGB</mat-label>
-                    <input matInput type="color" [(ngModel)]="ngRGBUpdate">
-                </mat-form-field>
-                <div class="justify-end flex">
-                    <button [disabled]="isUpdateColorLoader" class="min-w-30 mr-2" mat-stroked-button
-                        [matTooltip]="'Back to list'" (click)="updateColorToggle(null)">
-                        <span> Cancel </span>
-                    </button>
-                    <button [disabled]="isUpdateColorLoader" class="min-w-40" mat-stroked-button
-                        [matTooltip]="'Update Color Name'" (click)="updateColor()">
-                        <mat-icon svgIcon="heroicons_solid:pencil" *ngIf="!isUpdateColorLoader"></mat-icon>
-                        <span class="ml-2" *ngIf="!isUpdateColorLoader"> Update Color </span>
-                        <mat-progress-spinner *ngIf="isUpdateColorLoader" [diameter]="24" [mode]="'indeterminate'">
-                        </mat-progress-spinner>
-                    </button>
-                </div>
-            </div>
         </div>
-        <!-- Product Imrints -->
-        <div *ngIf="imprintProducts" class="px-5">
-            <button class="min-w-40" mat-flat-button color="primary" (click)="imprintColorProductsToggle(null,false)">
+
+        <!-- Update Collection -->
+        <div *ngIf="isEditCollectionToggle" class="p-6">
+            <button class="min-w-40 mb-2" mat-flat-button color="primary"
+                (click)="imprintCollectionEditToggle(null,false)">
                 Back to Collections
             </button>
-            <app-product-color-imprint></app-product-color-imprint>
-        </div>
-        <!-- Add New Collection -->
-        <div *ngIf="mainScreen == 'Add New Collections'" class="p-6 row">
             <div class="col-12">
                 <mat-form-field class="w-full" appearance="fill">
                     <mat-label>Collection Name</mat-label>
-                    <input matInput [(ngModel)]="ngName" maxlength="50">
+                    <input matInput [(ngModel)]="updatedCollectionData.collectionName" maxlength="50">
                 </mat-form-field>
             </div>
             <div class="col-12 flex justify-end">
@@ -90,22 +68,75 @@
                     (click)="openColorModal()">
                     <span> Add Color </span>
                 </button>
-                <button [disabled]="isAddColorLoader" class="min-w-50" mat-stroked-button
-                    [matTooltip]="'Create Collection'" (click)="addNewColor()">
-                    <mat-icon svgIcon="heroicons_solid:plus" *ngIf="!isAddColorLoader"></mat-icon>
-                    <span class="ml-2" *ngIf="!isAddColorLoader"> Create Collection </span>
-                    <mat-progress-spinner *ngIf="isAddColorLoader" [diameter]="24" [mode]="'indeterminate'">
+                <button [disabled]="updatedCollectionData.isUpdateCollectionLoader" class="min-w-50" mat-stroked-button
+                    [matTooltip]="'Update Collection'" (click)="updateCollection()">
+                    <mat-icon svgIcon="heroicons_solid:plus"
+                        *ngIf="!updatedCollectionData.isUpdateCollectionLoader"></mat-icon>
+                    <span class="ml-2" *ngIf="!updatedCollectionData.isUpdateCollectionLoader"> Update Collection
+                    </span>
+                    <mat-progress-spinner *ngIf="updatedCollectionData.isUpdateCollectionLoader" [diameter]="24"
+                        [mode]="'indeterminate'">
                     </mat-progress-spinner>
                 </button>
 
             </div>
             <div class="col-12 border mx-3 p-3 my-2">
                 <div class="row">
-                    <div class="col-6 col-md-3 flex">
-                        <hr class="h-6 w-4 mr-2" style="background-color: red;">
-                        <mat-checkbox>(Specify PMS colors in order notes) (FFFFFF)</mat-checkbox>
+                    <div class="col-12" *ngIf="updatedCollectionData.isImprintLoader">
+                        <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+                        </ngx-skeleton-loader>
                     </div>
+                    <ng-container *ngIf="!updatedCollectionData.isImprintLoader">
+                        <div class="col-6 col-md-3 flex" *ngFor="let color of updatedCollectionData.imprintColors">
+                            <hr class="h-6 w-4 mr-2 m-0 p-0" [ngStyle]="{'background-color': color.rgbValue}">
+                            <mat-checkbox [(ngModel)]="color.checked">{{color.name}} ({{color.rgb}})</mat-checkbox>
+                        </div>
+                    </ng-container>
                 </div>
+            </div>
+        </div>
+    </div>
+    <!-- Product Imrints -->
+    <div *ngIf="imprintProducts" class="px-5">
+        <button class="min-w-40" mat-flat-button color="primary" (click)="imprintColorProductsToggle(null,false)">
+            Back to Collections
+        </button>
+        <app-product-color-imprint [selectedCollection]="selectedCollection"></app-product-color-imprint>
+    </div>
+    <!-- Add New Collection -->
+    <div *ngIf="mainScreen == 'Add New Collections'" class="p-6 row">
+        <div class="col-12">
+            <mat-form-field class="w-full" appearance="fill">
+                <mat-label>Collection Name</mat-label>
+                <input matInput [(ngModel)]="ngCollectionName" maxlength="50">
+            </mat-form-field>
+        </div>
+        <div class="col-12 flex justify-end">
+            <button class="min-w-30 mr-2" mat-flat-button color="primary" [matTooltip]="'Add Color'"
+                (click)="openColorModal()">
+                <span> Add Color </span>
+            </button>
+            <button [disabled]="isAddCollectionLoader" class="min-w-50" mat-stroked-button
+                [matTooltip]="'Create Collection'" (click)="addNewCollection()">
+                <mat-icon svgIcon="heroicons_solid:plus" *ngIf="!isAddCollectionLoader"></mat-icon>
+                <span class="ml-2" *ngIf="!isAddCollectionLoader"> Create Collection </span>
+                <mat-progress-spinner *ngIf="isAddCollectionLoader" [diameter]="24" [mode]="'indeterminate'">
+                </mat-progress-spinner>
+            </button>
+
+        </div>
+        <div class="col-12 border mx-3 p-3 my-2">
+            <div class="row">
+                <div class="col-12" *ngIf="isImprintLoader">
+                    <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+                    </ngx-skeleton-loader>
+                </div>
+                <ng-container *ngIf="!isImprintLoader">
+                    <div class="col-6 col-md-3 flex" *ngFor="let color of imprintColors">
+                        <hr class="h-6 w-4 mr-2 m-0 p-0" [ngStyle]="{'background-color': color.rgbValue}">
+                        <mat-checkbox [(ngModel)]="color.checked">{{color.name}} ({{color.rgb}})</mat-checkbox>
+                    </div>
+                </ng-container>
             </div>
         </div>
     </div>
@@ -122,6 +153,9 @@
                 </button>
             </div>
             <div class="modal-body">
+                <div class="alert alert-warning" *ngIf="modalAlertMessage">
+                    {{modalAlertMessage}}
+                </div>
                 <div class="row">
                     <div class="col-6 font-bold">Color Name</div>
                     <div class="col-6 font-bold">RGB</div>
@@ -142,11 +176,11 @@
             <div class="modal-footer">
                 <button type="button" class="mr-2 bg-red-500 text-white px-4 py-2 rounded"
                     data-dismiss="modal">Close</button>
-                <button type="button" (click)="addNewColors()"
-                    class="min-w-30 bg-blue-600 text-white px-4 py-2 rounded">
-                    <span>Add Color</span>
-                    <!-- <mat-progress-spinner *ngIf="modalContent?.commentLoader" [diameter]="24" [mode]="'indeterminate'">
-                    </mat-progress-spinner> -->
+                <button type="button" (click)="addNewColors()" class="min-w-30 bg-blue-600 text-white px-4 py-2 rounded"
+                    [disabled]="isAddNewColorLoader">
+                    <span *ngIf="!isAddNewColorLoader">Add Color</span>
+                    <mat-progress-spinner *ngIf="isAddNewColorLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
                 </button>
             </div>
         </div>

@@ -139,7 +139,7 @@ export class ImprintChargesComponent implements OnInit, OnDestroy {
           run.forEach((element, index) => {
             this.processQuantities[index].value = element.process;
             element.data.forEach((item, inner) => {
-              this.processQuantities[index]['quantitiesVal'][inner] = { value: item.charge.toFixed(3) };
+              this.processQuantities[index]['quantitiesVal'][inner] = { value: item.charge.toFixed(4) };
             });
           });
         }
@@ -160,7 +160,7 @@ export class ImprintChargesComponent implements OnInit, OnDestroy {
       this.processQuantities[index].value = this.processQuantities[index - 1].value + 1;
       this.processQuantities[0].quantitiesVal.forEach((element, i) => {
         if (element.value) {
-          this.processQuantities[index].quantitiesVal[i].value = (this.processQuantities[index].value * element.value).toFixed(3);
+          this.processQuantities[index].quantitiesVal[i].value = (this.processQuantities[index].value * element.value).toFixed(4);
         }
       });
     }
@@ -232,27 +232,6 @@ export class ImprintChargesComponent implements OnInit, OnDestroy {
     } catch (error) {
       console.error('An error occurred:', error);
     }
-
-
-
-
-
-    // let ChargeValue = [];
-    // this.processQuantities.forEach((element, i) => {
-    //   if (element.value) {
-    //     element.quantitiesVal.forEach((item, j) => {
-    //       if (element.value && this.productQuantities[j].value) {
-    //         ChargeValue.push(
-    //           {
-    //             process_quantity: element.value,
-    //             product_quantity: this.productQuantities[j].value,
-    //             value: item.value
-    //           }
-    //         )
-    //       }
-    //     });
-    //   }
-    // });
 
   }
   updateChargeValues(ChargeValue) {

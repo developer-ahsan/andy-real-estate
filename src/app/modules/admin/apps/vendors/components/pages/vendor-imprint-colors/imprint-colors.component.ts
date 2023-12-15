@@ -6,6 +6,7 @@ import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { VendorsService } from '../../vendors.service';
 import { AddColor, AddImprintColor, DeleteColor, DeleteImprintColor, UpdateColor, UpdateImprintColor } from '../../vendors.types';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 declare var $: any;
 @Component({
   selector: 'app-imprint-colors',
@@ -51,14 +52,23 @@ export class VendorImprintColorsComponent implements OnInit, OnDestroy {
 
   supplierData: any;
   collectionsData: any;
+  ngCollectionName = '';
+  isImprintLoader: boolean = false;
+  imprintColors: any;
+  isAddCollectionLoader: boolean = false;
+  modalAlertMessage = '';
+  isAddNewColorLoader: boolean = false;
+  @Input() selectedCollection: any;
+  isEditCollectionToggle: boolean = false;
+  updatedCollectionData: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _VendorsService: VendorsService
+    private _VendorsService: VendorsService,
+    private _commonService: DashboardsService
   ) { }
 
   ngOnInit(): void {
     this.isLoading = true;
-    this.getColors(1, 'get');
     this.getVendorsData();
   };
   getVendorsData() {
@@ -76,6 +86,7 @@ export class VendorImprintColorsComponent implements OnInit, OnDestroy {
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
+      this.collectionsData = [];
       res["data"].forEach(element => {
         element.colorsData = [];
         if (element.Colors) {
@@ -87,163 +98,105 @@ export class VendorImprintColorsComponent implements OnInit, OnDestroy {
         }
       });
       this.collectionsData = res["data"];
-      console.log(res);
     })
+  }
+  deleteCollection(collection) {
+    this._commonService.showConfirmation('Are you sure you want to remove this color collection?  The system will first check to make sure this collection is not associated with product imprints first.  This action cannot be undone.', (confirmed) => {
+      if (confirmed) {
+        let params = {
+          collectionID: collection.pk_collectionID,
+          delete_vendor_imprint_collection: true
+        }
+        collection.isDelLoader = true;
+        this._VendorsService.putVendorsData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+          collection.isDelLoader = false;
+          this._changeDetectorRef.markForCheck();
+        })).subscribe(res => {
+          if (res["success"]) {
+            this._VendorsService.snackBar(res["message"]);
+            this.collectionsData = this.collectionsData.filter(item => item.pk_collectionID != collection.pk_collectionID);
+          } else {
+            this._VendorsService.snackBar(res["message"]);
+          }
+        });
+      }
+    });
+  }
+  getImprintColorsList() {
+    const params = { view_imprint_colors: true };
+
+    this._VendorsService.getVendorsData(params)
+      .pipe(
+        takeUntil(this._unsubscribeAll),
+        finalize(() => {
+          this.isImprintLoader = false;
+          this._changeDetectorRef.markForCheck();
+        })
+      )
+      .subscribe(res => {
+        this.imprintColors = [];
+
+        const colorsData = res["data"][0]?.Colors;
+
+        if (colorsData) {
+          const colors = colorsData.split(',,');
+          this.imprintColors = colors.map(color => {
+            const [id, name, rgb] = color.split('::');
+            return { id, name, rgb, rgbValue: `#${rgb}`, checked: false };
+          });
+        }
+      });
+
+  }
+  addNewCollection() {
+    const collectionName = this.ngCollectionName.trim();
+
+    if (collectionName === '') {
+      this._VendorsService.snackBar('Collection name is required');
+      return;
+    }
+
+    const selectedColors = this.imprintColors.filter(color => color.checked).map(color => Number(color.id));
+
+    if (selectedColors.length === 0) {
+      this._VendorsService.snackBar('Please select at least one color');
+      return;
+    }
+
+    const payload = {
+      decoratorID: this.supplierData.pk_companyID,
+      collectionName: collectionName,
+      imprintColorsIDList: selectedColors,
+      add_vendor_imprint_collection: true
+    };
+
+    this.isAddCollectionLoader = true;
+
+    this._VendorsService.postVendorsData(payload)
+      .pipe(
+        takeUntil(this._unsubscribeAll),
+        finalize(() => {
+          this.isAddCollectionLoader = false;
+          this._changeDetectorRef.markForCheck();
+        })
+      )
+      .subscribe(res => {
+        if (res["success"]) {
+          this._VendorsService.snackBar(res["message"]);
+          this.ngCollectionName = '';
+          this.getCollectionData();
+          this.isLoading = true;
+          this.mainScreen = 'Current Collections';
+        }
+      });
+
   }
   calledScreen(value) {
     this.mainScreen = value;
-  }
-  convertColor(color) {
-    return '#' + color;
-  }
-  getColors(page, type) {
-    let params = {
-      imprint_colors: true,
-      keyword: this.keyword,
-      page: page,
-      size: 20
+    if (value == 'Add New Collections') {
+      this.isImprintLoader = true;
+      this.getImprintColorsList();
     }
-    this._VendorsService.getSystemsData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.dataSource = res["data"];
-      this.totalUsers = res["totalRecords"];
-      if (this.keyword == '') {
-        this.tempDataSource = res["data"];
-        this.tempRecords = res["totalRecords"];
-      }
-      if (type == 'add') {
-        this.isAddColorLoader = false;
-        this.ngName = '';
-        this.ngRGB = '#000000';
-        this._VendorsService.snackBar('Color Added Successfully');
-        this.mainScreen = 'Current Colors';
-      }
-      this.isLoading = false;
-      this.isSearching = false;
-      this.isLoadingChange.emit(false);
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this.isSearching = false;
-      this.isLoading = false;
-      this.isLoadingChange.emit(false);
-      this._changeDetectorRef.markForCheck();
-    });
-  }
-  getNextData(event) {
-    const { previousPageIndex, pageIndex } = event;
-
-    if (pageIndex > previousPageIndex) {
-      this.page++;
-    } else {
-      this.page--;
-    };
-    this.getColors(this.page, 'get');
-  };
-  searchColor(value) {
-    if (this.dataSource.length > 0) {
-      this.paginator.firstPage();
-    }
-    this.keyword = value;
-    this.isSearching = true;
-    this._changeDetectorRef.markForCheck();
-    this.getColors(1, 'get');
-  }
-  resetSearch() {
-    if (this.dataSource.length > 0) {
-      this.paginator.firstPage();
-    }
-    this.keyword = '';
-    this.dataSource = this.tempDataSource;
-    this.totalUsers = this.tempRecords;
-  }
-
-  addNewColor() {
-    if (this.ngName == '') {
-      this._VendorsService.snackBar('Color name is required');
-      return;
-    }
-    if (this.ngRGB == '') {
-      this._VendorsService.snackBar('RGB is required');
-      return;
-    }
-    let payload: AddImprintColor = {
-      color_name: this.ngName,
-      rgb: this.ngRGB.replace('#', ''),
-      add_imprint_color: true
-    }
-    this.isAddColorLoader = true;
-    this._VendorsService.AddSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-      this._changeDetectorRef.markForCheck();
-    })).subscribe(res => {
-      if (res["success"]) {
-        this.getColors(1, 'add')
-      } else {
-        this.isAddColorLoader = false;
-        this._VendorsService.snackBar(res["message"]);
-      }
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this.isAddColorLoader = false;
-      this._VendorsService.snackBar('Something went wrong');
-    })
-  }
-  // Delete Color
-  deleteColor(item) {
-    item.delLoader = true;
-    let payload: DeleteImprintColor = {
-      imprint_color_id: item.pk_imprintColorID,
-      delete_imprint_color: true
-    }
-    this._VendorsService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-      item.delLoader = false
-      this._changeDetectorRef.markForCheck();
-    })).subscribe(res => {
-      this.dataSource = this.dataSource.filter(color => color.pk_imprintColorID != item.pk_imprintColorID);
-      this.totalUsers--;
-      this.tempDataSource = this.tempDataSource.filter(color => color.pk_imprintColorID != item.pk_imprintColorID);
-      this.tempRecords--;
-      this.resetSearch();
-      this._VendorsService.snackBar('Color Deleted Successfully');
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this._VendorsService.snackBar('Something went wrong');
-    });
-  }
-  // Update Color
-  updateColorToggle(item) {
-    this.updateColorData = item;
-    if (item) {
-      this.ngRGBUpdate = '#' + item.RGB;
-    }
-    this.isUpdateColors = !this.isUpdateColors;
-  }
-  updateColor() {
-    if (this.updateColorData.imprintColorName == '') {
-      this._VendorsService.snackBar('Color name is required');
-      return;
-    }
-    const rgb = this.ngRGBUpdate.replace('#', '');
-    let payload: UpdateImprintColor = {
-      color_id: this.updateColorData.pk_imprintColorID,
-      color_name: this.updateColorData.imprintColorName,
-      rgb: rgb,
-      update_imprint_color: true
-    }
-    this.isUpdateColorLoader = true;
-    this._VendorsService.UpdateSystemData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
-      this.isUpdateColorLoader = false
-      this._changeDetectorRef.markForCheck();
-    })).subscribe(res => {
-      this.dataSource.filter(color => {
-        if (color.pk_imprintColorID == this.updateColorData.pk_imprintColorID) {
-          color.imprintColorName = this.updateColorData.imprintColorName;
-          color.RGB = rgb;
-        }
-      });
-      this._VendorsService.snackBar('Color Updated Successfully');
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this._VendorsService.snackBar('Something went wrong');
-    })
   }
   openColorModal() {
     for (let index = 0; index < 6; index++) {
@@ -252,35 +205,162 @@ export class VendorImprintColorsComponent implements OnInit, OnDestroy {
     $(this.colorModal.nativeElement).modal('show');
   }
   addNewColors() {
-    console.log(this.addColorsForm);
+    this.modalAlertMessage = '';
     const data = this.validateColors(this.addColorsForm);
-    console.log("Colors are valid:", data);
+    if (!data.value) {
+      this.modalAlertMessage = data.msg;
+      return;
+    }
+    if (data.colorsData.length == 0) {
+      this.modalAlertMessage = data.msg;
+      return;
+    }
+    let payload = {
+      imprintColors: data.colorsData,
+      add_imprint_color: true
+    }
+    this.isAddNewColorLoader = true;
+    this._VendorsService.postVendorsData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.isAddNewColorLoader = false;
+    })).subscribe(res => {
+      if (res["success"]) {
+        $(this.colorModal.nativeElement).modal('hide');
+        this._VendorsService.snackBar(res["message"]);
+        if (!this.updatedCollectionData) {
+          this.isImprintLoader = true;
+          this.getImprintColorsList();
+        } else {
+          this.updatedCollectionData.isImprintLoader = true;
+          this.getImprintColorsListForCollection();
+        }
+        this._changeDetectorRef.markForCheck();
+      }
+    });
   }
   validateColors(colors: any[]): any {
     let msg = '';
     let value;
+    let colorsData = [];
+    let data;
+
     for (const color of colors) {
       const { colorName, rgb } = color;
-
-      if (colorName === "" && rgb !== "") {
+      if (colorName.trim() === "" && rgb.trim() !== "") {
         msg = "Color name is required when RGB is provided.";
         value = false;
+        data = { value, msg, colorsData }
+        return data;
       }
-      if (colorName !== "" && rgb === "") {
+      if (colorName.trim() !== "" && rgb.trim() === "") {
         msg = "RGB value is required when color name is provided.";
         value = false;
+        data = { value, msg, colorsData }
+        return data;
       }
-      if (colorName !== "" && rgb !== "" && rgb.length !== 6) {
+      if (colorName.trim() !== "" && rgb.trim() !== "" && rgb.trim().length !== 6) {
         msg = "RGB value must be 6 characters long.";
         value = false;
+        data = { value, msg, colorsData }
+        return data;
+      }
+      if (colorName.trim() !== "" && rgb.trim() !== "") {
+        colorsData.push(color);
+        value = true;
       }
     }
-    let data = { value, msg }
+    if (colorsData.length == 0) {
+      data = { value: false, msg: 'Color and rgb both are required', colorsData }
+    } else {
+      data = { value: true, msg, colorsData }
+    }
     return data;
   }
   imprintColorProductsToggle(collection, check) {
+    this.selectedCollection = collection;
     this.imprintProducts = check;
     this._changeDetectorRef.markForCheck();
+  }
+  imprintCollectionEditToggle(collection, check) {
+    this.updatedCollectionData = collection;
+    this.isEditCollectionToggle = check;
+    if (this.updatedCollectionData) {
+      this.updatedCollectionData.isImprintLoader = true;
+      this.getImprintColorsListForCollection();
+    }
+    this._changeDetectorRef.markForCheck();
+  }
+  getImprintColorsListForCollection() {
+    const params = { view_imprint_colors: true };
+
+    this._VendorsService.getVendorsData(params)
+      .pipe(
+        takeUntil(this._unsubscribeAll),
+        finalize(() => {
+          this.updatedCollectionData.isImprintLoader = false;
+          this._changeDetectorRef.markForCheck();
+        })
+      )
+      .subscribe(res => {
+        this.updatedCollectionData.imprintColors = [];
+
+        const colorsDataIds = this.updatedCollectionData.colorsData.map(item => item.id);
+
+        if (res["data"][0]?.Colors) {
+          const colors = res["data"][0].Colors.split(',,');
+          colors.forEach(color => {
+            const [id, name, rgb] = color.split('::');
+            const checked = colorsDataIds.includes(id);
+
+            this.updatedCollectionData.imprintColors.push({ id, name, rgb, rgbValue: `#${rgb}`, checked });
+          });
+        }
+      });
+
+  }
+  updateCollection() {
+    const collectionName = this.updatedCollectionData.collectionName.trim();
+    const imprintColorsIDList = this.updatedCollectionData.imprintColors
+      .filter(color => color.checked)
+      .map(color => {
+        return {
+          id: Number(color.id),
+          data: color,
+        };
+      });
+
+    if (collectionName === '') {
+      this._VendorsService.snackBar('Collection name is required');
+      return;
+    }
+
+    if (imprintColorsIDList.length === 0) {
+      this._VendorsService.snackBar('Please select at least one color');
+      return;
+    }
+
+    const payload = {
+      collectionID: this.updatedCollectionData.pk_collectionID,
+      collectionName: collectionName,
+      imprintColorsIDList: imprintColorsIDList.map(color => color.id),
+      update_vendor_imprint_collection: true,
+    };
+
+    this.updatedCollectionData.isUpdateCollectionLoader = true;
+    this._VendorsService.putVendorsData(payload)
+      .pipe(
+        takeUntil(this._unsubscribeAll),
+        finalize(() => {
+          this.updatedCollectionData.isUpdateCollectionLoader = false;
+          this._changeDetectorRef.markForCheck();
+        })
+      )
+      .subscribe(res => {
+        if (res["success"]) {
+          this.updatedCollectionData.colorsData = imprintColorsIDList.map(color => color.data);
+          this._VendorsService.snackBar(res["message"]);
+        }
+      });
+
   }
   /**
      * On destroy
