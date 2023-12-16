@@ -76,7 +76,7 @@ export class StatAnalysisComponent implements OnInit, OnDestroy {
           data: [],
         },
         {
-          name: "Requests",
+          name: "Emails Sent",
           data: [],
         }
       ],
