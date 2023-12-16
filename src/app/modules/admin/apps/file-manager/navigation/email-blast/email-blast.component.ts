@@ -91,13 +91,13 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
   productsData: any;
 
   featureSelectedProducts: any = {
-    subProductSix: {},
-    subProductFive: {},
-    subProductFour: {},
-    subProductThree: {},
-    subProductTwo: {},
-    subProductOne: {},
-    featureProduct: {},
+    subProductSix: '',
+    subProductFive: '',
+    subProductFour: '',
+    subProductThree: '',
+    subProductTwo: '',
+    subProductOne: '',
+    featureProduct: '',
     actionTitle: '',
     actionText: ''
   };
@@ -135,6 +135,16 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
   @ViewChild('chipList', { static: false }) chipList: ElementRef<HTMLInputElement>;
 
   ngEmailOptIn: boolean = false;
+
+  selectedData: any = {
+    featuredProduct: '',
+    one: '',
+    two: '',
+    three: '',
+    four: '',
+    five: '',
+    six: ''
+  }
 
   selectedRecipientValue: string = 'everyone';
   incomingfile(event) {
@@ -235,7 +245,6 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
 
     // return;
     const { pk_storeID, storeName, storeURL, protocol } = this.selectedStore;
-    console.log(this.selectedStore);
     const { heading } = this.sendEmailForm.getRawValue();
     if (heading.trim() === '') {
       this._snackBar.open("Subject is required", '', {
@@ -334,6 +343,7 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
         verticalPosition: 'bottom',
         duration: 3000
       });
+
       this.resetMainScreen();
       this.storeProductLoader = false;
       this._changeDetectorRef.markForCheck();
@@ -362,19 +372,11 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
       });
       return;
     }
-    if(this.featureSelectedProducts.actionText?.length > 1400) {
-      this._snackBar.open("Maximum limit for Action text is 1400", '', {
-        horizontalPosition: 'center',
-        verticalPosition: 'bottom',
-        duration: 3000
-      });
-      return;
-    }
     this.selectedTemplate.name = ''
   }
 
   seeCampaigns(): void {
-    if(this.selectedTemplate?.length === 0) {
+    if (this.selectedTemplate?.length === 0) {
       this._snackBar.open("Please select template", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
@@ -382,6 +384,9 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
       });
       return;
     }
+
+    this.reset();
+
     this.presentationScreen = "Form Screen";
     if (this.selectedTemplate.name == 'Featured Products V2') {
 
@@ -799,7 +804,25 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
 
   resetMainScreen() {
     this.presentationScreen = 'Dropdowns';
-    this.selectedTemplate = []
+    this.getEmailTemplate('get');
+    this.selectedTemplate = [];
+    this.featureSelectedProducts = {
+      subProductSix: '',
+      subProductFive: '',
+      subProductFour: '',
+      subProductThree: '',
+      subProductTwo: '',
+      subProductOne: '',
+      featureProduct: '',
+      actionTitle: '',
+      actionText: ''
+    };
+    this.reset()
+  }
+
+  reset() {
+    this.emailsData = [];
+    this.sendEmailForm.reset();
   }
 
   viewTemplateType() {
