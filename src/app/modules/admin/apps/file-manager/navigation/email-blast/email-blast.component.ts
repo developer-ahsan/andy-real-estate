@@ -43,7 +43,7 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
     "Segmented target files",
   ];
   storeProductLoader: boolean = false;
-  selectedProduct:any='3M Promotional Markets Dept';
+  selectedProduct: any = '3M Promotional Markets Dept';
   checked = false;
   drawerOpened: boolean = false;
   selectedIndex: any;
@@ -234,9 +234,10 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
   sendProductFeatureEmail() {
 
     // return;
-    const { pk_storeID, storeName, storeURL } = this.selectedStore;
+    const { pk_storeID, storeName, storeURL, protocol } = this.selectedStore;
+    console.log(this.selectedStore);
     const { heading } = this.sendEmailForm.getRawValue();
-    if (!heading) {
+    if (heading.trim() === '') {
       this._snackBar.open("Subject is required", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
@@ -273,7 +274,7 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
           store_product_id: this.featureSelectedProducts.featureProduct.productId,
           sub_title: `${this.featureSelectedProducts.featureProduct.price}`,
           description: this.featureSelectedProducts.featureProduct.description,
-          url: `${storeURL}${this.featureSelectedProducts.featureProduct.permalink}`,
+          url: `${protocol}${storeURL}${this.featureSelectedProducts.featureProduct.permalink}`,
           image_url: ""
         },
         product_1: {
@@ -281,7 +282,7 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
           store_product_id: this.isEmpty(this.featureSelectedProducts.subProductOne) ? null : this.featureSelectedProducts.subProductOne.productId,
           sub_title: this.isEmpty(this.featureSelectedProducts.subProductOne) ? null : `${this.featureSelectedProducts.subProductOne.price}`,
           description: this.isEmpty(this.featureSelectedProducts.subProductOne) ? null : this.featureSelectedProducts.subProductOne.description,
-          url: this.isEmpty(this.featureSelectedProducts.subProductOne) ? null : `${storeURL}${this.featureSelectedProducts.subProductOne.permalink}`,
+          url: this.isEmpty(this.featureSelectedProducts.subProductOne) ? null : `${protocol}${storeURL}${this.featureSelectedProducts.subProductOne.permalink}`,
           image_url: this.isEmpty(this.featureSelectedProducts.subProductOne) ? null : ""
         },
         product_2: {
@@ -289,7 +290,7 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
           store_product_id: this.isEmpty(this.featureSelectedProducts.subProductTwo) ? null : this.featureSelectedProducts.subProductTwo.productId,
           sub_title: this.isEmpty(this.featureSelectedProducts.subProductTwo) ? null : `${this.featureSelectedProducts.subProductTwo.price}`,
           description: this.isEmpty(this.featureSelectedProducts.subProductTwo) ? null : this.featureSelectedProducts.subProductTwo.description,
-          url: this.isEmpty(this.featureSelectedProducts.subProductTwo) ? null : `${storeURL}${this.featureSelectedProducts.subProductTwo.permalink}`,
+          url: this.isEmpty(this.featureSelectedProducts.subProductTwo) ? null : `${protocol}${storeURL}${this.featureSelectedProducts.subProductTwo.permalink}`,
           image_url: this.isEmpty(this.featureSelectedProducts.subProductTwo) ? null : ""
         },
         product_3: {
@@ -297,7 +298,7 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
           store_product_id: this.isEmpty(this.featureSelectedProducts.subProductThree) ? null : this.featureSelectedProducts.subProductThree.productId,
           sub_title: this.isEmpty(this.featureSelectedProducts.subProductThree) ? null : `${this.featureSelectedProducts.subProductThree.price}`,
           description: this.isEmpty(this.featureSelectedProducts.subProductThree) ? null : this.featureSelectedProducts.subProductThree.description,
-          url: this.isEmpty(this.featureSelectedProducts.subProductOne) ? null : `${storeURL}${this.featureSelectedProducts.subProductThree.permalink}`,
+          url: this.isEmpty(this.featureSelectedProducts.subProductOne) ? null : `${protocol}${storeURL}${this.featureSelectedProducts.subProductThree.permalink}`,
           image_url: this.isEmpty(this.featureSelectedProducts.subProductThree) ? null : ""
         },
         product_4: {
@@ -305,7 +306,7 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
           store_product_id: this.isEmpty(this.featureSelectedProducts.subProductFour) ? null : this.featureSelectedProducts.subProductFour.productId,
           sub_title: this.isEmpty(this.featureSelectedProducts.subProductFour) ? null : `${this.featureSelectedProducts.subProductFour.price}`,
           description: this.isEmpty(this.featureSelectedProducts.subProductFour) ? null : this.featureSelectedProducts.subProductFour.description,
-          url: this.isEmpty(this.featureSelectedProducts.subProductFour) ? null : `${storeURL}${this.featureSelectedProducts.subProductFour.permalink}`,
+          url: this.isEmpty(this.featureSelectedProducts.subProductFour) ? null : `${protocol}${storeURL}${this.featureSelectedProducts.subProductFour.permalink}`,
           image_url: this.isEmpty(this.featureSelectedProducts.subProductFour) ? null : ""
         },
         product_5: {
@@ -313,7 +314,7 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
           store_product_id: this.isEmpty(this.featureSelectedProducts.subProductFive) ? null : this.featureSelectedProducts.subProductFive.productId,
           sub_title: this.isEmpty(this.featureSelectedProducts.subProductFive) ? null : `${this.featureSelectedProducts.subProductFive.price}`,
           description: this.isEmpty(this.featureSelectedProducts.subProductFive) ? null : this.featureSelectedProducts.subProductFive.description,
-          url: this.isEmpty(this.featureSelectedProducts.subProductFive) ? null : `${storeURL}${this.featureSelectedProducts.subProductFive.permalink}`,
+          url: this.isEmpty(this.featureSelectedProducts.subProductFive) ? null : `${protocol}${storeURL}${this.featureSelectedProducts.subProductFive.permalink}`,
           image_url: this.isEmpty(this.featureSelectedProducts.subProductFive) ? null : ""
         },
         product_6: {
@@ -321,7 +322,7 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
           store_product_id: this.isEmpty(this.featureSelectedProducts.subProductSix) ? null : this.featureSelectedProducts.subProductSix.productId,
           sub_title: this.isEmpty(this.featureSelectedProducts.subProductSix) ? null : `${this.featureSelectedProducts.subProductSix.price}`,
           description: this.isEmpty(this.featureSelectedProducts.subProductSix) ? null : this.featureSelectedProducts.subProductSix.description,
-          url: this.isEmpty(this.featureSelectedProducts.subProductSix) ? null : `${storeURL}${this.featureSelectedProducts.subProductSix.permalink}`,
+          url: this.isEmpty(this.featureSelectedProducts.subProductSix) ? null : `${protocol}${storeURL}${this.featureSelectedProducts.subProductSix.permalink}`,
           image_url: this.isEmpty(this.featureSelectedProducts.subProductSix) ? null : ""
         }
       }
@@ -333,6 +334,7 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
         verticalPosition: 'bottom',
         duration: 3000
       });
+      this.resetMainScreen();
       this.storeProductLoader = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
@@ -360,10 +362,26 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
       });
       return;
     }
+    if(this.featureSelectedProducts.actionText?.length > 1400) {
+      this._snackBar.open("Maximum limit for Action text is 1400", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
+      return;
+    }
     this.selectedTemplate.name = ''
   }
-  
+
   seeCampaigns(): void {
+    if(this.selectedTemplate?.length === 0) {
+      this._snackBar.open("Please select template", '', {
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        duration: 3000
+      });
+      return;
+    }
     this.presentationScreen = "Form Screen";
     if (this.selectedTemplate.name == 'Featured Products V2') {
 
@@ -689,7 +707,7 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
       });
       return;
     }
-    if (!heading) {
+    if (heading.trim() === '') {
       this._snackBar.open("Subject is required", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
@@ -697,7 +715,7 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
       });
       return;
     }
-    if (!message) {
+    if (message.trim() === '') {
       this._snackBar.open("Message is required", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
@@ -780,6 +798,11 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
   backToFormScreen() {
     this.presentationScreen = 'Form Screen';
   };
+
+  resetMainScreen() {
+    this.presentationScreen = 'Dropdowns';
+    this.selectedTemplate = []
+  }
 
   viewTemplateType() {
     this.presentationScreen = 'Dropdowns';
