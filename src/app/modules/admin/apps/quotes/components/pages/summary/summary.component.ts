@@ -145,12 +145,9 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
     if (this.selectedQuoteDetail.blnEProcurement) {
       let blnApproved = true;
 
-      for (let obj of this.imprintStatuses) {
-        if (obj["fk_statusID"] === 7 || obj["fk_statusID"] === 9) {
-          blnApproved = false;
-          break;
-        }
-      }
+      blnApproved = !this.imprintStatuses.some(obj =>
+        obj["fk_statusID"] === 7 || obj["fk_statusID"] === 9
+      );
 
       if (blnApproved) {
         this.strReturn.statusID = 4;
@@ -163,22 +160,11 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
         );
 
         if (!blnArtApprovalReceived) {
-          let blnProofAwaiting = false;
-          // = this.imprintStatuses.some(obj =>
-          //   (obj["fk_statusID"] === 3 || obj["fk_statusID"] === 4 || obj["fk_statusID"] === 13) &&
-          //   (!obj["fk_artApprovalContactID"] || !obj["fk_storeUserApprovalContactID"])
-          // );
-
-          for (let obj of this.imprintStatuses) {
-            if (
-              (obj["fk_statusID"] === 3 || obj["fk_statusID"] === 4 || obj["fk_statusID"] === 13) &&
-              !obj["fk_artApprovalContactID"] &&
-              !obj["fk_storeUserApprovalContactID"]
-            ) {
-              blnProofAwaiting = true;
-              break;
-            }
-          }
+          let blnProofAwaiting = this.imprintStatuses.some(obj =>
+            (obj["fk_statusID"] === 3 || obj["fk_statusID"] === 4 || obj["fk_statusID"] === 13) &&
+            !obj["fk_artApprovalContactID"] &&
+            !obj["fk_storeUserApprovalContactID"]
+        );
 
           if (blnProofAwaiting) {
             this.strReturn.statusID = 2;

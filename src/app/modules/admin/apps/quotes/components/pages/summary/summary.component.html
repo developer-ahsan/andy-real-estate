@@ -79,14 +79,14 @@
                         <div class="col-md-2 col-6 p-1 ">
                             <div class="h-24 p-2 tracker" [ngClass]="{'tracker-active': strReturn.statusID >= 1}">
                                 <h1>1</h1>
-                                Quote Placed
+                                Quote Generated
                             </div>
                         </div>
 
                         <div class="col-md-2 col-6 p-1 ">
                             <div class="h-24 p-2 tracker" [ngClass]="{'tracker-active': strReturn.statusID >= 2}">
                                 <h1>2</h1>
-                                Proofing
+                                Proof is awaiting your approval
                             </div>
 
                         </div>
@@ -94,30 +94,30 @@
                         <div class="col-md-2 col-6 p-1 ">
                             <div class="h-24 p-2 tracker" [ngClass]="{'tracker-active': strReturn.statusID >= 3}">
                                 <h1>3</h1>
-                                Your Art Approval Received
+                                Your proof Approval Received
                             </div>
 
                         </div>
 
                         <div class="col-md-2 col-6 p-1 ">
-                            <div class="h-24 p-2 tracker" [ngClass]="{'tracker-active': strReturn.statusID >= 4}">
+                            <div class=" p-2 tracker" [ngClass]="{'tracker-active': strReturn.statusID >= 4}">
                                 <h1>4</h1>
-                                All Approvals Received
+                                Secondary Approval(s) Received - Ready For Punchout
                             </div>
 
                         </div>
 
                         <div class="col-md-2 col-6 p-1">
-                            <div class="h-24 p-2 tracker" [ngClass]="{'tracker-active': strReturn.statusID >= 5}">
+                            <div class=" p-2 tracker" [ngClass]="{'tracker-active': strReturn.statusID >= 5}">
                                 <h1>5</h1>
-                                Ready to be Converted to Order
+                                Punchout Initiated - Awaiting Purchase Order
                             </div>
                         </div>
 
                         <div class="col-md-2 col-6 p-1">
                             <div class="h-24 p-2 tracker" [ngClass]="{'tracker-active': strReturn.statusID >= 6}">
                                 <h1>6</h1>
-                                Converted
+                                Purchase Order Received
                             </div>
                         </div>
                         <div class="col-12 text-center">
