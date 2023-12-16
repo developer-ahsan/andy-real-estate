@@ -145,14 +145,14 @@
                 <mat-label>
                   <span class="font-bold">Feature Product:</span>
                 </mat-label>
-                <mat-select disableRipple>
+                <mat-select [(ngModel)]="featureSelectedProducts.featureProduct" disableRipple>
                   <ng-container *ngFor="let product of productsData">
                     <mat-option [value]="0" class="font-bold">
                       {{product.companyName}}
                     </mat-option>
                     <mat-option (click)="setProduct(item, 'featureProduct')" [value]="item"
                       *ngFor="let item of product.splittedData">
-                      {{ item.productName }}
+                      ({{item.productId}}) {{ item.productName }}
                     </mat-option>
                   </ng-container>
                 </mat-select>
@@ -163,14 +163,14 @@
                 <mat-label>
                   <span class="font-bold">Sub Product 1:</span>
                 </mat-label>
-                <mat-select disableRipple>
+                <mat-select [(ngModel)]="featureSelectedProducts.subProductOne" disableRipple>
                   <ng-container *ngFor="let product of productsData">
                     <mat-option [value]="0" class="font-bold">
                       {{product.companyName}}
                     </mat-option>
                     <mat-option (click)="setProduct(item, 'subProductOne')" [value]="item"
                       *ngFor="let item of product.splittedData">
-                      {{ item.productName }}
+                      ({{item.productId}}) {{ item.productName }}
                     </mat-option>
                   </ng-container>
                 </mat-select>
@@ -182,14 +182,14 @@
                 <mat-label>
                   <span class="font-bold">Sub Product 2:</span>
                 </mat-label>
-                <mat-select disableRipple>
+                <mat-select [(ngModel)]="featureSelectedProducts.subProductTwo" disableRipple>
                   <ng-container *ngFor="let product of productsData">
                     <mat-option [value]="0" class="font-bold">
                       {{product.companyName}}
                     </mat-option>
                     <mat-option (click)="setProduct(item, 'subProductTwo')" [value]="item"
                       *ngFor="let item of product.splittedData">
-                      {{ item.productName }}
+                      ({{item.productId}}) {{ item.productName }}
                     </mat-option>
                   </ng-container>
                 </mat-select>
@@ -200,14 +200,14 @@
                 <mat-label>
                   <span class="font-bold">Sub Product 3:</span>
                 </mat-label>
-                <mat-select disableRipple>
+                <mat-select [(ngModel)]="featureSelectedProducts.subProductThree" disableRipple>
                   <ng-container *ngFor="let product of productsData">
                     <mat-option [value]="0" class="font-bold">
                       {{product.companyName}}
                     </mat-option>
                     <mat-option (click)="setProduct(item, 'subProductThree')" [value]="item"
                       *ngFor="let item of product.splittedData">
-                      {{ item.productName }}
+                      ({{item.productId}}) {{ item.productName }}
                     </mat-option>
                   </ng-container>
                 </mat-select>
@@ -218,14 +218,14 @@
                 <mat-label>
                   <span class="font-bold">Sub Product 4:</span>
                 </mat-label>
-                <mat-select disableRipple>
+                <mat-select [(ngModel)]="featureSelectedProducts.subProductFour" disableRipple>
                   <ng-container *ngFor="let product of productsData">
                     <mat-option [value]="0" class="font-bold">
                       {{product.companyName}}
                     </mat-option>
                     <mat-option (click)="setProduct(item, 'subProductFour')" [value]="item"
                       *ngFor="let item of product.splittedData">
-                      {{ item.productName }}
+                      ({{item.productId}}) {{ item.productName }}
                     </mat-option>
                   </ng-container>
                 </mat-select>
@@ -236,14 +236,14 @@
                 <mat-label>
                   <span class="font-bold">Sub Product 5:</span>
                 </mat-label>
-                <mat-select disableRipple>
+                <mat-select [(ngModel)]="featureSelectedProducts.subProductFive" disableRipple>
                   <ng-container *ngFor="let product of productsData">
                     <mat-option [value]="0" class="font-bold">
                       {{product.companyName}}
                     </mat-option>
                     <mat-option (click)="setProduct(item, 'subProductFive')" [value]="item"
                       *ngFor="let item of product.splittedData">
-                      {{ item.productName }}
+                      ({{item.productId}}) {{ item.productName }}
                     </mat-option>
                   </ng-container>
                 </mat-select>
@@ -253,14 +253,14 @@
                 <mat-label>
                   <span class="font-bold">Sub Product 6:</span>
                 </mat-label>
-                <mat-select disableRipple>
+                <mat-select [(ngModel)]="featureSelectedProducts.subProductSix" disableRipple>
                   <ng-container *ngFor="let product of productsData">
                     <mat-option [value]="0" class="font-bold">
                       {{product.companyName}}
                     </mat-option>
                     <mat-option (click)="setProduct(item, 'subProductSix')" [value]="item"
                       *ngFor="let item of product.splittedData">
-                      {{ item.productName }}
+                      ({{item.productId}}) {{ item.productName }}
                     </mat-option>
                   </ng-container>
                 </mat-select>
