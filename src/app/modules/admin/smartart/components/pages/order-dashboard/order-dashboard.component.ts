@@ -72,6 +72,7 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
   ngFilterProduct = '';
   isFilterLoader: boolean = false;
   smartArtUser: any = JSON.parse(sessionStorage.getItem('smartArt'));
+  userData: any = JSON.parse(localStorage.getItem('userDetails'));
   paramsData: any;
   // BUlk Update
   status_id = 2;
@@ -94,6 +95,7 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this._activeRoute.queryParams.subscribe(res => {
+      this.page = 1;
       this.paramsData = res;
       this.isLoading = true;
       this.getSmartArtList(1, 'get', '');
@@ -219,7 +221,7 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
         this.drawer.toggle();
       }
       res["data"].forEach(element => {
-        element.ageInHours = Math.floor(element.age / 60);
+        element.ageInHours = Math.round(element.age / 60);
         if (element.viewProofDetails) {
           const proof = element.viewProofDetails.split(';');
           element.proofDetails = proof[0].split(',');
@@ -276,7 +278,6 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
   getNextData(event) {
     this.checkAll = false;
     const { previousPageIndex, pageIndex } = event;
-
     if (pageIndex > previousPageIndex) {
       this.page++;
     } else {
@@ -379,16 +380,15 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
     });
   }
   // Update Claim
-  updateClaim(item, check) {
+  updateClaim(item, check, confirm) {
     this.claimItem = item;
     this.claimCheck = check;
-    if (check) {
-      if (!item.fk_smartArtDesignerClaimID) {
-        this.ClaimUnClaimItem();
-      } else {
-        this.isClaimedModal = true;
-        this._changeDetectorRef.markForCheck();
-      }
+    if (confirm) {
+      this._commonService.showConfirmation('This item is already claimed by someone else.  Are you sure you want to claim this?', (confirmed) => {
+        if (confirmed) {
+          this.ClaimUnClaimItem();
+        }
+      });
     } else {
       this.ClaimUnClaimItem();
     }
@@ -401,7 +401,7 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
     this.claimItem.isClaimLoader = true;
     let claimID = null;
     if (this.claimCheck) {
-      claimID = Number(this.smartArtUser.adminUserID)
+      claimID = Number(this.userData.pk_userID)
     } else {
       claimID = null;
     }

@@ -43,48 +43,38 @@
                                             'MM/dd/yyyy | hh:mm a'}}</span>
                                         <span *ngIf="lastProofData == 'N/A'">{{lastProofData}}</span>
                                     </p>
-                                    <!-- If Not claimed already -->
-                                    <div *ngIf="!orderData.fk_smartArtDesignerClaimID">
-                                        <button type="button"
-                                            class="inline-flex items-center gap-x-1.5 rounded-md bg-green-400 px-2.5 py-1.5 text-sm font-semibold text-white shadow-smfocus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-                                            [disabled]="orderData?.isClaimLoader" matTooltip="Claim this item"
-                                            (click)="updateClaim(orderData, true)">
+                                    <!-- Claim Unclaim -->
+                                    <div *ngIf="orderData.fk_smartArtDesignerClaimID;else claimItem">
+                                        <ng-container
+                                            *ngIf="orderData.fk_smartArtDesignerClaimID != userDetails.pk_userID">
+                                            <div class="alert alert-warning small">
+                                                <span class="fa fa-exclamation-circle"></span> Claimed:
+                                                {{orderData.claimedUserName}}
+                                            </div>
+                                        </ng-container>
+                                        <ng-container
+                                            *ngIf="orderData.fk_smartArtDesignerClaimID == userDetails.pk_userID">
+                                            <button (click)="updateClaim(orderData, false)" type="button"
+                                                [disabled]="orderData?.isClaimLoader" matTooltip="Unclaim this item"
+                                                class="text-white bg-red-500 px-2.5 py-1.5 text-md rounded">
+                                                <span *ngIf="!orderData?.isClaimLoader">Unclaim</span>
+                                                <mat-progress-spinner *ngIf="orderData?.isClaimLoader" [diameter]="24"
+                                                    [mode]="'indeterminate'">
+                                                </mat-progress-spinner>
+                                            </button>
+                                        </ng-container>
+                                    </div>
+                                    <ng-template #claimItem>
+                                        <button (click)="updateClaim(orderData, true)" type="button"
+                                            matTooltip="Unclaim this item"
+                                            class="text-white bg-red-500 px-2.5 py-1.5 text-md rounded"
+                                            [disabled]="orderData?.isClaimLoader">
                                             <span *ngIf="!orderData?.isClaimLoader">Claim</span>
                                             <mat-progress-spinner *ngIf="orderData?.isClaimLoader" [diameter]="24"
                                                 [mode]="'indeterminate'">
                                             </mat-progress-spinner>
                                         </button>
-                                        <!-- spinner -->
-                                    </div>
-                                    <!-- If Already Claimed -->
-                                    <div *ngIf="orderData.fk_smartArtDesignerClaimID">
-                                        <button type="button"
-                                            class="inline-flex items-center gap-x-1.5 rounded-md bg-red-400 px-2.5 py-1.5 text-sm font-semibold text-white shadow-smfocus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-                                            [ngClass]="{ 'bg-red-400': !orderData.blnAttention, 'bg-green-400': orderData.blnAttention}"
-                                            [disabled]="orderData?.isClaimLoader">
-                                            <!-- Claim -->
-                                            <span matTooltip="Claim this item"
-                                                *ngIf="!orderData.fk_smartArtDesignerClaimID && !orderData?.isClaimLoader"
-                                                (click)="updateClaim(orderData, true)">Claim</span>
-                                            <!-- Unclaim this item if  claimed iD == logged in smart-->
-                                            <span matTooltip="Unclaim this item"
-                                                *ngIf="orderData.fk_smartArtDesignerClaimID == smartArtUser.adminUserID && !orderData?.isClaimLoader"
-                                                (click)="updateClaim(orderData, false)">Unclaim</span>
-                                            <!-- if already claimed but not by samrt art logged in user -->
-                                            <!-- <span
-                                                *ngIf="orderData.fk_smartArtDesignerClaimID != smartArtUser.adminUserID && !orderData?.isClaimLoader">
-                                                Claimed: {{orderData.claimedUserName}}
-                                                <br>
-                                            </span> -->
-                                            <span matTooltip="Claim this item"
-                                                *ngIf="orderData.fk_smartArtDesignerClaimID != smartArtUser.adminUserID && !orderData?.isClaimLoader"
-                                                (click)="updateClaim(orderData, true)">Claimed:
-                                                {{orderData.claimedUserName}}</span>
-                                            <mat-progress-spinner *ngIf="orderData?.isClaimLoader" [diameter]="24"
-                                                [mode]="'indeterminate'">
-                                            </mat-progress-spinner>
-                                        </button>
-                                    </div>
+                                    </ng-template>
                                 </div>
 
                                 <!-- <button *ngIf="!lastProofLoader"
@@ -109,8 +99,8 @@
                                 </div>
                                 <div *ngIf="orderData.sessionArtworkBillingStudentOrgCode">
                                     <b>SABO: </b>
-                                    {{orderData.sessionArtworkAttributeName}}
-                                    ({{orderData.sessionArtworkBillingStudentOrgCode}})<br />
+                                    {{orderData?.sessionArtworkBillingStudentOrgName}}
+                                    ({{orderData?.sessionArtworkBillingStudentOrgCode}})<br />
                                 </div>
                                 <div *ngIf="orderData.sessionArtworkrutgersStudentType">
                                     <b>Campus:</b>

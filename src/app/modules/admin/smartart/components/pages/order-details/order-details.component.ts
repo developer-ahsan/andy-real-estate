@@ -965,7 +965,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
     item.isClaimLoader = true;
     let claimID = null;
     if (check) {
-      claimID = Number(this.smartArtUser.adminUserID)
+      claimID = Number(this.userDetails.pk_userID)
     } else {
       claimID = null;
     }
