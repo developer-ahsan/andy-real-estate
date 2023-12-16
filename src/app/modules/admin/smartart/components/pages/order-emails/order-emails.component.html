@@ -42,49 +42,76 @@
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                             <div *ngIf="orderData.length > 0">
-                                <span class="font-medium">Product: </span>
-                                <span [innerHTML]="orderData[0]?.productName"></span>
-                                <br>
-                                <span class="font-medium">RECIPIENT: </span>
-                                <mat-form-field class="w-full">
-                                    <mat-label>Proof Contact</mat-label>
-                                    <mat-select matInput [(ngModel)]="selectedContact">
-                                        <mat-option [value]="orderData[0].billingEmail">{{orderData[0].billingName}} -
-                                            {{orderData[0].billingEmail}}</mat-option>
-                                        <mat-option *ngFor="let contact of contactProofs"
-                                            [value]="contact.email">{{contact.firstName
-                                            + ' ' +
-                                            contact.lastName}} - {{contact.email}}</mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                                <div class="text-center font-medium">OR</div>
-                                <span class="font-medium"> Manual Email: </span>
-                                <mat-form-field class="w-full">
-                                    <input matInput [(ngModel)]="ngTo">
-                                    <mat-hint>Entering a manual email address will override any email in the list
-                                        above.</mat-hint>
-                                </mat-form-field>
-                                <span class="font-medium"> From: </span>
-                                <mat-form-field class="w-full">
-                                    <input matInput value="{{orderData[0]?.FROM_EMAIL}}">
-                                </mat-form-field>
-                                <span class="font-medium"> Subject: </span>
-                                <mat-form-field class="w-full">
-                                    <input matInput [(ngModel)]="orderData[0].SUBJECT">
-                                </mat-form-field>
-                                <span class="font-medium"> Message: </span>
-                                <mat-form-field class="w-full">
-                                    <textarea matInput [(ngModel)]="ngMessage"></textarea>
-                                </mat-form-field>
-                                <div>
-                                    <button class="min-w-40 mt-2 btn buttonComment hover:bg-gray-200"
-                                        [disabled]="sendEmailLoader" (click)="sendEmailRequest()">
-                                        <span *ngIf="!sendEmailLoader">Send Email</span>
-                                        <mat-progress-spinner *ngIf="sendEmailLoader" [diameter]="24"
-                                            [mode]="'indeterminate'">
-                                        </mat-progress-spinner>
-                                    </button>
+                                <!-- Session Master -->
+                                <div *ngIf="smartArtUser.blnMaster;else elseEmail">
+                                    <span>Product: </span>
+                                    <span class="font-bold" [innerHTML]="orderData[0]?.product"></span>
+                                    <br>
+                                    <span class="font-medium">RECIPIENT: </span>
+                                    <mat-form-field class="w-full">
+                                        <mat-label>Proof Contact</mat-label>
+                                        <mat-select matInput [(ngModel)]="selectedContact">
+                                            <mat-option [value]="orderData[0].billingEmail">{{orderData[0].billingName}}
+                                                -
+                                                {{orderData[0].billingEmail}}</mat-option>
+                                            <mat-option *ngFor="let contact of contactProofs"
+                                                [value]="contact.email">{{contact.firstName
+                                                + ' ' +
+                                                contact.lastName}} - {{contact.email}}</mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                    <div class="text-center font-medium">OR</div>
+                                    <span class="font-medium"> Manual Email: </span>
+                                    <mat-form-field class="w-full">
+                                        <input matInput [(ngModel)]="ngTo">
+                                        <mat-hint>Entering a manual email address will override any email in the list
+                                            above.</mat-hint>
+                                    </mat-form-field>
+                                    <span class="font-medium"> From: </span>
+                                    <mat-form-field class="w-full">
+                                        <input matInput [(ngModel)]="ngFrom" value="{{orderData[0]?.FROM_EMAIL}}">
+                                    </mat-form-field>
+                                    <span class="font-medium"> Subject: </span>
+                                    <mat-form-field class="w-full">
+                                        <input matInput [(ngModel)]="orderData[0].SUBJECT">
+                                    </mat-form-field>
+                                    <span class="font-medium"> Message: </span>
+                                    <mat-form-field class="w-full">
+                                        <textarea matInput [(ngModel)]="ngMessage"></textarea>
+                                    </mat-form-field>
+                                    <div>
+                                        <button class="min-w-40 mt-2 btn buttonComment hover:bg-gray-200"
+                                            [disabled]="sendEmailLoader" (click)="sendEmailRequest()">
+                                            <span *ngIf="!sendEmailLoader">Send Email</span>
+                                            <mat-progress-spinner *ngIf="sendEmailLoader" [diameter]="24"
+                                                [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                    </div>
                                 </div>
+                                <ng-template #elseEmail>
+                                    <span>Product: </span>
+                                    <span class="font-bold" [innerHTML]="orderData[0]?.product"></span>
+                                    <br>
+                                    <p>From: artwork@{{orderData[0]?.storeName}}</p>
+                                    <span class="font-medium"> Subject: </span>
+                                    <mat-form-field class="w-full">
+                                        <input matInput [(ngModel)]="orderData[0].SUBJECT">
+                                    </mat-form-field>
+                                    <span class="font-medium"> Message: </span>
+                                    <mat-form-field class="w-full">
+                                        <textarea matInput [(ngModel)]="ngMessage"></textarea>
+                                    </mat-form-field>
+                                    <div>
+                                        <button class="min-w-40 mt-2 btn buttonComment hover:bg-gray-200"
+                                            [disabled]="sendEmailLoader" (click)="sendEmailRequest()">
+                                            <span *ngIf="!sendEmailLoader">Send Email</span>
+                                            <mat-progress-spinner *ngIf="sendEmailLoader" [diameter]="24"
+                                                [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                    </div>
+                                </ng-template>
                             </div>
                         </mat-expansion-panel>
                     </mat-accordion>

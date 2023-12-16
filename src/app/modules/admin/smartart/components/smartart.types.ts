@@ -272,6 +272,7 @@ export interface SmartartImprintStatusUpdate {
 
 export interface SmartartImprintStatusUpdate {
     orderLineID: number;
+    storePrimaryHighlight: string;
     imprintID: number;
     userID: number;
     orderLineImprintID: number;

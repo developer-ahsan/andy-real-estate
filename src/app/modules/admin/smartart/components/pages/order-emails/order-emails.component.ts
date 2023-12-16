@@ -31,6 +31,8 @@ export class SmartartOrderEmailComponent implements OnInit, OnDestroy {
   ngMessage = '';
   selectedContact: any;
   contactProofs = [];
+  smartArtUser: any = JSON.parse(sessionStorage.getItem('smartArt'));
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _authService: AuthService,

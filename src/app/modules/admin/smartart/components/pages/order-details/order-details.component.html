@@ -94,10 +94,12 @@
                         <mat-expansion-panel [expanded]="true">
                             <mat-expansion-panel-header>
                                 <mat-panel-title>
-                                    Company Information
+                                    <span *ngIf="smartArtUser.blnMaster">Company Information</span>
+                                    <span *ngIf="!smartArtUser.blnMaster">Contact Information</span>
+
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
-                            <div>
+                            <div *ngIf="smartArtUser.blnMaster">
                                 <div><b>Company name:</b> {{orderData?.companyInformationName}}</div>
                                 <div *ngIf="orderData?.fk_companyProfileID"><b>Location: </b>
                                     <span>{{orderData?.companyProfileName}}</span>
@@ -105,10 +107,29 @@
                                         {{orderData?.storeUserDepartmentsLocationName}} -
                                         {{orderData?.storeUserDepartmentsDepartmentName}}</span>
                                 </div>
-                                <div><b>Name:</b> {{orderData.billingName}}</div>
+                                <div *ngIf="orderData.sessionArtworkBillingStudentOrgCode">
+                                    <b>SABO: </b>
+                                    {{orderData.sessionArtworkAttributeName}}
+                                    ({{orderData.sessionArtworkBillingStudentOrgCode}})<br />
+                                </div>
+                                <div *ngIf="orderData.sessionArtworkrutgersStudentType">
+                                    <b>Campus:</b>
+                                    {{orderData.sessionArtworkrutgersStudentType}}<br />
+                                </div>
+                                <div><b>Name:</b> {{orderData.sessionArtworkFirstName + ' ' +
+                                    orderData.sessionArtworkLastName}}</div>
                                 <div><b>Company:</b> {{orderData.companyInformationName}}</div>
-                                <div><b>Address:</b> {{orderData.billingAddress}} {{orderData.billingCity}}</div>
-                                <div><b>Phone:</b> {{orderData.billingPhone}}</div>
+                                <div><b>Address:</b>
+                                    {{orderData.sessionArtworkAddress1[0]}}
+                                    <span *ngIf="orderData.sessionArtworkAddress1[1]">
+                                        {{orderData.sessionArtworkAddress1[1]}}<br />
+                                    </span>
+                                    {{orderData.sessionArtworkCity}}, {{orderData.sessionArtworkState}}
+                                    {{orderData.sessionArtworkZipCode}}<br />
+                                </div>
+                                <div><b>Phone:</b> {{orderData.sessionArtworkDayPhone}}</div>
+                                <div *ngIf="orderData.sessionArtworkDayFax"><b>Fax:</b>
+                                    {{orderData.sessionArtworkDayFax}}</div>
                                 <div><b>Email:</b>
                                     <!-- <div *ngIf="orderData.sessionProofEmails.length > 0">
                                         <p *ngFor="let email of orderData.sessionProofEmails">{{email}}</p>
@@ -123,6 +144,31 @@
                                         Notes</a>
                                     <span *ngIf="!orderData.sessionArtworkDesignerNotes">None</span>
                                 </div>
+                                <div class="space-y-1">
+                                    <button class="min-w-60 btn buttonComment hover:bg-gray-200"
+                                        (click)="customerEmail()">Email Customer</button>
+                                    <br>
+                                    <button [disabled]="isAutoRequestLoader" (click)="senAutoArtRequest()"
+                                        class="min-w-60 btn buttonComment hover:bg-gray-200">
+                                        <span *ngIf="!isAutoRequestLoader">Auto Art Request</span>
+                                        <mat-progress-spinner *ngIf="isAutoRequestLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                    </button>
+                                    <br>
+                                    <a class="min-w-60 btn buttonComment hover:bg-gray-200"
+                                        [routerLink]="['/apps/customers', orderData.fk_storeUserID, 'order-history']"
+                                        target="_blank">Order
+                                        History</a>
+                                </div>
+                            </div>
+                            <div *ngIf="!smartArtUser.blnMaster">
+                                Krysti Horvat<br />
+                                Manager of Creative Services<br />
+                                330.319.7202<br />
+                                <a href="mailto:artwork@{{orderData?.sessionArtworkStoreName}}"
+                                    class="text-lowercase">artwork@{{orderData?.sessionArtworkStoreName}}</a>
+                                <br />
                                 <div class="space-y-1">
                                     <button class="min-w-60 btn buttonComment hover:bg-gray-200"
                                         (click)="customerEmail()">Email Customer</button>
@@ -207,7 +253,11 @@
                                 <div>
                                     <mat-checkbox
                                         [(ngModel)]="orderData.sessionArtwork_blnIgnoreAdditionalArtEmails"><b>Ignore
-                                            additional proof emails</b></mat-checkbox>
+                                            additional proof emails</b>
+                                        <mat-icon class="icon-size-4 ml-1" matTooltip="i.e. licensing forms, etc."
+                                            [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+
+                                    </mat-checkbox>
                                 </div>
                                 <div *ngIf="orderData.blnAdditionalArtApproval">
                                     <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full min-w-50">
@@ -258,7 +308,7 @@
                                         <mat-progress-spinner [diameter]="24" [mode]="'indeterminate'">
                                         </mat-progress-spinner>
                                     </div>
-                                    <div *ngIf="!artWorkLoader">
+                                    <div *ngIf="!artWorkLoader && artworktemplatesData.length > 0">
                                         <b>Artwork Templates:</b>
                                         <span *ngIf="artworktemplatesData.length == 0"> NONE</span>
                                         <br>
@@ -266,7 +316,6 @@
                                             <a target="_blank"
                                                 href="https://assets.consolidus.com/globalAssets/Products/ArtworkTemplates/{{item.fk_productID}}/{{item.pk_artworkTemplateID}}.{{item.extension}}">ArtworkTemplate</a>
                                         </div>
-
                                     </div>
                                 </div>
                                 <div>
@@ -575,13 +624,16 @@
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                             <div>
-                                <div class="text-center">{{ hours | number: '2.0' }}:{{ minutes | number: '2.0' }}:{{
-                                    seconds | number:
-                                    '2.0' }}</div>
-                                <mat-form-field class="w-full mt-2">
-                                    <mat-select [(ngModel)]="selectedImprint">
+                                <div class="text-center font-bold my-2">Total time so far:
+                                    {{selectedImprintForTimer.qryOrderLineImprintTime}}</div>
+                                <mat-form-field class="w-full font-bold">
+                                    <input matInput readonly
+                                        [(ngModel)]="selectedImprintForTimer.qryOrderLineImprintTime">
+                                </mat-form-field>
+                                <mat-form-field class="w-full">
+                                    <mat-select [(ngModel)]="selectedImprintForTimer">
                                         <mat-option *ngFor="let imprint of imprintdata"
-                                            [value]="imprint.pk_imprintID">({{imprint.pk_imprintID}})
+                                            [value]="imprint">({{imprint.pk_imprintID}})
                                             <span
                                                 [innerHTML]="imprint.locationName"></span>/{{imprint.decorationName}}</mat-option>
                                     </mat-select>

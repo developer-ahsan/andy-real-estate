@@ -75,6 +75,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   // Comment
   ngComment = '';
   allColors: any;
+  selectedImprintForTimer: any;
   selectedImprint: any;
   selectedImprintColor = '';
   selectedMultipleColors: any;
@@ -199,6 +200,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
 
         this.orderData.artworkEmail = this.imprintdata[0].artworkEmail;
         this.selectedImprint = this.imprintdata[0].pk_imprintID;
+        this.selectedImprintForTimer = this.imprintdata[0];
         this.selectedProofImprint = this.imprintdata[0].pk_imprintID;
         this.selectedPOComments = this.imprintdata[0].purchaseComment;
         if (this.imprintdata[0].colorNameList) {
@@ -1087,6 +1089,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       blnGroupRun: this.orderData.blnGroupRun,
       proofComments: imprint.proofComments,
       blnApproved: blnApprove,
+      storePrimaryHighlight: this.orderData.storePrimaryHighlight,
       smartArtLoggedInUserName: this.smartArtUser.firstName + ' ' + this.smartArtUser.lastName,
       update_smart_imprint_status: true
     }
