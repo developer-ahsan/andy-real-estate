@@ -14,16 +14,30 @@
             <div (click)="navigateToArtworkDetails()" class="col-lg-4 col-md-6 col-12 my-2 cursor-pointer">
                 <div class="rounded-2xl shadow bg-card flex items-center  w-full p-6 filter-info  "
                     style="height: 8rem;">
-                    <mat-icon role="img" class="icon-size-10 mr-6 {{selectedQuoteDetail.statusColor}}"
-                        svgIcon="heroicons_outline:clock"></mat-icon>
-                    <div class="flex flex-col ">
-                        <div class="text-xl font-semibold leading-tight">Artwork Status</div>
-                        <div class="text-md text-secondary font-bold {{selectedQuoteDetail.statusColor}}">
-                            <p>{{(selectedQuoteDetail?.statusName) ||
-                                not_available}}</p>
-                            <span></span>
+                    <div class="flex flex-row gap-x-2" *ngIf="imprintStatus">
+                        <mat-icon role="img" class="icon-size-10 mr-6 text-green-600"
+                            svgIcon="heroicons_outline:clock"></mat-icon>
+                        <div class="flex flex-col ">
+                            <div class="text-xl font-semibold leading-tight">Artwork Status</div>
+                            <div class="text-md text-secondary font-bold text-green-600">
+                                <p>All artwork approved</p>
+                                <span></span>
+                            </div>
                         </div>
                     </div>
+
+                    <div class="flex flex-row gap-x-2" *ngIf="!imprintStatus">
+                        <mat-icon role="img" class="icon-size-10 mr-6 text-red-600"
+                            svgIcon="heroicons_outline:clock"></mat-icon>
+                        <div class="flex flex-col ">
+                            <div class="text-xl font-semibold leading-tight">Artwork Status</div>
+                            <div class="text-md text-secondary font-bold text-red-600">
+                                <p>Artwork Pending</p>
+                                <span></span>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
             <div class="col-lg-4 col-md-6 col-12 my-2">
@@ -66,7 +80,7 @@
 
 
 
-            
+
             <!-- Quote Tracker -->
             <div class="col-12 ">
                 <div class="rounded-2xl shadow bg-card items-center w-full px-6 py-6 filter-info">
@@ -120,14 +134,11 @@
                                 Purchase Order Received
                             </div>
                         </div>
-                        <div class="col-12 text-center">
-                            <div [innerHTML]="statusText"></div>
-                        </div>
                     </div>
                     <div class="text-center mt-2" [innerHTML]="strReturn.statusDescription"></div>
                 </div>
 
-                
+
             </div>
 
 
@@ -136,7 +147,7 @@
 
 
 
-            
+
             <!-- Quote Comments -->
             <div class="my-2 col-md-6 col-12">
                 <div class=" flex flex-col lg:flex-row w-full rounded-2xl shadow bg-card">
@@ -231,7 +242,8 @@
                                         </span>
                                         <span class="flex  mt-1">
                                             <h2 class="font-bold">
-                                                Account Charge Code: <span class="fa fa-question-circle fa-lg" matTooltip="This is the account/charge code on the customer's account, and not representative of whether there is an account/charge code entered for the order.  For the order, see below."></span>
+                                                Account Charge Code: <span class="fa fa-question-circle fa-lg"
+                                                    matTooltip="This is the account/charge code on the customer's account, and not representative of whether there is an account/charge code entered for the order.  For the order, see below."></span>
                                             </h2>
                                             <h2 class="ml-2">{{selectedQuoteDetail?.accountChargeCode || not_available}}
                                             </h2>
@@ -247,7 +259,8 @@
                                             <h2 class="font-bold">
                                                 Credit terms:
                                             </h2>
-                                            <h2 class="ml-2">{{selectedQuoteDetail?.customerCreditTermDesc || not_available}}
+                                            <h2 class="ml-2">{{selectedQuoteDetail?.customerCreditTermDesc ||
+                                                not_available}}
                                             </h2>
                                         </span>
                                     </div>
@@ -304,7 +317,8 @@
                                         <div class="col-lg-6 col-md-6 col-12 my-1">
                                             <div class="row">
                                                 <div class="col-12">
-                                                    <b>Account/charge Code</b> <span class="fa fa-question-circle fa-lg" matTooltip="This is the account/charge code entered for the order, if any"></span>
+                                                    <b>Account/charge Code</b> <span class="fa fa-question-circle fa-lg"
+                                                        matTooltip="This is the account/charge code entered for the order, if any"></span>
                                                 </div>
                                                 <div class="col-12">
                                                     N/A
@@ -319,7 +333,8 @@
                                                 <div class="col-12">
                                                     {{(selectedQuoteDetail?.shippingCarrierName + '/' +
                                                     selectedQuoteDetail?.shippingServiceName) || not_available}}
-                                                    ACCT#: {{selectedQuoteDetail?.shippingCustomerAccountNumber || 'NONE'}}
+                                                    ACCT#: {{selectedQuoteDetail?.shippingCustomerAccountNumber ||
+                                                    'NONE'}}
                                                 </div>
                                             </div>
                                         </div>
