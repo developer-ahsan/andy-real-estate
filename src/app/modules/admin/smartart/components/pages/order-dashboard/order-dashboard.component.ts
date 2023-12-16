@@ -191,12 +191,14 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
       }
     }
     let filter_field = '2';
-
-    if (this.paramsData.filterField == 0) {
-      filter_field = '';
-    } else {
-      filter_field = this.paramsData.filterField;
+    if (this.paramsData.filterField) {
+      if (this.paramsData.filterField == 0) {
+        filter_field = '';
+      } else {
+        filter_field = this.paramsData.filterField;
+      }
     }
+
     let params = {
       smart_art_userID: this.smartArtUser.pk_userID,
       // smartart_list: true,
