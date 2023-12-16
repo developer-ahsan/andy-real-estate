@@ -276,8 +276,7 @@
                                                 <div
                                                     *ngIf="element.fk_smartArtDesignerClaimID != userData.pk_userID; else userClaimed">
                                                     <ng-container>
-                                                        Claimed:<br />
-                                                        {{ element.claimedUserName }}<br />
+                                                        Claimed: {{ element.claimedUserName }}<br />
                                                         <button type="button"
                                                             class="inline-flex items-center gap-x-1.5 rounded-md bg-green-400 px-2.5 py-1.5 text-sm font-semibold text-white shadow-smfocus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                                                             [disabled]="element?.isClaimLoader"
