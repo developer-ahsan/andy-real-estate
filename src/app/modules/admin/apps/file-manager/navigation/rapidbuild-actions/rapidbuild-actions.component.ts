@@ -31,7 +31,7 @@ export class RapidbuildActionsComponent implements OnInit, OnDestroy {
   selectedAction: any = 0;
   updateLoader: boolean = false;
   finalProducts: any;
-
+  totalRecords = 0;
   constructor(
     private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -69,6 +69,7 @@ export class RapidbuildActionsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this.dataSource = response["data"];
+        this.totalRecords = response["totalRecords"];
         let extractedProducts = [];
 
         this.dataSource.forEach(item => {
@@ -98,6 +99,9 @@ export class RapidbuildActionsComponent implements OnInit, OnDestroy {
           item['splittedData'] = extractedProducts
           extractedProducts = [];
         });
+        this.dataSourceLoading = false;
+        this._changeDetectorRef.markForCheck();
+      }, err => {
         this.dataSourceLoading = false;
         this._changeDetectorRef.markForCheck();
       });
@@ -165,7 +169,7 @@ export class RapidbuildActionsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((response: any) => {
         this._customerService.snackBar('Products updated successfuly');
-        if(this.selectedAction === 'delete') {
+        if (this.selectedAction === 'delete') {
           this.removeFiles();
           this.getMainStoreCall(this.page)
         }

@@ -236,7 +236,7 @@ export class FileManagerService {
         size: 20,
         page: pageNo,
       },
-    });
+    }).pipe(retry(3));
   }
 
   getStoreProductsEmailBlast(params): Observable<any[]> {

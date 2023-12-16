@@ -1095,12 +1095,12 @@
                                                                 <!-- <input type="checkbox"> -->
                                                                 <mat-checkbox class="mt-2"
                                                                     [(ngModel)]="imprint.blnIncludeApproveByDate"></mat-checkbox>
-                                                                <input class="form-control" type="date">
-                                                                <input class="form-control" type="time">
-                                                                <select class="form-control">
-                                                                    <option value="am">AM</option>
-                                                                    <option value="pm">PM</option>
-                                                                </select>
+                                                                <input class="form-control" type="date"
+                                                                    [(ngModel)]="imprint.artworkDate"
+                                                                    [disabled]="!imprint.blnIncludeApproveByDate">
+                                                                <input class="form-control" type="time"
+                                                                    [(ngModel)]="imprint.artworkTime"
+                                                                    [disabled]="!imprint.blnIncludeApproveByDate">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -2032,12 +2032,12 @@
                                                                 <!-- <input type="checkbox"> -->
                                                                 <mat-checkbox class="mt-2"
                                                                     [(ngModel)]="imprint.blnIncludeApproveByDate"></mat-checkbox>
-                                                                <input class="form-control" type="date">
-                                                                <input class="form-control" type="time">
-                                                                <select class="form-control">
-                                                                    <option value="am">AM</option>
-                                                                    <option value="pm">PM</option>
-                                                                </select>
+                                                                <input class="form-control" type="date"
+                                                                    [(ngModel)]="imprint.artworkDate"
+                                                                    [disabled]="!imprint.blnIncludeApproveByDate">
+                                                                <input class="form-control" type="time"
+                                                                    [(ngModel)]="imprint.artworkTime"
+                                                                    [disabled]="!imprint.blnIncludeApproveByDate">
                                                             </div>
                                                         </div>
                                                     </div>

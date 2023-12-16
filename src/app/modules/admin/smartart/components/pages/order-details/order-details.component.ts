@@ -312,7 +312,9 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       this.imprintdata.forEach(imprint => {
         // let status = imprint.pk_statusID;
         imprint.artworkPO = this.orderData.fk_orderID + '-' + this.paramData?.pk_orderLineID;
-        imprint.blnIncludeApproveByDate = false;
+        // imprint.blnIncludeApproveByDate = false;
+        imprint.artworkDate = '2023-12-17';
+        imprint.artworkTime = '14:00';
         imprint.proofComments = '';
         imprint.statusID = 9;
         imprint.emailRecipients = '';

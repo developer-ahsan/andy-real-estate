@@ -9,7 +9,7 @@
                 <div class="text-2xl font-bold">
                     Bulk RapidBuild Actions
                 </div>
-                <p>Total products: 1198</p>
+                <p>Total products: {{totalRecords}}</p>
                 <div class="flex space-x-2">
                     <mat-form-field class="min-w-200">
                         <mat-select [(ngModel)]="selectedAction" matInput>
@@ -69,13 +69,17 @@
                             </tr>
                         </ng-container>
                         <tr *ngFor="let data of item.splittedData">
-                            <td  class="align-middle cursor-pointer undeline">
-                                <a class="underline" [routerLink]="['/apps/ecommerce/inventory/storeProduct',data.pk_storeProductID,'pricing']" target="_blank" [ngClass]="{'disabled': !(data.blnActive && data.blnStoreActive)}">
+                            <td class="align-middle cursor-pointer undeline">
+                                <a class="underline"
+                                    [routerLink]="['/apps/ecommerce/inventory/storeProduct',data.pk_storeProductID,'pricing']"
+                                    target="_blank" [ngClass]="{'disabled': !(data.blnActive && data.blnStoreActive)}">
                                     {{data.pk_storeProductID}}
                                 </a>
                             </td>
-                            <td  class="align-middle cursor-pointer undeline">
-                                <a class="underline" [routerLink]="['/apps/ecommerce/inventory/storeProduct',data.pk_storeProductID,'pricing']" target="_blank" [ngClass]="{'disabled': !(data.blnActive && data.blnStoreActive)}">
+                            <td class="align-middle cursor-pointer undeline">
+                                <a class="underline"
+                                    [routerLink]="['/apps/ecommerce/inventory/storeProduct',data.pk_storeProductID,'pricing']"
+                                    target="_blank" [ngClass]="{'disabled': !(data.blnActive && data.blnStoreActive)}">
                                     {{data.productNumber}} {{data.productName}}
                                 </a>
                             </td>
