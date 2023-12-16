@@ -67,7 +67,7 @@
                                     <ng-template #claimItem>
                                         <button (click)="updateClaim(orderData, true)" type="button"
                                             matTooltip="Unclaim this item"
-                                            class="text-white bg-red-500 px-2.5 py-1.5 text-md rounded"
+                                            class="text-white bg-green-500 px-2.5 py-1.5 text-md rounded"
                                             [disabled]="orderData?.isClaimLoader">
                                             <span *ngIf="!orderData?.isClaimLoader">Claim</span>
                                             <mat-progress-spinner *ngIf="orderData?.isClaimLoader" [diameter]="24"

@@ -315,7 +315,7 @@
                                                 </ng-containter>
                                                 <ng-container
                                                     *ngIf="element.fk_smartArtDesignerClaimID == userData.pk_userID">
-                                                    <button (click)="updateClaim(element, true, false)" type="button"
+                                                    <button (click)="updateClaim(element, false, false)" type="button"
                                                         matTooltip="Unclaim this item"
                                                         class="my-1 text-white bg-red-500 px-2.5 py-1.5 text-md rounded">
                                                         <span *ngIf="!element?.isClaimLoader">Unclaim</span>
