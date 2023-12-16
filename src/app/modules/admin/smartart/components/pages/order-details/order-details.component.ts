@@ -20,6 +20,10 @@ import { environment } from 'environments/environment';
   styleUrls: ['./order-detail.scss']
 })
 export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
+  @ViewChild('outerDiv') outerDiv!: ElementRef;
+  @ViewChild('scrollBottomComment') scrollBottomComment!: ElementRef;
+  @ViewChild('commentsContainer', { static: false }) commentsContainer: ElementRef;
+
   @ViewChild('paginator') paginator: MatPaginator;
   @ViewChild('drawer', { static: true }) drawer: MatDrawer;
   @ViewChild('artworkFileInput') artworkFileInput: ElementRef;
@@ -196,8 +200,6 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       this.approvalHistoryData = res["approvalHistory"];
       this.imprintdata = res["data"];
       if (this.imprintdata.length > 0) {
-
-
         this.orderData.artworkEmail = this.imprintdata[0].artworkEmail;
         this.selectedImprint = this.imprintdata[0].pk_imprintID;
         this.selectedImprintForTimer = this.imprintdata[0];
@@ -253,6 +255,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
         getArtworkFinalartFiles,
         getArtworkFiles
       ])
+
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isLoading = false;
@@ -421,6 +424,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       }
       this.artWorkLoader = false;
       this.isLoading = false;
+      this.scrollToComments()
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isLoading = false;
@@ -638,12 +642,14 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
     this._smartartService.AddSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       let comment = res["comment"];
       this.orderData.internalComments = this.orderData.internalComments + comment;
-      setTimeout(() => {
-        const element = document.getElementById('scrollBottomComment');
-        element.scrollIntoView({ behavior: 'smooth' });
-        this._changeDetectorRef.markForCheck();
-        this.ngComment = '';
-      }, 100);
+      this.scrollToComments();
+      this.ngComment = ''
+      // setTimeout(() => {
+      //   const element = document.getElementById('scrollBottomComment');
+      //   element.scrollIntoView({ behavior: 'smooth' });
+      //   this._changeDetectorRef.markForCheck();
+      //   this.ngComment = '';
+      // }, 100);
       this._smartartService.snackBar(res["message"]);
       this.isAddCommentLoader = false;
       this._changeDetectorRef.markForCheck();
@@ -856,12 +862,14 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
         this.imprintdata[index].imprintColors = this.selectedMultipleColors.toString();
         this.imprintPMSColors = '';
         this.orderData.internalComments = this.orderData.internalComments + res["comment"];
-        setTimeout(() => {
-          const element = document.getElementById('scrollBottomComment');
-          element.scrollIntoView({ behavior: 'smooth' });
-          this._changeDetectorRef.markForCheck();
-          this.ngComment = '';
-        }, 100);
+        // setTimeout(() => {
+        //   const element = document.getElementById('scrollBottomComment');
+        //   element.scrollIntoView({ behavior: 'smooth' });
+        //   this._changeDetectorRef.markForCheck();
+        //   this.ngComment = '';
+        // }, 100);
+        this.scrollToComments();
+        this.ngComment = '';
         this._smartartService.snackBar(res["message"]);
       }
       this.imprintColorsLoader = false;
@@ -1720,6 +1728,25 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       imprint.finalArtworkProofLoader = false;
       this._changeDetectorRef.markForCheck();
     })
+  }
+  scrollToComments() {
+    setTimeout(() => {
+      const outerContainer = document.getElementById('outerContainer'); // Replace 'outerContainer' with the ID of your outer container
+      const innerDiv = document.getElementById('scrollBottomComment');
+
+      // Calculate the offset of the inner div relative to the outer container
+      const offset = innerDiv.offsetTop - outerContainer.offsetTop;
+
+      // Scroll only the inner div
+      outerContainer.scrollTop = offset;
+
+      // Optionally, you can add smooth scrolling using CSS
+      innerDiv.style.scrollBehavior = 'smooth';
+
+      // const element = document.getElementById('scrollBottomComment');
+      // element.scrollIntoView({ behavior: 'smooth' });
+      this._changeDetectorRef.markForCheck();
+    }, 500);
   }
 
 }

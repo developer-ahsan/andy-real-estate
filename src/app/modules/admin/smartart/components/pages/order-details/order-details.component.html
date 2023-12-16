@@ -1,4 +1,4 @@
-<div class=" rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+<div class=" rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full" #outerDiv>
     <div class="w-full">
         <div class="px-4 sm:px-4 lg:px-8 py-4">
             <div class="flex justify-between">
@@ -351,7 +351,7 @@
                                     [type]="'warning'" [showIcon]="false">
                                     There are no comments on this order.
                                 </fuse-alert>
-                                <div *ngIf="orderData.internalComments"
+                                <div *ngIf="orderData.internalComments" id="outerContainer" #commentsContainer
                                     class="mb-2 max-h-40 overflow-y-auto border p-2">
                                     <p [innerHTML]="orderData.internalComments"></p>
                                     <p id="scrollBottomComment" #scrollBottomComment></p>
