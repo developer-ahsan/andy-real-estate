@@ -520,7 +520,7 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
   }
   updateDefaulApprovalGroupContact() {
     const { listOrder, firstName, lastName, email, fk_storeUserID } = this.isEditDefaultContactForm.getRawValue();
-    if (listOrder == '' || firstName.trim() == '' || lastName.trim() == '' || email.trim() == '') {
+    if (firstName.trim() == '' || lastName.trim() == '' || email.trim() == '') {
       this._snackBar.open("Please fill out required fields", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
@@ -659,7 +659,7 @@ export class ArtApprovalComponent implements OnInit, OnDestroy {
 
 
 
-    if (storeUserID == '' || listOrder == '' || firstName.trim() == '' || lastName.trim() == '' || email.trim() == '') {
+    if (listOrder == '' || firstName.trim() == '' || lastName.trim() == '' || email.trim() == '') {
       this._snackBar.open("Please fill out required fields", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
