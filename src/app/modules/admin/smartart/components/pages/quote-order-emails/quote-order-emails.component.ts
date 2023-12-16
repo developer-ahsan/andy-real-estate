@@ -90,6 +90,7 @@ export class QuoteOrderEmailComponent implements OnInit, OnDestroy {
   ngTo = '';
   ngSubject = '';
   ngMessage = '';
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _authService: AuthService,

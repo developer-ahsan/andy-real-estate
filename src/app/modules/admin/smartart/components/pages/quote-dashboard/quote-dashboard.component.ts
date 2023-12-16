@@ -45,6 +45,8 @@ export class QuoteDashboardComponent implements OnInit, OnDestroy {
   isFilterLoader: boolean = false;
 
   smartArtUser: any = JSON.parse(sessionStorage.getItem('smartArt'));
+  userData: any = JSON.parse(localStorage.getItem('userDetails'));
+
   paramsData: any;
   // BUlk Update
   status_id = 2;
@@ -303,11 +305,17 @@ export class QuoteDashboardComponent implements OnInit, OnDestroy {
   // Update Claim
   updateClaim(item, check) {
     item.isClaimLoader = true;
+    let claimID = null;
+    if (check) {
+      claimID = this.userData.pk_userID;
+    } else {
+      claimID = null;
+    }
     this._changeDetectorRef.markForCheck();
     let payload: UpdateQuoteClaim = {
       cartLineID: Number(item.pk_cartLineID),
       blnClaim: check,
-      fk_smartArtDesignerClaimID: Number(item.fk_smartArtDesignerClaimID),
+      fk_smartArtDesignerClaimID: claimID,
       update_quote_claim: true
     }
     this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -315,6 +323,7 @@ export class QuoteDashboardComponent implements OnInit, OnDestroy {
         this._smartartService.snackBar(res["message"]);
       }
       item.isClaimLoader = false;
+      item.fk_smartArtDesignerClaimID = claimID;
       // item.blnAttention = check;
       this._changeDetectorRef.markForCheck();
     }, err => {

@@ -8,7 +8,7 @@ import moment from 'moment';
 import { Subject, forkJoin, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { SmartArtService } from '../../smartart.service';
-import { sendAutoRequest, UpdateArtworkTgas, UpdateQuoteOptions, updateQuoteProofContact, updateQuotePurchaseOrderComment, updateReorderNumber } from '../../smartart.types';
+import { sendAutoRequest, UpdateArtworkTgas, UpdateQuoteClaim, UpdateQuoteOptions, updateQuoteProofContact, updateQuotePurchaseOrderComment, updateReorderNumber } from '../../smartart.types';
 @Component({
   selector: 'app-quote-details',
   templateUrl: './quote-details.component.html',
@@ -99,6 +99,7 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
   selectedArtworkTags = [];
   contactProofs = [];
   smartArtUser: any;
+  userDetails: any = JSON.parse(localStorage.getItem('userDetails'));
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -569,31 +570,32 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
   }
   // // Update Claim
   updateClaim(item, check) {
-    // item.isClaimLoader = true;
-    // let claimID = null;
-    // if (check) {
-    //   claimID = Number(this.smartArtUser.adminUserID)
-    // } else {
-    //   claimID = null;
-    // }
-    // this._changeDetectorRef.markForCheck();
-    // let payload: UpdateOrderLineClaim = {
-    //   orderLineID: Number(this.paramData.pk_orderLineID),
-    //   blnClaim: check,
-    //   fk_smartArtDesignerClaimID: claimID,
-    //   update_orderline_claim: true
-    // }
-    // this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-    //   if (res["success"]) {
-    //     this._smartartService.snackBar(res["message"]);
-    //     item.fk_smartArtDesignerClaimID = claimID;
-    //   }
-    //   item.isClaimLoader = false;
-    //   this._changeDetectorRef.markForCheck();
-    // }, err => {
-    //   item.isClaimLoader = false;
-    //   this._changeDetectorRef.markForCheck();
-    // });
+    item.isClaimLoader = true;
+    let claimID = null;
+    if (check) {
+      claimID = this.userData.pk_userID;
+    } else {
+      claimID = null;
+    }
+    this._changeDetectorRef.markForCheck();
+    let payload: UpdateQuoteClaim = {
+      cartLineID: Number(item.pk_cartLineID),
+      blnClaim: check,
+      fk_smartArtDesignerClaimID: claimID,
+      update_quote_claim: true
+    }
+    this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this._smartartService.snackBar(res["message"]);
+      }
+      item.isClaimLoader = false;
+      item.fk_smartArtDesignerClaimID = claimID;
+      // item.blnAttention = check;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      item.isClaimLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
   }
   backToListBySearch() {
     this.router.navigateByUrl(`/smartart/quotes-dashboard?search=${this.paramData.fk_cartID}&customer=`);

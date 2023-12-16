@@ -65,16 +65,16 @@
                                                     (click)="updateClaim(quoteData, true)">Claim</span>
                                                 <!-- Unclaim this item if  claimed iD == logged in smart-->
                                                 <span matTooltip="Unclaim this item"
-                                                    *ngIf="quoteData.fk_smartArtDesignerClaimID == smartArtUser.adminUserID && !quoteData?.isClaimLoader"
+                                                    *ngIf="quoteData.fk_smartArtDesignerClaimID == userDetails.pk_userID && !quoteData?.isClaimLoader"
                                                     (click)="updateClaim(quoteData, false)">Unclaim</span>
                                                 <!-- if already claimed but not by samrt art logged in user -->
                                                 <span
-                                                    *ngIf="quoteData.fk_smartArtDesignerClaimID != smartArtUser.adminUserID && !quoteData?.isClaimLoader">
+                                                    *ngIf="quoteData.fk_smartArtDesignerClaimID != userDetails.pk_userID && !quoteData?.isClaimLoader">
                                                     Claimed: {{quoteData.claimedUserName}}
                                                     <br>
                                                 </span>
                                                 <span matTooltip="Claim this item"
-                                                    *ngIf="quoteData.fk_smartArtDesignerClaimID != smartArtUser.adminUserID && !quoteData?.isClaimLoader"
+                                                    *ngIf="quoteData.fk_smartArtDesignerClaimID != userDetails.pk_userID && !quoteData?.isClaimLoader"
                                                     (click)="updateClaim(quoteData, true)">Claimed:
                                                     {{quoteData.claimedUserName}}</span>
                                                 <mat-progress-spinner *ngIf="quoteData?.isClaimLoader" [diameter]="24"

@@ -217,7 +217,8 @@
                                         Age
                                     </th>
                                     <td mat-cell *matCellDef="let element" class="text-xs pr-1"
-                                        (click)="orderDetails(element)">{{element?.ageInHours}} hrs
+                                        (click)="orderDetails(element)">
+                                        {{element?.ageInHours}} hrs
                                     </td>
                                 </ng-container>
                                 <ng-container matColumnDef="store">
@@ -258,81 +259,84 @@
                                         Action
                                     </th>
                                     <td mat-cell *matCellDef="let element" class="text-left">
-                                        <button (click)="customerEmail(element)"
-                                            class="bg-blue-500 text-white px-2.5 my-1 py-1.5 text-md rounded mr-1">Email</button>
-                                        <button type="button"
-                                            class="bg-blue-300 text-white px-2.5 my-1 py-1.5 text-md rounded mr-1"
-                                            [disabled]="element?.isHiddenLoader">
-                                            <!-- Hide -->
-                                            <span matTooltip="Hide this item"
-                                                *ngIf="!element.blnHidden && !element?.isHiddenLoader"
-                                                (click)="HideUnhideCart(element, true)">Hide</span>
-                                            <!-- Uhide -->
-                                            <span matTooltip="UnHide this item"
-                                                *ngIf="element.blnHidden && !element?.isHiddenLoader"
-                                                (click)="HideUnhideCart(element, false)">UnHide</span>
-                                            <!-- spinner -->
-                                            <mat-progress-spinner *ngIf="element?.isHiddenLoader" [diameter]="24"
-                                                [mode]="'indeterminate'">
-                                            </mat-progress-spinner>
-                                        </button>
-                                        <button type="button"
-                                            class=" my-1 text-white px-2.5 py-1.5 text-md rounded mr-1"
-                                            [ngClass]="{ 'bg-red-400': !element.blnAttention, 'bg-green-400': element.blnAttention}"
-                                            [disabled]="element?.isFlagLoader">
-                                            <!-- Flag -->
-                                            <span matTooltip="Flag this item"
-                                                *ngIf="!element.blnAttention && !element?.isFlagLoader"
-                                                (click)="updateAttentionFlagOrder(element, true)">Flag</span>
-                                            <!-- UFlag -->
-                                            <span matTooltip="UnFlag this item"
-                                                *ngIf="element.blnAttention && !element?.isFlagLoader"
-                                                (click)="updateAttentionFlagOrder(element, false)">UnFlag</span>
-                                            <!-- spinner -->
-                                            <mat-progress-spinner *ngIf="element?.isFlagLoader" [diameter]="24"
-                                                [mode]="'indeterminate'">
-                                            </mat-progress-spinner>
-                                        </button>
-                                        <!-- Claim Unclaimed -->
-                                        <ng-container *ngIf="element.fk_smartArtDesignerClaimID;else alreadyClaimed">
-                                            <ng-containter
-                                                *ngIf="element.fk_smartArtDesignerClaimID != userData.pk_userID">
-                                                <div>
-                                                    <span>Claimed: {{element.claimedUserName}}</span>
-                                                    <br>
-                                                    <button (click)="updateClaim(element, true, true)" type="button"
-                                                        matTooltip="Claim this item"
-                                                        class="text-white bg-green-500 px-2.5 py-1.5 text-md rounded">
-                                                        <span *ngIf="!element?.isClaimLoader">Claim</span>
+                                        <div class="flex justify-left mt-1 space-x-1">
+                                            <button (click)="customerEmail(element)"
+                                                class="bg-blue-500 text-white px-2.5 my-1 py-1.5 text-md rounded mr-1">Email</button>
+                                            <button type="button"
+                                                class="bg-blue-300 text-white px-2.5 my-1 py-1.5 text-md rounded mr-1"
+                                                [disabled]="element?.isHiddenLoader">
+                                                <!-- Hide -->
+                                                <span matTooltip="Hide this item"
+                                                    *ngIf="!element.blnHidden && !element?.isHiddenLoader"
+                                                    (click)="HideUnhideCart(element, true)">Hide</span>
+                                                <!-- Uhide -->
+                                                <span matTooltip="UnHide this item"
+                                                    *ngIf="element.blnHidden && !element?.isHiddenLoader"
+                                                    (click)="HideUnhideCart(element, false)">UnHide</span>
+                                                <!-- spinner -->
+                                                <mat-progress-spinner *ngIf="element?.isHiddenLoader" [diameter]="24"
+                                                    [mode]="'indeterminate'">
+                                                </mat-progress-spinner>
+                                            </button>
+                                            <button type="button"
+                                                class=" my-1 text-white px-2.5 py-1.5 text-md rounded mr-1"
+                                                [ngClass]="{ 'bg-red-400': !element.blnAttention, 'bg-green-400': element.blnAttention}"
+                                                [disabled]="element?.isFlagLoader">
+                                                <!-- Flag -->
+                                                <span matTooltip="Flag this item"
+                                                    *ngIf="!element.blnAttention && !element?.isFlagLoader"
+                                                    (click)="updateAttentionFlagOrder(element, true)">Flag</span>
+                                                <!-- UFlag -->
+                                                <span matTooltip="UnFlag this item"
+                                                    *ngIf="element.blnAttention && !element?.isFlagLoader"
+                                                    (click)="updateAttentionFlagOrder(element, false)">UnFlag</span>
+                                                <!-- spinner -->
+                                                <mat-progress-spinner *ngIf="element?.isFlagLoader" [diameter]="24"
+                                                    [mode]="'indeterminate'">
+                                                </mat-progress-spinner>
+                                            </button>
+                                            <!-- Claim Unclaimed -->
+                                            <ng-container
+                                                *ngIf="element.fk_smartArtDesignerClaimID;else alreadyClaimed">
+                                                <ng-containter
+                                                    *ngIf="element.fk_smartArtDesignerClaimID != userData.pk_userID">
+                                                    <div>
+                                                        <span>Claimed: {{element.claimedUserName}}</span>
+                                                        <br>
+                                                        <button (click)="updateClaim(element, true, true)" type="button"
+                                                            matTooltip="Claim this item"
+                                                            class="my-1 text-white bg-green-500 px-2.5 py-1.5 text-md rounded">
+                                                            <span *ngIf="!element?.isClaimLoader">Claim</span>
+                                                            <mat-progress-spinner *ngIf="element?.isClaimLoader"
+                                                                [diameter]="24" [mode]="'indeterminate'">
+                                                            </mat-progress-spinner>
+                                                        </button>
+                                                    </div>
+                                                </ng-containter>
+                                                <ng-container
+                                                    *ngIf="element.fk_smartArtDesignerClaimID == userData.pk_userID">
+                                                    <button (click)="updateClaim(element, true, false)" type="button"
+                                                        matTooltip="Unclaim this item"
+                                                        class="my-1 text-white bg-red-500 px-2.5 py-1.5 text-md rounded">
+                                                        <span *ngIf="!element?.isClaimLoader">Unclaim</span>
                                                         <mat-progress-spinner *ngIf="element?.isClaimLoader"
                                                             [diameter]="24" [mode]="'indeterminate'">
                                                         </mat-progress-spinner>
                                                     </button>
-                                                </div>
-                                            </ng-containter>
-                                            <ng-container
-                                                *ngIf="element.fk_smartArtDesignerClaimID == userData.pk_userID">
-                                                <button (click)="updateClaim(element, true, false)" type="button"
-                                                    matTooltip="Unclaim this item"
-                                                    class="text-white bg-red-500 px-2.5 py-1.5 text-md rounded">
-                                                    <span *ngIf="!element?.isClaimLoader">Unclaim</span>
+                                                </ng-container>
+                                            </ng-container>
+                                            <ng-template #alreadyClaimed>
+                                                <button (click)="updateClaim(element, true, true)" type="button"
+                                                    matTooltip="Claim this item"
+                                                    class="my-1 text-white bg-green-500 px-2.5 py-1.5 text-md rounded"
+                                                    *ngIf="element.fk_smartArtDesignerClaimID != smartArtUser.pk_userID">
+                                                    <span *ngIf="!element?.isClaimLoader">Claim</span>
                                                     <mat-progress-spinner *ngIf="element?.isClaimLoader" [diameter]="24"
                                                         [mode]="'indeterminate'">
                                                     </mat-progress-spinner>
                                                 </button>
-                                            </ng-container>
-                                        </ng-container>
-                                        <ng-template #alreadyClaimed>
-                                            <button (click)="updateClaim(element, true, true)" type="button"
-                                                matTooltip="Claim this item"
-                                                class="text-white bg-green-500 px-2.5 py-1.5 text-md rounded"
-                                                *ngIf="element.fk_smartArtDesignerClaimID != smartArtUser.pk_userID">
-                                                <span *ngIf="!element?.isClaimLoader">Claim</span>
-                                                <mat-progress-spinner *ngIf="element?.isClaimLoader" [diameter]="24"
-                                                    [mode]="'indeterminate'">
-                                                </mat-progress-spinner>
-                                            </button>
-                                        </ng-template>
+                                            </ng-template>
+                                        </div>
                                     </td>
                                 </ng-container>
                                 <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>

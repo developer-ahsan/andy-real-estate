@@ -134,6 +134,9 @@ export class SmartArtComponent {
     checkDashboard() {
         this._router.events.subscribe((event) => {
             if (event instanceof NavigationEnd) {
+                if (this.selectedScreeen != this.route.children[0].snapshot.data.title) {
+                    this.selectedStore = this.allStores[0];
+                }
                 this.selectedScreeen = this.route.children[0].snapshot.data.title;
                 this.selectedRoute = this.route.children[0].snapshot.data.url;
                 if (this.selectedScreeen == 'Orders Dashboard' || this.selectedScreeen == 'Order Details' || this.selectedScreeen == 'Order Scheduler' || this.selectedScreeen == 'Order Emails') {
