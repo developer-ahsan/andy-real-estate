@@ -168,8 +168,7 @@ export class CategoriesComponent implements OnInit, OnDestroy {
     this.isUpdateCategories = true;
     this._storeService.putStoresProductData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
-        this._storeService.getStoreProductsDetail(this.selectedProduct.pk_storeProductID).subscribe(res => {
-          console.log(res);
+        this._storeService.getStoreProductsDetail(this.selectedProduct.pk_storeProductID).subscribe(response => {
           this.isUpdateCategories = false;
           this._storeService.snackBar(res["message"]);
           this._changeDetectorRef.markForCheck();
