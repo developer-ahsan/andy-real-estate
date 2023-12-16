@@ -82,8 +82,8 @@ export class SimpleEmailBlastComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.sendEmailForm = this._formBuilder.group({
-      subject: ['', Validators.required],
-      message: ['', Validators.required]
+      subject: [''],
+      message: ['']
     });
     this.getStoreDetails();
   }
@@ -192,8 +192,11 @@ export class SimpleEmailBlastComponent implements OnInit, OnDestroy {
       if (res["success"]) {
         this._fileManagerService.snackBar(res["message"]);
       }
-      this.sendEmailForm.reset();
-      this.sendEmailForm.markAsUntouched();
+
+      this.sendEmailForm.get('subject').setValue('');
+      this.sendEmailForm.get('message').setValue('');
+      this.previewEmail=false;
+      // this.sendEmailForm.
       this.imageValue = null;
       this.file = null;
       this.emails = [];

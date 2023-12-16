@@ -44,11 +44,10 @@
           </button>
         </div>
 
-        <div *ngIf="previewEmail" class="my-4 w-full mx-4">
+        <div *ngIf="previewEmail" class="my-4 w-full mx-4 mr-10">
           <div><span class="font-bold">Subject : </span> {{ sendEmailForm.get('subject').value }}</div>
-          <div><span class="font-bold">Body :</span>
+       
             <div [innerHTML]="sendEmailForm.get('message').value"></div>
-          </div>
         </div>
       </div>
     </form>

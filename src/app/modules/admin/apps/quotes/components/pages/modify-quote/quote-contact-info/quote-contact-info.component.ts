@@ -59,7 +59,6 @@ export class QuoteContactInfoComponent implements OnInit {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((quote) => {
         this.selectedQuoteDetail = quote["data"][0];
-        console.log(this.selectedQuoteDetail);
         this.billingShippingForm.patchValue(this.selectedQuoteDetail);
         this._changeDetectorRef.markForCheck();
       });
@@ -69,12 +68,23 @@ export class QuoteContactInfoComponent implements OnInit {
       this._quoteService.snackBar('Please fill out required fields');
       return;
     }
-    this.isBillingLoader = true;
     const { billingCompanyName, billingFirstName, billingLastName, billingLocation, billToDeliverTo, billingAddress, billingCity, billingState, billingZip, billingCountry, billingPhone, billingEmail, shippingCompanyName, shippingFirstName, shippingLastName, shippingLocation, shipToDeliverTo, shippingAddress, shippingCity, shippingState, shippingZip, shippingZipExt, shippingCountry, shippingPhone, shippingEmail, accountChargeCode } = this.billingShippingForm.value;
+
+    if(billingCompanyName.trim() === '' || billingFirstName.trim()==='' || billingLastName.trim()==='' || 
+    billingAddress.trim()==='' || billingCity.trim()==='' || billingState.trim()==='' || 
+    billingZip.trim()==='' || billingPhone.trim()==='' || billingEmail.trim()==='' || 
+    shippingCompanyName.trim()==='' || shippingFirstName.trim()==='' || shippingLastName.trim()==='' || 
+    shippingAddress.trim()==='' || shippingCity.trim()==='' || shippingState.trim()==='' || 
+    shippingZip.trim()==='' || shippingPhone.trim()==='' || shippingEmail.trim()==='') {
+      this._quoteService.snackBar('Please fill out required fields');
+      return
+    } 
+console.log(this.selectedQuoteDetail);
+const storedData = JSON.parse(localStorage.getItem('userDetails'));
     let payload: updateCartInfo = {
       cart_id: this.selectedQuoteDetail.pk_cartID,
       store_id: this.selectedQuoteDetail.storeID,
-      admin_user_id: 6286,
+      admin_user_id: storedData.pk_userID,
       billing_company_name: billingCompanyName,
       billing_first_name: billingFirstName,
       billing_last_name: billingLastName,
@@ -102,7 +112,8 @@ export class QuoteContactInfoComponent implements OnInit {
       alternate_proof_emails: [],
       modify_cart_contact_information: true
     };
-    this._quoteService.UpdateQuoteData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this.isBillingLoader = true;
+    this._quoteService.UpdateQuoteData(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this.isBillingLoader = false;
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
@@ -113,4 +124,13 @@ export class QuoteContactInfoComponent implements OnInit {
       // console.log(err);
     });
   }
+
+  replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
+    for (const key in obj) {
+        if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+            obj[key] = obj[key]?.replace(/'/g, "''");
+        }
+    }
+    return obj;
+}
 }

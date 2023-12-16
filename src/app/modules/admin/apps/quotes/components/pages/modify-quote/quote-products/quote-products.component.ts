@@ -19,6 +19,12 @@ export class QuoteProductsComponent implements OnInit {
   searchProductCtrl = new FormControl();
   isSearchingProduct: boolean = false;
   selectedProduct: any;
+  ngSelectedProduct: any = {
+    royaltyPrice: '',
+    shippingCost: '',
+    shippingPrice: '',
+    blnOverride: ''
+  };
 
   orderProducts: any = [];
   constructor(
