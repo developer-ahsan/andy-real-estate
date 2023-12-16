@@ -54,6 +54,13 @@ export class QuoteOrderDetailsComponent implements OnInit {
       return;
     }
     const { inHandsDate, shippingCarrierName, paymentDate, shippingServiceName, purchaseOrderNum, shippingCustomerAcc, invoiceDueDate, shippingServiceCode, costCenterCode } = this.shippingForm.value;
+
+    if(shippingCarrierName.trim() === '' || shippingServiceName.trim() === '' || shippingServiceCode.trim() === '') {
+      this._quoteService.snackBar('Please fill out required fields');
+
+      return;
+    }
+
     let inhands = '';
     if (inHandsDate) {
       inhands = moment(inHandsDate).format('MM/DD/yyyy');
@@ -74,7 +81,7 @@ export class QuoteOrderDetailsComponent implements OnInit {
       purchase_order_num: purchaseOrderNum,
       modify_cart_shipping_details: true
     };
-    this._quoteService.UpdateQuoteData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._quoteService.UpdateQuoteData(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this.isShippingLoader = false;
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
@@ -85,4 +92,13 @@ export class QuoteOrderDetailsComponent implements OnInit {
       // console.log(err);
     });
   }
+
+  replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
+    for (const key in obj) {
+        if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+            obj[key] = obj[key]?.replace(/'/g, "''");
+        }
+    }
+    return obj;
+}
 }

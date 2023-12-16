@@ -279,10 +279,19 @@
 
             </div>
 
-            <button class="ml-4 min-w-40" mat-flat-button [color]="'primary'" [matTooltip]="'Create Email'"
+            <div class="flex justify-between mb-3">
+              <button class="ml-4" mat-flat-button mat-stroked-button [matTooltip]="'Back to Template'"
+                (click)="resetMainScreen()">
+                <mat-icon [svgIcon]="'heroicons_outline:arrow-narrow-left'"></mat-icon>
+                <span class="ml-2 mr-1">Back</span>
+              </button>
+              <button class="ml-4 min-w-40" mat-flat-button [color]="'primary'" [matTooltip]="'Create Email'"
               (click)="createEmail()">
               <span class="ml-2 mr-1">Create Email</span>
             </button>
+            </div>
+
+            
           </div>
         </div>
 
@@ -525,7 +534,7 @@
           </button>
         </div>
         <div [innerHtml]="previewData"></div>
-        <div [innerHtml]="this.product_templete"></div>
+        <!-- <div [innerHtml]="this.product_templete"></div> -->
         <div class="text-right w-full py-5" *ngIf="previewData">
           <button class="ml-4 min-w-40" mat-flat-button [color]="'primary'" [disabled]="sendEmailLoader"
             [matTooltip]="'Send an Email'" (click)="sendEmail()">
@@ -543,7 +552,7 @@
             <!-- Template Column -->
             <ng-container matColumnDef="template">
               <th class="min-w-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
-                Template
+                Templatee
               </th>
               <td mat-cell *matCellDef="let element">{{element.name}}</td>
             </ng-container>

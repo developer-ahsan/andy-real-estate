@@ -134,10 +134,6 @@ export class RapidbuildActionsComponent implements OnInit, OnDestroy {
     this.getMainStoreCall(this.page);
   };
 
-  navigate(data) {
-    // this.router.navigateByUrl(`/apps/ecommerce/inventory/storeProduct/${data.pk_storeProductID}/pricing`);
-  }
-
   toggleCheckbox(item: any) {
     const index = this.selectedProduct.indexOf(item);
     if (index === -1) {
