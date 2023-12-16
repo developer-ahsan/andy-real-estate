@@ -806,6 +806,10 @@ export class EmailBlastComponent implements OnInit, OnDestroy {
     this.presentationScreen = 'Dropdowns';
   };
 
+  viewTemplateTypeFeatured() {
+    this.selectedTemplate.name = 'Featured Products V2'
+  };
+
   sendEmail() {
     const { pk_storeID } = this.selectedStore;
     const { heading, campaign, message } = this.sendEmailForm.getRawValue();
