@@ -92,7 +92,7 @@ export class SimpleEmailBlastComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((items: any) => {
         this.selectedStore = items["data"][0];
-        this.sendEmailForm.get('message').setValue(`<br /><br /><br /><br />If you would like to stop receiving emails from ${this.selectedStore.storeName}. <a href="${this.selectedStore.protocol}www.${this.selectedStore.storeName}/unsubscribe">click here to unsubscribe.`)
+        this.sendEmailForm.get('message').setValue(`<br /><br /><br /><br />If you would like to stop receiving emails from ${this.selectedStore.storeName}, <a href="${this.selectedStore.protocol}www.${this.selectedStore.storeName}/unsubscribe">click here to unsubscribe.`)
       });
   }
   add(event: MatChipInputEvent): void {
@@ -195,7 +195,7 @@ export class SimpleEmailBlastComponent implements OnInit, OnDestroy {
 
       this.sendEmailForm.get('subject').setValue('');
       this.sendEmailForm.get('message').setValue('');
-      this.previewEmail=false;
+      this.previewEmail = false;
       // this.sendEmailForm.
       this.imageValue = null;
       this.file = null;
@@ -228,7 +228,7 @@ export class SimpleEmailBlastComponent implements OnInit, OnDestroy {
   }
 
   preview() {
-    this.previewEmail= true;
+    this.previewEmail = true;
   }
 
   ngOnDestroy(): void {
