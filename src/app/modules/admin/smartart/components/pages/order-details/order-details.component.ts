@@ -237,6 +237,15 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
               }
             }
           }
+          // Pack and accessories
+          imprint.packAccessories = [];
+          if (imprint.qryOrderLineAccessoriesReport) {
+            const accessories = imprint.qryOrderLineAccessoriesReport.split(',,');
+            accessories.forEach(packs => {
+              const [quantity, packagingName] = packs.split('::');
+              imprint.packAccessories.push({ quantity, packagingName });
+            });
+          }
         });
       }
       const checkFileExistObservable = of(this.checkFileExist(`https://assets.consolidus.com/globalAssets/Stores/BrandGuide/${this.orderData.pk_storeID}.pdf`, 'brand', 0));

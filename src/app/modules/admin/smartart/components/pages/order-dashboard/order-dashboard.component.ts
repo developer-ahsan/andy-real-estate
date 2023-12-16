@@ -221,6 +221,14 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
         this.drawer.toggle();
       }
       res["data"].forEach(element => {
+        element.bgColor = '';
+        if (element.blnAttention) {
+          element.bgColor = 'bg-blue-200';
+        } else if (element.inHandsDate) {
+          element.bgColor = 'bg-pink-200';
+        } else if (element.blnRushFlexibility) {
+
+        }
         element.ageInHours = Math.floor(element.age / 60);
         if (element.viewProofDetails) {
           const proof = element.viewProofDetails.split(';');

@@ -734,6 +734,17 @@
                                             </div>
                                             <div class="col-6 font-bold">Digitizer:</div>
                                             <div class="col-6">{{imprint.digitizer || 'NONE'}}</div>
+                                            <!--  -->
+                                            <ng-container *ngIf="imprint?.packAccessories?.length > 0">
+                                                <div class="col-6 font-bold">Accessories/packaging: </div>
+                                                <div class="col-6">
+                                                    <p
+                                                        *ngFor="let accessories of imprint?.packAccessories; let a_i=index">
+                                                        <b>{{a_i+1 + '.)'}}</b> ({{accessories.quantity}}) x
+                                                        {{accessories.packagingName}}
+                                                    </p>
+                                                </div>
+                                            </ng-container>
                                         </div>
                                     </div>
                                     <div class="col-md-4 col-12">
