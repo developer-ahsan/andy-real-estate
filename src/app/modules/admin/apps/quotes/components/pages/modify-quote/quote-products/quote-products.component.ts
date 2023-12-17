@@ -19,12 +19,32 @@ export class QuoteProductsComponent implements OnInit {
   searchProductCtrl = new FormControl();
   isSearchingProduct: boolean = false;
   selectedProduct: any;
+
   ngSelectedProduct: any = {
     royaltyPrice: '',
     shippingCost: '',
     shippingPrice: '',
-    blnOverride: ''
+    blnOverride: '',
+    // Initialize the structure according to your data model
+    products: [
+      {
+        cost: 0, // Provide initial values as per your application logic
+        price: 0,
+        blnOverride: false,
+        blnSample: false,
+        blnTaxable: false
+        // Add more properties if needed
+      }
+    ],
+    color_sizes: [],
+    colors: [], // Initialize with available colors
+    sizes: [], // Initialize with available sizes
+    totalQuantity: 0,
+    totalRunintCost: 0,
+    totalRunintPrice: 0,
+    // Add more properties as per your application's data structure
   };
+
 
   orderProducts: any = [];
   constructor(
@@ -114,5 +134,19 @@ export class QuoteProductsComponent implements OnInit {
   }
   displayWith(value: any) {
     return value?.productName;
+  }
+
+
+
+
+  
+  isUpdateOptionLoader: boolean = false;
+
+  // Implement methods for functionality
+  updateProductOptions() {
+    // Implement logic to update product options
+    // Access and modify ngSelectedProduct properties accordingly
+    // e.g., this.ngSelectedProduct.totalQuantity = ...;
+    // Implement API calls or other business logic as needed
   }
 }

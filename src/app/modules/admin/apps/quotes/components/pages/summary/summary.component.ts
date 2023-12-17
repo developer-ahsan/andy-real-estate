@@ -92,11 +92,6 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
       });
   }
 
-  checkStatus() {
-    return this.imprintStatuses.some(obj => obj["fk_statusID"] === 7 || obj["fk_statusID"] === 9);
-  }
-
-
   setQuoteTracker() {
     const sortedData = this.imprintStatuses.sort((a, b) => a.fk_statusID - b.fk_statusID);
     console.log(sortedData[0]);
@@ -147,6 +142,15 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
       }
     }
   }
+
+
+  listFindNoCase(list, value) {
+  // Convert the comma-separated list to an array
+  const listArray = list.split(',');
+
+  // Check if the value exists in the array (case insensitive)
+  return listArray.some(item => item.trim().toLowerCase() === value.toString().toLowerCase());
+}
 
 
   setCartLineTrackerData() {

@@ -1,7 +1,7 @@
-<div class="mx-3 bg-card rounded-2xl shadow p-5">
+<!-- <div class="mx-2 rounded-2xl p-5 w-full">
     <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
     </ngx-skeleton-loader>
-    <!-- <div *ngIf="!isLoading">
+    <div class="shadow bg-card p-3" *ngIf="!isLoading">
         <div class="text-lg font-bold text-secondary mb-2">Quote Products</div>
         <div class="alert alert-primary text-secondary text-sm" role="alert">
             <p> This is how the delivery information currently appears to the customer.</p>
@@ -30,12 +30,12 @@
                 </ng-container>
             </mat-autocomplete>
         </mat-form-field>
-    </div> -->
-</div>
+    </div>
+</div> -->
 
 
 
-<div class="mx-3 bg-card rounded-2xl shadow p-5">
+<div class="mx-3 rounded-2xl p-5 w-full">
 
     <div class="my-3" *ngIf="isLoading">
         <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
@@ -45,9 +45,9 @@
         <!-- <div class="text-lg font-bold text-secondary mb-2">Quote Products</div>
         <div class="alert alert-primary text-secondary text-sm" role="alert">
             <p> This is how the delivery information currently appears to the customer.</p>
-        </div> -->
+        </div>
 
-        <!-- <div class="col-12 flex justify-between mb-2">
+        <div class="col-12 flex justify-between mb-2">
             <div>
                 <mat-button-toggle-group #group="matButtonToggleGroup" name="fontStyle" aria-label="Font Style"
                     [(ngModel)]="ngSelectedProduct" (change)="changeOrderLine(group.value)">
@@ -60,14 +60,14 @@
 
         <mat-accordion class="example-headers-align w-full" multi>
 
-            <!-- <mat-expansion-panel>
+            <mat-expansion-panel [expanded]="true">
                 <mat-expansion-panel-header>
                     <mat-panel-title class="text-lg font-bold">
                         Add New Product
                     </mat-panel-title>
                 </mat-expansion-panel-header>
-                <div class="row">
-                    <div class="col-md-6 col-12">
+                <div class="row m-3">
+                    <div class="col-md-3 col-12">
                         <mat-form-field class="w-full">
                             <mat-label>Prducts</mat-label>
                             <input matInput placeholder="Search Products" matTooltip="Search Products by name"
@@ -83,16 +83,49 @@
                             </mat-autocomplete>
                         </mat-form-field>
                     </div>
-                    <div class="col-md-6 col-12">
+                    <div class="col-md-3 col-12">
                         <mat-form-field class="w-full" matTooltip="Quantity must be greater than or equal to 20">
                             <mat-label>Quantity</mat-label>
-                            <input matInput [(ngModel)]="newProductQuantity">
+                            <input type="number" min="0" matInput [(ngModel)]="newProductQuantity">
                         </mat-form-field>
                     </div>
-                    <div class="col-12">
+                    <div class="col-md-3 col-12">
+                        <mat-form-field class="w-full">
+                            <mat-label>Color</mat-label>
+                            <input matInput placeholder="Search Products" matTooltip="Search Products by name"
+                                [matAutocomplete]="auto" [formControl]="searchProductCtrl">
+                            <mat-autocomplete class="w-full" #auto="matAutocomplete"
+                                (optionSelected)="onSelected($event)" [displayWith]="displayWith">
+                                <mat-option *ngIf="isSearchingProduct" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isSearchingProduct">
+                                    <mat-option *ngFor="let item of allProducts" [value]="item">
+                                        <span>{{item.productName}}</span>
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-3 col-12">
+                        <mat-form-field class="w-full">
+                            <mat-label>Size</mat-label>
+                            <input matInput placeholder="Search Products" matTooltip="Search Products by name"
+                                [matAutocomplete]="auto" [formControl]="searchProductCtrl">
+                            <mat-autocomplete class="w-full" #auto="matAutocomplete"
+                                (optionSelected)="onSelected($event)" [displayWith]="displayWith">
+                                <mat-option *ngIf="isSearchingProduct" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isSearchingProduct">
+                                    <mat-option *ngFor="let item of allProducts" [value]="item">
+                                        <span>{{item.productName}}</span>
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div class="flex flex-row gap-x-3 ml-3">
                         <mat-checkbox class="mr-1" [(ngModel)]="newBlnOverride">Override Shipping</mat-checkbox>
                         <mat-checkbox class="mr-1" [(ngModel)]="newBlnSample">Sample</mat-checkbox>
                         <mat-checkbox class="mr-1" [(ngModel)]="newBlnTax">Taxable</mat-checkbox>
+                        <mat-checkbox class="mr-1" [(ngModel)]="newRoyalty">Royalty</mat-checkbox>
                     </div>
                     <div class="col-12 text-right">
                         <button mat-button mat-stroked-button (click)="addNewProduct()" [disabled]="isAddNewProdLoader">
@@ -102,7 +135,7 @@
                         </button>
                     </div>
                 </div>
-            </mat-expansion-panel> -->
+            </mat-expansion-panel>
 
             <!-- <mat-expansion-panel [expanded]="true">
                 <mat-expansion-panel-header>
@@ -338,22 +371,25 @@
                 </div>
             </mat-expansion-panel> -->
             <!-- Add Product Options -->
-            <!-- <mat-expansion-panel [expanded]="true">
+            <mat-expansion-panel [expanded]="true">
                 <mat-expansion-panel-header>
                     <mat-panel-title class="text-lg font-bold">
-                        Add Product Options
+                        <h1><span class="fa fa-tag fa-lg"></span> Non-Woven Mini Tote Bag</h1>
                     </mat-panel-title>
                 </mat-expansion-panel-header>
-                <div class="col-12">
+
+                <!-- <div class="col-12 p-3">
                     <div class="row">
                         <div class="col-12 col-md-4">
                             <mat-form-field class="w-full">
                                 <mat-label>Color</mat-label>
-                                <mat-select matInput *ngIf="ngSelectedProduct.colors.length != 0" [(ngModel)]="ngColor">
+                                *ngIf="ngSelectedProduct.colors.length != 0"
+                                <mat-select matInput [(ngModel)]="ngColor">
                                     <mat-option *ngFor="let color of ngSelectedProduct.colors"
                                         [value]="color.id">{{color.name}}</mat-option>
                                 </mat-select>
-                                <mat-select matInput *ngIf="ngSelectedProduct.colors.length == 0" [(ngModel)]="ngColor">
+                                *ngIf="ngSelectedProduct.colors.length == 0"
+                                <mat-select matInput [(ngModel)]="ngColor">
                                     <mat-option [value]="0">N/A</mat-option>
                                 </mat-select>
                             </mat-form-field>
@@ -361,11 +397,13 @@
                         <div class="col-12 col-md-4">
                             <mat-form-field class="w-full">
                                 <mat-label>Size</mat-label>
-                                <mat-select matInput *ngIf="ngSelectedProduct.sizes.length != 0" [(ngModel)]="ngSize">
+                                *ngIf="ngSelectedProduct.sizes.length != 0"
+                                <mat-select matInput [(ngModel)]="ngSize">
                                     <mat-option *ngFor="let size of ngSelectedProduct.sizes"
                                         [value]="size.id">{{size.name}}</mat-option>
                                 </mat-select>
-                                <mat-select matInput *ngIf="ngSelectedProduct.sizes.length == 0" [(ngModel)]="ngSize">
+                                *ngIf="ngSelectedProduct.sizes.length == 0"
+                                <mat-select matInput [(ngModel)]="ngSize">
                                     <mat-option [value]="0">N/A</mat-option>
                                 </mat-select>
                             </mat-form-field>
@@ -389,16 +427,325 @@
                             </button>
                         </div>
                     </div>
+                </div> -->
+                <div class="row m-3">
+                    <div class="col-12 ">
+                        <b>Vendor:</b> Hit Promotional Products
+                    </div>
+                    <div class="col-md-6 col-12">
+                        <mat-form-field class="w-full">
+                            <mat-label>Current Product</mat-label>
+                            <input matInput placeholder="Search Products" matTooltip="Search Products by name"
+                                [matAutocomplete]="auto" [formControl]="searchProductCtrl">
+                            <mat-autocomplete class="w-full" #auto="matAutocomplete"
+                                (optionSelected)="onSelected($event)" [displayWith]="displayWith">
+                                <mat-option *ngIf="isSearchingProduct" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isSearchingProduct">
+                                    <mat-option *ngFor="let item of allProducts" [value]="item">
+                                        <span>{{item.productName}}</span>
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-6 col-12 ">
+                        <!-- <mat-form-field class="w-full" matTooltip="Quantity must be greater than or equal to 20">
+                            <mat-label>Quantity</mat-label>
+                            <input type="number" min="0" matInput [(ngModel)]="newProductQuantity">
+                        </mat-form-field> -->
+                        <div class="alert alert-info mt-6">
+                            <span class="fa fa-info-circle fa-lg"></span>
+                            <b class="ml-2">Min. Quantity:</b> 1
+                        </div>
+                    </div>
+                    <div class="flex flex-row gap-x-3 ml-3">
+                        <mat-checkbox class="mr-1" [(ngModel)]="newBlnOverride">Override Shipping</mat-checkbox>
+                        <mat-checkbox class="mr-1" [(ngModel)]="newBlnSample">Sample</mat-checkbox>
+                        <mat-checkbox class="mr-1" [(ngModel)]="newBlnTax">Taxable</mat-checkbox>
+                        <mat-checkbox class="mr-1" [(ngModel)]="newRoyalty">Royalty</mat-checkbox>
+                    </div>
+                    <div class="col-12 text-right">
+
+                        <button class="bg-red-500 text-white mr-2" mat-button mat-stroked-button
+                            (click)="addNewProduct()" [disabled]="isAddNewProdLoader">
+                            <span *ngIf="!isAddNewProdLoader">Remove item</span>
+                            <mat-progress-spinner *ngIf="isAddNewProdLoader" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                        </button>
+                        <button mat-button mat-stroked-button (click)="addNewProduct()" [disabled]="isAddNewProdLoader">
+                            <span *ngIf="!isAddNewProdLoader">Update product</span>
+                            <mat-progress-spinner *ngIf="isAddNewProdLoader" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                        </button>
+                    </div>
                 </div>
-            </mat-expansion-panel> -->
+            </mat-expansion-panel>
+
+
+
+
+
+
+
+
+
+
+            <!-- Product Options -->
+            <mat-expansion-panel [expanded]="true">
+                <mat-expansion-panel-header>
+                    <mat-panel-title class="text-lg font-bold">
+                        Product Options
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <div class="col-12 m-3">
+                    <table
+                        class="w-full table table-striped table-bordered table-condensed table-hover  wide no-bottom-margin"
+                        id="updateProductOptionsTable_138125">
+                        <thead>
+                            <tr class="columnHeader2">
+                                <td width="20%" colspan="2">COLOR/SIZE</td>
+                                <td width="5%" align="center">QTY</td>
+                                <td width="20%" colspan="2" align="center">COST</td>
+                                <td width="20%" colspan="2" align="center">PRICE</td>
+                                <td width="1%" align="center" valign="middle"><span class="fa fa-trash fa-lg"></span>
+                                </td>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td colspan="2"></td>
+                                <td></td>
+                                <td colspan="2">
+                                    <b>Standard Cost:</b><br>
+                                    <div class="form-group no-bottom-marginp">
+                                        <div class="input-group no-bottom-margin">
+                                            <!-- <div class="input-group-addon">$</div> -->
+                                            <input type="text" name="standardCost"
+                                                class="adminInput light wide form-control" maxlength="8" required=""
+                                                [(ngModel)]="ngSelectedProduct.products[0].cost">
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td colspan="2">
+                                    <b>Standard Price:</b><br>
+                                    <div class="form-group no-bottom-margin">
+                                        <div class="input-group no-bottom-margin">
+                                            <!-- <div class="input-group-addon">$</div> -->
+                                            <input type="text" name="standardPrice"
+                                                class="form-control adminInput light wide form-control" maxlength="8"
+                                                required [(ngModel)]="ngSelectedProduct.products[0].price">
+                                        </div>
+                                    </div>
+                                </td>
+                                <td></td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <b>Color</b>
+                                </td>
+                                <td><b>Size</b></td>
+                                <td></td>
+                                <td align="center"><b>Unit</b></td>
+                                <td align="center"><b>Total</b></td>
+                                <td align="center"><b>Unit</b></td>
+                                <td align="center"><b>Total</b></td>
+                                <td></td>
+                            </tr>
+
+
+
+                            <tr class="" *ngFor="let product of ngSelectedProduct.color_sizes">
+                                <td width="10%">
+                                    <select *ngIf="ngSelectedProduct.colors.length != 0"
+                                        class="select1 wide form-control" [(ngModel)]="product.fk_colorID">
+                                        <option *ngFor="let color of ngSelectedProduct.colors" [value]="color.id">
+                                            {{color.name}}</option>
+                                    </select>
+                                    <select *ngIf="ngSelectedProduct.colors.length == 0"
+                                        class="select1 wide form-control" [(ngModel)]="product.fk_colorID">
+                                        <option value="0">N/A</option>
+                                    </select>
+                                </td>
+
+                                <td width="10%">
+                                    <select *ngIf="ngSelectedProduct.sizes.length != 0"
+                                        class="select1 wide form-control" [(ngModel)]="product.fk_sizeID">
+                                        <option *ngFor="let size of ngSelectedProduct.sizes" [value]="size.id">
+                                            {{size.name}}</option>
+                                    </select>
+                                    <select *ngIf="ngSelectedProduct.sizes.length == 0"
+                                        class="select1 wide form-control" [(ngModel)]="product.fk_sizeID">
+                                        <option [ngValue]="null">N/A</option>
+                                    </select>
+                                </td>
+
+                                <td><input type="text" name="quantity138125" class="adminInput light wide form-control"
+                                        [(ngModel)]="product.quantity" required="" maxlength="8"></td>
+                                <td>
+                                    <div class="form-group no-bottom-margin">
+                                        <div class="input-group no-bottom-margin">
+                                            <!-- <div class="input-group-addon">$</div> -->
+                                            <input type="text" class="adminInput light wide form-control"
+                                                [(ngModel)]="product.runCost" required="" maxlength="8">
+                                        </div>
+                                    </div>
+                                </td>
+                                <td align="center">+ {{ngSelectedProduct.products[0].cost | currency}} =
+                                    {{(product.runCost
+                                    + ngSelectedProduct.products[0].cost) |
+                                    currency}}
+                                    <br>
+                                    {{(product.quantity * (product.runCost + ngSelectedProduct.products[0].cost)) |
+                                    currency}}
+                                </td>
+                                <td>
+                                    <div class="form-group no-bottom-margin">
+                                        <div class="input-group no-bottom-margin">
+                                            <!-- <div class="input-group-addon">$</div> -->
+                                            <input type="text" class="form-control adminInput light wide"
+                                                [(ngModel)]="product.runPrice" required="" maxlength="8">
+                                        </div>
+                                    </div>
+                                </td>
+                                <td align="center">+ {{ngSelectedProduct.products[0].price | currency}} =
+                                    {{(product.runPrice + ngSelectedProduct.products[0].price)
+                                    | currency}}
+                                    <br>
+                                    {{(product.quantity * (product.runPrice + ngSelectedProduct.products[0].price)) |
+                                    currency}}
+                                </td>
+                                <td align="center" valign="top">
+                                    <mat-checkbox></mat-checkbox>
+                                </td>
+                            </tr>
+
+                            <tr class="columnHeader2">
+                                <td colspan="2">GRAND TOTAL:</td>
+                                <td align="center">{{ngSelectedProduct.totalQuantity}}</td>
+                                <td></td>
+                                <td align="center">{{ngSelectedProduct.totalRunintCost | currency}}</td>
+                                <td></td>
+                                <td align="center">{{ngSelectedProduct.totalRunintPrice | currency}}</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class=" flex justify-between align-items-center">
+                        <div class="space-x-1 ">
+                            <mat-checkbox class="mr-1" [(ngModel)]="ngSelectedProduct.products[0].blnOverride">Override
+                                Shipping</mat-checkbox>
+                            <mat-checkbox class="mr-1"
+                                [(ngModel)]="ngSelectedProduct.products[0].blnSample">Sample</mat-checkbox>
+                            <mat-checkbox class="mr-1"
+                                [(ngModel)]="ngSelectedProduct.products[0].blnTaxable">Taxable</mat-checkbox>
+                        </div>
+                        <div>
+                            <button mat-button mat-stroked-button (click)="updateProductOptions()"
+                                [disabled]="isUpdateOptionLoader" class="min-w-30">
+                                <span *ngIf="!isUpdateOptionLoader">Update Options</span>
+                                <mat-progress-spinner *ngIf="isUpdateOptionLoader" [diameter]="24"
+                                    [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </mat-expansion-panel>
+
+
+
+
+
+
+
+
+
+
+            <!-- Add Product Options -->
+            <mat-expansion-panel [expanded]="true">
+                <mat-expansion-panel-header>
+                    <mat-panel-title class="text-lg font-bold">
+                        Add Product Option
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <div class="p-3">
+                    <!-- <div class="mt-2">
+                        <div class="alert alert-warning">
+                            There are currently no imprint defined for this line item.
+                        </div>
+                    </div> -->
+                    <!-- *ngIf="ngSelectedProduct.imprintsUnSelected.length > 0" -->
+                    <div class="row m-3">
+
+
+                        <div class="col-md-4 col-12">
+                            <mat-form-field class="w-full">
+                                <mat-label>Color</mat-label>
+                                <input matInput placeholder="Search Products" matTooltip="Search Products by name"
+                                    [matAutocomplete]="auto" [formControl]="searchProductCtrl">
+                                <mat-autocomplete class="w-full" #auto="matAutocomplete"
+                                    (optionSelected)="onSelected($event)" [displayWith]="displayWith">
+                                    <mat-option *ngIf="isSearchingProduct" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isSearchingProduct">
+                                        <mat-option *ngFor="let item of allProducts" [value]="item">
+                                            <span>{{item.productName}}</span>
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-4 col-12">
+                            <mat-form-field class="w-full">
+                                <mat-label>Size</mat-label>
+                                <input matInput placeholder="Search Products" matTooltip="Search Products by name"
+                                    [matAutocomplete]="auto" [formControl]="searchProductCtrl">
+                                <mat-autocomplete class="w-full" #auto="matAutocomplete"
+                                    (optionSelected)="onSelected($event)" [displayWith]="displayWith">
+                                    <mat-option *ngIf="isSearchingProduct" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isSearchingProduct">
+                                        <mat-option *ngFor="let item of allProducts" [value]="item">
+                                            <span>{{item.productName}}</span>
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-4 col-12">
+                            <mat-form-field class="w-full" matTooltip="Quantity must be greater than or equal to 20">
+                                <mat-label>Quantity</mat-label>
+                                <input type="number" min="0" matInput [(ngModel)]="newProductQuantity">
+                            </mat-form-field>
+                        </div>
+                        <div class="flex flex-row gap-x-3 ml-3">
+                            <mat-checkbox class="mr-1" [(ngModel)]="newBlnOverride">Override Shipping</mat-checkbox>
+                        </div>
+                        <div class="col-12 text-right">
+                            <button mat-button mat-stroked-button (click)="addNewProduct()"
+                                [disabled]="isAddNewProdLoader">
+                                <span *ngIf="!isAddNewProdLoader">Add new product</span>
+                                <mat-progress-spinner *ngIf="isAddNewProdLoader" [diameter]="24"
+                                    [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </mat-expansion-panel>
+
+
+
             <!-- Imprint Options -->
-            <!-- <mat-expansion-panel [expanded]="true">
+            <mat-expansion-panel [expanded]="true">
                 <mat-expansion-panel-header>
                     <mat-panel-title class="text-lg font-bold">
                         Imprint Options
                     </mat-panel-title>
                 </mat-expansion-panel-header>
-                <div *ngIf="ngSelectedProduct.main_imprints.length == 0" class="mt-2">
+                <!-- *ngIf="ngSelectedProduct.main_imprints.length == 0" -->
+                <div class="mt-2">
                     <div class="alert alert-warning">
                         There are currently no imprint defined for this line item.
                     </div>
@@ -506,8 +853,8 @@
                                     </mat-form-field>
                                     <mat-checkbox>Match artwork colors</mat-checkbox>
                                     <mat-checkbox class="w-full font-bold text-white"
-                                    [ngStyle]="{'background': '#'+item.code}"
-                                    *ngFor="let item of ngSelectedProduct.imprintColorsData">{{item.name}}</mat-checkbox>
+                                        [ngStyle]="{'background': '#'+item.code}"
+                                        *ngFor="let item of ngSelectedProduct.imprintColorsData">{{item.name}}</mat-checkbox>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
@@ -519,7 +866,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="text-right" *ngIf="ngSelectedProduct.main_imprints.length > 0">
+                <!-- *ngIf="ngSelectedProduct.main_imprints.length > 0" -->
+                <div class="text-right">
                     <button mat-button mat-stroked-button (click)="updateImprintOptions()"
                         [disabled]="isUpdateImprintLoader">
                         <span *ngIf="!isUpdateImprintLoader">Update Imprints</span>
@@ -527,7 +875,9 @@
                         </mat-progress-spinner>
                     </button>
                 </div>
-            </mat-expansion-panel> -->
+            </mat-expansion-panel>
+
+
             <!-- Add Imprint Options -->
             <mat-expansion-panel [expanded]="true">
                 <mat-expansion-panel-header>
@@ -536,172 +886,60 @@
                     </mat-panel-title>
                 </mat-expansion-panel-header>
                 <div class="p-3">
-                    <div class="mt-2">
-                        <div class="alert alert-warning">
-                            There are currently no imprint defined for this line item.
+                    <!-- *ngIf="ngSelectedProduct.imprintsUnSelected.length > 0" -->
+                    <div>
+                        <mat-form-field class="w-full">
+                            <mat-select matInput [(ngModel)]="ngImprintSelected">
+                                <mat-option *ngFor="let imprint of ngSelectedProduct.imprintsUnSelected"
+                                    [value]="imprint">{{imprint.locationName}} /
+                                    {{imprint.methodName}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <div class="text-right">
+                            <button class="min-w-30" mat-button mat-stroked-button (click)="addImprintOptions()"
+                                [disabled]="isAddImprintLoader">
+                                <span *ngIf="!isAddImprintLoader">Add Imprint Option</span>
+                                <mat-progress-spinner *ngIf="isAddImprintLoader" [diameter]="24"
+                                    [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                            </button>
                         </div>
                     </div>
-                    <!-- <div *ngIf="ngSelectedProduct.imprintsUnSelected.length > 0">
-                    <mat-form-field class="w-full">
-                        <mat-select matInput [(ngModel)]="ngImprintSelected">
-                            <mat-option *ngFor="let imprint of ngSelectedProduct.imprintsUnSelected"
-                                [value]="imprint">{{imprint.locationName}} /
-                                {{imprint.methodName}}</mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                    <div class="text-right">
-                        <button class="min-w-30" mat-button mat-stroked-button (click)="addImprintOptions()"
-                            [disabled]="isAddImprintLoader">
-                            <span *ngIf="!isAddImprintLoader">Add Imprint Option</span>
-                            <mat-progress-spinner *ngIf="isAddImprintLoader" [diameter]="24" [mode]="'indeterminate'">
-                            </mat-progress-spinner>
-                        </button>
-                    </div>
-                </div> -->
                 </div>
             </mat-expansion-panel>
+
+
+
+
             <!-- Accessories -->
-            <mat-expansion-panel [expanded]="true">
+            <!-- <mat-expansion-panel [expanded]="true">
                 <mat-expansion-panel-header>
                     <mat-panel-title class="text-lg font-bold">
-                        Accessories
+                        Add accessory
                     </mat-panel-title>
                 </mat-expansion-panel-header>
                 <div class="p-3">
-                    <div class="mt-2 alert alert-warning">
-                        There are currently no accessories defined for this line item.
-                    </div>
-                    <!-- <div *ngIf="ngSelectedProduct.accessoriesSelected.length > 0">
-                    <table
-                        class="table table-striped table-bordered table-condensed table-hover padding-1x wide no-bottom-margin"
-                        id="updateAccessoriesTable_431">
-                        <thead>
-                            <tr class="columnHeader2">
-                                <td width="15%" colspan="2">ACCESSORY</td>
-                                <td width="5%" align="center">QTY</td>
-                                <td width="15%" colspan="2" align="center">COST</td>
-                                <td width="15%" colspan="2" align="center">PRICE</td>
-                                <td width="15%" align="center">DECORATOR PO</td>
-                                <td width="1%" align="center" valign="middle"><span class="fa fa-trash fa-lg"></span>
-                                </td>
-                            </tr>
-                        </thead>
-
-                        <tbody *ngFor="let item of ngSelectedProduct.accessoriesSelected">
-                            <tr>
-                                <td colspan="2"></td>
-                                <td></td>
-                                <td align="center"><b>Unit</b></td>
-                                <td align="center"><b>Total</b></td>
-                                <td align="center"><b>Unit</b></td>
-                                <td align="center"><b>Total</b></td>
-                                <td align="center"></td>
-                                <td></td>
-                            </tr>
-
-
-                            <tr class="clickable">
-                                <td width="10%" colspan="2">
-                                    <b>{{item.packagingName}}</b>
-                                </td>
-
-                                <td>
-                                    <input type="text" class="form-control" [(ngModel)]="item.quantity">
-                                </td>
-                                <td>
-                                    <div class="form-group no-bottom-margin">
-                                        <div class="input-group no-bottom-margin">
-                                            <input type="text" class="form-control" [(ngModel)]="item.runCost">
-                                        </div>
-                                    </div>
-                                </td>
-                                <td align="center">{{(item.quantity * item.runCost) | currency}}</td>
-                                <td>
-                                    <div class="form-group no-bottom-margin">
-                                        <div class="input-group no-bottom-margin">
-                                            <input type="text" class="form-control" [(ngModel)]="item.runPrice">
-                                        </div>
-                                    </div>
-                                </td>
-                                <td align="center">{{(item.quantity * item.runPrice) | currency}}</td>
-                                <td>
-                                    <select class="form-control" [(ngModel)]="item.blnDecoratorPO">
-                                        <option [value]="false" selected="">No</option>
-                                        <option [value]="true">Yes</option>
-                                    </select>
-                                </td>
-                                <td align="center" valign="top">
-                                    <mat-checkbox></mat-checkbox>
-                            </tr>
-
-                            <tr>
-                                <td colspan="3" align="right">
-                                    <h2 class="no-underline no-padding no-margin">Setups:</h2>
-                                </td>
-                                <td>
-                                    <div class="form-group no-bottom-margin">
-                                        <div class="input-group no-bottom-margin">
-                                            <input type="text" class="form-control" [(ngModel)]="item.setupCost">
-                                        </div>
-                                    </div>
-                                </td>
-
-                                <td></td>
-
-                                <td>
-                                    <div class="form-group no-bottom-margin">
-                                        <div class="input-group no-bottom-margin">
-                                            <input type="text" class="form-control" [(ngModel)]="item.setupPrice">
-                                        </div>
-                                    </div>
-                                </td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-
-                        </tbody>
-
-                    </table>
-                </div> -->
-                    <div class="text-right" *ngIf="true">
-                        <button mat-button mat-stroked-button (click)="updateAccessoriesOptions()" class="min-w-30"
-                            [disabled]="false">
-                            <span *ngIf="true">Update Accessories</span>
-                            <mat-progress-spinner *ngIf="false" [diameter]="24" [mode]="'indeterminate'">
-                            </mat-progress-spinner>
-                        </button>
+                    *ngIf="ngSelectedProduct.imprintsUnSelected.length > 0"
+                    <div>
+                        <mat-form-field class="w-full">
+                            <mat-select matInput [(ngModel)]="ngImprintSelected">
+                                <mat-option *ngFor="let imprint of ngSelectedProduct.imprintsUnSelected"
+                                    [value]="imprint">{{imprint.locationName}} /
+                                    {{imprint.methodName}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <div class="text-right">
+                            <button class="min-w-30" mat-button mat-stroked-button (click)="addImprintOptions()"
+                                [disabled]="isAddImprintLoader">
+                                <span *ngIf="!isAddImprintLoader">Add Imprint Option</span>
+                                <mat-progress-spinner *ngIf="isAddImprintLoader" [diameter]="24"
+                                    [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                            </button>
+                        </div>
                     </div>
                 </div>
-
-            </mat-expansion-panel>
-            <!-- Add New Accessories -->
-            <mat-expansion-panel [expanded]="true">
-                <mat-expansion-panel-header>
-                    <mat-panel-title class="text-lg font-bold">
-                        Add Accessories Option
-                    </mat-panel-title>
-                </mat-expansion-panel-header>
-                <div class="alert alert-warning mt-2">
-                    This product does not have any available accessories.
-                </div>
-                <!-- <div *ngIf="ngSelectedProduct.accessoriesUnSelected.length > 0">
-                    <mat-form-field class="w-full">
-                        <mat-select [(ngModel)]="ngSelectedAccessory">
-                            <mat-option *ngFor="let item of ngSelectedProduct.accessoriesUnSelected"
-                                [value]="item">{{item.packagingName}}</mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                    <div class="text-right">
-                        <button mat-button mat-stroked-button (click)="addAccoryOptionOptions()" class="min-w-30"
-                            [disabled]="isAddAccessoryLoader">
-                            <span *ngIf="!isAddAccessoryLoader">Add Accessories</span>
-                            <mat-progress-spinner *ngIf="isAddAccessoryLoader" [diameter]="24" [mode]="'indeterminate'">
-                            </mat-progress-spinner>
-                        </button>
-                    </div>
-                </div> -->
-            </mat-expansion-panel>
+            </mat-expansion-panel> -->
             <!-- Shipping -->
             <mat-expansion-panel [expanded]="true">
                 <mat-expansion-panel-header>
@@ -709,7 +947,7 @@
                         Shipping
                     </mat-panel-title>
                 </mat-expansion-panel-header>
-                <div class="row my-3 mx-3">
+                <div class="row p-3">
                     <div class="col-12 col-md-4">
                         <mat-form-field class="w-full">
                             <mat-label>Shipping Cost</mat-label>
@@ -745,15 +983,15 @@
                         Royalties
                     </mat-panel-title>
                 </mat-expansion-panel-header>
-                <div class="row px-3">
-                    <div class="col-12 col-md-9">
+                <div class="row p-3">
+                    <div class="col-12 col-md-12">
                         <mat-form-field class="w-full">
                             <mat-label>Royalty Price</mat-label>
                             <span matTextPrefix>$&nbsp;</span>
                             <input matInput [(ngModel)]="ngSelectedProduct.royaltyPrice">
                         </mat-form-field>
                     </div>
-                    <div class="col-12 col-md-3 mt-7">
+                    <div class="col-12 text-right">
                         <button class="min-w-40" mat-button mat-stroked-button (click)="updateRoyalties()"
                             [disabled]="isRoyaltyLoader">
                             <sapn *ngIf="!isRoyaltyLoader">Update Royalties</sapn>
@@ -770,7 +1008,7 @@
                         Subtotal
                     </mat-panel-title>
                 </mat-expansion-panel-header>
-                <div class="container-fluid text-lg">
+                <div class="container-fluid text-lg p-3">
                     <div class="row mt-2">
                         <div class="col-md-8 col-12 add-padding-sm"></div>
                         <div class="col-md-2 col-12 add-padding-sm text-right">
@@ -822,7 +1060,7 @@
                         Total
                     </mat-panel-title>
                 </mat-expansion-panel-header>
-                <div class="px-3">
+                <div class="p-3">
                     <div class="row mt-2 text-lg">
                         <div class="col-md-9 col-12">
                             <h2>TOTAL DISCOUNT:</h2>
