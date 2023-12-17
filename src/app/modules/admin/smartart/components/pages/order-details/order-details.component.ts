@@ -1137,6 +1137,15 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       } else {
         inhands = 'None';
       }
+      let approvingStoreUserID = null;
+      if (imprint.fk_storeUserApprovalContactID) {
+        approvingStoreUserID = imprint.fk_storeUserApprovalContactID;
+      } else if (imprint.fk_artApprovalContactID) {
+        approvingStoreUserID = imprint.fk_artApprovalContactID;
+      } else {
+        approvingStoreUserID = this.orderData.fk_storeUserID;
+      }
+
       this._changeDetectorRef.markForCheck();
       let payload: SmartartImprintStatusUpdate = {
         orderLineID: Number(this.paramData.pk_orderLineID),
@@ -1163,6 +1172,10 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
         billingStudentOrgCode: this.orderData.sessionArtworkBillingStudentOrgCode,
         imprintsCount: this.imprintdata.length,
         storeProductImage: storeImage,
+        blnIgnoreAdditionalArtEmails: this.orderData.sessionArtwork_blnIgnoreAdditionalArtEmails,
+        blnProofSent: imprint.blnProofSent,
+        fk_artApprovalContactID: approvingStoreUserID,
+        fk_storeUserApprovalContactID: imprint.fk_storeUserApprovalContactID,
         update_smart_imprint_status: true
       }
       this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -1628,6 +1641,8 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
         }
         this.orderData.artworkEmail = imprint.selectedContactEmail;
       }
+      const url = `https://assets.consolidus.com/artwork/Proof/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${imprint.pk_imprintID}.jpg`
+      this.checkIfImageExists(url, imprint)
     });
     // Contact Proof
     if (this.contactProofs) {

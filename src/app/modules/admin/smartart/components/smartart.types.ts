@@ -284,6 +284,10 @@ export interface SmartartImprintStatusUpdate {
     billingStudentOrgCode: string;
     imprintsCount: number;
     storeProductImage: string;
+    blnIgnoreAdditionalArtEmails: boolean;
+    blnProofSent: boolean;
+    fk_artApprovalContactID: number;
+    fk_storeUserApprovalContactID: number;
     update_smart_imprint_status: boolean;
 };
 
