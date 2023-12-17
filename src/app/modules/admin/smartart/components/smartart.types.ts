@@ -265,28 +265,25 @@ export interface SmartartImprintStatusUpdate {
     userID: number;
     orderLineImprintID: number;
     orderID: number;
-    statusID: number;
-    blnGroupRun: boolean;
-    update_smart_imprint_status: boolean;
-};
-
-export interface SmartartImprintStatusUpdate {
-    orderLineID: number;
-    storePrimaryHighlight: string;
-    imprintID: number;
-    userID: number;
-    orderLineImprintID: number;
-    orderID: number;
     orderDate: string;
     inHandsDate: string;
     statusID: number;
     storeID: number;
     storeName: string;
+    storeCode: string;
+    protocol: string;
+    storeURL: string;
     blnRespond: boolean;
     blnGroupRun: boolean;
     proofComments: string;
-    blnApproved: number; // Check fk_statusID for all orderLineImprintID's in the orderline 1 if statusID of imprint is "5,6,7,9,11,16" else 0
+    blnApproved: boolean; // Check fk_statusID for all orderLineImprintID's in the orderline 1 if statusID of imprint is "5,6,7,9,11,16" else 0
     smartArtLoggedInUserName: string;
+    blnAdditionalArtApproval: boolean;
+    blnAdditionalApprovalOverride: boolean;
+    storePrimaryHighlight: string;
+    billingStudentOrgCode: string;
+    imprintsCount: number;
+    storeProductImage: string;
     update_smart_imprint_status: boolean;
 };
 

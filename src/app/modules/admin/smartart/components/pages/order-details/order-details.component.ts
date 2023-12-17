@@ -313,12 +313,19 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
         // let status = imprint.pk_statusID;
         imprint.artworkPO = this.orderData.fk_orderID + '-' + this.paramData?.pk_orderLineID;
         // imprint.blnIncludeApproveByDate = false;
-        imprint.artworkDate = '2023-12-17';
-        imprint.artworkTime = '14:00';
+        imprint.artworkDate = '';
+        imprint.artworkTime = '';
+        if (imprint.formattedApproveByDate) {
+          let date = imprint.formattedApproveByDate.split('|||');
+          imprint.artworkDate = date[0];
+          imprint.artworkTime = date[1];
+        }
         imprint.proofComments = '';
         imprint.statusID = 9;
         imprint.emailRecipients = '';
         imprint.recipientsComment = '';
+        // Set Imprint Color
+        imprint.bgColor = this.setImprintColor(imprint.pk_statusID);
         // NEW PENDING
 
         if (imprint.pk_statusID == 2) {
@@ -442,6 +449,24 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       this.artWorkLoader = false;
       this._changeDetectorRef.markForCheck();
     });
+  }
+  setImprintColor(pk_statusID) {
+    const statusColorMap = {
+      2: '#FF9999',
+      4: '#FF9999',
+      9: '#FF9999',
+      16: '#FF9999',
+      3: '#99FF99',
+      5: '#99FF99',
+      7: '#99FF99',
+      11: '#99FF99',
+      12: '#99FF99',
+      13: '#99FF99',
+      17: '#99FF99',
+      // Add more mappings as needed
+    };
+
+    return statusColorMap[pk_statusID] || '';
   }
   getArtworkFiles() {
     let payload = {
@@ -1040,145 +1065,178 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     })
   }
+  checkImageExist(url) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.src = url;
 
+      if (img.complete) {
+        resolve(url);
+      } else {
+        img.onload = () => {
+          resolve(url);
+        };
+
+        img.onerror = () => {
+          resolve('https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg');
+        };
+      }
+    });
+  }
   applyStatusChangeImprint(imprint, statusID, type) {
-    let index = this.imprintdata.findIndex(imp => imp.pk_imprintID == imprint.pk_imprintID)
-    if (statusID == 9) {
-      if (imprint.blnRespond) {
-        if (imprint.proofComments == '') {
-          this._smartartService.snackBar('Please enter comments regarding this communication.');
-          return;
+    const url = `https://assets.consolidus.com/globalAssets/Products/HiRes/${this.orderData.pk_storeProductID}.jpg?${this.randomString}`;
+    let storeImage: any = '';
+    this.checkImageExist(url).then(imgRes => {
+      console.log(imgRes)
+      storeImage = imgRes;
+      let index = this.imprintdata.findIndex(imp => imp.pk_imprintID == imprint.pk_imprintID)
+      if (statusID == 9) {
+        if (imprint.blnRespond) {
+          if (imprint.proofComments == '') {
+            this._smartartService.snackBar('Please enter comments regarding this communication.');
+            return;
+          }
         }
       }
-    }
-    imprint.applyStatusLoader = false;
-    if (type != 'apply') {
-      if (statusID == 2) {
-        imprint.pendingStatusLoader = true;
-        imprint.recipientsComment = 'Please double check all details of this proof for accuracy.  (ie. phone numbers, email/addresses, websites).';
-      } else if (statusID == 3) {
-        imprint.awaitingStatusLoader = true;
-      } else if (statusID == 4) {
-        imprint.artworkStatusLoader = true;
-        imprint.recipientsComment = 'Please double check all details of this proof for accuracy.  (ie. phone numbers, email/addresses, websites).';
-      } else if (statusID == 5) {
-        imprint.decoratorStatusLoader = true;
-      } else if (statusID == 7) {
-        imprint.proofStatusLoader = true;
-      } else if (statusID == 9) {
-        imprint.approveStatusLoader = true;
-      } else if (statusID == 11) {
-        imprint.productionStatusLoader = true;
-      } else if (statusID == 12) {
-        imprint.holdStatusLoader = true;
-      } else if (statusID == 13) {
-        imprint.followStatusLoader = true;
-      } else if (statusID == 16) {
-        imprint.poStatusLoader = true;
-      } else if (statusID == 17) {
-        imprint.waitingStatusLoader = true;
-      }
-    } else {
-      imprint.applyStatusLoader = true;
-    }
-    let inhands;
-    let blnApprove = 0;
-    if (imprint.pk_statusID == 5 || imprint.pk_statusID == 6 || imprint.pk_statusID == 7 || imprint.pk_statusID == 9 || imprint.pk_statusID == 11 || imprint.pk_statusID == 16) {
-      blnApprove = 1;
-    } else {
-      blnApprove = 0;
-    }
-    if (this.orderData.inHandsDate) {
-      inhands = moment(this.orderData.inHandsDate).format('MM/DD/yyyy');
-    } else {
-      inhands = 'None';
-    }
-    let payload: SmartartImprintStatusUpdate = {
-      orderLineID: Number(this.paramData.pk_orderLineID),
-      imprintID: Number(imprint.pk_imprintID),
-      userID: Number(this.paramData.pfk_userID),
-      orderLineImprintID: Number(this.paramData.fk_imprintID),
-      orderID: Number(this.paramData.fk_orderID),
-      orderDate: moment(this.orderData.orderDate).format('MM/DD/YYYY'),
-      inHandsDate: inhands,
-      statusID: Number(statusID),
-      storeID: Number(this.orderData.pk_storeID),
-      storeName: this.orderData.storeName,
-      blnRespond: imprint.blnRespond,
-      blnGroupRun: this.orderData.blnGroupRun,
-      proofComments: imprint.proofComments,
-      blnApproved: blnApprove,
-      storePrimaryHighlight: this.orderData.storePrimaryHighlight,
-      smartArtLoggedInUserName: this.smartArtUser.firstName + ' ' + this.smartArtUser.lastName,
-      update_smart_imprint_status: true
-    }
-    this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      if (res["success"]) {
-        this._smartartService.snackBar(res["message"]);
-        if (statusID == 9) {
-          imprint.statusName = 'Artwork Approved';
-        } else if (statusID == 2) {
-          imprint.statusName = 'NEW PENDING';
+      imprint.applyStatusLoader = false;
+      if (type != 'apply') {
+        if (statusID == 2) {
+          imprint.pendingStatusLoader = true;
+          imprint.recipientsComment = 'Please double check all details of this proof for accuracy.  (ie. phone numbers, email/addresses, websites).';
         } else if (statusID == 3) {
-          imprint.statusName = 'AWAITING ARTWORK APPROVAL';
+          imprint.awaitingStatusLoader = true;
         } else if (statusID == 4) {
-          imprint.statusName = 'ARTWORK REVISION';
+          imprint.artworkStatusLoader = true;
+          imprint.recipientsComment = 'Please double check all details of this proof for accuracy.  (ie. phone numbers, email/addresses, websites).';
         } else if (statusID == 5) {
-          imprint.statusName = 'DECORATOR NOTIFIED';
+          imprint.decoratorStatusLoader = true;
         } else if (statusID == 7) {
-          imprint.statusName = 'NO PROOF NEEDED';
+          imprint.proofStatusLoader = true;
         } else if (statusID == 9) {
-          imprint.statusName = 'ARTWORK APPROVED';
+          imprint.approveStatusLoader = true;
         } else if (statusID == 11) {
-          imprint.statusName = 'IN PRODUCTION';
+          imprint.productionStatusLoader = true;
         } else if (statusID == 12) {
-          imprint.statusName = 'ON HOLD';
+          imprint.holdStatusLoader = true;
         } else if (statusID == 13) {
-          imprint.statusName = 'FOLLOW UP FOR APPROVAL';
+          imprint.followStatusLoader = true;
         } else if (statusID == 16) {
-          imprint.statusName = 'PO Sent';
+          imprint.poStatusLoader = true;
         } else if (statusID == 17) {
-          imprint.statusName = 'WAITING FOR GROUP ORDER';
+          imprint.waitingStatusLoader = true;
         }
-        imprint.pk_statusID = statusID;
-        imprint.statusDate = moment().format('yyyy-MM-DD');
+      } else {
+        imprint.applyStatusLoader = true;
       }
-      imprint.applyStatusLoader = false;
-      imprint.pendingStatusLoader = false;
-      imprint.awaitingStatusLoader = false;
-      imprint.artworkStatusLoader = false;
-      imprint.decoratorStatusLoader = false;
-      imprint.proofStatusLoader = false;
-      imprint.approveStatusLoader = false;
-      imprint.productionStatusLoader = false;
-      imprint.holdStatusLoader = false;
-      imprint.followStatusLoader = false;
-      imprint.poStatusLoader = false;
-      imprint.waitingStatusLoader = false;
-      imprint.blnRespond = false;
-      imprint.proofComments = '';
-      this.orderData.internalComments = this.orderData.internalComments + res["orderComment"];
-      if (res["customerArtworkComment"]) {
-        // this.imprintdata[index].imprintComments = this.imprintdata[index].imprintComments + ' <br>' + res["customerArtworkComment"];
+      let inhands;
+      let orderDate;
+      const validStatusIDs = [5, 6, 7, 9, 11, 16];
+      let blnApprove = validStatusIDs.includes(imprint.pk_statusID) ? true : false;
+      if (this.orderData.inHandsDate) {
+        inhands = moment(this.orderData.inHandsDate).format('MM/DD/yyyy');
+      } else {
+        inhands = 'None';
       }
-
-      this.updateImprintsData();
       this._changeDetectorRef.markForCheck();
-    }, err => {
-      imprint.applyStatusLoader = false;
-      imprint.pendingStatusLoader = false;
-      imprint.awaitingStatusLoader = false;
-      imprint.artworkStatusLoader = false;
-      imprint.decoratorStatusLoader = false;
-      imprint.proofStatusLoader = false;
-      imprint.approveStatusLoader = false;
-      imprint.productionStatusLoader = false;
-      imprint.holdStatusLoader = false;
-      imprint.followStatusLoader = false;
-      imprint.poStatusLoader = false;
-      imprint.waitingStatusLoader = false;
-      this._changeDetectorRef.markForCheck();
-    })
+      let payload: SmartartImprintStatusUpdate = {
+        orderLineID: Number(this.paramData.pk_orderLineID),
+        imprintID: Number(imprint.pk_imprintID),
+        userID: Number(this.paramData.pfk_userID),
+        orderLineImprintID: Number(this.paramData.fk_imprintID),
+        orderID: Number(this.paramData.fk_orderID),
+        orderDate: this.orderData.orderDate,
+        inHandsDate: inhands,
+        statusID: Number(statusID),
+        storeID: Number(this.orderData.pk_storeID),
+        storeName: this.orderData.storeName,
+        storeCode: this.orderData.storeCode,
+        protocol: this.orderData.protocol,
+        storeURL: this.orderData.storeURL,
+        blnRespond: imprint.blnRespond,
+        blnGroupRun: this.orderData.blnGroupRun,
+        proofComments: imprint.proofComments,
+        blnApproved: blnApprove,
+        smartArtLoggedInUserName: this.smartArtUser.firstName + ' ' + this.smartArtUser.lastName,
+        blnAdditionalArtApproval: false,
+        blnAdditionalApprovalOverride: false,
+        storePrimaryHighlight: this.orderData.storePrimaryHighlight,
+        billingStudentOrgCode: this.orderData.sessionArtworkBillingStudentOrgCode,
+        imprintsCount: this.imprintdata.length,
+        storeProductImage: storeImage,
+        update_smart_imprint_status: true
+      }
+      this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+        if (res["success"]) {
+          this._smartartService.snackBar(res["message"]);
+          if (statusID == 9) {
+            imprint.statusName = 'Artwork Approved';
+          } else if (statusID == 2) {
+            imprint.statusName = 'NEW PENDING';
+          } else if (statusID == 3) {
+            imprint.statusName = 'AWAITING ARTWORK APPROVAL';
+          } else if (statusID == 4) {
+            imprint.statusName = 'ARTWORK REVISION';
+          } else if (statusID == 5) {
+            imprint.statusName = 'DECORATOR NOTIFIED';
+          } else if (statusID == 7) {
+            imprint.statusName = 'NO PROOF NEEDED';
+          } else if (statusID == 9) {
+            imprint.statusName = 'ARTWORK APPROVED';
+          } else if (statusID == 11) {
+            imprint.statusName = 'IN PRODUCTION';
+          } else if (statusID == 12) {
+            imprint.statusName = 'ON HOLD';
+          } else if (statusID == 13) {
+            imprint.statusName = 'FOLLOW UP FOR APPROVAL';
+          } else if (statusID == 16) {
+            imprint.statusName = 'PO Sent';
+          } else if (statusID == 17) {
+            imprint.statusName = 'WAITING FOR GROUP ORDER';
+          }
+          imprint.pk_statusID = statusID;
+          imprint.statusDate = moment().format('yyyy-MM-DD');
+        }
+        imprint.applyStatusLoader = false;
+        imprint.pendingStatusLoader = false;
+        imprint.awaitingStatusLoader = false;
+        imprint.artworkStatusLoader = false;
+        imprint.decoratorStatusLoader = false;
+        imprint.proofStatusLoader = false;
+        imprint.approveStatusLoader = false;
+        imprint.productionStatusLoader = false;
+        imprint.holdStatusLoader = false;
+        imprint.followStatusLoader = false;
+        imprint.poStatusLoader = false;
+        imprint.waitingStatusLoader = false;
+        imprint.blnRespond = false;
+        imprint.proofComments = '';
+        this.orderData.internalComments = this.orderData.internalComments + res["orderComment"];
+        if (res["customerArtworkComment"]) {
+          // this.imprintdata[index].imprintComments = this.imprintdata[index].imprintComments + ' <br>' + res["customerArtworkComment"];
+        }
+        if (statusID == 9) {
+          if (imprint.viewProofCheck) {
+            this.removeProofArtImage(imprint);
+          }
+        }
+        this.updateImprintsData();
+        this._changeDetectorRef.markForCheck();
+      }, err => {
+        imprint.applyStatusLoader = false;
+        imprint.pendingStatusLoader = false;
+        imprint.awaitingStatusLoader = false;
+        imprint.artworkStatusLoader = false;
+        imprint.decoratorStatusLoader = false;
+        imprint.proofStatusLoader = false;
+        imprint.approveStatusLoader = false;
+        imprint.productionStatusLoader = false;
+        imprint.holdStatusLoader = false;
+        imprint.followStatusLoader = false;
+        imprint.poStatusLoader = false;
+        imprint.waitingStatusLoader = false;
+        this._changeDetectorRef.markForCheck();
+      })
+    });
   }
   // Update order Attention
   updateAttentionFlagOrder(item, check) {
@@ -1239,7 +1297,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   }
   removeProofArtImage(imprint) {
     let payload = {
-      files: [`/artwork/Proof/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.paramData.fk_imprintID}.jpg`],
+      files: [`/artwork/Proof/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${imprint.pk_imprintID}.jpg`],
       delete_multiple_files: true
     }
     this._commonService.removeMediaFiles(payload)
@@ -1252,7 +1310,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   }
   uploadProofArtDelCheck(imprint) {
     let path;
-    path = `/artwork/Proof/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${this.paramData.fk_imprintID}.${this.imageArtworkValue.type}`;
+    path = `/artwork/Proof/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${imprint.pk_imprintID}.jpg`;
     const base64 = this.imageArtworkValue.imageUpload.split(",")[1];
     const payload = {
       file_upload: true,
@@ -1335,13 +1393,15 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
     }
     this.artworkFileInput.nativeElement.value = '';
     this.imageArtworkValue = null;
-    let index = this.imprintdata.findIndex(imp => imp.pk_imprintID == this.paramData.fk_imprintID)
+    let index = this.imprintdata.findIndex(imp => imp.pk_imprintID == imprint.pk_imprintID)
     this._smartartService.AddSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       imprint.artworkProofLoader = false;
-      this.imprintdata[index].statusName = 'Awaiting Artwork Approval';
-      this.imprintdata[index].pk_statusID = 3;
-      this.imprintdata[index].imprintComments = this.imprintdata[index].imprintComments + ' <br>' + res["customerComment"];
+      imprint.statusName = 'Awaiting Artwork Approval';
+      imprint.pk_statusID = 3;
+      imprint.imprintComments = imprint.imprintComments + ' <br>' + res["customerComment"];
       this.orderData.internalComments = this.orderData.internalComments + res["orderComment"];
+      imprint.bgColor = this.setImprintColor(imprint.pk_statusID);
+      // console.log(imprint);
       this._smartartService.snackBar(res["message"]);
       this.updateImprintsData();
       this._changeDetectorRef.markForCheck();
@@ -1473,12 +1533,23 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
     // Assign email recipients
     this.imprintdata.forEach(imprint => {
       // let status = imprint.pk_statusID;
+      // let status = imprint.pk_statusID;
       imprint.artworkPO = this.orderData.fk_orderID + '-' + this.paramData?.pk_orderLineID;
-      imprint.blnIncludeApproveByDate = false;
+      // imprint.blnIncludeApproveByDate = false;
+      imprint.artworkDate = '';
+      imprint.artworkTime = '';
+      if (imprint.formattedApproveByDate) {
+        let date = imprint.formattedApproveByDate.split('|||');
+        imprint.artworkDate = date[0];
+        imprint.artworkTime = date[1];
+      }
       imprint.proofComments = '';
       imprint.statusID = 9;
       imprint.emailRecipients = '';
       imprint.recipientsComment = '';
+      // Set Imprint Color
+      imprint.bgColor = this.setImprintColor(imprint.pk_statusID);
+
       // NEW PENDING
 
       if (imprint.pk_statusID == 2) {

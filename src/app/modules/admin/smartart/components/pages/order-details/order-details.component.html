@@ -784,14 +784,19 @@
                                         </div>
                                     </div>
                                     <div class="col-12 mt-2">
+                                        <!-- Imprint Status -->
+                                        <div [ngStyle]="{'background-color': imprint.bgColor}"
+                                            class="p-2 mb-2 rounded-md text-center text-dark" [showIcon]="false">
+                                            As of {{imprint.statusDate | date: 'MM/dd/yyyy'}} the status of this
+                                            item
+                                            is <b>{{imprint.statusName}}</b>
+                                            <ng-container *ngIf="imprint.pk_statusID == 9">
+                                                <span *ngIf="imprint.approvalName">{{imprint.approvalName}} </span>
+                                                <span *ngIf="imprint.approvalEmail">({{imprint.approvalEmail}})</span>
+                                            </ng-container>.
+                                        </div>
                                         <!-- NEW PENDING -->
                                         <div *ngIf="imprint.pk_statusID == 2" class="rounded-2xl shadow bg-card p-4 ">
-                                            <fuse-alert class="mb-2" [appearance]="'outline'" [type]="'warning'"
-                                                [showIcon]="false">
-                                                As of {{imprint.statusDate | date: 'MM/dd/yyyy'}} the status of this
-                                                item
-                                                is {{imprint.statusName}}.
-                                            </fuse-alert>
                                             <div *ngIf="imprint.viewProofCheck || imprint.viewFinalArtworkCheck">
                                                 <b>
                                                     <div class="flex space-x-1 text-lg">
@@ -799,11 +804,11 @@
                                                         <br>
                                                         <a target="_blank" class="underline" class="underline"
                                                             *ngIf="imprint.viewProofCheck"
-                                                            href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg?{{randomString}}">(Click
+                                                            href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{imprint.pk_imprintID}}.jpg?{{randomString}}">(Click
                                                             here to view proof)</a>
                                                         <a target="_blank" class="underline"
                                                             *ngIf="imprint.viewFinalArtworkCheck"
-                                                            href="https://assets.consolidus.com/artwork/finalArt/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.eps?{{randomString}}">(Download
+                                                            href="https://assets.consolidus.com/artwork/finalArt/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{imprint.pk_imprintID}}.eps?{{randomString}}">(Download
                                                             final artwork)</a>
                                                     </div>
                                                 </b>
@@ -856,7 +861,7 @@
                                                         <div>
                                                             <label>Select File</label>
                                                             <br>
-                                                            <input type="file" #artworkFileInput
+                                                            <input type="file" accept=".jpg" #artworkFileInput
                                                                 (change)="uploadArtworkFile($event)">
                                                         </div>
                                                         <mat-checkbox
@@ -1022,12 +1027,6 @@
                                         </div>
                                         <!--- AWAITING ARTWORK APPROVAL --->
                                         <div *ngIf="imprint.pk_statusID == 3" class="rounded-2xl shadow bg-card p-4 ">
-                                            <fuse-alert class="mb-2" [appearance]="'outline'" [type]="'warning'"
-                                                [showIcon]="false">
-                                                As of {{imprint.statusDate | date: 'MM/dd/yyyy'}} the status of this
-                                                item is {{imprint.statusName}}.
-                                            </fuse-alert>
-
                                             <div *ngIf="imprint.viewProofCheck || imprint.viewFinalArtworkCheck">
                                                 <b>
                                                     <div class="flex space-x-1">
@@ -1035,7 +1034,7 @@
                                                         <br>
                                                         <a target="_blank" class="underline"
                                                             *ngIf="imprint.viewProofCheck"
-                                                            href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg?{{randomString}}">(Click
+                                                            href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{imprint.pk_imprintID}}.jpg?{{randomString}}">(Click
                                                             here to view proof)</a>
                                                     </div>
                                                 </b>
@@ -1228,11 +1227,6 @@
                                         </div>
                                         <!--- ARTWORK REVISION --->
                                         <div *ngIf="imprint.pk_statusID == 4" class="rounded-2xl shadow bg-card p-4 ">
-                                            <fuse-alert class="mb-2" [appearance]="'outline'" [type]="'warning'"
-                                                [showIcon]="false">
-                                                As of {{imprint.statusDate | date: 'MM/dd/yyyy'}} the status of this
-                                                item is {{imprint.statusName}}.
-                                            </fuse-alert>
                                             <div *ngIf="imprint.viewProofCheck || imprint.viewFinalArtworkCheck">
                                                 <b>
                                                     <div class="flex space-x-1">
@@ -1240,7 +1234,7 @@
                                                         <br>
                                                         <a target="_blank" class="underline"
                                                             *ngIf="imprint.viewProofCheck"
-                                                            href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg?{{randomString}}">(Click
+                                                            href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{imprint.pk_imprintID}}.jpg?{{randomString}}">(Click
                                                             here to view proof)</a>
                                                     </div>
                                                 </b>
@@ -1293,7 +1287,7 @@
                                                         <div>
                                                             <label>Select File</label>
                                                             <br>
-                                                            <input type="file" #artworkFileInput
+                                                            <input type="file" accept=".jpg" #artworkFileInput
                                                                 (change)="uploadArtworkFile($event)">
                                                         </div>
                                                         <mat-checkbox
@@ -1461,11 +1455,6 @@
                                         </div>
                                         <!--- DECORATOR NOTIFIED --->
                                         <div *ngIf="imprint.pk_statusID == 5" class="rounded-2xl shadow bg-card p-4 ">
-                                            <fuse-alert class="mb-2" [appearance]="'outline'" [type]="'success'"
-                                                [showIcon]="false">
-                                                As of {{imprint.statusDate | date: 'MM/dd/yyyy'}} the status of this
-                                                item is {{imprint.statusName}}.
-                                            </fuse-alert>
                                             <div>
                                                 <b>
                                                     <div class="flex space-x-1">
@@ -1473,7 +1462,7 @@
                                                         <br>
                                                         <a target="_blank" class="underline"
                                                             *ngIf="imprint.viewProofCheck"
-                                                            href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg?{{randomString}}">(Click
+                                                            href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{imprint.pk_imprintID}}.jpg?{{randomString}}">(Click
                                                             here to view proof)</a>
                                                         <a target="_blank"
                                                             *ngFor="let finalArt of imprint?.artworkFinalartFiles"
@@ -1613,11 +1602,6 @@
                                         </div>
                                         <!-- No Proof Needed -->
                                         <div *ngIf="imprint.pk_statusID == 7" class="rounded-2xl shadow bg-card p-4 ">
-                                            <fuse-alert class="mb-2" [appearance]="'outline'" [type]="'warning'"
-                                                [showIcon]="false">
-                                                As of {{imprint.statusDate | date: 'MM/dd/yyyy'}} the status of this
-                                                item is {{imprint.statusName}}.
-                                            </fuse-alert>
                                             <div class="row">
                                                 <div class="col-md-8 col-12">
                                                     <p class="text-lg font-bold">No Proof Needed</p>
@@ -1677,14 +1661,6 @@
                                         </div>
                                         <!--- ARTWORK APPROVED --->
                                         <div *ngIf="imprint.pk_statusID == 9" class="rounded-2xl shadow bg-card p-4 ">
-                                            <fuse-alert class="mb-2" [appearance]="'outline'" [type]="'warning'"
-                                                [showIcon]="false">
-                                                As of {{imprint.statusDate | date: 'MM/dd/yyyy'}} the status of this
-                                                item
-                                                is {{imprint.statusName}} <span
-                                                    *ngIf="imprint.approvalName">{{imprint.approvalName}} </span> <span
-                                                    *ngIf="imprint.approvalEmail">({{imprint.approvalEmail}})</span>.
-                                            </fuse-alert>
                                             <div *ngIf="imprint.viewProofCheck">
                                                 <b>
                                                     <div class="flex space-x-1">
@@ -1824,11 +1800,6 @@
                                         </div>
                                         <!--- IN PRODUCTION --->
                                         <div *ngIf="imprint.pk_statusID == 11" class="rounded-2xl shadow bg-card p-4 ">
-                                            <fuse-alert class="mb-2" [appearance]="'outline'" [type]="'success'"
-                                                [showIcon]="false">
-                                                As of {{imprint.statusDate | date: 'MM/dd/yyyy'}} the status of this
-                                                item is {{imprint.statusName}}.
-                                            </fuse-alert>
                                             <div>
                                                 <b>
                                                     <div class="flex space-x-1">
@@ -1836,7 +1807,7 @@
                                                         <br>
                                                         <a target="_blank" class="underline"
                                                             *ngIf="imprint.viewProofCheck"
-                                                            href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg?{{randomString}}">(Click
+                                                            href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{imprint.pk_imprintID}}.jpg?{{randomString}}">(Click
                                                             here to view proof)</a>
                                                         <a target="_blank"
                                                             *ngFor="let finalArt of imprint?.artworkFinalartFiles"
@@ -1965,11 +1936,6 @@
                                         </div>
                                         <!--- ON HOLD --->
                                         <div *ngIf="imprint.pk_statusID == 12" class="rounded-2xl shadow bg-card p-4 ">
-                                            <fuse-alert class="mb-2" [appearance]="'outline'" [type]="'warning'"
-                                                [showIcon]="false">
-                                                As of {{imprint.statusDate | date: 'MM/dd/yyyy'}} the status of this
-                                                item is {{imprint.statusName}}.
-                                            </fuse-alert>
                                             <div *ngIf="imprint.viewProofCheck || imprint.viewFinalArtworkCheck">
                                                 <b>
                                                     <div class="flex space-x-1">
@@ -1977,7 +1943,7 @@
                                                         <br>
                                                         <a target="_blank" class="underline"
                                                             *ngIf="imprint.viewProofCheck"
-                                                            href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg?{{randomString}}">(Click
+                                                            href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{imprint.pk_imprintID}}.jpg?{{randomString}}">(Click
                                                             here to view proof)</a>
                                                     </div>
                                                 </b>
@@ -2177,17 +2143,12 @@
                                         </div>
                                         <!--- FOLLOW UP FOR APPROVAL --->
                                         <div *ngIf="imprint.pk_statusID == 13" class="rounded-2xl shadow bg-card p-4 ">
-                                            <fuse-alert class="mb-2" [appearance]="'outline'" [type]="'warning'"
-                                                [showIcon]="false">
-                                                As of {{imprint.statusDate | date: 'MM/dd/yyyy'}} the status of this
-                                                item is {{imprint.statusName}}.
-                                            </fuse-alert>
                                             <div *ngIf="imprint.viewProofCheck || imprint.viewFinalArtworkCheck">
                                                 <b>
                                                     <div class="flex space-x-1">
                                                         <a target="_blank" class="underline"
                                                             *ngIf="imprint.viewProofCheck"
-                                                            href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg?{{randomString}}">(Click
+                                                            href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{imprint.pk_imprintID}}.jpg?{{randomString}}">(Click
                                                             here to view proof)</a>
                                                     </div>
                                                 </b>
@@ -2342,18 +2303,13 @@
                                         </div>
                                         <!--- PO Sent --->
                                         <div *ngIf="imprint.pk_statusID == 16" class="rounded-2xl shadow bg-card p-4 ">
-                                            <fuse-alert class="mb-2" [appearance]="'outline'" [type]="'warning'"
-                                                [showIcon]="false">
-                                                As of {{imprint.statusDate | date: 'MM/dd/yyyy'}} the status of this
-                                                item is {{imprint.statusName}}.
-                                            </fuse-alert>
                                             <div *ngIf="imprint.viewProofCheck || imprint.viewFinalArtworkCheck">
                                                 <b>
                                                     <div class="flex space-x-1">
                                                         <p>Send Art To Decorator | </p>
                                                         <a target="_blank" class="underline"
                                                             *ngIf="imprint.viewProofCheck"
-                                                            href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{this.paramData.fk_imprintID}}.jpg?{{randomString}}">(Click
+                                                            href="https://assets.consolidus.com/artwork/Proof/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{imprint.pk_imprintID}}.jpg?{{randomString}}">(Click
                                                             here to view proof)</a>
                                                     </div>
                                                 </b>
@@ -2449,11 +2405,6 @@
                                         </div>
                                         <!--- WAITING FOR GROUP ORDER --->
                                         <div *ngIf="imprint.pk_statusID == 17" class="rounded-2xl shadow bg-card p-4 ">
-                                            <fuse-alert class="mb-2" [appearance]="'outline'" [type]="'warning'"
-                                                [showIcon]="false">
-                                                As of {{imprint.statusDate | date: 'MM/dd/yyyy'}} the status of this
-                                                item is {{imprint.statusName}}.
-                                            </fuse-alert>
                                             <div class="row">
                                                 <div class="col-md-8 col-12">
                                                     <h3>Waiting For group order To Finish</h3>
