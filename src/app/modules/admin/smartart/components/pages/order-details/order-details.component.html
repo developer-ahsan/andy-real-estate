@@ -702,7 +702,28 @@
                                     <div class="col-md-8 col-12 mt-3">
                                         <div class="row">
                                             <div class="col-6 font-bold">Quantity:</div>
-                                            <div class="col-6">{{orderData.quantity}}</div>
+                                            <div class="col-6">
+                                                <span *ngIf="!orderData.blnApparel">{{orderData.quantity}}</span>
+                                                <div class="relative" *ngIf="orderData.blnApparel"
+                                                    [id]="'tooltip-' + i +'imprint'" (mouseenter)="mouseEnter($event)"
+                                                    (mouseleave)="activeTooltip = ''">
+                                                    <div class="cursor-pointer">{{orderData.quantity}}</div>
+
+                                                    <div *ngIf="activeTooltip === 'tooltip-' + i +'imprint'">
+                                                        <div class="absolute bg-yellow-100  top-5 left-0 right-0 p-2 z-10 rounded-lg shadow-md"
+                                                            style="max-width: max-content; ">
+                                                            <div class="font-medium text-xs">
+                                                                <p
+                                                                    *ngFor="let qtyData of imprint.qryOrderLineItemReportData">
+                                                                    ({{qtyData.quantity}}x) {{qtyData.name}} &
+                                                                    {{qtyData.size}}</p>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
                                             <div class="col-6 font-bold">Imprint Colors:</div>
                                             <div class="col-6">
                                                 <div class="max-h-20  overflow-y-auto ">
@@ -713,8 +734,15 @@
                                             <div class="col-6">{{imprint.locationName}}</div>
                                             <div class="col-6 font-bold">Item Colors:</div>
                                             <div class="col-6">
-                                                <div class="max-h-20  overflow-y-auto ">
-                                                    {{imprint.itemColors}}
+                                                <div class="">
+                                                    <span
+                                                        *ngFor="let color of imprint.itemColorsWithIDsData;let last=last">
+                                                        <a *ngIf="color.image"
+                                                            href="https://assets.consolidus.com/globalAssets/Products/Colors/{{orderData.fk_productID}}/{{color.id}}.jpg"
+                                                            target="_blank">{{color.name}}</a>
+                                                        <span *ngIf="!color.image">{{color.name}}</span>
+                                                        <span *ngIf="!last">, </span></span>
+
                                                 </div>
                                             </div>
                                             <div class="col-6 font-bold">Imprint Size:</div>

@@ -143,6 +143,8 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   userDetails: any;
   randomString: any = new Date().getTime();
 
+  activeTooltip = '';
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _authService: AuthService,
@@ -324,6 +326,12 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
         imprint.statusID = 9;
         imprint.emailRecipients = '';
         imprint.recipientsComment = '';
+        // set Imprint Quantity
+        this.setitemColorsWithIDs(imprint);
+
+        if (this.orderData.blnApparel) {
+          this.setImprintQTYToast(imprint);
+        }
         // Set Imprint Color
         imprint.bgColor = this.setImprintColor(imprint.pk_statusID);
         // NEW PENDING
@@ -449,6 +457,33 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       this.artWorkLoader = false;
       this._changeDetectorRef.markForCheck();
     });
+  }
+  setitemColorsWithIDs(imprint) {
+    imprint.itemColorsWithIDsData = [];
+    if (imprint.itemColorsWithIDs) {
+      let colors = imprint.itemColorsWithIDs.split(',,');
+      colors.forEach(color => {
+        const [id, name] = color.split('::');
+        let image = false;
+        this.checkImageExist(`https://assets.consolidus.com/globalAssets/Products/Colors/${this.orderData.fk_productID}/${id}.jpg`).then(res => {
+          if (res) {
+            image = true;
+          }
+          imprint.itemColorsWithIDsData.push({ id, name, image });
+        })
+      });
+    }
+  }
+  setImprintQTYToast(imprint) {
+    if (imprint.qryOrderLineItemReport) {
+      let items = imprint.qryOrderLineItemReport.split(',,');
+      imprint.qryOrderLineItemReportData = [];
+      items.forEach(element => {
+        const [quantity, name, size] = element.split('::');
+        imprint.qryOrderLineItemReportData.push({ quantity, name, size });
+      });
+    }
+    this._changeDetectorRef.markForCheck();
   }
   setImprintColor(pk_statusID) {
     const statusColorMap = {
@@ -1071,14 +1106,14 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       img.src = url;
 
       if (img.complete) {
-        resolve(url);
+        resolve(true);
       } else {
         img.onload = () => {
-          resolve(url);
+          resolve(true);
         };
 
         img.onerror = () => {
-          resolve('https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg');
+          resolve(false);
         };
       }
     });
@@ -1087,8 +1122,11 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
     const url = `https://assets.consolidus.com/globalAssets/Products/HiRes/${this.orderData.pk_storeProductID}.jpg?${this.randomString}`;
     let storeImage: any = '';
     this.checkImageExist(url).then(imgRes => {
-      console.log(imgRes)
-      storeImage = imgRes;
+      if (imgRes) {
+        storeImage = url;
+      } else {
+        storeImage = 'https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg';
+      }
       let index = this.imprintdata.findIndex(imp => imp.pk_imprintID == imprint.pk_imprintID)
       if (statusID == 9) {
         if (imprint.blnRespond) {
@@ -1250,6 +1288,9 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
       })
     });
+  }
+  mouseEnter(ev: any) {
+    this.activeTooltip = ev.target.id;
   }
   // Update order Attention
   updateAttentionFlagOrder(item, check) {
@@ -1560,6 +1601,12 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       imprint.statusID = 9;
       imprint.emailRecipients = '';
       imprint.recipientsComment = '';
+      this.setitemColorsWithIDs(imprint);
+      // Set Imprint Quantity Toast
+      if (this.orderData.blnApparel) {
+        this.setImprintQTYToast(imprint);
+      }
+
       // Set Imprint Color
       imprint.bgColor = this.setImprintColor(imprint.pk_statusID);
 
