@@ -149,7 +149,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
     if (this.selectedQuoteDetail.blnEProcurement) {
       let blnApproved = true;
 
-      blnApproved = !this.imprintStatuses.some(obj =>
+      blnApproved = !this.imprintStatuses.every(obj =>
         obj["fk_statusID"] !== 7 || obj["fk_statusID"] !== 9
       );
 
@@ -159,7 +159,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
         this.strReturn.statusDescription = '<b>All Approvals Have Been Received!</b><br />All approvals have been received and you can now load your quote and punchout.';
         return;
       } else {
-        let blnArtApprovalReceived = this.imprintStatuses.some(obj =>
+        let blnArtApprovalReceived = this.imprintStatuses.every(obj =>
           (obj["fk_statusID"] === 3 || obj["fk_statusID"] === 4 || obj["fk_statusID"] === 13) &&
           (obj["fk_artApprovalContactID"] || obj["fk_storeUserApprovalContactID"])
         );
@@ -171,7 +171,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
             this.strReturn.statusDescription = '<b>Your artwork approval has been received!</b><br />We are now waiting for any additional approval required.'
           return;
         } else {
-          let blnProofAwaiting = this.imprintStatuses.some(obj =>
+          let blnProofAwaiting = this.imprintStatuses.every(obj =>
             (obj["fk_statusID"] === 3 || obj["fk_statusID"] === 4 || obj["fk_statusID"] === 13) &&
             !obj["fk_artApprovalContactID"] &&
             !obj["fk_storeUserApprovalContactID"]
@@ -208,21 +208,18 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
         // }
       }
     } else {
-      let blnApproved = !this.imprintStatuses.some(obj =>
+      let blnApproved = this.imprintStatuses.every(obj =>
         obj["fk_statusID"] === 7 || obj["fk_statusID"] === 9
       );
-
-
       if (blnApproved) {
         this.strReturn.statusID = 4;
         this.strReturn.statusName = 'All Approvals Received';
         this.strReturn.statusDescription = '<b>All approvals have been received!</b><br />All approvals have been received and we are ready to send to production as long as payment has been arranged.';
         return;
       } else {
-        let blnNew = this.imprintStatuses.every(obj =>
+        let blnNew = !this.imprintStatuses.every(obj =>
           obj["fk_statusID"] !== 1
         );
-
         if (!blnNew) {
           this.strReturn.statusID = 3;
           this.strReturn.statusName = 'Your Art Approval Received';
