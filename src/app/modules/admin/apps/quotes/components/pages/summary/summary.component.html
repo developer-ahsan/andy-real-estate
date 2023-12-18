@@ -83,7 +83,7 @@
 
             <!-- Quote Tracker -->
             <div class="col-12 ">
-                <div class="rounded-2xl shadow bg-card items-center w-full px-6 py-6 filter-info">
+                <div *ngIf="this.selectedQuoteDetail.punchoutDate" class="rounded-2xl shadow bg-card items-center w-full px-6 py-6 filter-info">
                     <div class="text-xl font-semibold leading-tight pb-3">Quote Tracker</div>
                     <div *ngIf="ngStatus == 0" class="mt-2">
                         <ngx-skeleton-loader count="4" appearance="line" animation="pulse">
@@ -91,21 +91,21 @@
                     </div>
                     <div class="row text-center font-medium" *ngIf="ngStatus != 0">
                         <div class="col-md-2 col-6 p-1 ">
-                            <div class="h-24 p-2 tracker" [ngClass]="{'tracker-active': strReturn.statusID > 0}">
+                            <div class="min-h-24 p-2 tracker" [ngClass]="{'tracker-active': strReturn.statusID > 0}">
                                 <h1>1</h1>
                                 Quote Generated
                             </div>
                         </div>
 
                         <div class="col-md-2 col-6 p-1 ">
-                            <div class="h-24 p-2 tracker" [ngClass]="{'tracker-active': strReturn.statusID > 1}">
+                            <div class="min-h-24 p-2 tracker" [ngClass]="{'tracker-active': strReturn.statusID > 1}">
                                 <h1>2</h1>
                                 Proof is awaiting your approval
                             </div>
 
                         </div>
                         <div class="col-md-2 col-6 p-1 ">
-                            <div class="h-24 p-2 tracker" [ngClass]="{'tracker-active': strReturn.statusID > 2}">
+                            <div class="min-h-24 p-2 tracker" [ngClass]="{'tracker-active': strReturn.statusID > 2}">
                                 <h1>3</h1>
                                 Your proof Approval Received
                             </div>
@@ -113,7 +113,7 @@
                         </div>
 
                         <div class="col-md-2 col-6 p-1 ">
-                            <div class=" p-2 tracker" [ngClass]="{'tracker-active': strReturn.statusID > 3}">
+                            <div class="min-h-24 p-2 tracker" [ngClass]="{'tracker-active': strReturn.statusID > 3}">
                                 <h1>4</h1>
                                 Secondary Approval(s) Received - Ready For Punchout
                             </div>
@@ -121,16 +121,71 @@
                         </div>
 
                         <div class="col-md-2 col-6 p-1">
-                            <div class=" p-2 tracker" [ngClass]="{'tracker-active': strReturn.statusID > 4}">
+                            <div class="min-h-24 p-2 tracker" [ngClass]="{'tracker-active': strReturn.statusID > 3}">
                                 <h1>5</h1>
                                 Punchout Initiated - Awaiting Purchase Order
                             </div>
                         </div>
 
                         <div class="col-md-2 col-6 p-1">
-                            <div class="h-24 p-2 tracker" [ngClass]="{'tracker-active': strReturn.statusID > 5}">
+                            <div class="min-h-24 p-2 tracker" [ngClass]="{'tracker-active': strReturn.statusID > 5}">
                                 <h1>6</h1>
                                 Purchase Order Received
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center mt-2" [innerHTML]="strReturn.statusDescription"></div>
+                </div>
+
+
+                <div *ngIf="!this.selectedQuoteDetail.punchoutDate" class="rounded-2xl shadow bg-card items-center w-full px-6 py-6 filter-info">
+                    <div class="text-xl font-semibold leading-tight pb-3">Quote Tracker</div>
+                    <div *ngIf="ngStatus == 0" class="mt-2">
+                        <ngx-skeleton-loader count="4" appearance="line" animation="pulse">
+                        </ngx-skeleton-loader>
+                    </div>
+                    <div class="row text-center font-medium" *ngIf="ngStatus != 0">
+                        <div class="col-md-2 col-6 p-1 ">
+                            <div class="min-h-24 p-2 tracker" [ngClass]="{'tracker-active': strReturn.statusID > 0}">
+                                <h1>1</h1>
+                                Quote Placed
+                            </div>
+                        </div>
+
+                        <div class="col-md-2 col-6 p-1 ">
+                            <div class="min-h-24 p-2 tracker" [ngClass]="{'tracker-active': strReturn.statusID > 1}">
+                                <h1>2</h1>
+                                Proofing
+                            </div>
+
+                        </div>
+                        <div class="col-md-2 col-6 p-1 ">
+                            <div class="min-h-24 p-2 tracker" [ngClass]="{'tracker-active': strReturn.statusID > 2}">
+                                <h1>3</h1>
+                                Your Art Approval Received
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-2 col-6 p-1 ">
+                            <div class="min-h-24 p-2 tracker" [ngClass]="{'tracker-active': strReturn.statusID > 3}">
+                                <h1>4</h1>
+                                All Approvals Received
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-2 col-6 p-1">
+                            <div class="min-h-24 p-2 tracker" [ngClass]="{'tracker-active': strReturn.statusID > 3}">
+                                <h1>5</h1>
+                                Ready to be Converted to Order
+                            </div>
+                        </div>
+
+                        <div class="col-md-2 col-6 p-1">
+                            <div class="min-h-24 p-2 tracker" [ngClass]="{'tracker-active': strReturn.statusID > 5}">
+                                <h1>6</h1>
+                                Converted
                             </div>
                         </div>
                     </div>
@@ -280,14 +335,15 @@
                                     <div class="text-lg font-medium tracking-tight leading-6 truncate ">
                                         Additional Information
                                     </div>
-                                    <div class="row w-full pt-2">
+
+                                    <div class="row w-full">
                                         <div class="col-lg-6 col-md-6 col-12 my-1">
                                             <div class="row">
                                                 <div class="col-12">
-                                                    <b>Instructions</b>
+                                                    <b>Purchase Order</b>
                                                 </div>
-                                                <div class="col-12">
-                                                    {{selectedQuoteDetail?.instructions || not_available}}
+                                                <div class="col-6">
+                                                    {{selectedQuoteDetail?.purchaseOrderNum || not_available}}
                                                 </div>
                                             </div>
                                         </div>
@@ -298,18 +354,6 @@
                                                 </div>
                                                 <div class="col-12">
                                                     {{selectedQuoteDetail?.discountCode || not_available}}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row w-full">
-                                        <div class="col-lg-6 col-md-6 col-12 my-1">
-                                            <div class="row">
-                                                <div class="col-12">
-                                                    <b>Purchase Order</b>
-                                                </div>
-                                                <div class="col-6">
-                                                    {{selectedQuoteDetail?.purchaseOrderNum || not_available}}
                                                 </div>
                                             </div>
                                         </div>
@@ -338,6 +382,20 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="row w-full pt-2">
+                                        <div class="col-lg-6 col-md-6 col-12 my-1">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <b>Cost center code</b>
+                                                </div>
+                                                <div class="col-12">
+                                                    {{selectedQuoteDetail?.costCenterCode || not_available}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                    
                                 </div>
                             </div>
                         </div>
