@@ -54,14 +54,8 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((quote) => {
         this.selectedQuoteDetail = quote["data"][0];
-        console.log(this.selectedQuoteDetail)
         this.imprintStatuses = quote['imprintStatuses']
         this.setQuoteTracker();
-        console.log(this.strReturn);
-
-        // this.setCartLineTrackerData();
-        // console.log(this.strReturn);
-
         this.imprintStatus = this.getCartImprintStatus()
 
 
@@ -93,64 +87,61 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
   }
 
   setQuoteTracker() {
-    const sortedData = this.imprintStatuses.sort((a, b) => a.fk_statusID - b.fk_statusID);
-    console.log(sortedData[0]);
-
     if (this.selectedQuoteDetail.blnEProcurement) {
       if (this.selectedQuoteDetail.punchoutDate) {
         this.strReturn.statusID = 5;
         this.strReturn.statusName = "Punchout Initiated - Awaiting Purchase Order";
         this.strReturn.statusDescription = "<b>Punchout Has Been Initiated!</b><br />We will receive a purchase order electronically from your procurement system next.";
+        return;
       }
+      this.setCartLineTrackerData();
 
-
-
-      if (sortedData[0].fk_statusID === 2) {
+      if (this.strReturn.statusID === 2) {
         this.strReturn.statusID = 2;
         this.strReturn.statusName = "Proof Is Awaiting Your Approval";
         this.strReturn.statusDescription = "<b>Artwork Proofing Process Has Begun!</b><br />We are now waiting for your proof approval.";
-      } else if (sortedData[0].fk_statusID === 3) {
+        return;
+      } else if (this.strReturn.statusID === 3) {
         this.strReturn.statusID = 3;
         this.strReturn.statusName = "Your Proof Approval Received";
         this.strReturn.statusDescription = "<b>Your artwork approval has been received!</b><br />We are now waiting for any additional approvals required.";
-      } else if (sortedData[0].fk_statusID === 4) {
+        return;
+      } else if (this.strReturn.statusID === 4) {
         this.strReturn.statusID = 4;
         this.strReturn.statusName = "Secondary Approval(s) Received - Ready For Punchout";
         this.strReturn.statusDescription = "<b>All Approvals Have Been Received!</b><br />All approvals have been received and you can now load your quote and punchout.";
+        return;
       } else {
         this.strReturn.statusID = 1;
         this.strReturn.statusName = "Quote Generated";
         this.strReturn.statusDescription = "<b>Your Quote Has Been Created!</b><br />You will receive artwork proof(s) within 24 hours.";
+        return;
       }
     } else {
-      if (sortedData[0].fk_statusID === 2) {
+      this.setCartLineTrackerData();
+      if (this.strReturn.statusID === 2) {
         this.strReturn.statusID = 2;
         this.strReturn.statusName = 'Proofing';
         this.strReturn.statusDescription = '<b>An artwork proof has been sent!</b><br />The artwork approval process is underway.';
-      } else if (sortedData[0].fk_statusID === 3) {
+        return;
+      } else if (this.strReturn.statusID === 3) {
         this.strReturn.statusID = 3;
         this.strReturn.statusName = 'Your Art Approval Received';
         this.strReturn.statusDescription = '<b>Your artwork approval has been received!</b><br />We are now waiting for any additional approvals required.';
-      } else if (sortedData[0].fk_statusID === 4) {
+        return;
+      } else if (this.strReturn.statusID === 4) {
         this.strReturn.statusID = 4;
         this.strReturn.statusName = 'All Approvals Received';
         this.strReturn.statusDescription = '<b>All approvals have been received!</b><br />All approvals have been received and you can now convert the quote into an order.';
+        return;
       } else {
         this.strReturn.statusID = 1;
         this.strReturn.statusName = 'Quote Placed';
         this.strReturn.statusDescription = '<b>Your quote has been created!</b><br />You will receive artwork proof(s) within 24 hours.';
+        return;
       }
     }
   }
-
-
-  listFindNoCase(list, value) {
-  // Convert the comma-separated list to an array
-  const listArray = list.split(',');
-
-  // Check if the value exists in the array (case insensitive)
-  return listArray.some(item => item.trim().toLowerCase() === value.toString().toLowerCase());
-}
 
 
   setCartLineTrackerData() {
@@ -159,60 +150,74 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
       let blnApproved = true;
 
       blnApproved = !this.imprintStatuses.some(obj =>
-        obj["fk_statusID"] === 7 || obj["fk_statusID"] === 9
+        obj["fk_statusID"] !== 7 || obj["fk_statusID"] !== 9
       );
 
       if (blnApproved) {
         this.strReturn.statusID = 4;
         this.strReturn.statusName = 'Secondary Approvals(s) Received - Ready For Punchout';
         this.strReturn.statusDescription = '<b>All Approvals Have Been Received!</b><br />All approvals have been received and you can now load your quote and punchout.';
+        return;
       } else {
         let blnArtApprovalReceived = this.imprintStatuses.some(obj =>
           (obj["fk_statusID"] === 3 || obj["fk_statusID"] === 4 || obj["fk_statusID"] === 13) &&
           (obj["fk_artApprovalContactID"] || obj["fk_storeUserApprovalContactID"])
         );
 
-        if (!blnArtApprovalReceived) {
+
+        if (blnArtApprovalReceived) {
+          this.strReturn.statusID = 3,
+            this.strReturn.statusName = 'Your Art Approval Received',
+            this.strReturn.statusDescription = '<b>Your artwork approval has been received!</b><br />We are now waiting for any additional approval required.'
+          return;
+        } else {
           let blnProofAwaiting = this.imprintStatuses.some(obj =>
             (obj["fk_statusID"] === 3 || obj["fk_statusID"] === 4 || obj["fk_statusID"] === 13) &&
             !obj["fk_artApprovalContactID"] &&
             !obj["fk_storeUserApprovalContactID"]
           );
-
           if (blnProofAwaiting) {
             this.strReturn.statusID = 2;
             this.strReturn.statusName = 'Proof Is Awaiting Your Approval';
             this.strReturn.statusDescription = '<b>Artwork Proofing Process Has Begun!</b><br />We are now waiting for your proof approval.';
-          } else {
-            let blnNew = this.imprintStatuses.every(obj =>
-              obj["fk_statusID"] !== 1 && obj["fk_statusID"] !== 2
-            );
-
-            if (!blnNew) {
-              this.strReturn.statusID = 3;
-              this.strReturn.statusName = 'Your Art Approval Received';
-              this.strReturn.statusDescription = '<b>Your artwork approval has been received!</b><br />We are now waiting for any additional approval required.';
-            } else {
-              this.strReturn.statusID = 1;
-              this.strReturn.statusName = 'Quote Generated';
-              this.strReturn.statusDescription = '<b>Your Quote Has Been Created!</b><br />You will receive artwork proof(s) within 24 hours.';
-            }
+            return;
           }
-        } else {
+        }
+
+        let blnNew = true;
+        blnNew = !this.imprintStatuses.every(obj =>
+          obj["fk_statusID"] !== 1 && obj["fk_statusID"] !== 2
+        );
+
+        if (!blnNew) {
           this.strReturn.statusID = 3;
           this.strReturn.statusName = 'Your Art Approval Received';
           this.strReturn.statusDescription = '<b>Your artwork approval has been received!</b><br />We are now waiting for any additional approval required.';
+          return;
+        } else {
+          this.strReturn.statusID = 1;
+          this.strReturn.statusName = 'Quote Generated';
+          this.strReturn.statusDescription = '<b>Your Quote Has Been Created!</b><br />You will receive artwork proof(s) within 24 hours.';
+          return;
         }
+
+        // else {
+        //   this.strReturn.statusID = 3;
+        //   this.strReturn.statusName = 'Your Art Approval Received';
+        //   this.strReturn.statusDescription = '<b>Your artwork approval has been received!</b><br />We are now waiting for any additional approval required.';
+        // }
       }
     } else {
       let blnApproved = !this.imprintStatuses.some(obj =>
         obj["fk_statusID"] === 7 || obj["fk_statusID"] === 9
       );
 
+
       if (blnApproved) {
         this.strReturn.statusID = 4;
         this.strReturn.statusName = 'All Approvals Received';
         this.strReturn.statusDescription = '<b>All approvals have been received!</b><br />All approvals have been received and we are ready to send to production as long as payment has been arranged.';
+        return;
       } else {
         let blnNew = this.imprintStatuses.every(obj =>
           obj["fk_statusID"] !== 1
@@ -222,10 +227,12 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
           this.strReturn.statusID = 3;
           this.strReturn.statusName = 'Your Art Approval Received';
           this.strReturn.statusDescription = '<b>Your artwork approval has been received!</b><br />We are now waiting for any additional approval required.';
+          return;
         } else {
           this.strReturn.statusID = 2;
           this.strReturn.statusName = 'Proofing';
           this.strReturn.statusDescription = '<b>An art proof has been sent!</b><br />The artwork approval process is underway';
+          return;
         }
       }
     }
