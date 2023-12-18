@@ -230,6 +230,16 @@
                                     </td>
                                 </ng-container>
 
+                                <!-- Proof Contact -->
+                                <ng-container matColumnDef="proof_contact">
+                                    <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30">
+                                        Proof Contact
+                                    </th>
+                                    <td mat-cell *matCellDef="let element" class="text-xs pr-1"
+                                        (click)="orderDetails(element)">{{element.storeCode}}
+                                    </td>
+                                </ng-container>
+                                <!-- Last Proof -->
                                 <ng-container matColumnDef="proof">
                                     <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30 ">
                                         Last Proof
@@ -342,7 +352,7 @@
                                 <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
                                 <tr mat-row *matRowDef="let row; columns: displayedColumns;"
                                     class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
-                                    [ngClass]="{'bg-blue-200': row.blnAttention,'bg-pink-200': row.inHandsDate,'bg-orange-200': row.fk_groupOrderID,'bg-yellow-200': row.blnReorder,'bg-purple-200': row.blnGroupRun,'bg-green-200': row.paymentDate}">
+                                    [ngStyle]="{'background-color': row.bgColor}">
                                 </tr>
                             </table>
                             <mat-paginator #paginator

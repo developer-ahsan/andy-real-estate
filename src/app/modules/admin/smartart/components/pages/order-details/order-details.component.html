@@ -2477,55 +2477,61 @@
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                             <div class="my-3">
-                                <div class="row mb-2" *ngFor="let item of orderData.qryGroupRun">
+                                <div class="row mb-2 border-b pb-2"
+                                    *ngFor="let item of orderData.qryGroupRun; let last=last;"
+                                    [ngClass]="{'border-b': !last}">
                                     <div class="col-md-2 col-12">
-                                        <img
+                                        <img class="w-30"
                                             src="{{assetUrl}}globalAssets/Products/Images/{{item.pk_storeProductID}}.jpg?{{randomString}}">
                                     </div>
-                                    <div class="col-md-10 col-12">
+                                    <div class="col-md-5 col-12">
                                         <table>
                                             <tr>
-                                                <td><b>SKU: </b>{{item.SKU}}</td>
-                                                <td><b>Supplier: </b>{{item.supplierName}}</td>
-                                                <td>
-                                                    <b>Product: </b>
-                                                    <span>
-                                                        <a href="{{item.supplierLink}}"
-                                                            target="_blank">{{item.productName}}</a>
-                                                    </span>
-                                                </td>
-
+                                                <td><b>SKU: </b></td>
+                                                <td> {{item.SKU}}</td>
                                             </tr>
                                             <tr>
-                                                <td><b>Quantity: </b>{{item.quantity}}</td>
-                                                <td><b>Imprint Colors: </b>{{item.imprintColors}}</td>
+                                                <td><b>Supplier: </b></td>
+                                                <td> {{item.supplierName}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><b>Product: </b></td>
                                                 <td>
-                                                    <b>Imprint Size: </b>
-                                                    <span>{{item.area}}</span>
+                                                    <a href="{{item.supplierLink}}" target="_blank">
+                                                        {{item.productName}}</a>
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>
-                                                    <b>Item Dimensions: </b>
-                                                    <span>{{item.itemDimensions}}</span>
-                                                </td>
-
-                                                <td>
-                                                    <b>Item Colors: </b>
-                                                    <span>{{item.itemColors}}</span>
-                                                </td>
-                                                <td>
-                                                    <b>Imprint Method: </b>
-                                                    <span>{{item.imprintMethod}}</span>
-                                                </td>
+                                                <td><b>Quantity: </b></td>
+                                                <td> {{item.quantity}}</td>
                                             </tr>
                                             <tr>
-                                                <td>
-                                                    <b>Imprint Location: </b>
-                                                    <span> {{item.imprintLocation}}</span>
-                                                </td>
-                                                <td></td>
-                                                <td></td>
+                                                <td><b>Item Dimensions: </b></td>
+                                                <td> {{item.itemDimensions || 'N/A'}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><b>Item Colors: </b></td>
+                                                <td> {{item.itemColors}}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class="col-md-5 col-12">
+                                        <table>
+                                            <tr>
+                                                <td><b>Imprint Locations: </b></td>
+                                                <td> {{item.imprintLocation}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><b>Imprint Methods: </b></td>
+                                                <td> {{item.imprintMethod}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><b>Imprint Size: </b></td>
+                                                <td> {{item.area}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><b>Imprint Colors: </b></td>
+                                                <td> {{item.imprintColors}}</td>
                                             </tr>
                                         </table>
                                     </div>

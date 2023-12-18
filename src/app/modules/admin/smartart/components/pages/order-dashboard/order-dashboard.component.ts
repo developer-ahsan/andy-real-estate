@@ -47,7 +47,7 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
 
   dataSource = [];
   tempDataSource = [];
-  displayedColumns: string[] = ['check', 'date', 'inhands', 'order', 'line', 'customer', 'product', 'supplier', 'status', 'age', 'store', 'proof', 'action'];
+  displayedColumns: string[] = [];
   totalRecords = 0;
   tempRecords = 0;
   page = 1;
@@ -97,79 +97,17 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
     this._activeRoute.queryParams.subscribe(res => {
       this.page = 1;
       this.paramsData = res;
+      const filterFields = [3, 12, 13, 4];
+      this.displayedColumns = ['check', 'date', 'inhands', 'order', 'line', 'customer', 'product', 'supplier', 'status', 'age', 'store'];
+      if (filterFields.includes(Number(res.filterField)) || res.search || res.customer) {
+        this.displayedColumns.push('proof_contact')
+      }
+      this.displayedColumns = this.displayedColumns.concat(['proof', 'action']);
       this.isLoading = true;
       this.getSmartArtList(1, 'get', '');
     });
-    // this.searchableFields();
   };
-  searchableFields() {
-    this._smartartService.adminStores$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.allStores.push({ storeName: 'All Stores', pk_storeID: null });
-      this.allStores = this.allStores.concat(res['data']);
-    });
-    this._smartartService.smartArtUsers$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.allDesigners.push({ firstName: 'All', lastName: " Designers", pk_userID: null });
-      this.allDesigners = this.allDesigners.concat(res['data']);
-    });
-    let params;
-    this.searchStoreCtrl.valueChanges.pipe(
-      filter((res: any) => {
-        params = {
-          stores: true,
-          bln_active: 1,
-          keyword: res
-        }
-        return res !== null && res.length >= 3
-      }),
-      distinctUntilChanged(),
-      debounceTime(300),
-      tap(() => {
-        this.allStores = [];
-        this.isSearchingStore = true;
-        this._changeDetectorRef.markForCheck();
-      }),
-      switchMap(value => this._smartartService.getSmartArtData(params)
-        .pipe(
-          finalize(() => {
-            this.isSearchingStore = false
-            this._changeDetectorRef.markForCheck();
-          }),
-        )
-      )
-    ).subscribe((data: any) => {
-      this.allStores.push({ storeName: 'All Stores', pk_storeID: null });
-      this.allStores = this.allStores.concat(data['data']);
-    });
-    let params1;
-    this.searchDesignerCtrl.valueChanges.pipe(
-      filter((res: any) => {
-        params1 = {
-          smart_art_users: true,
-          keyword: res
-        }
-        return res !== null && res.length >= 3
-      }),
-      distinctUntilChanged(),
-      debounceTime(300),
-      tap(() => {
-        this.allDesigners = [];
-        this.isSearchingDesigner = true;
-        this._changeDetectorRef.markForCheck();
-      }),
-      switchMap(value => this._smartartService.getSmartArtData(params1)
-        .pipe(
-          finalize(() => {
-            this.isSearchingDesigner = false
-            this._changeDetectorRef.markForCheck();
-          }),
-        )
-      )
-    ).subscribe((data: any) => {
-      this.allDesigners.push({ firstName: 'All', lastName: " Designers", pk_userID: null });
-      this.allDesigners = this.allDesigners.concat(data['data']);
-    });
 
-  }
   onSelected(ev) {
     this.selectedStore = ev.option.value;
   }
@@ -221,14 +159,7 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
         this.drawer.toggle();
       }
       res["data"].forEach(element => {
-        element.bgColor = '';
-        if (element.blnAttention) {
-          element.bgColor = 'bg-blue-200';
-        } else if (element.inHandsDate) {
-          element.bgColor = 'bg-pink-200';
-        } else if (element.blnRushFlexibility) {
-
-        }
+        this.setColor(element);
         element.ageInHours = Math.floor(element.age / 60);
         if (element.viewProofDetails) {
           const proof = element.viewProofDetails.split(';');
@@ -261,6 +192,26 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
       // this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
     });
+  }
+  setColor(element) {
+    element.bgColor = '';
+    if (element.blnAttention) {
+      element.bgColor = '#75bbf5';
+    } else if (element.inHandsDate) {
+      if (element.blnRushFlexibility) {
+        element.bgColor = '#F2D1A0';
+      } else {
+        element.bgColor = '#ffcaca';
+      }
+    } else if (element.fk_groupOrderID) {
+      element.bgColor = '#fca769';
+    } else if (element.blnReorder) {
+      element.bgColor = '#feee84';
+    } else if (element.blnGroupRun) {
+      element.bgColor = '#DBD7FF';
+    } else if (element.paymentDate) {
+      element.bgColor = '#ADFFB6';
+    }
   }
   getSmartArtListProof(item) {
     item.proofLoader = true;
@@ -361,6 +312,7 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
       this._smartartService.snackBar(res["message"]);
       item.isFlagLoader = false;
       item.blnAttention = check;
+      this.setColor(item);
       this._changeDetectorRef.markForCheck();
     }, err => {
       item.isFlagLoader = false;

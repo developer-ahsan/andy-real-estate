@@ -144,6 +144,7 @@ export class SmartArtComponent {
                 } else {
                     this.ngDashboardCheck = 1;
                 }
+                // this.ngFilterField = Number(this.route.children[0].snapshot.queryParams.filterField);
                 this.ngSearchField = '';
                 this.ngCustomerField = '';
                 this.ngFilterProduct = '';
