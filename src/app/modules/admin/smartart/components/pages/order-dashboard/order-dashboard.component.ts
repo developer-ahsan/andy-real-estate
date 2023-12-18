@@ -10,6 +10,7 @@ import { HideUnhideCart, HideUnhideOrder, UpdateOrderLineClaim, updateAttentionF
 import { AuthService } from 'app/core/auth/auth.service';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
+import moment from 'moment';
 @Component({
   selector: 'app-order-dashboard',
   templateUrl: './order-dashboard.component.html',
@@ -194,10 +195,11 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
     });
   }
   setColor(element) {
+    let theInHandsDate = moment(element.orderDate).add(element.prodTimeMax);
     element.bgColor = '';
     if (element.blnAttention) {
       element.bgColor = '#75bbf5';
-    } else if (element.inHandsDate) {
+    } else if (element.inHandsDate && (moment(element.inHandsDate).isBefore(theInHandsDate))) {
       if (element.blnRushFlexibility) {
         element.bgColor = '#F2D1A0';
       } else {
