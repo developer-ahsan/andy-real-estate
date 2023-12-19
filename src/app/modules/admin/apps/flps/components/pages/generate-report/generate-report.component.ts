@@ -387,6 +387,7 @@ export class GenerateReportComponent implements OnInit {
         let reportSummary = [];
         let markPaidList = [];
         let grandCommission = 0;
+        let grandEstimatedProfitTotal = 0;
         let totalNumSales = 0;
         this.reportSummaryData.forEach(element => {
             element.DetailsData.forEach(order => {
@@ -394,6 +395,7 @@ export class GenerateReportComponent implements OnInit {
                 if (order.checked) {
                     if (order.comission > 0) {
                         grandCommission += Number(order.comission);
+                        grandEstimatedProfitTotal += Number(element.Profit);
                         totalNumSales += 1;
                         const index = reportSummary.findIndex(store => store.fk_storeID == element.fk_storeID);
                         if (index < 0) {
@@ -442,7 +444,7 @@ export class GenerateReportComponent implements OnInit {
             reportSummary: reportSummary,
             grandSalesTotal: this.storeTotals.Sales,
             grandNumSalesTotal: totalNumSales,
-            grandEstimatedProfitTotal: this.storeTotals.EST_Profit,
+            grandEstimatedProfitTotal: grandEstimatedProfitTotal,
             grandCommissionTotal: Number(grandCommission),
             userTotalCommission: Number(userCommission), // totalCommission * Profit
             update_flps_report: true
