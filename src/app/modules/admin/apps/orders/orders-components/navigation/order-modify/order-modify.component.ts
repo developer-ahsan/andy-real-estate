@@ -100,7 +100,8 @@ export class OrderModifyComponent implements OnInit, OnDestroy {
       shippingCountry: new FormControl('', Validators.required),
       shippingPhone: new FormControl('', Validators.required),
       shippingEmail: new FormControl('', Validators.required),
-      accountChargeCode: new FormControl('')
+      accountChargeCode: new FormControl(''),
+      CNumber: new FormControl('')
     });
     this.shippingForm = new FormGroup({
       inHandsDate: new FormControl(''),
@@ -156,7 +157,17 @@ export class OrderModifyComponent implements OnInit, OnDestroy {
       return;
     }
     this.isBillingLoader = true;
-    const { billingCompanyName, billingFirstName, billingLastName, billingLocation, billToDeliverTo, billingAddress, billingCity, billingState, billingZip, billingCountry, billingPhone, billingEmail, shippingCompanyName, shippingFirstName, shippingLastName, shippingLocation, shipToDeliverTo, shippingAddress, shippingCity, shippingState, shippingZip, shippingZipExt, shippingCountry, shippingPhone, shippingEmail, accountChargeCode } = this.billingShippingForm.value;
+    const { CNumber,billingCompanyName, billingFirstName, billingLastName, billingLocation, billToDeliverTo, billingAddress, billingCity, billingState, billingZip, billingCountry, billingPhone, billingEmail, shippingCompanyName, shippingFirstName, shippingLastName, shippingLocation, shipToDeliverTo, shippingAddress, shippingCity, shippingState, shippingZip, shippingZipExt, shippingCountry, shippingPhone, shippingEmail, accountChargeCode } = this.billingShippingForm.value;
+    if (billingCompanyName.trim() === '' || billingFirstName.trim() === '' || billingLastName.trim() === '' ||
+      billingAddress.trim() === '' || billingCity.trim() === '' || billingState.trim() === '' ||
+      billingZip.trim() === '' || billingCountry.trim() === '' || billingEmail.trim() === '' ||
+      shippingCompanyName.trim() === '' || shippingFirstName.trim() === '' || shippingLastName.trim() === '' ||
+      shippingAddress.trim() === '' || shippingCity.trim() === '' || shippingState.trim() === '' ||
+      shippingZip.trim() === '' || shippingCountry.trim() === '' || shippingEmail.trim() === '') {
+      this._orderService.snackBar('Please fill out required fields');
+      return;
+    }
+
     let payload: contactInfoObj = {
       order_id: this.selectedOrder.pk_orderID,
       store_id: this.selectedOrder.fk_storeID,
@@ -188,10 +199,11 @@ export class OrderModifyComponent implements OnInit, OnDestroy {
       shipping_location: shippingLocation,
       ship_to_deliver_to: shipToDeliverTo,
       bill_to_deliver_to: billToDeliverTo,
-      modify_contact_info: true
+      modify_contact_info: true,
+      CNumber:CNumber
     };
     this.selectedOrder.proofEmail = this.emails.toString();
-    this._orderService.updateOrderCalls(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._orderService.updateOrderCalls(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this.isBillingLoader = false;
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
@@ -208,6 +220,10 @@ export class OrderModifyComponent implements OnInit, OnDestroy {
       return;
     }
     const { inHandsDate, shippingCarrierName, paymentDate, shippingServiceName, purchaseOrderNum, shippingCustomerAcc, invoiceDueDate, shippingServiceCode, costCenterCode } = this.shippingForm.value;
+    if(shippingCarrierName.trim() === '' || shippingServiceCode.trim() === '') {
+      this._orderService.snackBar('Please fill out required fields');
+      return;
+    }
     let inhands = '';
     if (inHandsDate) {
       inhands = moment(inHandsDate).format('MM/DD/yyyy');
@@ -234,7 +250,7 @@ export class OrderModifyComponent implements OnInit, OnDestroy {
       cost_center_code: costCenterCode,
       modify_shipping_details: true
     };
-    this._orderService.updateOrderCalls(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._orderService.updateOrderCalls(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this.isShippingLoader = false;
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
@@ -251,6 +267,10 @@ export class OrderModifyComponent implements OnInit, OnDestroy {
       return;
     }
     const { paymentMethodID, discountCode, transactionID, discountAmount, salesTaxRate, taxExemptionCom, instructions, blnTaxable } = this.paymentForm.value;
+    if(salesTaxRate.trim() === '') {
+      this._orderService.snackBar('Please fill out required fields');
+      return;
+    }
     let paymentName = this.paymentMethods.filter(item => item.id == paymentMethodID);
     let payload: paymentInfoObj = {
       payment_method_id: paymentMethodID,
@@ -267,7 +287,7 @@ export class OrderModifyComponent implements OnInit, OnDestroy {
       modify_payment_info: true
     };
     this.isPaymentLoader = true;
-    this._orderService.updateOrderCalls(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    this._orderService.updateOrderCalls(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this.isPaymentLoader = false;
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
@@ -278,6 +298,16 @@ export class OrderModifyComponent implements OnInit, OnDestroy {
       // console.log(err);
     });
   }
+
+  replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
+    for (const key in obj) {
+        if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+            obj[key] = obj[key]?.replace(/'/g, "''");
+        }
+    }
+    return obj;
+}
+
   /**
      * On destroy
      */
