@@ -213,6 +213,7 @@ export interface contactInfoObj {
     ship_to_deliver_to: string;
     bill_to_deliver_to: string;
     modify_contact_info: boolean;
+    CNumber:string
 };
 export interface shippingDetailsObj {
     order_id: number;
