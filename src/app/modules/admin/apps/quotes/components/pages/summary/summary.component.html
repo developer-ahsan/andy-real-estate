@@ -83,7 +83,7 @@
 
             <!-- Quote Tracker -->
             <div class="col-12 ">
-                <div *ngIf="this.selectedQuoteDetail.punchoutDate" class="rounded-2xl shadow bg-card items-center w-full px-6 py-6 filter-info">
+                <div *ngIf="ifCase" class="rounded-2xl shadow bg-card items-center w-full px-6 py-6 filter-info">
                     <div class="text-xl font-semibold leading-tight pb-3">Quote Tracker</div>
                     <div *ngIf="ngStatus == 0" class="mt-2">
                         <ngx-skeleton-loader count="4" appearance="line" animation="pulse">
@@ -113,7 +113,7 @@
                         </div>
 
                         <div class="col-md-2 col-6 p-1 ">
-                            <div class="min-h-24 p-2 tracker" [ngClass]="{'tracker-active': strReturn.statusID > 3}">
+                            <div class="min-h-24 p-2 tracker" [ngClass]="{'tracker-active': strReturn.statusID > 2}">
                                 <h1>4</h1>
                                 Secondary Approval(s) Received - Ready For Punchout
                             </div>
@@ -138,7 +138,7 @@
                 </div>
 
 
-                <div *ngIf="!this.selectedQuoteDetail.punchoutDate" class="rounded-2xl shadow bg-card items-center w-full px-6 py-6 filter-info">
+                <div *ngIf="!ifCase" class="rounded-2xl shadow bg-card items-center w-full px-6 py-6 filter-info">
                     <div class="text-xl font-semibold leading-tight pb-3">Quote Tracker</div>
                     <div *ngIf="ngStatus == 0" class="mt-2">
                         <ngx-skeleton-loader count="4" appearance="line" animation="pulse">
@@ -183,7 +183,7 @@
                         </div>
 
                         <div class="col-md-2 col-6 p-1">
-                            <div class="min-h-24 p-2 tracker" [ngClass]="{'tracker-active': strReturn.statusID > 5}">
+                            <div class="min-h-24 p-2 tracker" [ngClass]="{'tracker-active': strReturn.statusID > 4}">
                                 <h1>6</h1>
                                 Converted
                             </div>

@@ -38,6 +38,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
   isRemoveQuote: boolean = false;
   @ViewChild('removeQuote') removeQuote: ElementRef;
   imprintStatus: boolean;
+  ifCase: boolean;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -92,6 +93,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
         this.strReturn.statusID = 5;
         this.strReturn.statusName = "Punchout Initiated - Awaiting Purchase Order";
         this.strReturn.statusDescription = "<b>Punchout Has Been Initiated!</b><br />We will receive a purchase order electronically from your procurement system next.";
+        this.ifCase = true;
         return;
       }
       this.setCartLineTrackerData();
@@ -100,21 +102,25 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
         this.strReturn.statusID = 2;
         this.strReturn.statusName = "Proof Is Awaiting Your Approval";
         this.strReturn.statusDescription = "<b>Artwork Proofing Process Has Begun!</b><br />We are now waiting for your proof approval.";
+        this.ifCase = true;
         return;
       } else if (this.strReturn.statusID === 3) {
         this.strReturn.statusID = 3;
         this.strReturn.statusName = "Your Proof Approval Received";
         this.strReturn.statusDescription = "<b>Your artwork approval has been received!</b><br />We are now waiting for any additional approvals required.";
+        this.ifCase = true;
         return;
       } else if (this.strReturn.statusID === 4) {
         this.strReturn.statusID = 4;
         this.strReturn.statusName = "Secondary Approval(s) Received - Ready For Punchout";
         this.strReturn.statusDescription = "<b>All Approvals Have Been Received!</b><br />All approvals have been received and you can now load your quote and punchout.";
+        this.ifCase = true;
         return;
       } else {
         this.strReturn.statusID = 1;
         this.strReturn.statusName = "Quote Generated";
         this.strReturn.statusDescription = "<b>Your Quote Has Been Created!</b><br />You will receive artwork proof(s) within 24 hours.";
+        this.ifCase = true;
         return;
       }
     } else {
@@ -123,21 +129,25 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
         this.strReturn.statusID = 2;
         this.strReturn.statusName = 'Proofing';
         this.strReturn.statusDescription = '<b>An artwork proof has been sent!</b><br />The artwork approval process is underway.';
+        this.ifCase = false;
         return;
       } else if (this.strReturn.statusID === 3) {
         this.strReturn.statusID = 3;
         this.strReturn.statusName = 'Your Art Approval Received';
         this.strReturn.statusDescription = '<b>Your artwork approval has been received!</b><br />We are now waiting for any additional approvals required.';
+        this.ifCase = false;
         return;
       } else if (this.strReturn.statusID === 4) {
         this.strReturn.statusID = 4;
         this.strReturn.statusName = 'All Approvals Received';
         this.strReturn.statusDescription = '<b>All approvals have been received!</b><br />All approvals have been received and you can now convert the quote into an order.';
+        this.ifCase = false;
         return;
       } else {
         this.strReturn.statusID = 1;
         this.strReturn.statusName = 'Quote Placed';
         this.strReturn.statusDescription = '<b>Your quote has been created!</b><br />You will receive artwork proof(s) within 24 hours.';
+        this.ifCase = false;
         return;
       }
     }
