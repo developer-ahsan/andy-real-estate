@@ -159,7 +159,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
     if (this.selectedQuoteDetail.blnEProcurement) {
       let blnApproved = true;
 
-      blnApproved = !this.imprintStatuses.every(obj =>
+      blnApproved = this.imprintStatuses.every(obj =>
         obj["fk_statusID"] !== 7 || obj["fk_statusID"] !== 9
       );
 
