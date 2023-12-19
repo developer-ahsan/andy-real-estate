@@ -280,7 +280,7 @@ export class CompaniesService {
             environment.system, payload, { headers });
     };
     getIPAddress() {
-        return this._httpClient.get("http://api.ipify.org/?format=json");
+        return this._httpClient.get("https://www.ipconfig.in/ip/");
     }
 
     // Get calls

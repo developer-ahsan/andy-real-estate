@@ -89,7 +89,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   // Virtual Proof Images
   virtualProofData: any;
   // Approval History
-  approvalHistoryData: any;
+  approvalHistoryData: any = [];
   // artwork tags
   artworkTags: any = [];
 
@@ -199,9 +199,19 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       orderLineImprint_id: this.paramData.fk_imprintID
     }
     this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.approvalHistoryData = res["approvalHistory"];
       this.imprintdata = res["data"];
       if (this.imprintdata.length > 0) {
+        if (this.imprintdata[0].approvalHistory) {
+          const approvals = this.imprintdata[0].approvalHistory.split(',,');
+          approvals.forEach(approval => {
+            const [name, date, blnStoreUserApproval, fk_approvalContactID, fk_storeUserApprovalContactID] = approval.split('::');
+            let userApproval = true;
+            if (blnStoreUserApproval == 0) {
+              userApproval = false;
+            }
+            this.approvalHistoryData.push({ name, date, blnStoreUserApproval: userApproval, fk_approvalContactID, fk_storeUserApprovalContactID });
+          });
+        }
         this.orderData.artworkEmail = this.imprintdata[0].artworkEmail;
         this.selectedImprint = this.imprintdata[0].pk_imprintID;
         this.selectedImprintForTimer = this.imprintdata[0];
@@ -1891,6 +1901,34 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       // element.scrollIntoView({ behavior: 'smooth' });
       this._changeDetectorRef.markForCheck();
     }, 500);
+  }
+  // Remove ApprovalHistory
+  removeApprovalHistory(item) {
+    item.removeApproveLoader = true;
+    let storeUserID;
+    let approvalID;
+    if (item.blnStoreUserApproval) {
+      approvalID = null;
+      storeUserID = Number(item.fk_storeUserApprovalContactID);
+    } else {
+      storeUserID = null;
+      approvalID = Number(item.fk_approvalContactID);
+    }
+    let payload = {
+      orderline_id: Number(this.paramData.pk_orderLineID),
+      imprint_id: Number(this.paramData.fk_imprintID),
+      blnStoreUserApproval: item.blnStoreUserApproval,
+      storeUserApprovalContactID: storeUserID,
+      approvalContactID: approvalID,
+      remove_order_approval_history: true
+    }
+    this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      item.removeApproveLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      this.approvalHistoryData = this.approvalHistoryData.filter(approval => approval.name != item.name);
+      this._smartartService.snackBar(res["message"]);
+    });
   }
 
 }

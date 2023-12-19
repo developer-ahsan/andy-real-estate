@@ -590,17 +590,27 @@
                                     [appearance]="'outline'" [type]="'warning'" [showIcon]="false">
                                     This order has no approval history.
                                 </fuse-alert>
-                                <table class="table" *ngIf="approvalHistoryData.length > 0">
+                                <table class="table table-striped" *ngIf="approvalHistoryData.length > 0">
                                     <thead>
                                         <tr>
                                             <th>Name</th>
                                             <th>Date</th>
+                                            <th></th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr *ngFor="let item of approvalHistoryData">
-                                            <td>{{item.firstName + ' ' + item.lastName}}</td>
-                                            <td>{{item.statusDate | date}}</td>
+                                            <td>{{item.name}}</td>
+                                            <td>{{item.date}}</td>
+                                            <td>
+                                                <mat-progress-spinner *ngIf="item.removeApproveLoader" [diameter]="24"
+                                                    [mode]="'indeterminate'">
+                                                </mat-progress-spinner>
+                                                <mat-icon *ngIf="!item.removeApproveLoader"
+                                                    (click)="removeApprovalHistory(item)"
+                                                    [svgIcon]="'heroicons_solid:x-circle'"
+                                                    matTooltip="Remove"></mat-icon>
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>

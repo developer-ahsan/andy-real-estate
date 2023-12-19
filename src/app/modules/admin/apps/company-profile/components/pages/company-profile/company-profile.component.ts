@@ -54,8 +54,8 @@ export class CompanyProfileComponent implements OnInit, OnDestroy {
     this.getCompanies(1, 'get');
   };
 
-  
-  
+
+
   initialize() {
     this.addCompanyForm = new FormGroup({
       companyName: new FormControl('', Validators.required),
@@ -154,7 +154,7 @@ export class CompanyProfileComponent implements OnInit, OnDestroy {
     return value?.storeName;
   }
 
-  navigateToUpdate(data:any) {
+  navigateToUpdate(data: any) {
     this.router.navigateByUrl(`/apps/companies/company-profile-update/${data.pk_companyProfileID}/${data.fk_storeID}`);
   }
 

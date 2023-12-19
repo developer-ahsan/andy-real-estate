@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
 import { Subject } from 'rxjs';
+import { CompaniesService } from './companies.service';
 
 @Component({
     selector: 'app-companies-list',
@@ -18,7 +19,12 @@ export class CompaniesDetailsComponent {
      * Constructor
      */
     constructor(
+        private _coampnyService: CompaniesService
     ) {
+        // this._coampnyService.getIPAddress().subscribe(res => {
+        //     console.log(res)
+        // });
+
     }
 
     // -----------------------------------------------------------------------------------------------------
