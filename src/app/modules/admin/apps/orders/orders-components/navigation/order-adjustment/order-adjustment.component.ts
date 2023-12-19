@@ -62,7 +62,7 @@ export class OrderAdjustmentComponent implements OnInit, OnDestroy {
         this.totalAdjustmentPrice += element.price;
       });
       if (type == 'add') {
-        this._orderService.snackBar('Addjustment Created Successfully');
+        this._orderService.snackBar('Adjustment Created Successfully');
         this.isAddLoader = false;
         this.addAdjsutmentForm = {
           cost: 0,
@@ -106,8 +106,12 @@ export class OrderAdjustmentComponent implements OnInit, OnDestroy {
   }
   addNewAdjsustment() {
     const { cost, price, description, taxable } = this.addAdjsutmentForm;
-    if (description == '') {
+    if (description.trim() == '') {
       this._orderService.snackBar('Description is required');
+      return;
+    }
+    if(cost < 0 || price < 0) {
+      this._orderService.snackBar('Please enter positive number');
       return;
     }
     let prices = price;
@@ -122,7 +126,7 @@ export class OrderAdjustmentComponent implements OnInit, OnDestroy {
       add_adjustment: true
     }
     this.isAddLoader = true;
-    this._orderService.orderPostCalls(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._orderService.orderPostCalls(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.getAdjustments('add');
     }, err => {
       this.isAddLoader = false;
@@ -137,6 +141,15 @@ export class OrderAdjustmentComponent implements OnInit, OnDestroy {
       }
     }
   }
+
+  replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
+    for (const key in obj) {
+        if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+            obj[key] = obj[key]?.replace(/'/g, "''");
+        }
+    }
+    return obj;
+}
 
 
 
