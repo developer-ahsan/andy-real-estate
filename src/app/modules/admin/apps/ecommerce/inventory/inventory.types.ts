@@ -71,7 +71,7 @@ export interface ProductsDetails {
     fk_supplierID?: number;
     RowNumber: number;
     TotalRequests: number;
-    pk_storeProductID:number;
+    pk_storeProductID: number;
 }
 
 export interface Colors {
@@ -539,6 +539,7 @@ export interface Product {
     technologo_sku: string;
     bln_group_run: boolean;
     blnPromoStandard: boolean;
+    pk_userID: number;
     create_product: boolean;
 };
 export interface caseDimensionsObj {

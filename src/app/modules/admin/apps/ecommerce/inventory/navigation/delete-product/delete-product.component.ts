@@ -50,7 +50,11 @@ export class RemoveProductComponent implements OnInit, OnDestroy {
     });
   }
   removeModal() {
-    $(this.deleteProduct.nativeElement).modal('show');
+    this._commonService.showConfirmation('Are you sure you want to remove this product from the system? This cannot be undone.', (confirmed) => {
+      if (confirmed) {
+        this.removeProduct();
+      }
+    });
   }
   removeProduct(): void {
     const { pk_productID } = this.selectedProduct;

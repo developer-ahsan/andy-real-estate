@@ -80,6 +80,7 @@ export class DuplicateComponent implements OnInit, OnDestroy {
       product_id: pk_productID,
       product_number: formValues.number.replace(/'/g, "''"),
       product_name: formValues.name.replace(/'/g, "''"),
+      supplier_id: this.selectedProduct.fk_supplierID,
       duplicate_product: true,
     };
     payload = this._commonService.replaceNullSpaces(payload);
@@ -91,21 +92,35 @@ export class DuplicateComponent implements OnInit, OnDestroy {
     this.duplicateLoader = true;
     this._inventoryService.addDuplicate(payload).subscribe(
       (response) => {
-        this._inventoryService
-          .getProductByProductId(response["product_id"])
-          .subscribe((res) => {
-            this.showFlashMessage(
-              response["success"] === true ? "success" : "error"
-            );
-            this.duplicateLoader = false;
-
-            this.firstFormGroup.reset();
-            const productId = response["product_id"];
-            this._router.navigate([`/apps/ecommerce/inventory/${productId}`]);
-
-            // Mark for check
-            this._changeDetectorRef.markForCheck();
+        if (!response["success"]) {
+          this._snackBar.open(response["message"], "", {
+            horizontalPosition: "center",
+            verticalPosition: "bottom",
+            duration: 3500,
           });
+          this.duplicateLoader = false;
+          // Mark for check
+          this._changeDetectorRef.markForCheck();
+        }
+        if (response["success"]) {
+          this._inventoryService
+            .getProductByProductId(response["product_id"])
+            .subscribe((res) => {
+              if (response["success"]) {
+                this.firstFormGroup.reset();
+                const productId = response["product_id"];
+                this._router.navigate([`/apps/ecommerce/inventory/${productId}`]);
+              }
+              this._snackBar.open(response["message"], "", {
+                horizontalPosition: "center",
+                verticalPosition: "bottom",
+                duration: 3500,
+              });
+              this.duplicateLoader = false;
+              // Mark for check
+              this._changeDetectorRef.markForCheck();
+            });
+        }
       },
       (err) => {
         this._snackBar.open("Some error occured", "", {

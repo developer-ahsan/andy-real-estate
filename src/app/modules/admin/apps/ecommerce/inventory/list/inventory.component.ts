@@ -210,6 +210,8 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     selectedColorsListArray = [];
     blnPromoStandard: boolean = false;
 
+
+    userDetails = JSON.parse(localStorage.getItem('userDetails'));
     selectEvent(item) {
         // do something with selected item
     }
@@ -3270,6 +3272,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             technologo_sku: null,
             blnPromoStandard: this.blnPromoStandard,
             bln_group_run: allowGroupRun,
+            pk_userID: Number(this.userDetails.pk_userID),
             create_product: true
         }
         if (!this.productId) {
