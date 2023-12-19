@@ -16,14 +16,18 @@ export class SurveysComponent implements OnInit, OnDestroy {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   dataSource = [];
-  displayedColumns: string[] = ['pk_surveyID', 'dateCreated', 'name', 'blnAutomate', 'blnFinalized'];
+  displayedColumns: string[] = ['pk_surveyID', 'dateCreated', 'name', 'blnAutomate', 'blnFinalized','actions'];
   duplicatedDataSource = [];
   dataSourceLoading: boolean = true;
   dataSourceTotalRecord: number;
   setAddSurveyText: string = "";
+  mainScreen = 'Surveys';
+
 
   isUpdate: boolean = false;
   flashMessage: 'success' | 'error' | null = null;
+  isUpdateSurveys: boolean =false;
+  surveyName: any;
 
   constructor(
     private _storeManagerService: FileManagerService,
@@ -148,6 +152,14 @@ export class SurveysComponent implements OnInit, OnDestroy {
     }
   };
 
+  updateSurveyToggle(item) {
+    if (item) {
+      this.surveyName = item.name;
+    }
+    this.isUpdateSurveys = true;
+  }
+
+
   /**
    * Show flash message
    */
@@ -167,6 +179,17 @@ export class SurveysComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     }, 3000);
   };
+
+  calledScreen(screen) {
+    this.mainScreen = screen;
+    this.isUpdateSurveys = false;
+  }
+
+  back() {
+    this.isUpdateSurveys = false;
+    this.surveyName = '';
+  }
+
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions
     this._unsubscribeAll.next();
