@@ -60,16 +60,27 @@
                                                         <div><b class="text-secondary">User:
                                                             </b>{{orderDetail?.userFirstName + '
                                                             ' +
-                                                            orderDetail?.userLastName}}</div>
+                                                            orderDetail?.userLastName}} (id: {{orderDetail?.fk_storeUserID}})</div>
+                                                            <div><b class="text-secondary">Payment Method:
+                                                            </b>{{orderDetail?.paymentMethodName ||
+                                                                not_available}}</div>
                                                         <div><b class="text-secondary">Compnay:
-                                                            </b>{{orderDetail?.billingCompanyName}}</div>
+                                                            </b>{{orderDetail?.billingCompanyName ||
+                                                                not_available}}</div>
                                                         <div><b class="text-secondary">Store:
-                                                            </b>{{orderDetail?.storeName}}</div>
+                                                            </b>{{orderDetail?.storeName ||
+                                                                not_available}}</div>
+                                                            <div><b class="text-secondary">Program manager:
+                                                            </b>{{orderDetail?.programManager ||
+                                                                not_available}}</div>
                                                         <div><b class="text-secondary">Shipping:
                                                             </b>{{orderDetail?.shippingCarrierName + ', '
                                                             +orderDetail?.shippingServiceName}}</div>
                                                         <div><b class="text-secondary">Account/Charge Code:
                                                             </b>{{orderDetail?.accountChargeCode ||
+                                                            not_available}}</div>
+                                                            <div><b class="text-secondary">Instructions:
+                                                            </b>{{orderDetail?.instructions ||
                                                             not_available}}</div>
                                                     </div>
                                                 </div>
@@ -91,7 +102,7 @@
                                                     class="justify-self-start font-medium tracking-tight text-secondary">
                                                     Payment Date</div>
                                                 <div class="font-medium">{{(orderDetail?.paymentDate | date:'medium') ||
-                                                    not_available}}
+                                                    PENDING}}
                                                 </div>
                                                 <div
                                                     class="justify-self-start font-medium tracking-tight text-secondary">

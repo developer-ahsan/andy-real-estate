@@ -2,7 +2,11 @@
     <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
     </ngx-skeleton-loader>
     <div *ngIf="!isLoading">
+        <button mat-stroked-button (click)="goToComments()">
+            <span>Revert to Quote</span>
+        </button>
         <div class="row">
+
             <!-- <div class="col-lg-3 col-md-4 col-6 my-2">
                 <div class="rounded-2xl shadow bg-card flex items-center max-w-80 w-full p-6 filter-info">
                     <mat-icon *ngIf="orderDetail?.OrderStatus == false" class="icon-size-10 mr-6" svgIcon="close">
@@ -63,6 +67,126 @@
                 </div>
             </div> -->
             <div class="col-lg-4 col-md-6 col-12 my-2">
+                <div class="rounded-2xl shadow bg-card flex items-center  w-full p-6 filter-info  "
+                    style="height: 8rem;">
+                    <div class="flex flex-row gap-x-8">
+                            <div class="text-center">
+                                <ng-container *ngIf="orderDetail.blnCancelled">
+                                    <span class="fa fa-times disabled fa-3x"></span><br />
+                                </ng-container>
+
+                                <ng-container *ngIf="orderDetail.blnClosed">
+                                    <span class="fa fa-lock disabled fa-3x"></span><br />
+                                </ng-container>
+
+                                <ng-container *ngIf="ngStatus === 1">
+                                    <span class="fa fa-clock-o disabled fa-3x"></span><br />
+                                </ng-container>
+
+                                <ng-container *ngIf="ngStatus === 5">
+                                    <span class="fa fa-truck active fa-3x"></span><br />
+                                </ng-container>
+
+                                <ng-container *ngIf="ngStatus === 6">
+                                    <span class="fa fa-check active fa-3x"></span><br />
+                                </ng-container>
+
+                                <ng-container *ngIf="ngStatus === 7">
+                                    <span class="fa fa-file-text fa-3x" [style.color]="'purple'"></span><br />
+                                </ng-container>
+
+                                <ng-container *ngIf="ngStatus === 8">
+                                    <span class="fa fa-car fa-3x active"></span><br />
+                                </ng-container>
+
+                                <ng-container *ngIf="ngStatus === 10">
+                                    <span class="fa fa-users fa-3x caution"></span><br />
+                                </ng-container>
+                            </div>
+                        <div class="flex flex-col ">
+                            <div class="text-xl font-semibold leading-tight">Status</div>
+
+
+                            <div class="text-center">
+                                <ng-container *ngIf="orderDetail.blnCancelled">
+                                    <span class="disabled bold">Cancelled</span>
+                                </ng-container>
+
+                                <ng-container *ngIf="orderDetail.blnClosed">
+                                    <span class="disabled bold">Closed</span>
+                                </ng-container>
+
+                                <ng-container *ngIf="ngStatus === 1">
+                                    <span class="disabled bold">Processing</span>
+                                </ng-container>
+
+                                <ng-container *ngIf="ngStatus === 5">
+                                    <span class="active bold">Shipped</span>
+                                </ng-container>
+
+                                <ng-container *ngIf="ngStatus === 6">
+                                    <span class="active bold">Delivered</span>
+                                </ng-container>
+
+                                <ng-container *ngIf="ngStatus === 7">
+                                    <span class="bold" [style.color]="'purple'">P.O. Needed</span>
+                                </ng-container>
+
+                                <ng-container *ngIf="ngStatus === 8">
+                                    <span class="bold active">Picked Up</span>
+                                </ng-container>
+
+                                <ng-container *ngIf="ngStatus === 10">
+                                    <span class="bold caution">Group order pending</span>
+                                </ng-container>
+                            </div>
+
+
+
+                            <!-- <div class="text-md text-secondary font-bold text-green-600">
+                                <p>All artwork approved</p>
+                                <span></span>
+                            </div> -->
+                        </div>
+                    </div>
+                    <!-- *ngIf="!imprintStatus" -->
+                    <!-- <div class="flex flex-row gap-x-2" >
+                        <mat-icon role="img" class="icon-size-10 mr-6 text-red-600"
+                            svgIcon="heroicons_outline:clock"></mat-icon>
+                        <div class="flex flex-col ">
+                            <div class="text-xl font-semibold leading-tight">Artwork Status</div>
+                            <div class="text-md text-secondary font-bold text-red-600">
+                                <p>Artwork Pending</p>
+                                <span></span>
+                            </div>
+                        </div>
+                    </div> -->
+
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 col-12 my-2">
+                <div class="rounded-2xl shadow bg-card flex items-center  w-full p-6 filter-info" style="height: 8rem;"
+                    matTooltip="{{orderDetail.rushFlexibilityComment}}">
+                    <mat-icon role="img" class="icon-size-10 mr-6 mt-2" svgIcon="mat_outline:date_range"></mat-icon>
+                    <div class="flex flex-col w-full">
+                        <div class="text-xl font-semibold leading-tight">Payment Date</div>
+                        <div class="text-md text-secondary h-10 overflow-y-auto">
+                            <p *ngIf="orderDetail.paymentDate">{{(orderDetail?.paymentDate.substr(0,10) | date:
+                                'MM-dd-yyyy')}}</p>
+                            <p *ngIf="!orderDetail.paymentDate">{{not_available}}</p>
+                            <!-- <span class="font-bold">Rush Flexibility: </span>
+                            <span *ngIf="!orderDetail.blnRushFlexibility" class="text-red-500">NO</span>
+                            <span *ngIf="orderDetail.blnRushFlexibility" class="text-green-500">YES</span>
+                            <br>
+                            <span class="font-bold">Comment: </span>
+                            <span>{{orderDetail.rushFlexibilityComment || not_available}}</span> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 col-12 my-2">
                 <div class="rounded-2xl shadow bg-card flex items-center  w-full p-6 filter-info" style="height: 8rem;"
                     matTooltip="{{orderDetail.rushFlexibilityComment}}">
                     <mat-icon role="img" class="icon-size-10 mr-6" svgIcon="mat_outline:date_range"></mat-icon>
@@ -90,6 +214,20 @@
                         <div class="text-xl font-semibold leading-tight">Order Total</div>
                         <div class="text-md text-secondary">
                             <p>{{(orderDetail?.orderTotal | currency) ||
+                                not_available_price}}</p>
+                            <span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-12 my-2">
+                <div class="rounded-2xl shadow bg-card flex items-center  w-full p-6 filter-info  "
+                    style="height: 8rem;">
+                    <mat-icon role="img" class="icon-size-10 mr-6" svgIcon="mat_outline:money"></mat-icon>
+                    <div class="flex flex-col ">
+                        <div class="text-xl font-semibold leading-tight">Paid</div>
+                        <div class="text-md text-secondary">
+                            <p>{{(orderDetail?.currentTotal | currency) ||
                                 not_available_price}}</p>
                             <span></span>
                         </div>
@@ -248,7 +386,8 @@
                                             <p>{{item.statusName}}</p>
                                             <p *ngIf="item.trackingNumber"><b>Tracking Number:
                                                 </b>{{item.trackingNumber}}</p>
-                                            <p *ngIf="item?.shippingDate"><b>Shipping Date: </b>{{item.shippingDate |
+                                            <p *ngIf="item?.shippingDate"><b>Shipping Date: </b>{{item.shippingDate
+                                                |
                                                 date}}</p>
                                         </div>
                                     </td>
@@ -273,7 +412,8 @@
                                     <h2>
                                         <mat-icon svgIcon="mat_solid:person"></mat-icon>
                                     </h2>
-                                    <h2 class="ml-2">{{orderDetail?.userFirstName + ' ' + orderDetail?.userLastName}}
+                                    <h2 class="ml-2">{{orderDetail?.userFirstName + ' ' +
+                                        orderDetail?.userLastName}}
                                     </h2>
                                 </span>
                                 <span class="flex">
@@ -301,7 +441,9 @@
                                     <h2 class="font-bold">
                                         Location:
                                     </h2>
-                                    <h2 class="ml-2">{{orderDetail?.billingLocation || not_available}}
+                                    <h2 class="ml-2">{{(orderDetail?.companyName + ' - ' +
+                                        orderDetail?.qryUserProfileLocationName + ' - ' +
+                                        orderDetail?.qryUserProfileDepartmentName) || not_available}}
                                     </h2>
                                 </span>
                                 <span class="flex  mt-1">
@@ -380,15 +522,13 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row w-full">
                                 <div class="col-lg-6 col-md-6 col-12 my-1">
                                     <div class="row">
                                         <div class="col-12">
-                                            <b>Account/charge Code</b>
+                                            <b>C# number</b>
                                         </div>
-                                        <div class="col-12">
-                                            N/A
+                                        <div class="col-6">
+                                            {{orderDetail?.CNumber || not_available}}
                                         </div>
                                     </div>
                                 </div>
@@ -401,9 +541,36 @@
                                             {{(orderDetail?.shippingCarrierName + '/' +
                                             orderDetail?.shippingServiceName) || not_available}}
                                             {{orderDetail?.shippingCustomerAccountNumber}}
+                                            ACCT#: {{orderDetail?.shippingCustomerAccountNumber ||
+                                            'NONE'}}
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row w-full">
+                                <div class="col-lg-6 col-md-6 col-12 my-1">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <b>Account/charge Code</b>
+                                        </div>
+                                        <div class="col-12">
+                                            N/A
                                         </div>
                                     </div>
                                 </div>
+
+                                <div class="col-lg-6 col-md-6 col-12 my-1">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <b>Cost center code</b>
+                                        </div>
+                                        <div class="col-12">
+                                            {{orderDetail?.costCenterCode || not_available}}
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                     </div>

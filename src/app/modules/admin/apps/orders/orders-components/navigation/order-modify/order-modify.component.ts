@@ -48,6 +48,7 @@ export class OrderModifyComponent implements OnInit, OnDestroy {
   isBillingLoader: boolean = false;
   isShippingLoader: boolean = false;
   isPaymentLoader: boolean = false;
+  formattedDate: string;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _orderService: OrdersService,
@@ -135,9 +136,12 @@ export class OrderModifyComponent implements OnInit, OnDestroy {
           let emails = this.selectedOrder.proofEmail.split(',');
           this.emails = emails;
         }
+        console.log(this.selectedOrder);
         this.billingShippingForm.patchValue(this.selectedOrder);
+        this.formattedDate = moment(this.selectedOrder.inHandsDate).format('MMM D YYYY');
         this.shippingForm.patchValue(this.selectedOrder);
         this.paymentForm.patchValue(this.selectedOrder);
+        this.paymentForm.patchValue({ salesTaxRate: this.selectedOrder.salesTaxRate * 100 });
       }
     });
   };
@@ -157,7 +161,7 @@ export class OrderModifyComponent implements OnInit, OnDestroy {
       return;
     }
     this.isBillingLoader = true;
-    const { CNumber,billingCompanyName, billingFirstName, billingLastName, billingLocation, billToDeliverTo, billingAddress, billingCity, billingState, billingZip, billingCountry, billingPhone, billingEmail, shippingCompanyName, shippingFirstName, shippingLastName, shippingLocation, shipToDeliverTo, shippingAddress, shippingCity, shippingState, shippingZip, shippingZipExt, shippingCountry, shippingPhone, shippingEmail, accountChargeCode } = this.billingShippingForm.value;
+    const { CNumber, billingCompanyName, billingFirstName, billingLastName, billingLocation, billToDeliverTo, billingAddress, billingCity, billingState, billingZip, billingCountry, billingPhone, billingEmail, shippingCompanyName, shippingFirstName, shippingLastName, shippingLocation, shipToDeliverTo, shippingAddress, shippingCity, shippingState, shippingZip, shippingZipExt, shippingCountry, shippingPhone, shippingEmail, accountChargeCode } = this.billingShippingForm.value;
     if (billingCompanyName.trim() === '' || billingFirstName.trim() === '' || billingLastName.trim() === '' ||
       billingAddress.trim() === '' || billingCity.trim() === '' || billingState.trim() === '' ||
       billingZip.trim() === '' || billingCountry.trim() === '' || billingEmail.trim() === '' ||
@@ -200,7 +204,7 @@ export class OrderModifyComponent implements OnInit, OnDestroy {
       ship_to_deliver_to: shipToDeliverTo,
       bill_to_deliver_to: billToDeliverTo,
       modify_contact_info: true,
-      CNumber:CNumber
+      CNumber: CNumber
     };
     this.selectedOrder.proofEmail = this.emails.toString();
     this._orderService.updateOrderCalls(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
@@ -220,7 +224,7 @@ export class OrderModifyComponent implements OnInit, OnDestroy {
       return;
     }
     const { inHandsDate, shippingCarrierName, paymentDate, shippingServiceName, purchaseOrderNum, shippingCustomerAcc, invoiceDueDate, shippingServiceCode, costCenterCode } = this.shippingForm.value;
-    if(shippingCarrierName.trim() === '' || shippingServiceCode.trim() === '') {
+    if (shippingCarrierName.trim() === '' || shippingServiceCode.trim() === '') {
       this._orderService.snackBar('Please fill out required fields');
       return;
     }
@@ -266,11 +270,12 @@ export class OrderModifyComponent implements OnInit, OnDestroy {
       this._orderService.snackBar('Please fill out required fields');
       return;
     }
-    const { paymentMethodID, discountCode, transactionID, discountAmount, salesTaxRate, taxExemptionCom, instructions, blnTaxable } = this.paymentForm.value;
-    if(salesTaxRate.trim() === '') {
+    const { paymentMethodID, discountCode, transactionID, discountAmount, salesTaxRate, taxExemptionComment, instructions, blnTaxable } = this.paymentForm.value;
+    if (salesTaxRate === '' || paymentMethodID === '') {
       this._orderService.snackBar('Please fill out required fields');
       return;
     }
+
     let paymentName = this.paymentMethods.filter(item => item.id == paymentMethodID);
     let payload: paymentInfoObj = {
       payment_method_id: paymentMethodID,
@@ -278,8 +283,8 @@ export class OrderModifyComponent implements OnInit, OnDestroy {
       gateway_trx_id: transactionID,
       discount_code: discountCode,
       discount_amount: discountAmount,
-      sales_tax_rate: salesTaxRate,
-      tax_exemption_comment: taxExemptionCom,
+      sales_tax_rate: salesTaxRate/100,
+      tax_exemption_comment: taxExemptionComment,
       instructions: instructions,
       is_taxable: blnTaxable,
       credit_term_id: 0,
@@ -301,12 +306,12 @@ export class OrderModifyComponent implements OnInit, OnDestroy {
 
   replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
     for (const key in obj) {
-        if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
-            obj[key] = obj[key]?.replace(/'/g, "''");
-        }
+      if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+        obj[key] = obj[key]?.replace(/'/g, "''");
+      }
     }
     return obj;
-}
+  }
 
   /**
      * On destroy

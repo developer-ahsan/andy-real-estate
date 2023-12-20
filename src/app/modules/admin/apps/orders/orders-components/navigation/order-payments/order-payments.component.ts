@@ -25,6 +25,7 @@ export class OrderPaymentComponent implements OnInit {
   isPaymentLoader: boolean = false;
   paymentHandler: any = null;
   ngAmount = null;
+  referanceNumber: string = ''
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _orderService: OrdersService

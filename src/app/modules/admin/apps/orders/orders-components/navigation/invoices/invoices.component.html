@@ -39,6 +39,26 @@
 
                                         <div class="flex items-start">
                                             <div class="grid place-items-start  mt-5">
+
+                                                <div class="grid auto-cols-max grid-flow-col gap-x-2 mb-2">
+                                                    <div
+                                                        class="place-self-center w-24 text-center text-2xl text-secondary">
+                                                        Order Placed By
+                                                    </div>
+                                                    <div class="pl-6 border-l text-md">
+                                                        <p>{{orderDetail?.billingCompanyName}}</p>
+                                                        <p>{{orderDetail?.billingFirstName + ' ' +
+                                                            orderDetail?.billingLastName}}</p>
+                                                        <p>{{orderDetail?.billingAddress}}</p>
+                                                        <p>{{ orderDetail?.billingCity + ' ' +
+                                                            orderDetail?.billingCountry + ',' +
+                                                            orderDetail?.billingState + ' ' +orderDetail?.billingZip}}
+                                                        </p>
+                                                        <p>{{orderDetail?.billingPhone}}</p>
+                                                        <a href="mailto:{{orderDetail?.billingEmail}}">{{orderDetail?.billingEmail}}</a>
+                                                    </div>
+                                                </div>
+
                                                 <div class="grid auto-cols-max grid-flow-col gap-x-2">
                                                     <div
                                                         class="place-self-center w-24 text-center text-2xl text-secondary">
@@ -121,9 +141,101 @@
                                             </div>
                                         </div>
                                         <div class="grid grid-cols-12 gap-x-1 mt-8" *ngIf="orderProducts?.length > 0">
-                                            <div class="col-span-12 border-b font-bold text-medium my-2">
-                                                Promo Code: {{orderDetail?.discountCode || not_available}}
+                                            <div class="col-span-12 text-medium my-2">
+                                                <span class="font-bold"> Promo Code:</span> {{orderDetail?.discountCode
+                                                || not_available}}
                                             </div>
+                                            <div class="col-span-12 text-medium my-2 flex flex-row gap-x-2">
+                                                <div class="font-bold">Delivery Date (expected, in business
+                                                    days):</div>
+                                                <!-- {{orderDetail?.shippingCarrierName+ ', '+ orderDetail?.shippingServiceName || not_available}} -->
+                                                <div *ngIf="orderDetail?.inHandsDate">
+                                                    {{ orderDetail?.inHandsDate | date: 'MMM dd, yyyy' }} at the
+                                                    latest
+                                                </div>
+                                                <div *ngIf="!orderDetail?.inHandsDate">
+                                                    {{ not_available }}
+                                                </div>
+
+                                                <!-- <div *ngIf="orderDetail.paymentDate && !orderDetail.inHandsDate">
+                                                    No in-hands, customer has made approved payment arrangements
+                                                        <ng-container
+                                                            *ngIf="local.strTimeline = local.objOrder.getOrderTimeLine(arguments.orderID, local.qryOrder.paymentDate, arguments.DSN, arguments.COM)">
+                                                            {{ local.strTimeline.deliveryDate.low | date: 'EEEE, MMMM
+                                                            dd' }}
+                                                            <ng-container
+                                                                *ngIf="local.strTimeline.deliveryDate.low !== local.strTimeline.deliveryDate.high">
+                                                                - {{ local.strTimeline.deliveryDate.high | date: 'EEEE,
+                                                                MMMM dd, yyyy' }}
+                                                            </ng-container>
+                                                        </ng-container>
+                                                </div> -->
+
+                                                <!-- <div
+                                                    *ngIf="!isDate(local.qryOrder.inHandsDate) && !isDate(local.qryOrder.paymentDate)">
+                                                    No in-hands, customer has not made approved payment arrangements
+                                                    <ng-container *ngIf="local.objOrder">
+                                                        <ng-container
+                                                            *ngIf="local.strTimeline = local.objOrder.getOrderTimeLine(arguments.orderID, getCurrentDate(), arguments.DSN, arguments.COM)">
+                                                            {{ local.strTimeline.totalBusiness.low }}
+                                                            <ng-container
+                                                                *ngIf="local.strTimeline.totalBusiness.low !== local.strTimeline.totalBusiness.high">
+                                                                - {{ local.strTimeline.totalBusiness.high }} business
+                                                                days after approval
+                                                            </ng-container>
+                                                        </ng-container>
+                                                    </ng-container>
+                                                </div> -->
+
+
+
+                                            </div>
+                                            <div class="col-span-12 border-b  text-medium my-2">
+                                                <span class="font-bold">Shipping Method:</span>
+                                                {{orderDetail?.shippingCarrierName+ ', '+
+                                                orderDetail?.shippingServiceName || not_available}}
+                                            </div>
+
+
+                                            <div class="col-span-12 text-medium my-2">
+                                                <span class="font-bold">Payment Method:</span>
+                                                {{orderDetail?.paymentMethodName || not_available}}
+
+                                                <div>
+                                                <span [ngStyle]="{ 'font-weight': 'bold' }">If paying by check please
+                                                    address payment to:</span>
+
+                                                <span>
+                                                    Consolidus
+                                                    <span *ngIf="orderDetail.fk_storeID !== 178">(our parent
+                                                        company)</span>
+
+                                                    526 S. Main Street, Suite ##804
+                                                    Akron, Ohio 44311-4401
+                                                    </span>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="col-span-12 border-b  text-medium my-2">
+                                                <span class="font-bold">Account/Charge Code:</span>
+                                                <span *ngIf="orderDetail.billingStudentOrgCode">
+                                                    
+                                                    SABO: {{ orderDetail.billingStudentOrgCode }}, {{ orderDetail.billingStudentOrgName }}
+                                                  </span>
+                                                  <span *ngIf="orderDetail.accountChargeCode && orderDetail.billingStudentOrgCode">
+                                                    {{ orderDetail.accountChargeCode }}
+                                                  </span>
+                                                  <span *ngIf="!(orderDetail.billingStudentOrgCode) && !(orderDetail.accountChargeCode)">
+                                                    NONE
+                                                  </span>
+                                            </div>
+
+
+
+
+
+
                                             <div class="col-span-12 border-b" *ngFor="let item of orderProducts">
                                                 <div class="row">
                                                     <div class="col-9">
