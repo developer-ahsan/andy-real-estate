@@ -797,9 +797,10 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
     this._orderService.orderPostCalls(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         // this.getOrderLineDetailsAfterUpdateOrAdd(res["message"]);
-      } else {
-        this.isAddNewProdLoader = false;
-      }
+      } 
+      this.isAddNewProdLoader = false;
+      this._orderService.snackBar('Product added successfuly');
+
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isAddNewProdLoader = false;

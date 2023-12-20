@@ -19,7 +19,10 @@
                   <mat-label>Amount</mat-label>
                   <input matInput [(ngModel)]="ngAmount">
                 </mat-form-field>
-                <ngx-stripe-card [elementsOptions]="elementsOptions"></ngx-stripe-card>
+                <div class="font-bold mb-2">Card Number</div>
+                <div class="border border-gray-300 shadow rounded p-3">
+                  <ngx-stripe-card [options]="cardOptions" [elementsOptions]="elementsOptions"></ngx-stripe-card>
+                </div>
                 <mat-checkbox class="my-2">Send receipt to customer?</mat-checkbox>
                 <br>
                 <button [matTooltip]="'Process Payment'" [disabled]="isPaymentLoader" (click)="createToken()"
