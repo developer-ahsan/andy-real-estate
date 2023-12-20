@@ -1199,7 +1199,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
         orderLineID: Number(this.paramData.pk_orderLineID),
         imprintID: Number(imprint.pk_imprintID),
         userID: Number(this.paramData.pfk_userID),
-        orderLineImprintID: Number(this.paramData.fk_imprintID),
+        orderLineImprintID: Number(imprint.pk_imprintID),
         orderID: Number(this.paramData.fk_orderID),
         orderDate: this.orderData.orderDate,
         inHandsDate: inhands,
@@ -1462,7 +1462,6 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       imprint.artworkProofLoader = false;
       imprint.statusName = 'Awaiting Artwork Approval';
       imprint.pk_statusID = 3;
-      this.getArtworkFinalartFiles();
       this.setitemColorsWithIDs(imprint);
       imprint.imprintComments = imprint.imprintComments + ' <br>' + res["customerComment"];
       this.orderData.internalComments = this.orderData.internalComments + res["orderComment"];
@@ -1576,6 +1575,8 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       imprint.finalArtworkProofLoader = false;
       imprint.pk_statusID = 5;
       imprint.statusName = "DECORATOR NOTIFIED";
+      this.getArtworkFinalartFiles();
+      imprint.bgColor = this.setImprintColor(imprint.pk_statusID);
       this.orderData.internalComments = this.orderData.internalComments + res["orderComment"];
       this._smartartService.snackBar(res["message"]);
       this._changeDetectorRef.markForCheck();
@@ -1874,6 +1875,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
           element.artworkFinalartFiles = [];
         });
         imprint.artworkCommentsText = '';
+        this.getArtworkFinalartFiles();
         this.uploadFinalArtworkFileToServer(imprint, 'Final artwork successfully uploaded, and decorator has been notified.');
         this.updateImprintsData();
       } else {
@@ -1969,7 +1971,8 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
         if (res["success"]) {
           imprint.statusName = 'AWAITING ARTWORK APPROVAL';
           imprint.pk_statusID = 3;
-          this.getArtworkFinalartFiles();
+          this.setImprintColor(imprint);
+          this.updateImprintsData();
           this._smartartService.snackBar('Artwork status successfully updated.');
           this._changeDetectorRef.markForCheck();
         }

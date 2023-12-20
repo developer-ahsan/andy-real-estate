@@ -10,9 +10,10 @@
                 </mat-progress-spinner>
 
             </button>
-            <a target="_blank"
+            <a class="min-w-30 btn buttonComment hover:bg-gray-200" (click)="generatePDF()">View PDF</a>
+            <!-- <a target="_blank"
                 href="https://admin.consolidus.com/ssadm/controller/view/system/tempDocs/Purchase-Order-{{orderDataPO.purchaseOrderNumber}}-{{orderDataPO.pk_orderLinePOID}}.pdf"
-                class="min-w-30 btn buttonComment hover:bg-gray-200">View PDF</a>
+                class="min-w-30 btn buttonComment hover:bg-gray-200">View PDF</a> -->
         </div>
         <div>
             <button class="min-w-40 btn buttonComment hover:bg-gray-200" (click)="backToList()">Back to List</button>
@@ -59,21 +60,23 @@
                         Rush
                     </h2>
                     <div class="space-y-2">
-                        <div *ngIf="orderDataPO.POinHandsDate" class="text-xl font-bold text-orange-600">
-                            {{orderDataPO.POinHandsDate |
+                        <div *ngIf="orderData.formattedInHandsDate" class="text-xl font-bold text-orange-600">
+                            {{orderData.formattedInHandsDate |
                             date: 'MM/dd/YYYY'}}</div>
                         <div class="font-bold">
-                            <span><b>Rush Flexibility:</b> <span *ngIf="!orderData.blnRushFlexibility"
-                                    class="text-red-500"> No</span> <span class="text-green-500"
-                                    *ngIf="orderData.blnRushFlexibility"> Yes</span></span>
+                            <span
+                                [ngClass]="{'text-red-500': !orderData.blnRushFlexibility, 'text-green-500': orderData.blnRushFlexibility}">
+                                {{ orderData.blnRushFlexibility ? 'Yes' : 'No' }}
+                            </span>
                         </div>
-                        <div *ngIf="orderData.rushFlexibilityComment">
-                            <span><b>Comment:</b> {{orderData.rushFlexibilityComment}}</span>
+                        <div>
+                            <span><b>Comment:</b> {{orderData.rushFlexibilityComment || 'N/A'}}</span>
                         </div>
                         <mat-form-field class="w-full">
                             <mat-label>Add or Update In-Hands Date</mat-label>
                             <input matInput [matDatepicker]="picker" readonly
-                                [matDatepickerFilter]="weekendsDatesFilter" [(ngModel)]="orderDataPO.POinHandsDate">
+                                [matDatepickerFilter]="weekendsDatesFilter"
+                                [(ngModel)]="orderData.formattedInHandsDate">
                             <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                             <mat-datepicker #picker></mat-datepicker>
                         </mat-form-field>
@@ -98,13 +101,21 @@
                         <fuse-alert *ngIf="imprintInformation.length == 0" [appearance]="'soft'" [type]="'warning'">
                             No imprints
                         </fuse-alert>
-                        <div *ngFor="let item of imprintInformation">
-                            <span>{{item.productName}}</span>
-                            <span>({{item.locationName}}/{{item.methodName}}) - <b
-                                    [ngClass]="{'text-red-500': item.statusName != 'Artwork Approved','text-green-500': item.statusName == 'Artwork Approved'}">{{item.statusName}}</b></span>
-                            <br>
-                            <a href="https://assets.consolidus.com/artwork/Proof/{{orderData.fk_storeUserID}}/{{orderData.fk_orderID}}/{{orderData.pk_orderLineID}}/{{item.fk_imprintID}}.jpg"
-                                target="_blank" class="text-blue-500">View Proof</a>
+                        <div *ngIf="imprintInformation.length > 0">
+                            <table class="table table-striped" *ngFor="let item of imprintInformation">
+                                <tr>
+                                    <td>
+                                        <span>{{item.productName}}</span>
+                                        <span>({{item.locationName}}/{{item.methodName}}) - <b
+                                                [ngClass]="{'text-red-500': item.statusName != 'Artwork Approved','text-green-500': item.statusName == 'Artwork Approved'}">{{item.statusName}}</b></span>
+                                        <br>
+                                        <a *ngIf="item.proofCheck"
+                                            href="https://assets.consolidus.com/artwork/Proof/{{orderData.fk_storeUserID}}/{{orderData.fk_orderID}}/{{orderData.pk_orderLineID}}/{{item.fk_imprintID}}.jpg"
+                                            target="_blank" class="text-blue-500">View Proof</a>
+                                    </td>
+                                </tr>
+                            </table>
+
                         </div>
                     </div>
                 </div>
@@ -128,7 +139,7 @@
                             <mat-form-field class="w-full">
                                 <mat-label>Ship Date:</mat-label>
                                 <input matInput [matDatepicker]="shipDate" readonly
-                                    [(ngModel)]="orderData.shippingDate">
+                                    [(ngModel)]="orderData.formattedShippingDate">
                                 <mat-datepicker-toggle matIconSuffix [for]="shipDate"></mat-datepicker-toggle>
                                 <mat-datepicker #shipDate></mat-datepicker>
                             </mat-form-field>
@@ -170,7 +181,7 @@
                         <mat-form-field class="w-full">
                             <mat-label>Estimated Shipping Date</mat-label>
                             <input matInput [matDatepicker]="Estpicker" readonly
-                                [(ngModel)]="orderData.estimatedShippingDate">
+                                [(ngModel)]="orderData.formattedEstimatedShippingDate" (click)="Estpicker.open()">
                             <mat-datepicker-toggle matIconSuffix [for]="Estpicker"></mat-datepicker-toggle>
                             <mat-datepicker #Estpicker></mat-datepicker>
                         </mat-form-field>
@@ -193,7 +204,11 @@
                         Order Comments
                     </h2>
                     <div class="space-y-2">
-                        <div class="h-50 overflow-y-auto border p-3" [innerHTML]="orderData.internalComments"></div>
+                        <div class="h-50 overflow-y-auto border p-3" *ngIf="orderData.internalComments"
+                            [innerHTML]="orderData.internalComments"></div>
+                        <fuse-alert [appearance]="'soft'" [type]="'warning'" *ngIf="!orderData.internalComments">
+                            No comments yet for this order.
+                        </fuse-alert>
                         <mat-form-field class="w-full">
                             <mat-label>Add a comment:</mat-label>
                             <textarea matInput rows="5" [(ngModel)]="ngComment"></textarea>
@@ -205,6 +220,8 @@
                                     [value]="item">{{item}}</mat-option>
                             </mat-select>
                         </mat-form-field>
+                        <mat-checkbox>Urgent</mat-checkbox>
+                        <br>
                         <button class="min-w-40 btn buttonComment hover:bg-gray-200" (click)="updateComments()"
                             [disabled]="isCommentsLoader">
                             <span *ngIf="!isCommentsLoader">Add Comment</span>
@@ -239,8 +256,8 @@
                                         <mat-progress-spinner *ngIf="item?.delLoader" [diameter]="24"
                                             [mode]="'indeterminate'">
                                         </mat-progress-spinner>
-                                        <mat-icon *ngIf="!item?.delLoader" (click)="deleteAttachment(item)"
-                                            svgIcon="mat_outline:delete"></mat-icon>
+                                        <mat-ic1on *ngIf="!item?.delLoader" (click)="deleteAttachment(item)"
+                                            svgIcon="mat_outline:delete"></mat-ic1on>
 
                                     </td>
                                 </tr>
@@ -339,6 +356,7 @@
                                 <mat-option value="Net 30">Net 30</mat-option>
                                 <mat-option value="Net 45">Net 45</mat-option>
                                 <mat-option value="Net 60">Net 60</mat-option>
+                                <mat-option value="2% 15, Net 30">2% 15, Net 30</mat-option>
                             </mat-select>
                         </mat-form-field>
                         <mat-checkbox class="w-full" [(ngModel)]="vendorBillData.blnInvoiced">Invoiced</mat-checkbox>
@@ -353,6 +371,7 @@
             </div>
         </div>
     </div>
+    <!-- Order Details -->
     <div class="col-12 col-md-8">
         <div class=" rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
             <div class="w-full">
@@ -401,13 +420,15 @@
                             <div class="col-12 col-md-6">
                                 <mat-form-field class="w-full">
                                     <mat-label>City</mat-label>
-                                    <input matInput disabled [(ngModel)]="orderDataPO.vendorShippingCity">
+                                    <input matInput disabled maxlength="100"
+                                        [(ngModel)]="orderDataPO.vendorShippingCity">
                                 </mat-form-field>
                             </div>
                             <div class="col-12 col-md-6">
                                 <mat-form-field class="w-full">
                                     <mat-label>Address1</mat-label>
-                                    <input matInput disabled [(ngModel)]="orderDataPO.vendorShippingAddress1">
+                                    <input matInput maxlength="200" disabled
+                                        [(ngModel)]="orderDataPO.vendorShippingAddress1">
                                 </mat-form-field>
                             </div>
                             <div class="col-6 col-md-3">
@@ -419,38 +440,44 @@
                             <div class="col-6 col-md-3">
                                 <mat-form-field class="w-full">
                                     <mat-label>Zip</mat-label>
-                                    <input matInput disabled [(ngModel)]="orderDataPO.vendorShippingZip">
+                                    <input matInput disabled maxlength="10" [(ngModel)]="orderDataPO.vendorShippingZip">
                                 </mat-form-field>
                             </div>
                             <div class="col-12 col-md-6">
                                 <mat-form-field class="w-full">
                                     <mat-label>Address2</mat-label>
-                                    <input matInput disabled placeholder="Vendor address 2"
+                                    <input matInput maxlength="200" disabled placeholder="Vendor address 2"
                                         [(ngModel)]="orderDataPO.vendorShippingAddress2">
                                 </mat-form-field>
                             </div>
                             <div class="col-12 col-md-6">
                                 <mat-form-field class="w-full">
                                     <mat-label>Phone</mat-label>
-                                    <input matInput disabled [(ngModel)]="orderDataPO.vendorShippingPhone">
+                                    <input matInput disabled maxlength="100"
+                                        [(ngModel)]="orderDataPO.vendorShippingPhone">
                                 </mat-form-field>
                             </div>
                             <div class="col-12 col-md-8">
                                 <mat-form-field class="w-full">
                                     <mat-label>Emails</mat-label>
-                                    <input matInput [(ngModel)]="orderDataPO.vendorShippingEmail">
+                                    <input matInput [(ngModel)]="orderDataPO.vendorShippingEmail" maxlength="5000">
                                 </mat-form-field>
                             </div>
                             <div class="col-12 col-md-6">
                                 <mat-form-field class="w-full">
                                     <mat-label>Shipping Comment</mat-label>
-                                    <input matInput [(ngModel)]="orderDataPO.shippingComment">
+                                    <input matInput [(ngModel)]="orderDataPO.shippingComment" maxlength="500">
                                 </mat-form-field>
                             </div>
                             <div class="col-12 col-md-6">
-                                <mat-form-field class="w-full">
+                                <div class="flex">
                                     <mat-label>In Hands Date</mat-label>
-                                    <input [(ngModel)]="orderData.inHandsDate" matInput
+                                    <mat-icon class="icon-size-4 ml-1"
+                                        matTooltip="This field allows you to customize the in-hands date field that appears on this PO. To update the actual in hands date for this order, use the 'Rush' panel on the left."
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                                <mat-form-field class="w-full">
+                                    <input [(ngModel)]="orderData.formattedInHandsDate" matInput
                                         [matDatepicker]="orderDataInhands" readonly (click)="orderDataInhands.open()">
                                     <mat-datepicker-toggle matIconSuffix
                                         [for]="orderDataInhands"></mat-datepicker-toggle>
@@ -466,139 +493,88 @@
                             <div class="col-12 col-md-6">
                                 <mat-form-field class="w-full">
                                     <mat-label>Shipping To Company</mat-label>
-                                    <input matInput [(ngModel)]="orderDataPO.shipToCompanyName">
+                                    <input matInput [(ngModel)]="orderDataPO.shipToCompanyName" maxlength="500">
                                 </mat-form-field>
                             </div>
                             <div class="col-12 col-md-6">
                                 <mat-form-field class="w-full">
                                     <mat-label>Ship To City</mat-label>
-                                    <input matInput [(ngModel)]="orderDataPO.shipToCity">
+                                    <input matInput [(ngModel)]="orderDataPO.shipToCity" maxlength="200">
                                 </mat-form-field>
                             </div>
                             <div class="col-12 col-md-6">
                                 <mat-form-field class="w-full">
                                     <mat-label>Ship To Name</mat-label>
-                                    <input matInput [(ngModel)]="orderDataPO.shipToCustomerName">
+                                    <input matInput [(ngModel)]="orderDataPO.shipToCustomerName" maxlength="500">
                                 </mat-form-field>
                             </div>
                             <div class="col-12 col-md-3">
                                 <mat-form-field class="w-full">
                                     <mat-label>Ship To State</mat-label>
                                     <mat-select matInput [(ngModel)]="orderDataPO.shipToState">
-                                        <mat-option value="AL">AL</mat-option>
-                                        <mat-option value="AK">AK</mat-option>
-                                        <mat-option value="AZ">AZ</mat-option>
-                                        <mat-option value="AR">AR</mat-option>
-                                        <mat-option value="CA">CA</mat-option>
-                                        <mat-option value="CO">CO</mat-option>
-                                        <mat-option value="CT">CT</mat-option>
-                                        <mat-option value="DE">DE</mat-option>
-                                        <mat-option value="FL">FL</mat-option>
-                                        <mat-option value="GA">GA</mat-option>
-                                        <mat-option value="HI">HI</mat-option>
-                                        <mat-option value="ID">ID</mat-option>
-                                        <mat-option value="IL">IL</mat-option>
-                                        <mat-option value="IN">IN</mat-option>
-                                        <mat-option value="IA">IA</mat-option>
-                                        <mat-option value="KS">KS</mat-option>
-                                        <mat-option value="KY">KY</mat-option>
-                                        <mat-option value="LA">LA</mat-option>
-                                        <mat-option value="ME">ME</mat-option>
-                                        <mat-option value="MD">MD</mat-option>
-                                        <mat-option value="MA">MA</mat-option>
-                                        <mat-option value="MI">MI</mat-option>
-                                        <mat-option value="MN">MN</mat-option>
-                                        <mat-option value="MS">MS</mat-option>
-                                        <mat-option value="MO">MO</mat-option>
-                                        <mat-option value="MT">MT</mat-option>
-                                        <mat-option value="NE">NE</mat-option>
-                                        <mat-option value="NV">NV</mat-option>
-                                        <mat-option value="NH">NH</mat-option>
-                                        <mat-option value="NJ">NJ</mat-option>
-                                        <mat-option value="NM">NM</mat-option>
-                                        <mat-option value="NY">NY</mat-option>
-                                        <mat-option value="NC">NC</mat-option>
-                                        <mat-option value="ND">ND</mat-option>
-                                        <mat-option value="OH">OH</mat-option>
-                                        <mat-option value="OK">OK</mat-option>
-                                        <mat-option value="OR">OR</mat-option>
-                                        <mat-option value="PA">PA</mat-option>
-                                        <mat-option value="PR">PR</mat-option>
-                                        <mat-option value="RI">RI</mat-option>
-                                        <mat-option value="SC">SC</mat-option>
-                                        <mat-option value="SD">SD</mat-option>
-                                        <mat-option value="TN">TN</mat-option>
-                                        <mat-option value="TX">TX</mat-option>
-                                        <mat-option value="UT">UT</mat-option>
-                                        <mat-option value="VT">VT</mat-option>
-                                        <mat-option value="VI">VI</mat-option>
-                                        <mat-option value="VA">VA</mat-option>
-                                        <mat-option value="WA">WA</mat-option>
-                                        <mat-option value="DC">DC</mat-option>
-                                        <mat-option value="WV">WV</mat-option>
-                                        <mat-option value="WI">WI</mat-option>
-                                        <mat-option value="WY">WY</mat-option>
+                                        <mat-option *ngFor="let state of allStates"
+                                            [value]="state.state">{{state.state}}</mat-option>
                                     </mat-select>
                                 </mat-form-field>
                             </div>
                             <div class="col-12 col-md-3">
                                 <mat-form-field class="w-full">
                                     <mat-label>Ship To Zip</mat-label>
-                                    <input matInput [(ngModel)]="orderDataPO.shipToZip">
+                                    <input matInput [(ngModel)]="orderDataPO.shipToZip" maxlength="10">
                                 </mat-form-field>
                             </div>
                             <div class="col-12 col-md-8">
                                 <mat-form-field class="w-full">
                                     <mat-label>Ship To Address</mat-label>
-                                    <input matInput [(ngModel)]="orderDataPO.shipToAddress">
+                                    <input matInput [(ngModel)]="orderDataPO.shipToAddress" maxlength="500">
                                 </mat-form-field>
                             </div>
                             <div class="col-12 col-md-8" *ngIf="orderDataPO.showPurchaseOrder">
                                 <mat-form-field class="w-full">
                                     <mat-label>Customer Purchase order</mat-label>
-                                    <input matInput [(ngModel)]="orderDataPO.shipToPurchaseOrder">
+                                    <input matInput maxlength="100" [(ngModel)]="orderDataPO.shipToPurchaseOrder">
                                 </mat-form-field>
                             </div>
                             <div class="col-12 col-md-6">
                                 <mat-form-field class="w-full">
                                     <mat-label>Ship To Location</mat-label>
-                                    <input matInput [(ngModel)]="orderDataPO.shipToLocation">
+                                    <input matInput maxlength="500" [(ngModel)]="orderDataPO.shipToLocation">
                                 </mat-form-field>
                             </div>
                             <div class="col-12 col-md-6">
                                 <mat-form-field class="w-full">
                                     <mat-label>Ship To Country</mat-label>
-                                    <input matInput [(ngModel)]="orderDataPO.shipToCountry">
+                                    <input matInput maxlength="100" [(ngModel)]="orderDataPO.shipToCountry">
                                 </mat-form-field>
                             </div>
                             <div class="col-12 col-md-6">
                                 <mat-form-field class="w-full">
                                     <mat-label>Deliver To</mat-label>
-                                    <input matInput [(ngModel)]="orderDataPO.shipToDeliverTo">
+                                    <input matInput maxlength="500" [(ngModel)]="orderDataPO.shipToDeliverTo">
                                 </mat-form-field>
                             </div>
-                            <div class="col-6 col-md-3">
+                            <div class="col-6 col-md-3" *ngIf="orderDataPO.blnSupplier">
                                 <mat-form-field class="w-full">
                                     <mat-label>Co-op</mat-label>
-                                    <input matInput [(ngModel)]="orderDataPO.coop">
+                                    <input matInput maxlength="1000" [(ngModel)]="orderDataPO.coop">
                                 </mat-form-field>
                             </div>
                         </div>
                         <!-- Product Data -->
                         <div class="row border-b py-2">
-                            <div class="col-12 col-md-9">
+                            <!-- <div class="col-12 col-md-9">
                                 <mat-form-field class="w-full">
                                     <mat-label>Product</mat-label>
-                                    <input matInput [(ngModel)]="orderDataPO.productName">
+                                    <input matInput [(ngModel)]="orderDataPO.productName" >
                                     <mat-hint *ngIf="orderDataPO.blnSample">This item is a sample</mat-hint>
                                 </mat-form-field>
                             </div>
                             <div class="col-12 col-md-3">
                                 <mat-form-field class="w-full">
                                     <mat-label>Quantity</mat-label>
-                                    <input matInput readonly disabled [(ngModel)]="orderDataPO.quantity">
+                                    <input matInput  readonly disabled [(ngModel)]="orderDataPO.quantity">
                                 </mat-form-field>
-                            </div>
+                            </div> -->
                             <div class="col-12 mt-2 border-b">
                                 <p class="font-medium text-secondary py-1 border-b">Product Color/Size Breakdown</p>
                                 <div class="w-full" *ngIf="orderDataPO.blnSupplier; else notBlnSupplier">
@@ -613,27 +589,29 @@
                                     <div class="row w-full" *ngFor="let item of colorsList">
                                         <div class="col-md-3">
                                             <mat-form-field class="w-full text-sm">
-                                                <input matInput [(ngModel)]="item.productName">
+                                                <input matInput maxlength="1000" [(ngModel)]="item.productName">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-md-2">
                                             <mat-form-field class="w-full text-sm">
-                                                <input matInput [(ngModel)]="item.optionName">
+                                                <input matInput [(ngModel)]="item.optionName" maxlength="500">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-md-2">
                                             <mat-form-field class="w-full text-sm">
-                                                <input matInput [(ngModel)]="item.quantity" type="number">
+                                                <input matInput [(ngModel)]="item.quantity" type="number"
+                                                    maxlength="10">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-md-2">
                                             <mat-form-field class="w-full text-sm">
-                                                <input matInput [(ngModel)]="item.unitCost" type="number">
+                                                <input matInput [(ngModel)]="item.unitCost" type="number"
+                                                    maxlength="10">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-md-2">
                                             <mat-form-field class="w-full text-sm">
-                                                <input matInput disabled [(ngModel)]="item.total">
+                                                <input matInput disabled [(ngModel)]="item.total" maxlength="10">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-md-1 mt-2">
@@ -652,7 +630,8 @@
                                         <div class="col-md-2 font-bold"></div>
                                         <div class="col-md-2">
                                             <mat-form-field class="w-full text-sm">
-                                                <input matInput disabled [(ngModel)]="totalColorsListQuantity">
+                                                <input matInput disabled maxlength="10"
+                                                    [(ngModel)]="totalColorsListQuantity">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-md-2 font-bold"></div>
@@ -663,25 +642,27 @@
                                         <div class="col-md-3">
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label>New product name</mat-label>
-                                                <input matInput [(ngModel)]="colorsForm.product">
+                                                <input maxlength="500" matInput [(ngModel)]="colorsForm.product">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-md-2">
                                             <mat-form-field class="w-full  text-sm">
                                                 <mat-label>New option name/description</mat-label>
-                                                <input matInput [(ngModel)]="colorsForm.name">
+                                                <input maxlength="500" matInput [(ngModel)]="colorsForm.name">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-md-2">
                                             <mat-form-field class="w-full  text-sm">
                                                 <mat-label>Quantity</mat-label>
-                                                <input matInput [(ngModel)]="colorsForm.quantity" type="number">
+                                                <input maxlength="10" matInput [(ngModel)]="colorsForm.quantity"
+                                                    type="number">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-md-2">
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label>Unit cost</mat-label>
-                                                <input matInput [(ngModel)]="colorsForm.cost" type="number">
+                                                <input maxlength="10" matInput [(ngModel)]="colorsForm.cost"
+                                                    type="number">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-md-2">
@@ -702,21 +683,28 @@
                                         <mat-form-field class="w-full text-sm">
                                             <mat-label>Stock coming from</mat-label>
                                             <input matInput maxlength="500" placeholder="Stock coming from"
-                                                [(ngModel)]="orderDataPO.stockFrom">
+                                                [(ngModel)]="orderDataPO.stockFrom" maxlength="500">
                                         </mat-form-field>
                                         <div class="row my-3 w-full" *ngIf="colorsList.length > 0">
-                                            <div class="col-md-6 col-12 font-bold">Color/size:</div>
-                                            <div class="col-md-6 col-12 font-bold">Quantity</div>
+                                            <div class="col-md-4 col-12 font-bold">Product:</div>
+                                            <div class="col-md-4 col-12 font-bold">Color/size:</div>
+                                            <div class="col-md-4 col-12 font-bold">Quantity</div>
                                         </div>
                                         <div class="row w-full" *ngFor="let item of colorsList">
-                                            <div class="col-md-6 col-12">
+                                            <div class="col-md-4 col-12">
                                                 <mat-form-field class="w-full text-sm">
-                                                    <input matInput [(ngModel)]="item.optionName">
+                                                    <input matInput maxlength="1000" [(ngModel)]="item.productName">
                                                 </mat-form-field>
                                             </div>
-                                            <div class="col-md-6 col-12">
+                                            <div class="col-md-4 col-12">
                                                 <mat-form-field class="w-full text-sm">
-                                                    <input matInput [(ngModel)]="item.quantity" type="number">
+                                                    <input matInput [(ngModel)]="item.optionName" maxlength="500">
+                                                </mat-form-field>
+                                            </div>
+                                            <div class="col-md-4 col-12">
+                                                <mat-form-field class="w-full text-sm">
+                                                    <input matInput maxlength="10" [(ngModel)]="item.quantity"
+                                                        type="number">
                                                 </mat-form-field>
                                             </div>
                                         </div>
@@ -729,32 +717,33 @@
                                     <div class="mt-3">
                                         <mat-form-field class="w-full text-sm">
                                             <mat-label>Imprint comment</mat-label>
-                                            <textarea matInput [(ngModel)]="orderDataPO.imprintComment"></textarea>
+                                            <textarea matInput maxlength="500"
+                                                [(ngModel)]="orderDataPO.imprintDetail"></textarea>
                                         </mat-form-field>
                                     </div>
                                     <div class="mt-3 row" *ngFor="let item of imprintdata">
                                         <div class="col-5">
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label>Imprint</mat-label>
-                                                <input matInput [(ngModel)]="item.imprintName">
+                                                <input matInput maxlength="500" [(ngModel)]="item.imprintName">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label>Quantity</mat-label>
-                                                <input matInput [(ngModel)]="item.quantity">
+                                                <input matInput maxlength="10" [(ngModel)]="item.quantity">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label>Run</mat-label>
-                                                <input matInput [(ngModel)]="item.unitCost">
+                                                <input matInput maxlength="20" [(ngModel)]="item.unitCost">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label>Setup</mat-label>
-                                                <input matInput [(ngModel)]="item.setup">
+                                                <input matInput maxlength="10" [(ngModel)]="item.setup">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-1 justify-between flex align-items-center">
@@ -786,25 +775,25 @@
                                         <div class="col-5">
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label>New imprint name/method/location:</mat-label>
-                                                <input matInput [(ngModel)]="imprintForm.name">
+                                                <input maxlength="500" matInput [(ngModel)]="imprintForm.name">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label>Quantity</mat-label>
-                                                <input matInput [(ngModel)]="imprintForm.quantity">
+                                                <input maxlength="10" matInput [(ngModel)]="imprintForm.quantity">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label>Run</mat-label>
-                                                <input matInput [(ngModel)]="imprintForm.run">
+                                                <input maxlength="10" matInput [(ngModel)]="imprintForm.run">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label>Setup</mat-label>
-                                                <input matInput [(ngModel)]="imprintForm.setup">
+                                                <input maxlength="10" matInput [(ngModel)]="imprintForm.setup">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-1 mt-7 text-right">
@@ -818,13 +807,20 @@
                                         <div class="col-2">
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label># Colors</mat-label>
-                                                <input matInput [(ngModel)]="imprintForm.n_color">
+                                                <input matInput maxlength="10" [(ngModel)]="imprintForm.n_color">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-4">
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label>Imprint colors</mat-label>
-                                                <input matInput [(ngModel)]="imprintForm.imprint_color">
+                                                <input matInput maxlength="9000"
+                                                    [(ngModel)]="imprintForm.imprint_color">
+                                            </mat-form-field>
+                                        </div>
+                                        <div class="col-12">
+                                            <mat-form-field class="w-full text-sm">
+                                                <mat-label>Imprint Comment</mat-label>
+                                                <input matInput maxlength="3000" [(ngModel)]="orderData.imprintComment">
                                             </mat-form-field>
                                         </div>
                                     </div>
@@ -843,27 +839,27 @@
                                     <div class="mt-3 row" *ngFor="let item of accessoriesList">
                                         <div class="col-4">
                                             <mat-form-field class="w-full">
-                                                <input matInput [(ngModel)]="item.accessoryName">
+                                                <input matInput maxlength="200" [(ngModel)]="item.accessoryName">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full">
-                                                <input matInput [(ngModel)]="item.quantity">
+                                                <input maxlength="10" matInput [(ngModel)]="item.quantity">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full">
-                                                <input matInput [(ngModel)]="item.unitCost">
+                                                <input maxlength="10" matInput [(ngModel)]="item.unitCost">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full">
-                                                <input matInput [(ngModel)]="item.setupCost">
+                                                <input matInput maxlength="20" [(ngModel)]="item.setupCost">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2 flex justify-between align-items-center">
                                             <mat-form-field class="w-full">
-                                                <input matInput disabled [(ngModel)]="item.totalCost">
+                                                <input matInput maxlength="20" disabled [(ngModel)]="item.totalCost">
                                             </mat-form-field>
                                             <mat-icon (click)="removePODetails(item,'accessory')"
                                                 *ngIf="!isAccessoriesDelLoader" svgIcon="heroicons_outline:trash"
@@ -877,25 +873,25 @@
                                         <div class="col-4">
                                             <mat-form-field class="w-full">
                                                 <mat-label>New accessory name/description:</mat-label>
-                                                <input matInput [(ngModel)]="accessoryForm.name">
+                                                <input maxlength="500" matInput [(ngModel)]="accessoryForm.name">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full">
                                                 <mat-label>Quantity</mat-label>
-                                                <input matInput [(ngModel)]="accessoryForm.quantity">
+                                                <input maxlength="10" matInput [(ngModel)]="accessoryForm.quantity">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full">
                                                 <mat-label>Unit cost</mat-label>
-                                                <input matInput [(ngModel)]="accessoryForm.cost">
+                                                <input maxlength="10" matInput [(ngModel)]="accessoryForm.cost">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full">
                                                 <mat-label>Setup</mat-label>
-                                                <input matInput [(ngModel)]="accessoryForm.setup">
+                                                <input matInput maxlength="10" [(ngModel)]="accessoryForm.setup">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2 mt-7 text-right">
@@ -926,7 +922,7 @@
                                 <div class="mt-3 row" *ngFor="let item of adjustmentsList">
                                     <div class="col-5">
                                         <mat-form-field class="w-full">
-                                            <input matInput [(ngModel)]="item.adjustmentName">
+                                            <input matInput maxlength="500" [(ngModel)]="item.adjustmentName">
                                         </mat-form-field>
                                     </div>
                                     <div class="col-2">
@@ -935,7 +931,7 @@
                                     </div>
                                     <div class="col-2 ">
                                         <mat-form-field class="mr-1">
-                                            <input matInput [(ngModel)]="item.unitCost">
+                                            <input maxlengt="10" matInput [(ngModel)]="item.unitCost">
                                         </mat-form-field>
                                     </div>
                                     <div class="col-1">
@@ -963,7 +959,7 @@
                                         <div class="flex align-items-center justify-content-end">
                                             <mat-form-field class="mr-1">
                                                 <mat-label>Total cost</mat-label>
-                                                <input matInput [(ngModel)]="adjustmentForm.cost">
+                                                <input maxlength="10" matInput [(ngModel)]="adjustmentForm.cost">
                                             </mat-form-field>
                                             <mat-icon (click)="addAdjustment()" svgIcon="mat_outline:add"
                                                 *ngIf="!isAdjustmentLoader" matTooltip="Add"

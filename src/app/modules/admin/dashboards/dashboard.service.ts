@@ -374,4 +374,23 @@ export class DashboardsService {
         const result = window.confirm(message);
         callback(result);
     }
+    // Check Image Exist
+    checkImageExistData(url) {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.src = url;
+
+            if (img.complete) {
+                resolve(true);
+            } else {
+                img.onload = () => {
+                    resolve(true);
+                };
+
+                img.onerror = () => {
+                    resolve(false);
+                };
+            }
+        });
+    }
 }

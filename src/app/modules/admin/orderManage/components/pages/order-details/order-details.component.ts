@@ -13,6 +13,9 @@ import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.servic
 import { VendorsService } from 'app/modules/admin/apps/vendors/components/vendors.service';
 import { SmartArtService } from 'app/modules/admin/smartart/components/smartart.service';
 import { lowerCase } from 'lodash';
+import * as pdfMake from "pdfmake/build/pdfmake";
+import * as pdfFonts from "pdfmake/build/vfs_fonts";
+
 declare var $: any;
 
 
@@ -41,7 +44,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
 
   // Shipping Tracking
   isTrackingLoader: boolean = false;
-  blnblnSendShippingEmail: boolean = false;
+  blnblnSendShippingEmail: boolean = true;
   blnRevised: boolean = false;
   shippingCarriers = [
     {
@@ -150,6 +153,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   isAttachmentLoader: boolean = false;
   attachmentName: string = '';
   @ViewChild('attachmentFile') attachmentFile: ElementRef;
+  allStates = [];
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _activeRoute: ActivatedRoute,
@@ -174,7 +178,20 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   getVendorsData() {
     this._commonService.suppliersData$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.allVendors = res["data"];
-    })
+    });
+    const storedValue = JSON.parse(sessionStorage.getItem('storeStateSupplierData'));
+    this.allStates = this.splitData(storedValue.data[2][0].states);
+  }
+  splitData(data) {
+    const dataArray = data.split(",,");
+    const result = [];
+
+    dataArray.forEach(item => {
+      const [id, state, index] = item.split("::");
+      result.push({ id: parseInt(id), state, index: parseInt(index) });
+    });
+
+    return result;
   }
   getOrderDetails() {
     let params = {
@@ -185,7 +202,11 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     }
     this._OrderManageService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.orderData = res["data"][0];
+      this.orderData.formattedInHandsDate = new Date(this.orderData.formattedInHandsDate);
+      this.orderData.formattedShippingDate = new Date(this.orderData.formattedShippingDate);
+      this.orderData.formattedEstimatedShippingDate = new Date(this.orderData.formattedEstimatedShippingDate);
       this.imprintInformation = res["imprintInformation"];
+      this.checkImprintProofExists();
       if (res["purchaseOrders"].length > 0) {
         this.orderDataPO = res["purchaseOrders"][0];
         const { shippingCarrierName, shippingServiceName, shippingCustomerAccountNumber, blnSupplier, blnDecorator, POinHandsDate } = this.orderDataPO;
@@ -200,17 +221,25 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
         if ((blnSupplier && blnDecorator) || (!blnSupplier && blnDecorator)) {
           this.orderDataPO.showPurchaseOrder = true;
         }
+        let vendorTerm: any = 0;
+        if (this.orderDataPO.vendorInvoiceNetTerms) {
+          vendorTerm = this.orderDataPO.vendorInvoiceNetTerms;
+        } else {
+          vendorTerm = 0;
+        }
         this.vendorBillData = {
           vendorInvoiceNumber: this.orderDataPO.vendorInvoiceNumber ? this.orderDataPO.vendorInvoiceNumber : null,
           vendorInvoiceDate: this.orderDataPO.vendorInvoiceDate ? this.orderDataPO.vendorInvoiceDate : null,
-          vendorInvoiceNetTerms: this.orderDataPO.vendorInvoiceNetTerms ? this.orderDataPO.vendorInvoiceNetTerms : 0,
+          vendorInvoiceNetTerms: vendorTerm,
           blnInvoiced: this.orderDataPO.blnInvoiced
         }
-        this.BillData = {
-          billPayPaymentMethod: this.orderDataPO.billPayPaymentMethod ? this.orderDataPO.billPayPaymentMethod : 0,
-          billPayPaymentDate: this.orderDataPO.billPayPaymentDate ? this.orderDataPO.billPayPaymentDate : null,
-          billPayReference: this.orderDataPO.billPayReference ? this.orderDataPO.billPayReference : null,
-          blnPaid: this.orderDataPO.blnPaid
+
+        this.setBillPayData();
+        if (this.orderData.shippingCustomerAccountNumber) {
+          this.orderDataPO.shippingComment = `${this.orderData.shippingCarrierName} / ${this.orderData.shippingServiceName} / ACCT##: ${this.orderData.shippingCustomerAccountNumber}`;
+        }
+        if (!this.orderDataPO.imprintDetail) {
+          this.orderDataPO.imprintDetail = `Please send proof to artwork@${this.orderData?.storeName?.toLowerCase()}`
         }
         this.getArtworkFiles();
       }
@@ -230,6 +259,42 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     }, err => {
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
+    });
+  }
+  // Bill Pay
+  setBillPayData() {
+    let selectedPaymentMethod: any = 0;
+
+    if (
+      !this.orderData.billPayPaymentMethod &&
+      !this.orderData.paymentMethod
+    ) {
+      selectedPaymentMethod = 0;
+    } else {
+      const paymentMethods = ['American Express', 'MasterCard', 'Credit card', 'Vendor Website', 'ACH', 'Check'];
+
+      for (const method of paymentMethods) {
+        if (this.orderData.billPayPaymentMethod === method || this.orderData.paymentMethod === method) {
+          selectedPaymentMethod = method;
+          break;
+        }
+      }
+    }
+    this.BillData = {
+      billPayPaymentMethod: selectedPaymentMethod,
+      billPayPaymentDate: this.orderDataPO.billPayPaymentDate || null,
+      billPayReference: this.orderDataPO.billPayReference || null,
+      blnPaid: this.orderDataPO.blnPaid
+    };
+  }
+
+  checkImprintProofExists() {
+    this.imprintInformation.forEach(imprint => {
+      const url = `https://assets.consolidus.com/artwork/Proof/${this.orderData.fk_storeUserID}/${this.orderData.fk_orderID}/${this.orderData.pk_orderLineID}/${imprint.fk_imprintID}.jpg`;
+      this._commonService.checkImageExistData(url).then(image => {
+        imprint.proofCheck = image;
+        this._changeDetectorRef.markForCheck();
+      });
     });
   }
   getImprintData() {
@@ -309,11 +374,11 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     /* Prevent Saturday and Sunday for select. */
   }
   updateInhandsDate() {
-    if (this.orderDataPO.POinHandsDate) {
+    if (this.orderData.formattedInHandsDate) {
       this.isHandsDateLoader = true;
       let date = null;
-      if (this.orderDataPO.POinHandsDate) {
-        date = moment(this.orderDataPO.POinHandsDate).format('L');
+      if (this.orderData.formattedInHandsDate) {
+        date = moment(this.orderData.formattedInHandsDate).format('L');
       }
       let payload: UpdateInHandsDate = {
         inHandsDate: String(date),
@@ -339,7 +404,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   updateComments() {
     const { storeName } = this.orderData;
     const { shippingCompanyName } = this.orderDataPO
-    if (this.ngComment != '') {
+    if (this.ngComment.trim() != '') {
       this.isCommentsLoader = true;
       let payload: AddComment = {
         comment: this.ngComment,
@@ -350,6 +415,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
         company_name: shippingCompanyName,
         post_comment: true
       }
+      payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
       this._OrderManageService.PostAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         if (res["success"]) {
           let comment = res["newComment"];
@@ -372,8 +438,8 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   updateShippingTracking() {
     this.isTrackingLoader = true;
     let date = null;
-    if (this.orderData.shippingDate) {
-      date = moment(this.orderData.shippingDate).format('L');
+    if (this.orderData.formattedShippingDate) {
+      date = moment(this.orderData.formattedShippingDate).format('L');
     }
     let payload: UpdateTracking = {
       orderLinePOID: this.orderDataPO.pk_orderLinePOID,
@@ -403,8 +469,8 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   updateEstimatedShipping() {
     this.isEstimatedDateLoader = true;
     let date = null;
-    if (this.orderData.estimatedShippingDate) {
-      date = moment(this.orderData.estimatedShippingDate).format('L');
+    if (this.orderData.formattedEstimatedShippingDate) {
+      date = moment(this.orderData.formattedEstimatedShippingDate).format('L');
     }
     let payload: UpdateEstimatedShipping = {
       orderLinePOID: this.orderDataPO.pk_orderLinePOID,
@@ -1181,10 +1247,10 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   deleteFileFromServer(item) {
     const path = `/globalAssets/Orders/PurchaseOrders/attachments/${this.orderDataPO.pk_orderLinePOID}/${item.pk_purchaseOrderAttachmentID}.${item.extension.replace(/ /g, '')}`;
     let payload = {
-      files: path,
-      delete_files: true
+      files: [path],
+      delete_multiple_files: true
     }
-    this._OrderManageService.removeMedia(payload)
+    this._commonService.removeMediaFiles(payload)
       .subscribe((response) => {
         this._OrderManageService.snackBar('Attachment Removed Successfully');
         this.attachmentsList = this.attachmentsList.filter(files => files.pk_purchaseOrderAttachmentID != item.pk_purchaseOrderAttachmentID);
@@ -1194,6 +1260,25 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
         item.delLoader = false;
         this._changeDetectorRef.markForCheck();
       })
+  }
+  // PDF Make
+  generatePDF() {
+    pdfMake.vfs = pdfFonts.pdfMake.vfs;
+
+    const documentDefinition = this.getDocumentDefinition();
+    pdfMake.createPdf(documentDefinition).download('generated.pdf');
+  }
+
+  getDocumentDefinition() {
+    const htmlContent = '<h1>Hello, this is HTML content!</h1><p>Thank you for <br>using pdfmake in Angular!</p>';
+
+    return {
+      content: [
+        // Convert HTML to pdfmake format
+        { text: 'PDF generated from HTML:', fontSize: 16, bold: true },
+        { text: htmlContent, margin: [0, 10] },
+      ],
+    };
   }
   /**
      * On destroy
