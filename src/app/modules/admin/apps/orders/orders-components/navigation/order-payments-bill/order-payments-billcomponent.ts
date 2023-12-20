@@ -62,7 +62,7 @@ export class OrderPaymentBillComponent implements OnInit, OnDestroy {
 
   }
   createToken(): void {
-    if (this.ngName == '' || !this.ngAmount) {
+    if (this.ngName.trim() == '' || !this.ngAmount) {
       this._orderService.snackBar('Please fill out the required fields');
       return;
     }

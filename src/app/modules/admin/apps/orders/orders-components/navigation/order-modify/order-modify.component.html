@@ -186,18 +186,18 @@
                     </div>
                     <!-- Shipping Information -->
                     <div class="row" [formGroup]="shippingForm">
-                        <div class="col-md-8 col-12 flex justify-between">
+                        <div class="col-12 flex ">
                             <div class="text-secondary font-bold">Expected Delivery Date:</div>
-                            <div class="text-secondary">12-17 business days after approval</div>
+                            <div class="text-secondary ml-2">*** RUSH ORDER *** Additional charges May Apply *** {{formattedDate}} at the latest </div>
                         </div>
-                        <div class="col-md-8 col-12 flex justify-between">
+                        <div class="col-12 flex">
                             <div class="text-secondary font-bold">Shipping Method:</div>
-                            <div class="text-secondary">{{selectedOrder?.shippingCarrierName}},
+                            <div class="text-secondary ml-2">{{selectedOrder?.shippingCarrierName}},
                                 {{selectedOrder?.shippingServiceName}}</div>
                         </div>
-                        <div class="col-md-8 col-12 flex justify-between">
+                        <div class="col-12 flex">
                             <div class="text-secondary font-bold">Order Date:</div>
-                            <div class="text-secondary">{{selectedOrder?.orderDate | date: 'MM/dd/YYYY'}}</div>
+                            <div class="text-secondary ml-2">{{selectedOrder?.orderDate | date: 'MM/dd/YYYY'}}</div>
                         </div>
                         <div class="col-md-6 col-12">
                             <mat-form-field class="w-full">
@@ -284,6 +284,16 @@
                         <div class="col-md-4 col-12 text-right">
                             <mat-checkbox formControlName="blnTaxable">Taxable</mat-checkbox>
                         </div>
+
+
+                        <div class="col-md-8 col-12 flex justify-between mb-2">
+                            <div class="text-secondary font-bold">Current Payment Method:</div>
+                            <!-- <div class="text-red-600" *ngIf="!selectedOrder.paymentDate">ON HOLD: Pending payment method
+                                approval</div>
+                            <div class="text-green-600" *ngIf="selectedOrder.paymentDate">Active: Approved on
+                                {{selectedOrder.paymentDate | date}}</div> -->
+                        </div>
+
                         <div class="col-md-6 col-12">
                             <mat-form-field class="w-full">
                                 <mat-label class="text-secondary">Payment Method</mat-label>
@@ -314,7 +324,7 @@
                         <div class="col-md-6 col-12 mr-1">
                             <mat-form-field class="w-full">
                                 <mat-label class="text-secondary">Sales Tax: (as a percentage) *</mat-label>
-                                <input matInput formControlName="salesTaxRate">
+                                <input type="number" min="0" matInput formControlName="salesTaxRate">
                             </mat-form-field>
                         </div>
                         <div class="col-md-6 col-12">
