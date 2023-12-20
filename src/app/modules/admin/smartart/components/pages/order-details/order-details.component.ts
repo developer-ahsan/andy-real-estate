@@ -9,7 +9,7 @@ import { Subject, forkJoin, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { SmartArtService } from '../../smartart.service';
 import { interval } from 'rxjs';
-import { AddOrderComment, UpdateOrderLineArtworkTags, UpdateArtworkTgas, UpdateOrderInformation, sendAutoRequest, updateOrderLineImprintColors, updateReorderNumberOrder, UpdateOrderLineClaim, updateOrderProofContact, SmartartImprintStatusUpdate, sendAutoRequestOrder, updateAttentionFlagOrder, sendOrderProofUpdate, UploadOrderArtProof, UploadOrderFinalArt, updateOrderPurchaseOrderComment, uploadVirtualProof, removeVirtualProof } from '../../smartart.types';
+import { AddOrderComment, UpdateOrderLineArtworkTags, UpdateArtworkTgas, UpdateOrderInformation, sendAutoRequest, updateOrderLineImprintColors, updateReorderNumberOrder, UpdateOrderLineClaim, updateOrderProofContact, SmartartImprintStatusUpdate, sendAutoRequestOrder, updateAttentionFlagOrder, sendOrderProofUpdate, UploadOrderArtProof, UploadOrderFinalArt, updateOrderPurchaseOrderComment, uploadVirtualProof, removeVirtualProof, sendOrderCustomerFollowUpEmail } from '../../smartart.types';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 import { environment } from 'environments/environment';
 
@@ -1255,7 +1255,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
             imprint.statusName = 'WAITING FOR GROUP ORDER';
           }
           imprint.pk_statusID = statusID;
-          imprint.statusDate = moment().format('yyyy-MM-DD');
+          imprint.formattedStatusDate = moment().format('yyyy-MM-DD');
         }
         imprint.applyStatusLoader = false;
         imprint.pendingStatusLoader = false;
@@ -1462,6 +1462,8 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       imprint.artworkProofLoader = false;
       imprint.statusName = 'Awaiting Artwork Approval';
       imprint.pk_statusID = 3;
+      this.getArtworkFinalartFiles();
+      this.setitemColorsWithIDs(imprint);
       imprint.imprintComments = imprint.imprintComments + ' <br>' + res["customerComment"];
       this.orderData.internalComments = this.orderData.internalComments + res["orderComment"];
       imprint.bgColor = this.setImprintColor(imprint.pk_statusID);
@@ -1866,7 +1868,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       if (res) {
         imprint.pk_statusID = 5;
         imprint.statusName = 'Decorator Notified';
-        imprint.statusDate = res["currentDate"];
+        imprint.formattedStatusDate = res["currentDate"];
         this.orderData.internalComments = this.orderData.internalComments + res['orderComment'];
         this.imprintdata.forEach(element => {
           element.artworkFinalartFiles = [];
@@ -1928,6 +1930,50 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
     })).subscribe(res => {
       this.approvalHistoryData = this.approvalHistoryData.filter(approval => approval.name != item.name);
       this._smartartService.snackBar(res["message"]);
+    });
+  }
+  sendFollwUpEmail(imprint) {
+    imprint.followUPLoader = true;
+    const url = `https://assets.consolidus.com/globalAssets/Products/HiRes/${this.orderData.pk_storeProductID}.jpg?${this.randomString}`;
+    let storeImage: any = '';
+    this.checkImageExist(url).then(imgRes => {
+      if (imgRes) {
+        storeImage = url;
+      } else {
+        storeImage = 'https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg';
+      }
+      let payload: sendOrderCustomerFollowUpEmail = {
+        orderID: Number(this.paramData.fk_orderID),
+        orderLineID: Number(this.paramData.pk_orderLineID),
+        orderLineImprintID: Number(imprint.pk_imprintID),
+        artApprovalContactID: this.orderData.fk_artApprovalContactID,
+        storeUserApprovalContactID: this.orderData.fk_storeUserApprovalContactID,
+        blnEProcurement: this.orderData.blnEProcurement,
+        email_recipients: imprint.emailRecipients,
+        smartArtAdminEmail: this.smartArtUser.email,
+        locationName: imprint.locationName,
+        methodName: imprint.decorationName,
+        productNumber: this.orderData.sessionArtwork_productNumber,
+        productName: this.orderData.sessionArtwork_productName,
+        primaryHighlight: this.orderData.storePrimaryHighlight,
+        storeID: this.orderData.sessionArtworkStoreID,
+        protocol: this.orderData.sessionArtworkStoreProtocol,
+        storeName: this.orderData.sessionArtworkStoreName,
+        storeProductImageURL: storeImage,
+        send_order_customer_followUp_email: true
+      }
+      this._smartartService.AddSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+        imprint.followUPLoader = false;
+        this._changeDetectorRef.markForCheck();
+      })).subscribe(res => {
+        if (res["success"]) {
+          imprint.statusName = 'AWAITING ARTWORK APPROVAL';
+          imprint.pk_statusID = 3;
+          this.getArtworkFinalartFiles();
+          this._smartartService.snackBar('Artwork status successfully updated.');
+          this._changeDetectorRef.markForCheck();
+        }
+      });
     });
   }
 

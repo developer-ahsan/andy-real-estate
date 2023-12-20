@@ -50,6 +50,7 @@ export class OrderExportComponent implements OnInit, OnDestroy {
     let params = {
       user_id: this.userData.pk_userID,
       status: this.ngstatusID,
+      is_export: true,
       view_dashboard: true
     }
     this._orderService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {

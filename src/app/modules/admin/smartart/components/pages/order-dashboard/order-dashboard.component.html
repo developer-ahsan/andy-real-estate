@@ -311,7 +311,8 @@
                                                 <ng-containter
                                                     *ngIf="element.fk_smartArtDesignerClaimID != userData.pk_userID">
                                                     <div>
-                                                        <span>Claimed: {{element.claimedUserName}}</span>
+                                                        <span class="text-sm">Claimed:
+                                                            {{element.claimedUserName}}</span>
                                                         <br>
                                                         <button (click)="updateClaim(element, true, true)" type="button"
                                                             matTooltip="Claim this item"

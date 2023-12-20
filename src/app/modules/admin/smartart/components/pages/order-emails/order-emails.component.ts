@@ -6,7 +6,7 @@ import { AuthService } from 'app/core/auth/auth.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { SmartArtService } from '../../smartart.service';
-import { sendOrderCustomerEmail } from '../../smartart.types';
+import { sendOrderCustomerEmail, sendOrderCustomerFollowUpEmail } from '../../smartart.types';
 import { Location } from '@angular/common';
 
 @Component({
@@ -119,6 +119,8 @@ export class SmartartOrderEmailComponent implements OnInit, OnDestroy {
   backToList() {
     this.router.navigate(['/smartart/orders-dashboard']);
   }
+
+
 
   /**
      * On destroy

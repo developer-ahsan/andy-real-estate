@@ -6,6 +6,7 @@ import { finalize, takeUntil } from 'rxjs/operators';
 import { OrderManageService } from '../../order-manage.service';
 import { updateOrderManageBulkStatusUpdate } from '../../order-manage.types';
 import moment from 'moment';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 @Component({
   selector: 'app-ordermanage-dashboard',
   templateUrl: './dashboard.component.html',
@@ -23,7 +24,7 @@ export class OrderManageDashboardComponent implements OnInit, OnDestroy {
   page = 1;
 
   userID: any;
-  status = 2;
+  status = 0;
   store_id = 0;
   rangeStart: any = '';
   rangeEnd: any = '';
@@ -59,11 +60,12 @@ export class OrderManageDashboardComponent implements OnInit, OnDestroy {
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _orderService: OrderManageService,
+    private _commonService: DashboardsService,
     private router: Router,
     private _route: ActivatedRoute
   ) { }
   resetInit() {
-    this.status = 2;
+    this.status = 0;
     this.store_id = 0;
     this.orderID = '';
     this.rangeStart = '';
@@ -108,7 +110,7 @@ export class OrderManageDashboardComponent implements OnInit, OnDestroy {
       sort_by: this.sort_by,
       sort_order: this.sort_order,
       bln_fulfillment: this.userData.blnFulfillment,
-      size: 100,
+      size: 50,
       page: page,
       view_dashboard: true
     }
@@ -119,13 +121,7 @@ export class OrderManageDashboardComponent implements OnInit, OnDestroy {
         if (element.productName) {
           element.prducts = element.productName.split(',');
         }
-        element.age = '---';
-        if (element.Age < 24) {
-          element.age = element.Age + ' hrs';
-        } else {
-          const calcAge = element.Age / 24;
-          element.age = Math.floor(calcAge) + ' days';
-        }
+        element.age = this._commonService.convertMinutesToDaysAndHours(element.Age);
         element.styles = this.getRowStyles(element);
       });
       this.dataSource = res["data"];

@@ -77,7 +77,7 @@
             <table class="table table-striped" matSort (matSortChange)="customSort($event)">
                 <thead>
                     <tr>
-                        <th>Action</th>
+                        <th></th>
                         <th mat-sort-header="orderDate">Date</th>
                         <th mat-sort-header="shippingDate">
                             <div class="flex">
@@ -130,13 +130,13 @@
                                 <mat-checkbox [(ngModel)]="item.checked"></mat-checkbox>
                             </td>
                             <td (click)="goToOrderDetails(item)">
-                                {{item.orderDate | date: 'MM/dd/yyyy'}}
+                                {{item.orderDate}}
                             </td>
                             <td (click)="goToOrderDetails(item)">
-                                {{(item.shippingDate | date: 'MM/dd/yyyy')|| '---'}}
+                                {{item.shippingDate || '---'}}
                             </td>
                             <td (click)="goToOrderDetails(item)">
-                                {{(item.inHandsDate | date: 'MM/dd/yyyy')|| 'N/A'}}
+                                {{item.inHandsDate || 'N/A'}}
                             </td>
                             <td>
                                 <a [routerLink]="['/apps/orders',item.pk_orderID]"
@@ -149,7 +149,9 @@
                                 {{item?.companyName}}
                             </td>
                             <td (click)="goToOrderDetails(item)">
-                                <p *ngFor="let prod of item.prducts">{{prod}}</p>
+                                <p *ngFor="let prod of item.prducts">
+                                    <span [innerHTML]="prod"></span>
+                                </p>
                             </td>
                             <td (click)="goToOrderDetails(item)">
                                 {{item?.vendorShippingName}}
@@ -182,7 +184,7 @@
                 </tbody>
             </table>
             <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                [disabled]="isPaginatedLoader" [length]="totalRecords" [pageIndex]="0" [pageSize]="100"
+                [disabled]="isPaginatedLoader" [length]="totalRecords" [pageIndex]="0" [pageSize]="50"
                 (page)="getNextData($event)" [hidePageSize]="true">
             </mat-paginator>
         </div>

@@ -22,20 +22,22 @@
                     <li class="col-span-1">
                         <mat-form-field class="w-full">
                             <mat-label>Order/PO</mat-label>
-                            <input matInput [(ngModel)]="ngOrderID" placeholder="Order/PO">
+                            <input matInput [(ngModel)]="ngOrderID" placeholder="Order/PO"
+                                (keyup.enter)="filterOrderManageData()">
                         </mat-form-field>
                     </li>
                     <li class="col-span-1">
                         <mat-form-field class="w-full">
                             <mat-label>Customer/Product/Vendor</mat-label>
-                            <input matInput placeholder="Customer/Product/Vendor" [(ngModel)]="customerKeyword">
+                            <input matInput placeholder="Customer/Product/Vendor" [(ngModel)]="customerKeyword"
+                                (keyup.enter)="filterOrderManageData()">
                         </mat-form-field>
                     </li>
                     <li class="col-span-1">
                         <mat-form-field class="w-full">
                             <mat-label>Filter By Status</mat-label>
                             <mat-select [(ngModel)]="status" matInput>
-                                <mat-option [value]="'0'">All Orders</mat-option>
+                                <mat-option [value]="0">All Orders</mat-option>
                                 <mat-option [value]="1">New Orders</mat-option>
                                 <mat-option [value]="2">Artwork Approved</mat-option>
                                 <mat-option [value]="3">Purchase Order Sent</mat-option>
@@ -65,7 +67,7 @@
                     </li>
                     <li class="col-span-1">
                         <mat-form-field class="w-full">
-                            <mat-label>Select a date</mat-label>
+                            <mat-label>Select a date range</mat-label>
                             <mat-date-range-input [max]="maxDate" [rangePicker]="picker1" (click)="picker1.open()">
                                 <input matStartDate placeholder="Start date" [(ngModel)]="rangeStart">
                                 <input matEndDate placeholder="End date" [(ngModel)]="rangeEnd">

@@ -395,3 +395,24 @@ export interface UploadOrderFinalArt {
     blnGroupRun: boolean;
     upload_order_final_art: boolean;
 };
+
+export interface sendOrderCustomerFollowUpEmail {
+    orderID: number;
+    orderLineID: number;
+    orderLineImprintID: number;
+    artApprovalContactID: number;
+    storeUserApprovalContactID: number;
+    blnEProcurement: boolean;
+    email_recipients: string[];
+    smartArtAdminEmail: string;
+    locationName: string;
+    methodName: string;
+    productNumber: string;
+    productName: string;
+    primaryHighlight: string;
+    storeID: string;
+    protocol: string;
+    storeName: string;
+    storeProductImageURL: string;
+    send_order_customer_followUp_email: boolean;
+};

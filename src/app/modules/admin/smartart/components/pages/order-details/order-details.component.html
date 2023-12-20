@@ -825,7 +825,7 @@
                                         <!-- Imprint Status -->
                                         <div [ngStyle]="{'background-color': imprint.bgColor}"
                                             class="p-2 mb-2 rounded-md text-center text-dark" [showIcon]="false">
-                                            As of {{imprint.statusDate | date: 'MM/dd/yyyy'}} the status of this
+                                            As of {{imprint.formattedStatusDate}} the status of this
                                             item
                                             is <b>{{imprint.statusName}}</b>
                                             <ng-container *ngIf="imprint.pk_statusID == 9">
@@ -1142,9 +1142,16 @@
                                                         </div>
                                                     </div>
                                                     <div>
-                                                        <button
-                                                            class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">Send
-                                                            follow up email</button>
+                                                        <button (click)="sendFollwUpEmail(imprint)"
+                                                            class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">
+                                                            <span *ngIf="!imprint?.followUPLoader">
+                                                                Send follow up email
+                                                            </span>
+                                                            <mat-progress-spinner [color]="'light'"
+                                                                *ngIf="imprint?.followUPLoader" [diameter]="24"
+                                                                [mode]="'indeterminate'">
+                                                            </mat-progress-spinner>
+                                                        </button>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4 col-12">
@@ -1505,7 +1512,7 @@
                                                         <a target="_blank"
                                                             *ngFor="let finalArt of imprint?.artworkFinalartFiles"
                                                             class="underline"
-                                                            href="https://assets.consolidus.com/artwork/finalArt/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{finalArt.FILENAME}}">
+                                                            href="https://assets.consolidus.com/artwork/finalArt/{{this.paramData.pfk_userID}}/{{this.paramData.fk_orderID}}/{{this.paramData.pk_orderLineID}}/{{finalArt.FILENAME}}?{{randomString}}">
                                                             | (Download final artwork)</a>
                                                     </div>
                                                 </b>
@@ -2230,9 +2237,16 @@
                                                             id="email-{{imprint.pk_imprintID}}">
                                                     </mat-form-field>
                                                     <div>
-                                                        <button
-                                                            class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">Send
-                                                            follow up email</button>
+                                                        <button (click)="sendFollwUpEmail(imprint)"
+                                                            class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">
+                                                            <span *ngIf="!imprint?.followUPLoader">
+                                                                Send follow up email
+                                                            </span>
+                                                            <mat-progress-spinner [color]="'light'"
+                                                                *ngIf="imprint?.followUPLoader" [diameter]="24"
+                                                                [mode]="'indeterminate'">
+                                                            </mat-progress-spinner>
+                                                        </button>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4 col-12">

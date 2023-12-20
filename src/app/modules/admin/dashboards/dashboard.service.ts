@@ -353,9 +353,23 @@ export class DashboardsService {
             return `${days} days`;
         } else {
             // Show in hours if less than 1 day
-            return `${Math.floor(hours)} hours`;
+            return `${Math.floor(hours)} hrs`;
         }
     }
+    convertMinutesToDaysAndHours(minutes) {
+        const hours = minutes / 60;
+
+        if (hours >= 24) {
+            // Convert hours to days
+            const days = Math.floor(hours / 24);
+            const remainingHours = Math.floor(hours % 24);
+            return `${days} days`;
+        } else {
+            // Show in hours if less than 1 day
+            return `${Math.floor(hours)} hrs`;
+        }
+    }
+
     showConfirmation(message: string, callback: (confirmed: boolean) => void) {
         const result = window.confirm(message);
         callback(result);

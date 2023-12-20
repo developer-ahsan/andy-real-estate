@@ -47,7 +47,7 @@ export class OrderManageComponent {
     ngPassword = '';
     userData: any;
 
-    status = 2;
+    status = 0;
     storesList: any = [];
     selectedStore: any;
     rangeStart: any = '';
