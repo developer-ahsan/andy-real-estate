@@ -405,15 +405,16 @@ export class IncidentReportsUpdateComponent implements OnInit {
       this.files.push(element);
     });
     if ((this.files.length + this.updateIncidentObj.images.length) > 5) {
-      this.files = [];
       this._orderService.snackBar("Please select maximum 5 images.");
+      this.files.pop();
       return;
     }
     if (this.updateIncidentObj.images.length == 5) {
-      this.files = [];
       this._orderService.snackBar("Max limit reached for image upload.");
+      this.files.pop();
       return;
     }
+    
     setTimeout(() => {
       this._changeDetectorRef.markForCheck();
     }, 200);

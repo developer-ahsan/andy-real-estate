@@ -32,7 +32,7 @@ export class OrderReviewEmailComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.orderDetail = res["data"][0];
-      this.emails.push({ email: this.orderDetail.managerEmail });
+      this.emails.push({ email: this.orderDetail.userEmail });
       this.getReorderEmail();
     })
   };
