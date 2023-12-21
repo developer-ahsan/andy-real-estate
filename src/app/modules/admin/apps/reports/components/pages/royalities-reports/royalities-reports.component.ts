@@ -121,6 +121,7 @@ export class RoyalitiesReportComponent implements OnInit, OnDestroy {
     this._reportService.setFiltersReport();
     this.isGenerateReportLoader = true;
     let params = {
+      is_weekly: this._reportService.ngPlan == 'weekly' ? true : false,
       royalty_reports: true,
       start_date: this._reportService.startDate,
       end_date: this._reportService.endDate,

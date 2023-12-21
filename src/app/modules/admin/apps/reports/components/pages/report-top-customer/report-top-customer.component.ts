@@ -74,6 +74,7 @@ export class ReportTopCustomerComponent implements OnInit, OnDestroy {
     });
     this.isGenerateReportLoader = true;
     let params = {
+      is_weekly: this._reportService.ngPlan == 'weekly' ? true : false,
       top_customers_purchases: true,
       start_date: this._reportService.startDate,
       end_date: this._reportService.endDate,

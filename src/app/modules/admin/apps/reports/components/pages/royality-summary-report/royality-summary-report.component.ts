@@ -33,6 +33,7 @@ export class RoyalitySummaryReportComponent implements OnInit, OnDestroy {
   };
   getRoyaltySummary() {
     let params = {
+      is_weekly: this._reportService.ngPlan == 'weekly' ? true : false,
       page: this.page,
       royalty_summaries: true,
       size: 20

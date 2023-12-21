@@ -71,11 +71,16 @@ export class ReportCustomerPurchaseComponent implements OnInit, OnDestroy {
     }
     this.initialData = null;
     this._reportService.setFiltersReport();
+    let is_weekly = false;
+    if (this._reportService.ngPlan == 'weekly') {
+      is_weekly = true;
+    }
     this.isGenerateReportLoader = true;
     let params = {
       customers_purchases: true,
       start_date: this._reportService.startDate,
       end_date: this._reportService.endDate,
+      is_weekly,
       store_id: this.selectedStores.pk_storeID,
     }
     this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {

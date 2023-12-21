@@ -67,12 +67,17 @@ export class ReportAccountCodeComponent implements OnInit, OnDestroy {
     this.totalDataCalculations = { total: 0, totalSales: 0 };
     this._reportService.setFiltersReport();
     this.isGenerateReportLoader = true;
+    let is_weekly = false;
+    if (this._reportService.ngPlan == 'weekly') {
+      is_weekly = true;
+    }
     let params = {
       account_code: true,
       store_id: this.selectedStores.pk_storeID,
       start_date: this._reportService.startDate,
       end_date: this._reportService.endDate,
       payment_status: this.paymentStatus,
+      is_weekly,
       report_type: this.reportType
     }
     this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {

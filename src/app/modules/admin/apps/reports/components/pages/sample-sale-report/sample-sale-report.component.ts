@@ -68,6 +68,7 @@ export class ReportSampleSaleComponent implements OnInit, OnDestroy {
     this._reportService.setFiltersReport();
     this.isGenerateReportLoader = true;
     let params = {
+      is_weekly: this._reportService.ngPlan == 'weekly' ? true : false,
       samples_report: true,
       bln_cancel: this.blnShowCancelled,
       start_date: this._reportService.startDate,

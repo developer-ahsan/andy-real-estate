@@ -141,6 +141,10 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
       MARGIN: 0,
       blnPercent: false
     };
+    let is_weekly = false;
+    if (this._reportService.ngPlan == 'weekly') {
+      is_weekly = true;
+    }
     this._reportService.setFiltersReport();
     if (!this.selectedEmployees) {
       this._reportService.snackBar('Please select an employee');
@@ -152,6 +156,7 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
         employee_sales_report: true,
         start_date: this._reportService.startDate,
         end_date: this._reportService.endDate,
+        is_weekly: is_weekly,
         user_id: Number(this.selectedEmployees.pk_userID),
         isIndividualOrder: this.blnIndividualOrders,
         payment_status: this.paymentStatus,
@@ -184,7 +189,7 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
                   sattusData = this._reportService.getStatusValue(data[8]);
                   // }
 
-                  element.storeDetails.push({ date: data[0], id: data[1], company: data[2], location: data[3], sale: data[4], tax: data[5], margin: Number(data[7]).toFixed(2), paid: paid, status: sattusData.statusValue, statusColor: sattusData.statusColor });
+                  element.storeDetails.push({ date: data[0], id: data[1], company: data[2], location: data[3], sale: data[4], tax: data[5], margin: Number(data[7])?.toFixed(2), paid: paid, status: sattusData.statusValue, statusColor: sattusData.statusColor });
                 });
               }
             });
@@ -298,6 +303,7 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
     }, 100);
   }
   generatePdf() {
+    this.isPdfLoader = true;
     const documentDefinition: any = {
       pageSize: 'A4',
       pageOrientation: 'landscape',
@@ -305,7 +311,7 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
       content: [
         // Add a title for your PDF
         { text: this._reportService.ngPlan.toUpperCase(), fontSize: 14 },
-        { text: this.selectedEmployees.firstName + ' ' + this.selectedEmployees.lastName, fontSize: 10 },
+        { text: this.selectedEmployees.name, fontSize: 10 },
         { text: 'Range: ' + this._reportService.startDate + ' - ' + this._reportService.endDate, fontSize: 10 },
         // Add a spacer element to create a margin above the table
         { text: '', margin: [0, 20, 0, 0] },
@@ -368,19 +374,20 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
         }
       );
       this.generateReportData.forEach(store => {
-        // First Table Data
-        documentDefinition.content[4].table.body.push(
-          [
-            { text: store.storeName, colSpan: 3, alignment: 'left', bold: true, margin: [0, 3, 0, 3], fontSize: 10 }, {}, {},
-            { text: this.currencyPipe.transform(Number(store.SALES), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
-            { text: this.currencyPipe.transform(Number(store.tax), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
-            { text: store.MARGIN.toFixed(2) + '%', bold: true, margin: [0, 3, 0, 3] },
-            { text: '', margin: [0, 3, 0, 3] },
-            { text: '', margin: [0, 3, 0, 3] }
-          ]
-        )
-        // date data
         if (store.date_data) {
+          // First Table Data
+          documentDefinition.content[4].table.body.push(
+            [
+              { text: store.storeName, colSpan: 3, alignment: 'left', bold: true, margin: [0, 3, 0, 3], fontSize: 10 }, {}, {},
+              { text: this.currencyPipe.transform(Number(store.SALES), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
+              { text: this.currencyPipe.transform(Number(store.tax), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
+              { text: store.MARGIN ? store.MARGIN?.toFixed(2) + '%' : '0.00%', bold: true, margin: [0, 3, 0, 3] },
+              { text: '', margin: [0, 3, 0, 3] },
+              { text: '', margin: [0, 3, 0, 3] }
+            ]
+          )
+          // date data
+
           store.date_data.forEach(dateData => {
             documentDefinition.content[4].table.body.push(
               [
@@ -399,7 +406,7 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
                   d.company,
                   this.currencyPipe.transform(Number(d.sale), 'USD', 'symbol', '1.0-2', 'en-US'),
                   this.currencyPipe.transform(Number(d.tax), 'USD', 'symbol', '1.0-2', 'en-US'),
-                  d.margin + '%',
+                  d.margin ? d.margin + '%' : '0.00%',
                   paid,
                   d.status
                 ]
@@ -413,13 +420,13 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
             store.storeName,
             this.currencyPipe.transform(Number(store.SALES), 'USD', 'symbol', '1.0-2', 'en-US'),
             this.currencyPipe.transform(Number(store.PY), 'USD', 'symbol', '1.0-2', 'en-US'),
-            `${store.percent.toFixed(2)}%`,
+            `${store.percent?.toFixed(2)}%`,
             this.currencyPipe.transform(Number(store.DIFF), 'USD', 'symbol', '1.0-2', 'en-US'),
             store.NS,
             store.PYNS,
             store.NS_DIFF,
             this.currencyPipe.transform(Number(store.AVG), 'USD', 'symbol', '1.0-2', 'en-US'),
-            `${store.MARGIN.toFixed(2)}%`
+            store.MARGIN ? `${store.MARGIN?.toFixed(2)}%` : '0.00%'
           ]
         )
       });
@@ -428,13 +435,13 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
           { text: 'Grand Total', bold: true },
           { text: this.currencyPipe.transform(Number(this.storeTotals.Sales), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
           { text: this.currencyPipe.transform(Number(this.storeTotals.PY), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
-          { text: `${(this.storeTotals?.percent / this.generateReportData.length).toFixed(2)}%`, bold: true },
+          { text: `${(this.storeTotals?.percent)?.toFixed(2)}%`, bold: true },
           { text: this.currencyPipe.transform(Number(this.storeTotals.DIFF), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
           { text: this.storeTotals.NS, bold: true },
           { text: this.storeTotals.PYNS, bold: true },
           { text: '', bold: true },
-          { text: this.currencyPipe.transform(Number((this.storeTotals?.AVG / this.generateReportData.length)), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
-          { text: `${(this.storeTotals?.MARGIN / this.generateReportData.length).toFixed(2)}%`, bold: true }
+          { text: this.currencyPipe.transform(Number((this.storeTotals?.Sales / this.storeTotals?.NS)), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
+          { text: `${this.storeTotals?.MARGIN?.toFixed(2)}%`, bold: true }
         ]
       )
     } else {
@@ -467,13 +474,13 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
             store.storeName,
             this.currencyPipe.transform(Number(store.SALES), 'USD', 'symbol', '1.0-2', 'en-US'),
             this.currencyPipe.transform(Number(store.PY), 'USD', 'symbol', '1.0-2', 'en-US'),
-            `${store.percent.toFixed(2)}%`,
+            `${store.percent?.toFixed(2)}%`,
             this.currencyPipe.transform(Number(store.DIFF), 'USD', 'symbol', '1.0-2', 'en-US'),
             store.NS,
             store.PYNS,
             store.NS_DIFF,
             this.currencyPipe.transform(Number(store.AVG), 'USD', 'symbol', '1.0-2', 'en-US'),
-            `${store.MARGIN.toFixed(2)}%`
+            store.MARGIN ? `${store.MARGIN?.toFixed(2)}%` : '0.00%'
           ]
         )
       });
@@ -482,17 +489,19 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
           { text: 'Grand Total', bold: true },
           { text: this.currencyPipe.transform(Number(this.storeTotals.Sales), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
           { text: this.currencyPipe.transform(Number(this.storeTotals.PY), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
-          { text: `${(this.storeTotals?.percent / this.generateReportData.length).toFixed(2)}%`, bold: true },
+          { text: `${(this.storeTotals?.percent)?.toFixed(2)}%`, bold: true },
           { text: this.currencyPipe.transform(Number(this.storeTotals.DIFF), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
           { text: this.storeTotals.NS, bold: true },
           { text: this.storeTotals.PYNS, bold: true },
           { text: '', bold: true },
-          { text: this.currencyPipe.transform(Number((this.storeTotals?.AVG / this.generateReportData.length)), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
-          { text: `${(this.storeTotals?.MARGIN / this.generateReportData.length).toFixed(2)}%`, bold: true }
+          { text: this.currencyPipe.transform(Number((this.storeTotals?.Sales / this.storeTotals?.NS)), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
+          { text: this.storeTotals?.MARGIN ? `${this.storeTotals?.MARGIN?.toFixed(2)}%` : '0.00%', bold: true }
         ]
       )
     }
-    pdfMake.createPdf(documentDefinition).download(`${this.selectedEmployees.firstName + ' ' + this.selectedEmployees.lastName}-Sales-Report-${this._reportService.startDate}-${this._reportService.endDate}.pdf`);
+    pdfMake.createPdf(documentDefinition).download(`${this.selectedEmployees.name}-Sales-Report-${this._reportService.startDate}-${this._reportService.endDate}.pdf`);
+    this.isPdfLoader = false;
+    this._changeDetectorRef.markForCheck();
   }
   /**
      * On destroy

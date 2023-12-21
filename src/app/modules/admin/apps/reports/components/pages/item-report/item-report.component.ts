@@ -78,8 +78,13 @@ export class ReportItemsComponent implements OnInit, OnDestroy {
       this._reportService.snackBar('Please select at least 1 store');
       return;
     }
+    let is_weekly = false;
+    if (this._reportService.ngPlan == 'weekly') {
+      is_weekly = true;
+    }
     this.isGenerateReportLoader = true;
     let params = {
+      is_weekly,
       itemized_report: true,
       payment_status: this.paymentStatus,
       start_date: this._reportService.startDate,

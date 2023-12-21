@@ -62,6 +62,10 @@ export class ReportInventorySummaryComponent implements OnInit, OnDestroy {
         this.paginator.pageIndex = 0;
       }
     }
+    let is_weekly = false;
+    if (this._reportService.ngPlan == 'weekly') {
+      is_weekly = true;
+    }
     this.isGenerateReportLoader = true;
     let params = {
       page: page,
@@ -69,6 +73,7 @@ export class ReportInventorySummaryComponent implements OnInit, OnDestroy {
       inventory: this.inventory,
       keyword: this.keyword,
       store_list: this.selectedStores.pk_storeID,
+      is_weekly,
       size: 20
     }
     this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {

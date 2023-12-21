@@ -133,6 +133,7 @@ export class ReportIncidentComponent implements OnInit, OnDestroy {
       end_date = moment(this.ngRangeEnd).format('MM/DD/yyyy');
     }
     let params = {
+      is_weekly: this._reportService.ngPlan == 'weekly' ? true : false,
       incident_reports: true,
       store_list: this.selectedStores.pk_storeID,
       supplier_list: this.selectedSuppliers.pk_companyID,

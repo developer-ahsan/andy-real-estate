@@ -38,6 +38,7 @@ export class ReportVendorRelationsComponent implements OnInit, OnDestroy {
   generateReport() {
     this.isGenerateReportLoader = true;
     let params = {
+      is_weekly: this._reportService.ngPlan == 'weekly' ? true : false,
       vendor_relations: true,
       relation: this.vendorRelation,
     }

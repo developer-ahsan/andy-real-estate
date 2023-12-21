@@ -228,6 +228,7 @@ export class ReportsStoreSalesComponent implements OnInit, OnDestroy {
       promo = this.selectedStates.name;
     }
     let params = {
+      is_weekly: this._reportService.ngPlan == 'weekly' ? true : false,
       store_sales_report: true,
       start_date: this._reportService.startDate,
       end_date: this._reportService.endDate,

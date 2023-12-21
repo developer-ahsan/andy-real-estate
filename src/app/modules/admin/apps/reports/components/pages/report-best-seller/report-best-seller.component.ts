@@ -94,6 +94,7 @@ export class ReportBestSellerComponent implements OnInit, OnDestroy {
     }
 
     let params = {
+      is_weekly: this._reportService.ngPlan == 'weekly' ? true : false,
       page: page,
       best_sellers: true,
       product_type: this.productType,

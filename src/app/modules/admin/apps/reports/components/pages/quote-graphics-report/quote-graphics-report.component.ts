@@ -86,6 +86,7 @@ export class QuoteGraphicsReportComponent implements OnInit, OnDestroy {
     }
     this._reportService.setFiltersReport();
     let params = {
+      is_weekly: this._reportService.ngPlan == 'weekly' ? true : false,
       quote_graphics_support_report: true,
       start_date: this._reportService.startDate,
       end_date: this._reportService.endDate,

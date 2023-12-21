@@ -91,7 +91,7 @@
                                 </tr>
                                 <tbody>
                                     <ng-container *ngFor="let item of generateReportData;">
-                                        <tr>
+                                        <tr *ngIf="item.date_data.length">
                                             <td colspan="3">
                                                 <div class="text-secondary pb-0 mb-2 text-lg flex justify-between">
                                                     <b>{{item.storeName}}</b>
@@ -121,7 +121,7 @@
                                                         {{data.margin}}%
                                                     </span>
                                                     <span class="text-red-500" *ngIf="data.margin < 0">
-                                                        ({{data.margin}}%)
+                                                        ({{data.margin * -1}}%)
                                                     </span>
                                                 </td>
                                                 <td>
@@ -269,7 +269,7 @@
                                         <span *ngIf="storeTotals.DIFF >= 0" class="text-green-500">
                                             {{storeTotals.DIFF | currency}}
                                         </span>
-                                        <span *ngIf="storeTotals.DIFF < 0" class="text-green-500">
+                                        <span *ngIf="storeTotals.DIFF < 0" class="text-red-500">
                                             ({{(storeTotals.DIFF * - 1) | currency}})</span>
                                     </th>
                                     <th>{{storeTotals?.NS}}</th>

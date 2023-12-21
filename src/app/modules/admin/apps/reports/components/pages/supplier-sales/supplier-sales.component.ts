@@ -65,6 +65,7 @@ export class ReportsSupplierSalesComponent implements OnInit, OnDestroy {
 
     this.isGenerateReportLoader = true;
     let params = {
+      is_weekly: this._reportService.ngPlan == 'weekly' ? true : false,
       supplier_sales: true,
       start_date: this._reportService.startDate,
       end_date: this._reportService.endDate,

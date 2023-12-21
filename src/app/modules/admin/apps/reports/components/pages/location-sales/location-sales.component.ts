@@ -113,7 +113,12 @@ export class ReportsLocationSalesComponent implements OnInit, OnDestroy {
       return;
     }
     this.isGenerateReportLoader = true;
+    let is_weekly = false;
+    if (this._reportService.ngPlan == 'weekly') {
+      is_weekly = true;
+    }
     let params = {
+      is_weekly,
       location_sales_report: true,
       start_date: this._reportService.startDate,
       end_date: this._reportService.endDate,
