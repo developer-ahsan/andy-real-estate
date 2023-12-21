@@ -203,7 +203,8 @@
                                 <div><b>Order: </b> <a [routerLink]="['/apps/orders',orderData.fk_orderID,'summary']"
                                         target="_blank">{{orderData.fk_orderID}}</a>
                                 </div>
-                                <div><b>Quote ID:</b> {{orderData.quoteID}}-{{paramData?.fk_imprintID}}</div>
+                                <div *ngIf="orderData.quoteID"><b>Quote ID:</b>
+                                    {{orderData.quoteID}}-{{orderData?.cartLineID}}</div>
                                 <div><b>PO:</b> {{orderData.fk_orderID}}-{{paramData?.pk_orderLineID}}</div>
                                 <div><b>Order Placed:</b> {{orderData.orderDate }}</div>
                                 <div><b>Store: </b> <a

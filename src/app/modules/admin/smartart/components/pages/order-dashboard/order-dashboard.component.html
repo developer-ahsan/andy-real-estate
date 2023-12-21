@@ -270,8 +270,18 @@
                                     </th>
                                     <td mat-cell *matCellDef="let element" class="text-left">
                                         <div class="flex justify-left mt-1 space-x-1">
-                                            <button (click)="customerEmail(element)"
+                                            <button (click)="customerEmail(element)" *ngIf="!element.blnSendProof"
                                                 class="bg-blue-500 text-white px-2.5 my-1 py-1.5 text-md rounded mr-1">Email</button>
+                                            <button *ngIf="element.blnSendProof"
+                                                (click)="uploadResenedProofEmail(element)" [disabled]="isProofLoader"
+                                                class="bg-blue-500 text-white px-2.5 my-1 py-1.5 text-md rounded mr-1">
+                                                <span matTooltip="Hide this item" *ngIf="!element.isProofLoader">Resend
+                                                    Proof</span>
+                                                <!-- spinner -->
+                                                <mat-progress-spinner *ngIf="element?.isProofLoader" [diameter]="24"
+                                                    [mode]="'indeterminate'">
+                                                </mat-progress-spinner>
+                                            </button>
                                             <button type="button"
                                                 class="bg-blue-300 text-white px-2.5 my-1 py-1.5 text-md rounded mr-1"
                                                 [disabled]="element?.isHiddenLoader">

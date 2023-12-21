@@ -6,7 +6,7 @@ import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { SmartArtService } from '../../smartart.service';
-import { HideUnhideCart, HideUnhideOrder, UpdateOrderLineClaim, updateAttentionFlagOrder, updateOrderBulkStatusUpdate } from '../../smartart.types';
+import { HideUnhideCart, HideUnhideOrder, UpdateOrderLineClaim, sendOrderCustomerFollowUpEmail, updateAttentionFlagOrder, updateOrderBulkStatusUpdate } from '../../smartart.types';
 import { AuthService } from 'app/core/auth/auth.service';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
@@ -168,6 +168,14 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
         } else {
           element.proofDetails = null;
         }
+        // Resesend Proof
+        element.blnSendProof = false;
+        const targetStatusIDs = [3, 12, 13];
+        element.qryContact = null;
+        if (targetStatusIDs.includes(element.pk_statusID)) {
+          this.resendProofEmail(element);
+        }
+
       });
       this.dataSource = res["data"];
       this.totalRecords = res["totalRecords"];
@@ -490,11 +498,10 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
     this._unsubscribeAll.complete();
   };
   resendProofEmail(order) {
+    order.blnSendProof = true;
     let store_user_approval_contact_id = 0;
     let art_approval_contact_id = 0;
-    order.isProofLoader = true;
-    console.log(order);
-    let email = order.email;
+    order.recpientsEmail = order.email;
     if (order.fk_storeUserApprovalContactID || order.fk_artApprovalContactID) {
       if (order.fk_storeUserApprovalContactID) {
         store_user_approval_contact_id = order.fk_storeUserApprovalContactID;
@@ -508,16 +515,72 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
         store_user_approval_contact_id, art_approval_contact_id
       }
       this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-        email = res["data"][0].email;
-        this.uploadResenedProofEmail(email, order);
-      })
-    } else {
-      this.uploadResenedProofEmail(email, order);
+        order.recpientsEmail = res["data"][0].email;
+        this._changeDetectorRef.markForCheck();
+      });
     }
   }
-  uploadResenedProofEmail(email, order) {
-    console.log(email);
-    order.isProofLoader = false;
-    this._changeDetectorRef.markForCheck();
+  uploadResenedProofEmail(order) {
+    order.isProofLoader = true;
+
+    let params = {
+      order_line_followUp_getCall: true,
+      orderLine_id: order.pk_orderLineID,
+      imprint_id: order.fk_imprintID
+    }
+    this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(colors => {
+      let colorData = null;
+      if (colors["data"].length > 0) {
+        colorData = colors["data"][0].colorNameList;
+      }
+      const url = `https://assets.consolidus.com/globalAssets/Products/HiRes/${order.storeProductID}.jpg?${Math.random()}`;
+      let storeImage: any = '';
+      this._commonService.checkImageExistData(url).then(imgRes => {
+        if (imgRes) {
+          storeImage = url;
+        } else {
+          storeImage = 'https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg';
+        }
+        let payload: sendOrderCustomerFollowUpEmail = {
+          orderID: Number(order.fk_orderID),
+          orderLineID: Number(order.pk_orderLineID),
+          orderLineImprintID: Number(order.fk_imprintID),
+          artApprovalContactID: order.fk_artApprovalContactID,
+          storeUserApprovalContactID: order.fk_storeUserApprovalContactID,
+          protocol: order.protocol,
+          email_recipients: order.recpientsEmail.split(','),
+          smartArtAdminEmail: this.smartArtUser.email,
+          locationName: order.locationName,
+          methodName: order.attributeName,
+          imprintColors: colorData,
+          productNumber: order.productNumber,
+          productName: order.productName,
+          primaryHighlight: order.storePrimaryHighlight,
+          storeID: order.pk_storeID,
+          storeName: order.storeName,
+          storeCode: order.storeCode,
+          storeProductID: order.storeProductID,
+          quantity: order.quantity,
+          storeProductImageURL: storeImage,
+          storeUserFirstName: order.firstName,
+          storeUserLastName: order.lastName,
+          storeUserEmail: order.email,
+          storeUserID: order.pfk_userID,
+          storeUserCompanyName: order.companyName,
+          blnStoreUserApprovalDone: order.blnStoreUserApprovalDone,
+          send_order_customer_followUp_email: true
+        }
+        this._smartartService.AddSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+          order.isProofLoader = false;
+          this._changeDetectorRef.markForCheck();
+        })).subscribe(res => {
+          if (res["success"]) {
+            this._smartartService.snackBar(res["message"]);
+            this._changeDetectorRef.markForCheck();
+          }
+        });
+      });
+    });
+
   }
 }

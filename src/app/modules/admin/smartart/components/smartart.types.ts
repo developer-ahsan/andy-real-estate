@@ -402,7 +402,7 @@ export interface sendOrderCustomerFollowUpEmail {
     orderLineImprintID: number;
     artApprovalContactID: number;
     storeUserApprovalContactID: number;
-    blnEProcurement: boolean;
+    protocol: string;
     email_recipients: string[];
     smartArtAdminEmail: string;
     locationName: string;

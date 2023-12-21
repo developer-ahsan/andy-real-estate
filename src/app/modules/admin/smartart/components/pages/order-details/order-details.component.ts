@@ -1950,7 +1950,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
         orderLineImprintID: Number(imprint.pk_imprintID),
         artApprovalContactID: this.orderData.fk_artApprovalContactID,
         storeUserApprovalContactID: this.orderData.fk_storeUserApprovalContactID,
-        blnEProcurement: this.orderData.blnEProcurement,
+        protocol: this.orderData.protocol,
         email_recipients: imprint.emailRecipients.split(','),
         smartArtAdminEmail: this.smartArtUser.email,
         locationName: imprint.locationName,
