@@ -24,7 +24,7 @@ export class OrdersComponent {
     isLoading: boolean = false;
     pagination: OrdersPagination;
     ordersCount: number = 0;
-    ordersTableColumns: string[] = ['sku', 'name', 'price', 'stock', 'active'];
+    ordersTableColumns: string[] = ['sku', 'name', 'price', 'stock', 'active', 'order'];
     searchInputControl: FormControl = new FormControl();
     selectedOrder: OrdersList | null = null;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
@@ -34,17 +34,23 @@ export class OrdersComponent {
     pageIndex = 0;
     keyword: string;
     @Output() isLoadingChange = new EventEmitter<boolean>();
-
+    size: any = 20;
+    orderType: any = 0;
+    fullfillmentOrder: string = ''
 
     advancedSearch: boolean = false;
     storesList: any;
+    storeId: any = 0;
+    searchOrderId: any = 0;
+    startDate: any = '';
+    endDate: any = '';
     advancedSearchForm: SearchOrder = {
-        store_id: 0,
-        range_end: '',
-        range_start: '',
-        search_order_id: 0,
-        size: 20,
-        order_type: 0
+        store_id: this.storeId,
+        range_end: this.endDate,
+        range_start: this.startDate,
+        search_order_id: this.searchOrderId,
+        size: this.size,
+        order_type: this.orderType
     };
     tempOrdersArray = [];
     tempTotalCount = 0;
@@ -131,7 +137,7 @@ export class OrdersComponent {
             store_id,
             range_end,
             range_start,
-            order_type,
+            order_type: this.orderType,
             search_order_id
         }
         this._orderService.getOrders(params)
@@ -143,12 +149,12 @@ export class OrdersComponent {
                 this.isLoadingChange.emit(false);
                 this._orderService._searchKeyword = '';
                 this.advancedSearchForm = {
-                    store_id: 0,
-                    range_end: '',
-                    range_start: '',
-                    search_order_id: 0,
-                    size: 20,
-                    order_type: 0
+                    store_id: this.storeId,
+                    range_end: this.endDate,
+                    range_start: this.startDate,
+                    search_order_id: this.searchOrderId,
+                    size: this.size,
+                    order_type: this.orderType
                 };
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -190,12 +196,12 @@ export class OrdersComponent {
     closeAdvancedSearch() {
         this.advancedSearch = false;
         this.advancedSearchForm = {
-            store_id: 0,
-            range_end: '',
-            range_start: '',
-            search_order_id: 0,
-            size: 20,
-            order_type: 0
+            store_id: this.storeId,
+            range_end: this.endDate,
+            range_start: this.startDate,
+            search_order_id: this.searchOrderId,
+            size: this.size,
+            order_type: this.orderType
         };
         this.orders = this.tempOrdersArray;
         this.ordersLength = this.tempTotalCount;
@@ -213,9 +219,35 @@ export class OrdersComponent {
         this.pageNo = 1;
         this.pageIndex = 0;
         this.isLoading = true;
-        // this.advancedSearch = false;
         this.pageSize = this.advancedSearchForm.size;
-        this.getOrders(this.advancedSearchForm.size, 1);
+        this.getOrders(this.size, 1);
+    }
+
+    reset() {
+        this.size = 20;
+        this.orderType = 0;
+        this.storeId = 0;
+        this.searchOrderId = 0;
+        this.endDate = '';
+        this.startDate = '';
+        this.advancedSearchForm = {
+            store_id: this.storeId,
+            range_end: this.endDate,
+            range_start: this.startDate,
+            search_order_id: this.searchOrderId,
+            size: this.size,
+            order_type: this.orderType
+        };
+        this.getOrders(this.size, 1);
+        this.sidenav.toggle();
+    }
+
+    searchByFullfilmentOrder() {
+        
+    }
+
+    moment(date) {
+        return moment(date).format('MMM, DD, YYYY');
     }
 }
 

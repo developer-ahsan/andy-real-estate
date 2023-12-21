@@ -206,9 +206,9 @@
                                     </ngx-dropzone-image-preview>
                                 </ngx-dropzone>
                             </div>
-                            <div class="col-12 col-md-3 align-content-center-data"
+                            <div class="col-12 col-md-3 align-content-center-data "
                                 *ngFor="let image of updateIncidentObj.images">
-                                <img class="w-50" [src]="image.path" />
+                                <img class="w-50 h-50" [src]="image.path" />
                                 <mat-checkbox [(ngModel)]="image.isRemove">Remove</mat-checkbox>
                             </div>
                             <div class="col-12 text-right">
