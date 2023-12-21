@@ -47,7 +47,7 @@
                             </fuse-alert>
                         </div>
                         <div class="col-12 text-right">
-                            <button [matTooltip]="'Send Reorder Email'" class="min-w-40" mat-stroked-button>
+                            <button (click)="sendEmail()" [matTooltip]="'Send Reorder Email'" class="min-w-40" mat-stroked-button>
                                 <!-- <mat-progress-spinner *ngIf="createProductDetailLoader" [diameter]="24"
                                                 [mode]="'indeterminate'">
                                             </mat-progress-spinner> -->

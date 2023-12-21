@@ -108,9 +108,12 @@ export class OrderCommentsComponent implements OnInit, OnDestroy {
       return;
     }
     this.commentators.forEach(element => {
-      if (element.checked) {
+      if (element.checked && !emailArr.includes(element.email)) {
         emailArr.push(element.email);
-      }
+      } 
+      // else if (!element.checked && emailArr.includes(element.email)) {
+      //   emailArr = emailArr.filter(item => item !== element.email)
+      // }
     });
     this.isAddCommentLoader = true;
     let payload: addComments = {

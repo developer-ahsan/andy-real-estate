@@ -17,6 +17,7 @@ export class OrderReorderEmailComponent implements OnInit, OnDestroy {
   orderDetail: any;
   emailData: any;
   optedEmail: boolean = false;
+  emailLoader: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _orderService: OrdersService
@@ -52,6 +53,14 @@ export class OrderReorderEmailComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     })
   }
+
+  sendEmail() {
+    this.emailLoader = true;
+
+    this.emailLoader = false;
+  }
+
+
   /**
      * On destroy
      */
