@@ -33,6 +33,7 @@ export class OrderExportComponent implements OnInit, OnDestroy {
   exportData: any;
   userData: any;
 
+  allStatus = [];
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _authService: AuthService,
@@ -43,15 +44,19 @@ export class OrderExportComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.userData = JSON.parse(sessionStorage.getItem('orderManage'));
+    this.getStatuses();
   };
-
+  getStatuses() {
+    this._orderService.orderManageStatus$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.allStatus = res["data"];
+    });
+  }
   getExportData() {
     this.isExcelLoader = true;
     let params = {
       user_id: this.userData.pk_userID,
-      status: this.ngstatusID,
-      is_export: 1,
-      view_dashboard: true
+      status_id: this.ngstatusID,
+      ordermanage_export_function: true
     }
     this._orderService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.exportData = res["data"];

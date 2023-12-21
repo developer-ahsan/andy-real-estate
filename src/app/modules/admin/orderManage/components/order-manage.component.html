@@ -38,21 +38,8 @@
                             <mat-label>Filter By Status</mat-label>
                             <mat-select [(ngModel)]="status" matInput>
                                 <mat-option [value]="0">All Orders</mat-option>
-                                <mat-option [value]="1">New Orders</mat-option>
-                                <mat-option [value]="2">Artwork Approved</mat-option>
-                                <mat-option [value]="3">Purchase Order Sent</mat-option>
-                                <mat-option [value]="4">Purchase Order Acknowledged</mat-option>
-                                <mat-option [value]="5">Shipped</mat-option>
-                                <mat-option [value]="6">Delivered</mat-option>
-                                <mat-option [value]="8">Picked up</mat-option>
-                                <mat-option [value]="11">Billed</mat-option>
-                                <mat-option [value]="12">Paid</mat-option>
-                                <mat-option [value]="9">Backorder</mat-option>
-                                <mat-option [value]="15">Rush Orders</mat-option>
-                                <mat-option [value]="16">Fulfillment Orders</mat-option>
-                                <mat-option [value]="13">Hidden</mat-option>
-                                <mat-option [value]="10">Waiting For Group Order</mat-option>
-                                <mat-option [value]="14">Semi-Rush</mat-option>
+                                <mat-option *ngFor="let status of allStatus"
+                                    [value]="status.pk_statusID">{{status.statusName}}</mat-option>
                             </mat-select>
                         </mat-form-field>
                     </li>

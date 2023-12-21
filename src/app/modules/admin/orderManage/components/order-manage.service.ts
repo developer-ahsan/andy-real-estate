@@ -22,7 +22,7 @@ export class OrderManageService {
     private _smartArtUsers: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _employeeAdmins: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _smartArtStores: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
-    private _reportUsers: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
+    private _orderManageStatus: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     /**
      * Constructor
      */
@@ -42,8 +42,8 @@ export class OrderManageService {
     }
 
     // Reports
-    get reportUsers$(): Observable<any[]> {
-        return this._reportUsers.asObservable();
+    get orderManageStatus$(): Observable<any[]> {
+        return this._orderManageStatus.asObservable();
     };
     // Observables
     get employeeAdmins$(): Observable<any[]> {
@@ -108,16 +108,15 @@ export class OrderManageService {
             })
         );
     };
-    // Generate Report Users
-    getAllReportUsers(): Observable<any[]> {
-        return this._httpClient.get<any[]>(environment.flps, {
+    // Generate OrderManage Status
+    getOrderManageStatus(): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.order_manage, {
             params: {
-                view_store_all_admins: true,
-                size: 10
+                order_statuses: true
             }
         }).pipe(
             tap((response: any) => {
-                this._reportUsers.next(response);
+                this._orderManageStatus.next(response);
             })
         );
     };

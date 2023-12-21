@@ -111,6 +111,31 @@ export class SmartArtUsersResolver implements Resolve<any>
         return this._OrderManageService.getSmartArtUsers();
     }
 }
+// getOrderManageStatus
+@Injectable({
+    providedIn: 'root'
+})
+export class OrderManageStatusResolver implements Resolve<any>
+{
+    /**
+     * Constructor
+     */
+    constructor(private _OrderManageService: OrderManageService) {
+    }
 
+    // -----------------------------------------------------------------------------------------------------
+    // @ Public methods
+    // -----------------------------------------------------------------------------------------------------
+
+    /**
+     * Resolver
+     *
+     * @param route
+     * @param state
+     */
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any[]> {
+        return this._OrderManageService.getOrderManageStatus();
+    }
+}
 
 

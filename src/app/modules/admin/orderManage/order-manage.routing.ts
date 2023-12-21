@@ -3,14 +3,15 @@ import { OrderManageDashboardComponent } from './components/pages/dashboard/dash
 import { OrderExportComponent } from './components/pages/export/export.component';
 import { OrderManageComponent } from './components/order-manage.component';
 import { OrderManageDetailsComponent } from './components/pages/order-details/order-details.component';
+import { OrderManageStatusResolver } from './components/order-manage.resolvers';
 
 export const orderManageRoutes: Route[] = [
     {
         path: '',
         component: OrderManageComponent,
-        // resolve: {
-        //     SmartArtStoresResolver, SmartArtUsersResolver
-        // },
+        resolve: {
+            OrderManageStatusResolver
+        },
         children: [
             {
                 path: '',

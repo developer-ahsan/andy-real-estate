@@ -55,6 +55,8 @@ export class OrderManageComponent {
     customerKeyword = '';
     ngOrderID = '';
     maxDate = new Date();
+
+    allStatus = [];
     /**
      * Constructor
      */
@@ -86,6 +88,12 @@ export class OrderManageComponent {
             this.selectedRoute = this.route.children[0].snapshot.data.url;
         }
         this.getStores();
+        this.getStatuses();
+    }
+    getStatuses() {
+        this._rapidService.orderManageStatus$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+            this.allStatus = res["data"];
+        });
     }
     getStores() {
         this.commonService.storesData$.pipe(

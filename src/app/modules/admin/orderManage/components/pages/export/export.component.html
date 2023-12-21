@@ -8,9 +8,9 @@
                 The information exported is the same that appears on the dashboard.
             </p>
             <mat-form-field class="min-w-100 mr-2">
-                <mat-select [(ngModel)]="ngstatusID" matInput>
-                    <mat-option *ngFor="let item of exportStatusOptions"
-                        [value]="item.value">{{item.label}}</mat-option>
+                <mat-select [(ngModel)]="ngstatusID" matInput [disabled]="isExcelLoader">
+                    <mat-option *ngFor="let status of allStatus"
+                        [value]="status.pk_statusID">{{status.statusName}}</mat-option>
                 </mat-select>
             </mat-form-field>
             <div>
