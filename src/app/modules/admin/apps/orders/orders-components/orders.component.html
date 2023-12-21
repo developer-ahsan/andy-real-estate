@@ -20,7 +20,7 @@
                 <div class="col-12 mt-5">
                     <mat-form-field class="w-full">
                         <mat-label>Store:</mat-label>
-                        <mat-select [(ngModel)]="advancedSearchForm.store_id">
+                        <mat-select [(ngModel)]="storeId">
                             <mat-option *ngFor="let item of storesList" [value]="item.pk_storeID">{{item.storeName}}
                             </mat-option>
                         </mat-select>
@@ -29,37 +29,36 @@
                 <div class="col-12">
                     <mat-form-field class="w-full">
                         <mat-label>Order Type:</mat-label>
-                        <mat-select [(ngModel)]="advancedSearchForm.order_type">
-                            <mat-option [value]="1">Normal and fulfillment</mat-option>
-                            <mat-option [value]="2">Normal only</mat-option>
-                            <mat-option [value]="3">Fulfillment only</mat-option>
+                        <mat-select [(ngModel)]="orderType">
+                            <mat-option [value]="0">Normal and fulfillment</mat-option>
+                            <mat-option [value]="1">Normal only</mat-option>
+                            <mat-option [value]="2">Fulfillment only</mat-option>
                         </mat-select>
                     </mat-form-field>
                 </div>
                 <div class="col-12">
                     <mat-form-field class="w-full">
                         <mat-label>Per Page:</mat-label>
-                        <mat-select ngModeladvancedSearchForm.size>
+                        <mat-select [(ngModel)]="size" ngModeladvancedSearchForm.size>
                             <mat-option [value]="20">20</mat-option>
-                            <mat-option [value]="30">30</mat-option>
                             <mat-option [value]="50">50</mat-option>
+                            <mat-option [value]="100">100</mat-option>
+                            <mat-option [value]="500">500</mat-option>
                         </mat-select>
                     </mat-form-field>
                 </div>
                 <div class="col-12">
                     <mat-form-field class="w-full">
                         <mat-label>Order ID:</mat-label>
-                        <input matInput [(ngModel)]="advancedSearchForm.search_order_id">
+                        <input matInput [(ngModel)]="searchOrderId">
                     </mat-form-field>
                 </div>
                 <div class="col-md-12 col-12">
                     <mat-form-field appearance="fill" class="w-full">
                         <mat-label>Time Span</mat-label>
                         <mat-date-range-input [rangePicker]="picker">
-                            <input readonly matStartDate placeholder="Start date"
-                                [(ngModel)]="advancedSearchForm.range_start">
-                            <input readonly matEndDate placeholder="End date"
-                                [(ngModel)]="advancedSearchForm.range_end">
+                            <input readonly matStartDate placeholder="Start date" [(ngModel)]="startDate">
+                            <input readonly matEndDate placeholder="End date" [(ngModel)]="endDate">
                         </mat-date-range-input>
                         <!-- <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint> -->
                         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
@@ -67,13 +66,19 @@
                     </mat-form-field>
                 </div>
                 <div class="col-12 ">
-                    <button [color]="'primary'" [matTooltip]="'Search Order'" (click)="searchOrder()" class="w-full"
-                        mat-stroked-button>
-                        <!-- <mat-progress-spinner *ngIf="createProductDetailLoader" [diameter]="24"
+                    <div class="flex flex-col gap-y-2">
+                        <button [color]="'primary'" [matTooltip]="'Search Order'" (click)="searchOrder()" class="w-full"
+                            mat-stroked-button>
+                            <!-- <mat-progress-spinner *ngIf="createProductDetailLoader" [diameter]="24"
                                             [mode]="'indeterminate'">
                                         </mat-progress-spinner> -->
-                        <span>Search</span>
-                    </button>
+                            <span>Search</span>
+                        </button>
+                        <button class="mt-2" [color]="'primary'" [matTooltip]="'Search Order'" (click)="reset()"
+                            class="w-full" mat-stroked-button>
+                            <span>Reset</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </mat-drawer>
@@ -91,6 +96,16 @@
                         <button class="min-w-40" mat-button (click)="openAdvancedSearch()">Filter</button>
                     </div>
                 </div>
+
+                <div class="my-3 flex flex-row gap-x-2">
+                    <button class="ml-4 min-w-30" mat-flat-button [color]="'primary'">
+                        <span class="ml-2 mr-1">Bulk Order Payment</span>
+                    </button>
+
+                    <button class="ml-4 min-w-30" mat-flat-button [color]="'primary'">
+                        <span class="ml-2 mr-1">Bulk Invoice Reminder</span>
+                    </button>
+                </div>
                 <!-- <div class="flex flex-col sm:flex-row items-start sm:items-center sm:justify-end py-4 px-6 md:px-8">
                         <mat-form-field class="w-full md:w-60">
                             <input matInput placeholder="Search Promostandard" [matTooltip]="'Press enter key after typing'"
@@ -105,7 +120,21 @@
                         <ngx-skeleton-loader count="8" appearance="line" animation="pulse"
                             *ngIf="isLoading && ordersLength == 0">
                         </ngx-skeleton-loader>
+
+                       
                         <ng-container *ngIf="ordersLength > 0; else noOrders">
+
+                            <div class="p-6 sm:p-8 lg:p-10 w-full my-3">
+                                <mat-form-field appearance="fill" class="mat-form-field w-full">
+                                    <mat-label>Search By Fullfillment order </mat-label>
+                                    <input matInput [(ngModel)]="fullfillmentOrder">
+                                </mat-form-field>
+    
+                                <button class="mt-2 text-right" [color]="'primary'" [matTooltip]="'Search Order'"
+                                    (click)="searchByFullfilmentOrder()" mat-stroked-button>
+                                    <span>Search</span>
+                                </button>
+                            </div>
 
                             <!-- Table wrapper -->
                             <div class="overflow-x-hidden sm:overflow-y-auto" cdkScrollable>
@@ -125,7 +154,7 @@
                                         <td class="px-8" mat-cell *matCellDef="let order"
                                             (click)="orderDetails(order.pk_orderID)" style="cursor: pointer;">
                                             <div class="flex items-center">
-                                                <span class="truncate">{{order.orderDate | date: 'MM/dd/yyyy'}}</span>
+                                                <span class="truncate">{{moment(order.orderDate)}}</span>
                                             </div>
                                         </td>
                                     </ng-container>
@@ -186,6 +215,27 @@
                                                 [svgIcon]="'heroicons_solid:x'"></mat-icon>
                                         </td>
                                     </ng-container>
+                                    <ng-container matColumnDef="order">
+                                        <th class="w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                            *matHeaderCellDef disableClear>
+                                            Order
+                                        </th>
+                                        <td class="pr-4" mat-cell *matCellDef="let order"
+                                            (click)="orderDetails(order.pk_orderID)" style="cursor: pointer;">
+                                            <!-- <mat-icon class="text-green-400 icon-size-5" *ngIf="!order.blnCancelled"
+                                                [svgIcon]="'heroicons_solid:check'"></mat-icon>
+                                            <mat-icon class="text-red-400 icon-size-5" *ngIf="order.blnCancelled"
+                                                [svgIcon]="'heroicons_solid:x'"></mat-icon> -->
+                                            <span *ngIf="order.paymentDate"
+                                                class="fa fa-dollar fa-2x fa-fw gray-icon clickable"
+                                                style="color: #38931f;" data-toggle="tooltip"
+                                                title="Order has not been paid"></span>
+                                            <span *ngIf="!order.paymentDate"
+                                                class="fa fa-dollar fa-2x fa-fw active clickable"
+                                                style="color: #f1f5f0;" data-toggle="tooltip"
+                                                title="Order has been paid"></span>
+                                        </td>
+                                    </ng-container>
                                     <tr class="shadow" mat-header-row
                                         *matHeaderRowDef="ordersTableColumns; sticky: true"></tr>
                                     <tr class="h-18 hover:bg-gray-100 dark:hover:bg-hover" mat-row
@@ -196,7 +246,7 @@
                             <mat-paginator
                                 class="sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
                                 [ngClass]="{'pointer-events-none': isLoading}" [length]="ordersLength" [pageIndex]="0"
-                                [pageSize]="pageSize" (page)="pageEvents($event)" [hidePageSize]="true">
+                                [pageSize]="this.size" (page)="pageEvents($event)" [hidePageSize]="true">
                             </mat-paginator>
 
                         </ng-container>
