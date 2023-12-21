@@ -108,7 +108,10 @@
                                 <div><b>Phone:</b> {{quoteData?.dayPhone}}</div>
                                 <div><b>Fax:</b> {{quoteData?.dayFax}}</div>
                                 <div><b>Email:</b> {{quoteData?.email}}</div>
-                                <div><b>Designer notes:</b> {{quoteData.designerNotes || 'None'}}</div>
+                                <div><b>Designer notes:</b>
+                                    <span *ngIf="quoteData.designerNotes" [innerHTML]="quoteData.designerNotes"></span>
+                                    <span *ngIf="!quoteData.designerNotes">NONE</span>
+                                </div>
                                 <div class="space-y-1">
                                     <button class="min-w-60 btn buttonComment hover:bg-gray-200"
                                         (click)="customerEmail()">Email Customer</button>
@@ -150,7 +153,11 @@
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                             <div *ngIf="smartArtUser.blnMaster">
-                                <div><b>Quote ID:</b> {{paramData.fk_cartID}}-{{paramData?.pk_cartLineID}}</div>
+                                <div><b>Quote ID:</b>
+                                    <a [routerLink]="['/apps/quotes',paramData.fk_cartID,'summary']"
+                                        target="_blank">{{paramData.fk_cartID}}-{{paramData?.pk_cartLineID}}
+                                    </a>
+                                </div>
                                 <div><b>Created:</b> {{quoteData.dateCreated | date: 'MM/dd/yyyy'}}</div>
                                 <div><b>Store:</b> <a href="{{quoteData?.storeURL}}" target="_blank">
                                         {{quoteData?.storeName}}</a></div>

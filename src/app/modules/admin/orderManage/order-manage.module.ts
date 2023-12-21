@@ -45,12 +45,13 @@ import { OrderManageDashboardComponent } from './components/pages/dashboard/dash
 import { OrderManageDetailsComponent } from './components/pages/order-details/order-details.component';
 import { OrderExportComponent } from './components/pages/export/export.component';
 import { CreatePoComponent } from './components/pages/order-details/create-po/create-po.component';
+import { OrderImportShippingComponent } from './components/pages/import-shipping/import-shipping.component';
 
 @NgModule({
     declarations: [
         OrderManageComponent,
         OrderManageDashboardComponent,
-        OrderManageDetailsComponent, OrderExportComponent, CreatePoComponent
+        OrderManageDetailsComponent, OrderExportComponent, CreatePoComponent, OrderImportShippingComponent
     ],
     imports: [
         RouterModule.forChild(orderManageRoutes),

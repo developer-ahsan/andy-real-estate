@@ -4,6 +4,7 @@ import { OrderExportComponent } from './components/pages/export/export.component
 import { OrderManageComponent } from './components/order-manage.component';
 import { OrderManageDetailsComponent } from './components/pages/order-details/order-details.component';
 import { OrderManageStatusResolver } from './components/order-manage.resolvers';
+import { OrderImportShippingComponent } from './components/pages/import-shipping/import-shipping.component';
 
 export const orderManageRoutes: Route[] = [
     {
@@ -32,6 +33,14 @@ export const orderManageRoutes: Route[] = [
                 data: {
                     title: 'Export',
                     url: 'export'
+                }
+            },
+            {
+                path: 'import',
+                component: OrderImportShippingComponent,
+                data: {
+                    title: 'Import Shipping',
+                    url: 'import'
                 }
             },
             {

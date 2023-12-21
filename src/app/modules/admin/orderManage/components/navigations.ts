@@ -8,5 +8,10 @@ export const navigations = [
         title: 'Export',
         icon: 'mat_outline:settings',
         route: 'export'
+    },
+    {
+        title: 'Import Shipping',
+        icon: 'mat_outline:settings',
+        route: 'import'
     }
 ];
