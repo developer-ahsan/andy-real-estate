@@ -53,9 +53,9 @@
                                         class="mr-2 inline-flex items-center gap-x-1.5 rounded-md bg-blue-400 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400">
                                         <span>View</span>
                                     </button>
-                                    <button type="button" (click)="openRemovalModal(item)"
-                                        *ngIf="userIDs.includes(userData.pk_userID)"
-                                        class="inline-flex items-center gap-x-1.5 rounded-md bg-orange-400 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400">
+                                    <button [disabled]="!userIDs.includes(userData.pk_userID)" type="button" (click)="openRemovalModal(item)"
+                                        
+                                        class="inline-flex items-center gap-x-1.5 rounded-md bg-red-400 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-red-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-400">
                                         <span *ngIf="!item.isRemoveLoader">Remove</span>
                                         <mat-progress-spinner *ngIf="item.isRemoveLoader" [diameter]="24"
                                             [mode]="'indeterminate'">
@@ -183,7 +183,7 @@
                     <div class="col-12">
                         <span class="font-semibold">Money lost:</span>
                         <mat-form-field appearance="outline" class="w-full">
-                            <input matInput type="number" [(ngModel)]="formModal.rerunCost">
+                            <input min="0" matInput type="number" [(ngModel)]="formModal.rerunCost">
                             <mat-icon matSuffix svgIcon="heroicons_outline:currency-dollar"></mat-icon>
                         </mat-form-field>
                     </div>

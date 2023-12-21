@@ -322,6 +322,10 @@ export class IncidentReportsListComponent implements OnInit {
     if (this.formModal.source_employee) {
       employees = this.formModal.source_employee.toString();
     }
+    if (+this.formModal.rerunCost < 0) {
+      this._orderService.snackBar("Please enter positive value in Money Lost field");
+      return;
+    }
     let payload: CreateIncidentReport = {
       store_id: this.orderDetail.fk_storeID,
       order_id: this.orderDetail.pk_orderID,
