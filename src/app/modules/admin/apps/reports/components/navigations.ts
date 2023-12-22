@@ -60,7 +60,7 @@ export const navigations = [
                 route: 'royaltySummary'
             },
             {
-                title: 'Best Seller',
+                title: 'Best Sellers',
                 icon: 'mat_outline:ondemand_video',
                 route: 'bestSeller'
             }

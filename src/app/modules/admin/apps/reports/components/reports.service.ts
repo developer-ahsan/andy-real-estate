@@ -78,6 +78,9 @@ export class ReportsService {
         });
     }
     setFiltersReport() {
+        var currentDate = moment();
+        const currentYear = moment().year();
+
         if (this.ngPlan == 'weekly') {
             this.startDate = moment(this.WeekDate).startOf('isoWeek').format('yyyy-MM-DD');
             this.endDate = moment(this.WeekDate).endOf('isoWeek').format('yyyy-MM-DD');
@@ -85,14 +88,24 @@ export class ReportsService {
             this.lastEndDate = moment(this.WeekDate).endOf('isoWeek').subtract(1, 'year').format('yyyy-MM-DD');
             this.reportType = 'Weekly Sales';
         } else if (this.ngPlan == 'monthly') {
-            var currentDate = moment();
+            const currentMonth = moment().month() + 1;
             let d = new Date(this.monthlyYear, this.monthlyMonth - 1, 1);
             this.startDate = moment(d).startOf('month').format('yyyy-MM-DD');
-            this.endDate = moment(d).endOf('month').format('yyyy-MM-DD');
+            if (this.monthlyYear == currentYear) {
+                if (currentMonth == this.monthlyMonth) {
+                    this.endDate = moment(currentDate).format('YYYY-MM-DD');
+                } else {
+                    this.endDate = moment(d).endOf('month').format('YYYY-MM-DD');
+                }
+            } else {
+                this.lastEndDate = moment(d).endOf('month').subtract(1, 'year').format('yyyy-MM-DD');
+                this.endDate = moment(d).endOf('month').format('yyyy-MM-DD');
+            }
             this.lastStartDate = moment(d).startOf('month').subtract(1, 'year').format('yyyy-MM-DD');
-            this.lastEndDate = moment(d).endOf('month').subtract(1, 'year').format('yyyy-MM-DD');
+            this.lastEndDate = moment(this.endDate).subtract(1, 'year').format('yyyy-MM-DD');
             this.reportType = 'Monthly Sales';
         } else if (this.ngPlan == 'quarterly') {
+            const currentQuarter = moment().quarter();
             let s;
             let e;
             if (this.quarterMonth == 1) {
@@ -109,18 +122,25 @@ export class ReportsService {
                 e = new Date(this.quarterYear, 11, 1);
             }
             this.startDate = moment(s).startOf('month').format('yyyy-MM-DD');
-            this.endDate = moment(e).endOf('month').format('yyyy-MM-DD');
+            if (this.quarterYear == currentYear) {
+                if (currentQuarter == this.quarterMonth) {
+                    this.endDate = moment(currentDate).format('YYYY-MM-DD');
+                } else {
+                    this.endDate = moment(e).format('YYYY-MM-DD');
+                }
+            } else {
+                this.endDate = moment(e).endOf('year').format('yyyy-MM-DD');
+            }
             this.reportType = 'Quarterly Sales';
             this.lastStartDate = moment(s).startOf('month').subtract(1, 'year').format('yyyy-MM-DD');
-            this.lastEndDate = moment(e).endOf('month').subtract(1, 'year').format('yyyy-MM-DD');
+            this.lastEndDate = moment(this.endDate).subtract(1, 'year').format('yyyy-MM-DD');
         } else if (this.ngPlan == 'yearly') {
-            var currentDate = moment();
-            const currentYear = moment().year();
             let d = new Date(this.yearlyYear, 0, 1);
             this.startDate = moment(d).startOf('year').format('yyyy-MM-DD');
-            this.endDate = moment(d).endOf('year').format('yyyy-MM-DD');
             if (this.yearlyYear == currentYear) {
-                this.endDate = moment(currentDate).endOf('year').format('YYYY-MM-DD');
+                this.endDate = moment(currentDate).format('YYYY-MM-DD');
+            } else {
+                this.endDate = moment(d).endOf('year').format('yyyy-MM-DD');
             }
             this.lastStartDate = moment(d).startOf('year').subtract(1, 'year').format('yyyy-MM-DD');
             this.lastEndDate = moment(this.endDate).subtract(1, 'year').format('yyyy-MM-DD');
@@ -413,49 +433,51 @@ export class ReportsService {
         let statusColor = '';
         let statusValue = '';
         let textColor = '';
-
-        switch (true) {
-            case status.includes(1):
-            case status.includes(2):
-            case status.includes(3):
-            case status.includes(4):
-                statusValue = 'Processing';
-                statusColor = 'text-red-500';
-                textColor = 'red';
-                break;
-            case status.includes(5):
-                statusValue = 'Shipped';
-                statusColor = 'text-green-500';
-                textColor = 'green';
-                break;
-            case status.includes(6):
-            case status.includes(8):
-            case status.includes(11):
-            case status.includes(12):
-            case status.includes(13):
-                statusValue = 'Delivered';
-                statusColor = 'text-green-500';
-                textColor = 'green';
-                break;
-            case status.includes(7):
-                statusValue = 'P.O. Needed';
-                statusColor = 'text-purple-500';
-                textColor = 'purple';
-                break;
-            // case status.includes(8):
-            //     statusValue = 'Picked up';
-            //     statusColor = 'text-green-500';
-            //     break;
-            case status.includes(10):
-                statusValue = 'Awaiting Group Order';
-                statusColor = 'text-orange-500';
-                textColor = 'orange';
-                break;
-            default:
-                statusValue = 'N/A';
-                break;
+        if (status) {
+            switch (true) {
+                case status.includes(1):
+                case status.includes(2):
+                case status.includes(3):
+                case status.includes(4):
+                    statusValue = 'Processing';
+                    statusColor = 'text-red-500';
+                    textColor = 'red';
+                    break;
+                case status.includes(5):
+                    statusValue = 'Shipped';
+                    statusColor = 'text-green-500';
+                    textColor = 'green';
+                    break;
+                case status.includes(6):
+                case status.includes(8):
+                case status.includes(11):
+                case status.includes(12):
+                case status.includes(13):
+                    statusValue = 'Delivered';
+                    statusColor = 'text-green-500';
+                    textColor = 'green';
+                    break;
+                case status.includes(7):
+                    statusValue = 'P.O. Needed';
+                    statusColor = 'text-purple-500';
+                    textColor = 'purple';
+                    break;
+                // case status.includes(8):
+                //     statusValue = 'Picked up';
+                //     statusColor = 'text-green-500';
+                //     break;
+                case status.includes(10):
+                    statusValue = 'Awaiting Group Order';
+                    statusColor = 'text-orange-500';
+                    textColor = 'orange';
+                    break;
+                default:
+                    statusValue = 'N/A';
+                    break;
+            }
+        } else {
+            statusValue = 'N/A';
         }
-
         return {
             statusColor,
             statusValue,

@@ -151,18 +151,23 @@ export class RoyalitiesReportComponent implements OnInit, OnDestroy {
           } else {
             element.paid = false;
           }
-          // if (data[10] == 1) {
-          //   element.statusColor = 'text-red-500';
-          //   element.statusValue = 'Cancelled';
-          //   element.textColor = 'red';
-          // } else if (data[9] == 1) {
-          //   element.statusColor = 'text-red-500';
-          //   element.statusValue = 'Closed';
-          //   element.textColor = 'red';
-          // } else {
-          //   element.status = this._reportService.getStatusValue(data[8]);
-          // }
-          element.status = this._reportService.getStatusValue(element.orderLinesStatus);
+          let statusColor = '';
+          let statusValue = '';
+          let textColor = '';
+
+          if (element.blnCancelled) {
+            statusColor = 'text-red-500';
+            statusValue = 'Cancelled';
+            textColor = 'red';
+            element.status = { statusColor, statusValue, textColor };
+          } else if (element.blnClosed) {
+            statusColor = 'text-red-500';
+            statusValue = 'Closed';
+            textColor = 'red';
+            element.status = { statusColor, statusValue, textColor };
+          } else {
+            element.status = this._reportService.getStatusValue(element.orderLinesStatus);
+          }
         });
         this.generateReportData = res["data"];
         this.initialData = res["data"];

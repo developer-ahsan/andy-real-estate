@@ -12,8 +12,8 @@
                 <mat-form-field class="w-full">
                     <mat-label>Select Store</mat-label>
                     <mat-select (selectionChange)="onSelectedStores()" matInput [(ngModel)]="selectedStores">
-                        <mat-option *ngFor="let item of allStores" [value]="item">
-                            <span>{{item.storeName}}</span></mat-option>
+                        <mat-option *ngFor="let store of allStores" [value]="store">
+                            <span>{{store.storeName}}</span></mat-option>
                     </mat-select>
                 </mat-form-field>
             </div>

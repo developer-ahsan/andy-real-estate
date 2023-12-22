@@ -5,8 +5,19 @@
             </ngx-skeleton-loader>
         </div>
         <div class="row" *ngIf="!isLoading">
-            <div class="col-12 text-red-500" *ngIf="dataSource">
-                This report excludes all sample orders, disabled products, and cancelled orders.
+            <div class="col-12  flex align-items-center justify-between" *ngIf="dataSource">
+                <span class="text-red-500">This report excludes all sample orders, disabled products, and cancelled
+                    orders.</span>
+                <div>
+                    <button (click)="generatePdf()" mat-flat-button color="primary" [disabled]="isPdfLoader"
+                        [matTooltip]="'Save report as PDF'">
+                        <mat-icon svgIcon="mat_outline:picture_as_pdf"></mat-icon>
+                        <span class="ml-2 mr-1">PDF</span>
+                    </button>
+                </div>
+            </div>
+            <div class="col-12 font-bold text-lg" *ngIf="!dataSource">
+                FILTER BY
             </div>
             <div class="col-12 col-md-4">
                 <mat-form-field class="w-full">
@@ -41,7 +52,7 @@
             <div class="col-12 col-md-4">
                 <mat-form-field class="w-full">
                     <mat-label>Keyword</mat-label>
-                    <input matInput [(ngModel)]="keyword">
+                    <input matInput [(ngModel)]="keyword" placeholder="Keyword, product name, number, etc.">
                 </mat-form-field>
             </div>
             <div class="col-12 col-md-4">
@@ -57,7 +68,7 @@
             </div>
             <div class="col-12 text-right">
                 <button mat-flat-button class="min-w-40 mr-2" [color]="'primary'" (click)="clearFilters()"
-                    [disabled]="isGenerateReportLoader">
+                    [disabled]="isGenerateReportLoader || !dataSource">
                     <span>Clear Filter</span>
                     <!-- <mat-progress-spinner *ngIf="isUpdateWebsiteLoader" [diameter]="24" [mode]="'indeterminate'">
                     </mat-progress-spinner> -->
@@ -76,6 +87,7 @@
         </ngx-skeleton-loader>
     </div>
     <div *ngIf="dataSource">
+
         <table class="table table-striped" *ngIf="dataSource.length > 0;else other_content">
             <thead>
                 <tr>
@@ -91,7 +103,7 @@
                     <td>{{item?.SALES }}</td>
                     <td>{{item?.totalQuantity | number}}</td>
                     <td>
-                        <a [routerLink]="['apps/ecommerce/inventory',item.pk_productID]"
+                        <a [routerLink]="['/apps/ecommerce/inventory',item.pk_productID,'net-cost']"
                             target="_blank">({{item.pk_productID}}) {{item.productNumber}}:{{item?.productName}}</a>
                     </td>
                     <td>

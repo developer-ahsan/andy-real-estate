@@ -121,7 +121,7 @@ export const vendorsRoutes: Route[] = [
                 path: 'bestSeller',
                 component: ReportBestSellerComponent,
                 data: {
-                    title: 'Best Seller',
+                    title: 'Best Sellers',
                     url: 'bestSeller'
                 }
             },

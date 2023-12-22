@@ -8,7 +8,12 @@ import { FormControl } from '@angular/forms';
 import moment from 'moment';
 import { MatDrawer } from '@angular/material/sidenav';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
+import * as pdfMake from "pdfmake/build/pdfmake";
+import * as pdfFonts from "pdfmake/build/vfs_fonts";
+import { CurrencyPipe } from '@angular/common';
+import { environment } from 'environments/environment';
 
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 @Component({
   selector: 'app-report-best-seller',
   templateUrl: './report-best-seller.component.html',
@@ -58,7 +63,7 @@ export class ReportBestSellerComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(res => {
         const activeStores = res["data"].filter(element => element.blnActive);
-        this.allStores.push({ storeName: 'Any Stores', pk_storeID: '' });
+        this.allStores.push({ storeName: 'Any Store', pk_storeID: '' });
         this.allStores.push(...activeStores);
         this.selectedStores = this.allStores[0];
       });
@@ -68,7 +73,7 @@ export class ReportBestSellerComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(suppliers => {
         const activeSuppliers = suppliers["data"].filter(element => element.blnActiveVendor);
-        this.allSuppliers.push({ pk_companyID: '', companyName: 'Any Vendors' });
+        this.allSuppliers.push({ pk_companyID: '', companyName: 'Any Vendor' });
         this.allSuppliers.push(...activeSuppliers);
         this.selectedSuppliers = this.allSuppliers[0];
       });
@@ -117,9 +122,11 @@ export class ReportBestSellerComponent implements OnInit, OnDestroy {
 
       this.dataSource = res["data"];
       this.totalData = res["totalRecords"];
+      this.isLoading = false;
       this.isGenerateReportLoader = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
+      this.isLoading = false;
       this.isGenerateReportLoader = false;
       this._changeDetectorRef.markForCheck();
     });
@@ -138,8 +145,10 @@ export class ReportBestSellerComponent implements OnInit, OnDestroy {
     this.selectedSuppliers = this.allSuppliers[0];
     this.keyword = '';
     this.productType = 0;
+    this.page = 1;
     this.ngStart = '';
     this.ngEnd = '';
+    this.isLoading = true;
     this.generateReport(1);
   }
   getCustomers(item) {
@@ -185,6 +194,50 @@ export class ReportBestSellerComponent implements OnInit, OnDestroy {
     this.getCustomers(this.singleItem);
 
   }
+  generatePdf() {
+    const documentDefinition: any = {
+      pageSize: 'A4',
+      pageOrientation: 'landscape',
+      pageMargins: [10, 10, 10, 10],
+      content: [],
+      styles: {
+        tableHeader: {
+          bold: true
+        }
+      }
+    };
+    documentDefinition.content.push(
+      {
+        table: {
+          widths: ['*', '*', '*', '*'],
+          body: [
+            [
+              { text: 'SALES', bold: true },
+              { text: 'TOTAL QTY', bold: true },
+              { text: 'PRODUCT', bold: true },
+              { text: 'SUPPLIER', bold: true }
+            ],
+          ]
+        },
+        fontSize: 8
+      },
+      { text: '', margin: [0, 20, 0, 0] },
+    );
+    this.dataSource.forEach(item => {
+      // First Table Data
+      documentDefinition.content[0].table.body.push(
+        [
+          item.SALES,
+          item?.totalQuantity,
+          { text: item.pk_productID, link: `${environment.siteDomain}apps/ecommerce/inventory/${item.pk_productID}/net-cost` },
+          item?.companyName
+        ]
+      );
+    });
+    pdfMake.createPdf(documentDefinition).download(`Best-Seller-Report.pdf`);
+    this._changeDetectorRef.markForCheck();
+  }
+
   closeSideNav() {
     this.singleItem = null;
     this.sidenav.toggle();
