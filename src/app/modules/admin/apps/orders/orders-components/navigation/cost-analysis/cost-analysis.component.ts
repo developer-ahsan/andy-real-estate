@@ -128,8 +128,6 @@ export class CostAnalysisComponent implements OnInit {
 
 
       this.orderProducts = data;
-      console.log(this.orderProducts);
-      // console.log(this.orderProducts)
       this.getProductTotal();
       this.isLoading = false;
       this.isLoadingChange.emit(false);
@@ -159,20 +157,34 @@ export class CostAnalysisComponent implements OnInit {
     // });
   }
 
-  public exportHtmlToPDF() {
-    let data = document.getElementById('htmltable');
+
+  public exportHtmlToPDF(id) {
+    let element = document.getElementById(id);
+    var positionInfo = element.getBoundingClientRect();
+    var height = positionInfo.height;
+    var width = positionInfo.width;
+    var top_left_margin = 15;
+    let PDF_Width = width + (top_left_margin * 2);
+    var PDF_Height = (PDF_Width * 1.5) + (top_left_margin * 2);
+    var canvas_image_width = width;
+    var canvas_image_height = height;
+
+    var totalPDFPages = Math.ceil(height / PDF_Height) - 1;
     const file_name = `CostAnalysisReport_56165.pdf`;
-    html2canvas(data).then(canvas => {
+    html2canvas(element, { useCORS: true }).then(canvas => {
+      canvas.getContext('2d');
+      var imgData = canvas.toDataURL("image/jpeg", 1.0);
+      var pdf = new jsPDF('p', 'pt', [PDF_Width, PDF_Height]);
+      pdf.addImage(imgData, 'jpeg', top_left_margin, top_left_margin, canvas_image_width, canvas_image_height);
 
-      let docWidth = 208;
-      let docHeight = canvas.height * docWidth / canvas.width;
 
-      const contentDataURL = canvas.toDataURL('image/png')
-      let doc = new jsPDF('p', 'mm', 'a4');
-      let position = 0;
-      doc.addImage(contentDataURL, 'PNG', 0, position, docWidth, docHeight)
+      for (var i = 1; i <= totalPDFPages; i++) {
+        pdf.addPage([PDF_Width, PDF_Height]);
+        pdf.addImage(imgData, 'jpeg', top_left_margin, -(PDF_Height * i) + (top_left_margin * 4), canvas_image_width, canvas_image_height);
+      }
 
-      doc.save(file_name);
+      pdf.save(file_name);
+      this._changeDetectorRef.markForCheck();
     });
   }
   getMerchendiseTotalCost(item) {
@@ -208,4 +220,40 @@ export class CostAnalysisComponent implements OnInit {
 
     }
   }
+
+  getTotal(item) {
+    let imprintAddition = 0;
+    item.products.forEach((data: any) => {
+      imprintAddition = imprintAddition + (data.cost * data.quantity)
+    })
+
+    item.imprints.forEach((data: any) => {
+      imprintAddition = imprintAddition + data.setupCost
+    })
+
+    item.accessories.forEach((data: any) => {
+      imprintAddition = imprintAddition + (data?.runCost * data?.quantity)
+    })
+    return `$${imprintAddition}`
+  }
+  grandTotal: any = 0;
+  calculateGrandTotal() {
+    this.grandTotal = 0;
+    this.orderProducts.forEach((product: any) => {
+      product.products.forEach((data: any) => {
+        this.grandTotal = this.grandTotal + (data.cost * data.quantity)
+      })
+
+      product.imprints.forEach((data: any) => {
+        this.grandTotal = this.grandTotal + data.setupCost
+      })
+
+      product.accessories.forEach((data: any) => {
+        this.grandTotal = this.grandTotal + (data?.runCost * data?.quantity)
+      })
+    })
+    return this.grandTotal.toFixed(2);
+  }
+
+  
 }
