@@ -82,15 +82,7 @@ export class ReportAccountCodeComponent implements OnInit, OnDestroy {
     }
     this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["data"].length > 0) {
-        this.generateReportData = res["data"];
-        let total = this.generateReportData[0].GRAND_SALES;
-        let totalSales = this.generateReportData[0].GRAND_NUM_SALES;
-        this.initialData = res["data"];
-        // this.generateReportData.forEach(element => {
-        //   total = total + element.SALES;
-        //   totalSales = totalSales + element.NUM_SALES;
-        // });
-        this.totalDataCalculations = { total: total, totalSales: totalSales };
+        this.accountChargeCodeFormat(res["data"]);
       } else {
         this.generateReportData = null;
         this.initialData = null;
@@ -103,40 +95,73 @@ export class ReportAccountCodeComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
+  accountChargeCodeFormat(qryOrders) {
+    let GRAND_SALES = 0;
+    let GRAND_NUM_SALES = 0;
+    const strReport = { qryReturn: [] };
+
+    const findAndUpdate = (code, total, firstName, lastName, locationName, companyName) => {
+      for (let ii = 0; ii < strReport.qryReturn.length; ii++) {
+        if (strReport.qryReturn[ii].accountChargeCode === code) {
+          strReport.qryReturn[ii].Total += total;
+          strReport.qryReturn[ii].numOrders += 1;
+          GRAND_SALES += total;
+          GRAND_NUM_SALES += 1;
+          return true;
+        }
+      }
+      return false;
+    };
+
+    const processOrder = (code, total, firstName, lastName, locationName, companyName) => {
+      const customer = `${firstName} ${lastName}${locationName ? ` - ${locationName}` : companyName ? ` - ${companyName}` : ''}`;
+      const newOrder = {
+        accountChargeCode: code,
+        Customer: code === 'No Charge Code' ? '---' : customer,
+        Total: total,
+        numOrders: 1,
+      };
+
+      // Add the new order at the beginning of the array
+      strReport.qryReturn.unshift(newOrder);
+
+      GRAND_SALES += total;
+      GRAND_NUM_SALES += 1;
+      return true;
+    };
+
+    for (let i = 0; i < qryOrders.length; i++) {
+      const { purchaseOrderNum, accountChargeCode, total, firstName, lastName, locationName, companyName } = qryOrders[i];
+
+      let blnFound = false;
+
+      if (purchaseOrderNum && purchaseOrderNum.length) {
+        blnFound = findAndUpdate(purchaseOrderNum, total, firstName, lastName, locationName, companyName);
+        if (!blnFound) processOrder(purchaseOrderNum, total, firstName, lastName, locationName, companyName);
+      } else if (accountChargeCode && accountChargeCode.length) {
+        blnFound = findAndUpdate(accountChargeCode, total, firstName, lastName, locationName, companyName);
+        if (!blnFound) processOrder(accountChargeCode, total, firstName, lastName, locationName, companyName);
+      } else {
+        blnFound = findAndUpdate('No Charge Code', total, firstName, lastName, locationName, companyName);
+        if (!blnFound) processOrder('No Charge Code', total, firstName, lastName, locationName, companyName);
+      }
+    }
+
+    this.generateReportData = strReport.qryReturn;
+    this.initialData = strReport.qryReturn;
+    this.totalDataCalculations = { total: GRAND_SALES, totalSales: GRAND_NUM_SALES };
+  }
   sortData(event: Sort): void {
-    // const data = this.generateReportData.slice(); // Create a copy of the data array
-
-    // if (!sort.active || sort.direction === '') {
-    //   this.generateReportData = data;
-    //   return;
-    // }
-
-    // this.generateReportData = data.sort((a, b) => {
-    //   const isAsc = sort.direction === 'asc';
-    //   switch (sort.active) {
-    //     case 'SALES':
-    //       return this.compare(a.SALES, b.SALES, isAsc);
-    //     default:
-    //       return 0;
-    //   }
-    // });
-
-
     const sortHeaderId = event.active;
     const sortDirection = event.direction;
 
     if (sortDirection === '') {
-      // Reset sorting, use your initial data here
       this.generateReportData = [...this.initialData];
       return;
     }
-
-    // Perform sorting based on sortHeaderId and sortDirection
-    // For example, using Array.sort() method:
     this.generateReportData.sort((a, b) => {
       const valueA = a[sortHeaderId];
       const valueB = b[sortHeaderId];
-
       if (typeof valueA === 'number' && typeof valueB === 'number') {
         if (sortDirection === 'asc') {
           return valueA - valueB;
@@ -169,10 +194,10 @@ export class ReportAccountCodeComponent implements OnInit, OnDestroy {
 
     // Columns
     let columns = [
-      { header: "AccountChargeCode", key: "ACCOUNTCODE", width: 30 },
-      { header: "CUSTOMER", key: "CUSTOMER", width: 50 },
-      { header: "Total", key: "SALES", width: 40 },
-      { header: "Num_Orders", key: "NUM_SALES", width: 30 }
+      { header: "AccountChargeCode", key: "accountChargeCode", width: 30 },
+      { header: "CUSTOMER", key: "Customer", width: 50 },
+      { header: "Total", key: "Total", width: 40 },
+      { header: "Num_Orders", key: "numOrders", width: 30 }
     ]
     worksheet.columns = columns;
     for (const obj of this.generateReportData) {

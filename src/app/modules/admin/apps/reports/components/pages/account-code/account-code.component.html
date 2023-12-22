@@ -68,18 +68,18 @@
                 <table class="table table-striped" matSort (matSortChange)="sortData($event)">
                     <thead>
                         <tr>
-                            <th mat-sort-header="ACCOUNTCODE">ACCOUNT CODE</th>
-                            <th mat-sort-header="CUSTOMER">CUSTOMER</th>
-                            <th mat-sort-header="SALES">SALES</th>
-                            <th mat-sort-header="NUM_SALES">NUMBER OF SALES</th>
+                            <th mat-sort-header="accountChargeCode">ACCOUNT CODE</th>
+                            <th mat-sort-header="Customer">CUSTOMER</th>
+                            <th mat-sort-header="Total">SALES</th>
+                            <th mat-sort-header="numOrders">NUMBER OF SALES</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr *ngFor="let element of generateReportData;let i=index" [ngClass]="{'font-bold': i==0}">
-                            <td>{{element.ACCOUNTCODE}}</td>
-                            <td> {{element.CUSTOMER}}</td>
-                            <td>{{element.SALES | currency}}</td>
-                            <td>{{element.NUM_SALES}}</td>
+                            <td>{{element.accountChargeCode}}</td>
+                            <td> {{element.Customer}}</td>
+                            <td>{{element.Total | currency}}</td>
+                            <td>{{element.numOrders}}</td>
                         </tr>
                         <tr class="font-bold">
                             <td>Total</td>

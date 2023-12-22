@@ -200,13 +200,13 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
             res["data"].forEach((store) => {
               store.date_data = [];
               store.storeDetails.forEach(element => {
-                let date_check = moment(element.date).format('MMM,yyyy');
+                let date_check = moment(new Date(element.date)).format('MMM,yyyy');
                 if (store.date_data.length == 0) {
-                  store.date_data.push({ date: moment(element.date).format('MMM,yyyy'), data: [element] });
+                  store.date_data.push({ date: moment(new Date(element.date)).format('MMM,yyyy'), data: [element] });
                 } else {
                   const d_index = store.date_data.findIndex(date => date.date == date_check);
                   if (d_index < 0) {
-                    store.date_data.push({ date: moment(element.date).format('MMM,yyyy'), data: [element] });
+                    store.date_data.push({ date: moment(new Date(element.date)).format('MMM,yyyy'), data: [element] });
                   } else {
                     store.date_data[d_index].data.push(element);
                   }
@@ -268,7 +268,11 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
           }
           var p = Math.pow(10, 2);
           // this.storeTotals.MARGIN = parseFloat(((this.storeTotals.Price - this.storeTotals.COST) / this.storeTotals.Price * 100).toFixed(2));
-          this.storeTotals.MARGIN = Math.floor(((this.storeTotals.Price - this.storeTotals.COST) / this.storeTotals.Price) * 10000) / 100;
+          if (this.storeTotals?.Price) {
+            this.storeTotals.MARGIN = Math.round(((this.storeTotals?.Price - this.storeTotals?.COST) / this.storeTotals?.Price) * 10000) / 100;
+          } else {
+            this.storeTotals.MARGIN = 0.00;
+          }
           this.backtoTop();
         } else {
           this.generateReportData = null;
@@ -383,7 +387,7 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
             [
               { text: store.storeName, colSpan: 3, alignment: 'left', bold: true, margin: [0, 3, 0, 3], fontSize: 10 }, {}, {},
               { text: this.currencyPipe.transform(Number(store.SALES), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
-              { text: this.currencyPipe.transform(Number(store.tax), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
+              { text: this.currencyPipe.transform(Number(store.tax), 'USD', 'symbol', '1.2-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
               { text: store.MARGIN ? store.MARGIN?.toFixed(2) + '%' : '0.00%', bold: true, margin: [0, 3, 0, 3] },
               { text: '', margin: [0, 3, 0, 3] },
               { text: '', margin: [0, 3, 0, 3] }
@@ -404,7 +408,7 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
               }
               documentDefinition.content[4].table.body.push(
                 [
-                  moment(d.date).format('MM/DD/yyyy'),
+                  d.date,
                   { text: d.id, link: `${environment.siteDomain}apps/orders/${d.id}` },
                   d.company,
                   this.currencyPipe.transform(Number(d.sale), 'USD', 'symbol', '1.0-2', 'en-US'),
@@ -438,7 +442,7 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
           { text: 'Grand Total', bold: true },
           { text: this.currencyPipe.transform(Number(this.storeTotals.Sales), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
           { text: this.currencyPipe.transform(Number(this.storeTotals.PY), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
-          { text: `${(this.storeTotals?.percent)?.toFixed(2)}%`, color: this.storeTotals?.blnPercent ? 'green' : 'red', bold: true },
+          { text: `${(this.storeTotals?.percent)}%`, color: this.storeTotals?.blnPercent ? 'green' : 'red', bold: true },
           { text: this.currencyPipe.transform(Number(this.storeTotals.DIFF), 'USD', 'symbol', '1.0-2', 'en-US'), color: this.storeTotals?.DIFF >= 0 ? 'green' : 'red', bold: true },
           { text: this.storeTotals.NS, bold: true },
           { text: this.storeTotals.PYNS, bold: true },
@@ -476,7 +480,7 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
           [
             store.storeName,
             this.currencyPipe.transform(Number(store.SALES), 'USD', 'symbol', '1.0-2', 'en-US'),
-            this.currencyPipe.transform(Number(store.PY), 'USD', 'symbol', '1.0-2', 'en-US'),
+            this.currencyPipe.transform(Number(store.PY)?.toFixed(2), 'USD', 'symbol', '1.0-2', 'en-US'),
             { text: `${store.percent?.toFixed(2)}%`, color: store?.blnPercent ? 'green' : 'red' },
             { text: this.currencyPipe.transform(Number(store.DIFF), 'USD', 'symbol', '1.0-2', 'en-US'), color: store?.DIFF >= 0 ? 'green' : 'red' },
             store.NS,
@@ -491,7 +495,7 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
         [
           { text: 'Grand Total', bold: true },
           { text: this.currencyPipe.transform(Number(this.storeTotals.Sales), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
-          { text: this.currencyPipe.transform(Number(this.storeTotals.PY), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
+          { text: this.currencyPipe.transform(Number(this.storeTotals.PY)?.toFixed(2), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
           { text: `${(this.storeTotals?.percent)?.toFixed(2)}%`, color: this.storeTotals?.blnPercent ? 'green' : 'red', bold: true },
           { text: this.currencyPipe.transform(Number(this.storeTotals.DIFF), 'USD', 'symbol', '1.0-2', 'en-US'), color: this.storeTotals?.DIFF >= 0 ? 'green' : 'red', bold: true },
           { text: this.storeTotals.NS, bold: true },
