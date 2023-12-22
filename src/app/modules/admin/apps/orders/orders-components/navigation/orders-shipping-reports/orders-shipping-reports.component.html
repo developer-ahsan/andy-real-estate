@@ -17,7 +17,7 @@
                             </button>
                         </div>
                         <div class="col-12 text-center print:overflow-visible">
-                            <div class="inline-block  text-left print:p-0 w-full" id="htmltable" #htmltable>
+                            <div class="inline-block  text-left print:p-0 w-full px-6 py-5" id="htmltable" #htmltable>
 
                                 <!-- Shipping Report -->
                                 <div
@@ -105,7 +105,7 @@
                                                 </div>
                                                 <div class="col-span-12 text-md text-secondary">
                                                     Supplier Zip: {{orderDetail?.shippingZip}} → Customer Zip:
-                                                    {{orderDetail?.billingZip}}
+                                                    <span *ngIf="orderDetail?.blnShipToOneLocation">{{orderDetail?.blnShipToOneLocation}}</span> <span *ngIf="!orderDetail?.blnShipToOneLocation">SHIPPING TO MULTIPLE LOCATIONS</span>
                                                 </div>
                                                 <div class="col-span-12 text-md text-secondary">
                                                     Expected: 1 package X 25.00lbs/package = 25.00lbs
