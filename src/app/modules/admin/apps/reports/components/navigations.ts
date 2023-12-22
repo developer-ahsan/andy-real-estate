@@ -50,7 +50,7 @@ export const navigations = [
                 route: 'selectItemReport'
             },
             {
-                title: 'Royalties Report',
+                title: 'Royalties',
                 icon: 'mat_outline:edit_location_alt',
                 route: 'selectRoyalties'
             },

@@ -116,7 +116,6 @@ export class ReportsService {
         } else if (this.ngPlan == 'yearly') {
             var currentDate = moment();
             const currentYear = moment().year();
-            console.log(currentYear);
             let d = new Date(this.yearlyYear, 0, 1);
             this.startDate = moment(d).startOf('year').format('yyyy-MM-DD');
             this.endDate = moment(d).endOf('year').format('yyyy-MM-DD');
@@ -132,6 +131,12 @@ export class ReportsService {
             this.lastStartDate = moment(this.ngRangeStart).subtract(1, 'year').format('yyyy-MM-DD');
             this.lastEndDate = moment(this.ngRangeEnd).subtract(1, 'year').format('yyyy-MM-DD');
             this.reportType = 'Range Sales';
+        } else if (this.ngPlan == 'alltime') {
+            this.startDate = '1980-01-01';
+            this.endDate = '9999-12-31';
+            this.lastStartDate = '1980-01-01';
+            this.lastEndDate = '9999-12-31';
+            this.reportType = 'All Time';
         }
     }
     // -----------------------------------------------------------------------------------------------------

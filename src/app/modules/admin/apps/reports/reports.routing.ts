@@ -105,7 +105,7 @@ export const vendorsRoutes: Route[] = [
                 path: 'selectRoyalties',
                 component: RoyalitiesReportComponent,
                 data: {
-                    title: 'Royalties Report',
+                    title: 'Royalties',
                     url: 'selectRoyalties'
                 }
             },

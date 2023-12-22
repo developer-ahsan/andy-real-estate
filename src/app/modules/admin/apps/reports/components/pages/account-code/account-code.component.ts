@@ -25,9 +25,9 @@ export class ReportAccountCodeComponent implements OnInit, OnDestroy {
   totalData = 0;
   displayedColumns: string[] = ['code', 'customer', 'sales', 'n_sales'];
   // ReportDropdowns
-  reportType = 0;
+  reportType = 1;
   blnShowCancelled = 0;
-  paymentStatus = 1;
+  paymentStatus = 2;
   ngStore = 637;
 
   allStores = [];

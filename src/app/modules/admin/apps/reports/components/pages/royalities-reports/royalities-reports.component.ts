@@ -11,6 +11,8 @@ import moment from 'moment';
 import * as pdfMake from "pdfmake/build/pdfmake";
 import * as pdfFonts from "pdfmake/build/vfs_fonts";
 import { CurrencyPipe } from '@angular/common';
+import { Sort } from '@angular/material/sort';
+import { environment } from 'environments/environment';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 @Component({
@@ -19,6 +21,7 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
   styles: [".mat-paginator {border-radius: 16px !important}"]
 })
 export class RoyalitiesReportComponent implements OnInit, OnDestroy {
+  pageCheck = 'Royalties';
   @ViewChild('topScrollAnchor') topScroll: ElementRef;
 
   @ViewChild('paginator') paginator: MatPaginator;
@@ -52,19 +55,28 @@ export class RoyalitiesReportComponent implements OnInit, OnDestroy {
 
   isGenerateReportLoader: boolean;
   generateReportData: any;
+  initialData: any;
   reportPage = 1;
   totalSales = 0;
   totalRoyalities = 0;
   displayedColumns: string[] = ['order', 'payment', 'id', 'company', 'sale', 'royalty', 'paid', 'status'];
+  serverCurrentDate = '';
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _reportService: ReportsService, private currencyPipe: CurrencyPipe,
-  ) { }
+  ) {
+  }
 
   ngOnInit(): void {
     this.isLoading = true;
     this.getStores();
+    this.getCurrentDate();
   };
+  getCurrentDate() {
+    this._reportService.currentDate$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.serverCurrentDate = res["currentDate"];
+    })
+  }
   getStores() {
     let param = {
       royalty_stores: true
@@ -134,25 +146,26 @@ export class RoyalitiesReportComponent implements OnInit, OnDestroy {
         res["data"].forEach(element => {
           this.totalSales = element.grandTotalThisOrderTotal;
           this.totalRoyalities = element.grandTotalRoyalties;
-          if (moment(new Date()).diff(moment(element.paymentDate)) >= 0) {
+          if (moment(new Date()).diff(moment(new Date(element.paymentDate))) >= 0) {
             element.paid = true;
           } else {
             element.paid = false;
           }
-          let status = '5';
-          let orderLinesStatus = element.orderLinesStatus.split('|');
-          orderLinesStatus.forEach(_status => {
-            if (_status == 1 || _status == 2 || _status == 3 || _status == 4) {
-              status = '7';
-            } else if (_status == 7) {
-              status = '1';
-            } else {
-              status = '5';
-            }
-          });
-          element.status = this._reportService.getStatusValue(status);
+          // if (data[10] == 1) {
+          //   element.statusColor = 'text-red-500';
+          //   element.statusValue = 'Cancelled';
+          //   element.textColor = 'red';
+          // } else if (data[9] == 1) {
+          //   element.statusColor = 'text-red-500';
+          //   element.statusValue = 'Closed';
+          //   element.textColor = 'red';
+          // } else {
+          //   element.status = this._reportService.getStatusValue(data[8]);
+          // }
+          element.status = this._reportService.getStatusValue(element.orderLinesStatus);
         });
         this.generateReportData = res["data"];
+        this.initialData = res["data"];
         this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
       } else {
         this.generateReportData = null;
@@ -163,6 +176,32 @@ export class RoyalitiesReportComponent implements OnInit, OnDestroy {
     }, err => {
       this.isGenerateReportLoader = false;
       this._changeDetectorRef.markForCheck();
+    });
+  }
+  sortData(event: Sort): void {
+    const sortHeaderId = event.active;
+    const sortDirection = event.direction;
+
+    if (sortDirection === '') {
+      this.generateReportData = [...this.initialData];
+      return;
+    }
+    this.generateReportData.sort((a, b) => {
+      const valueA = a[sortHeaderId];
+      const valueB = b[sortHeaderId];
+      if (typeof valueA === 'number' && typeof valueB === 'number') {
+        if (sortDirection === 'asc') {
+          return valueA - valueB;
+        } else {
+          return valueB - valueA;
+        }
+      } else {
+        if (sortDirection === 'asc') {
+          return new Date(valueA).getTime() - new Date(valueB).getTime();
+        } else {
+          return new Date(valueB).getTime() - new Date(valueA).getTime();
+        }
+      }
     });
   }
   backToList() {
@@ -208,14 +247,14 @@ export class RoyalitiesReportComponent implements OnInit, OnDestroy {
     this.generateReportData.forEach(element => {
       documentDefinition.content[3].table.body.push(
         [
-          moment(element.orderDate).format('MM-DD-yyyy'),
-          moment(element.paymentDate).format('MM-DD-yyyy'),
-          element.pk_orderID,
+          element.orderDate,
+          element.paymentDate,
+          { text: element.pk_orderID, link: `${environment.siteDomain}apps/orders/'${element.pk_orderID}` },
           element.companyName,
-          { text: this.currencyPipe.transform(Number(element.thisOrderTotal), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
-          { text: this.currencyPipe.transform(Number(element.Royalties), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
-          element.paid ? 'Paid' : 'Not Paid',
-          element.status.statusValue
+          { text: this.currencyPipe.transform(Number(element.thisOrderTotal), 'USD', 'symbol', '1.2-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
+          { text: this.currencyPipe.transform(Number(element.Royalties), 'USD', 'symbol', '1.2-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
+          { text: element.paid ? 'Paid' : 'Not Paid', color: element.paid ? 'green' : 'red', bold: true },
+          { text: element.status.statusValue, color: element.status.statusTextColor, bold: true }
         ]
       )
     });

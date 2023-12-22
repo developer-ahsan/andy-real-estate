@@ -100,12 +100,16 @@ export class ReportFiltersComponent implements OnInit, OnDestroy {
   fileDownloadLoader: boolean;
 
   serverCurrentDate = '';
+  @Input() pageCheckData: any;
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     public _reportsService: ReportsService
-  ) { }
+  ) {
+  }
 
   initForm() {
+
     for (let index = 0; index < 17; index++) {
       this.years.push(this.currentYear - index);
     }
@@ -141,6 +145,16 @@ export class ReportFiltersComponent implements OnInit, OnDestroy {
         price: '40'
       }
     ];
+    if (this.pageCheckData == 'Royalties') {
+      this.plans.push(
+        {
+          value: 'alltime',
+          label: 'All Time',
+          details: 'Generate all time report.',
+          price: '40'
+        }
+      );
+    }
     this._reportsService.WeekDate = new Date(this.serverCurrentDate);
     this._reportsService.monthlyMonth = moment().month() + 1;
     this._reportsService.monthlyYear = new Date().getFullYear();

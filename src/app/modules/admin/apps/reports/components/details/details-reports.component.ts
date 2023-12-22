@@ -32,6 +32,7 @@ export class ReportsDetailsComponent implements OnInit, OnDestroy {
   searchSupplierCtrl = new FormControl();
   selectedSupplier: any;
   isSearchingSupplier = false;
+  serverCurrentDate = '';
   /**
    * Constructor
    */
@@ -54,6 +55,7 @@ export class ReportsDetailsComponent implements OnInit, OnDestroy {
    */
 
   ngOnInit(): void {
+    this.getCurrentDate();
     this.routesInitialization();
     this._router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
@@ -66,6 +68,11 @@ export class ReportsDetailsComponent implements OnInit, OnDestroy {
 
     this.isLoading = false;
     this.sideDrawer();
+  }
+  getCurrentDate() {
+    this._ReportsService.currentDate$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.serverCurrentDate = res["currentDate"];
+    })
   }
   onSelected(ev) {
     this.selectedSupplier = ev.option.value;

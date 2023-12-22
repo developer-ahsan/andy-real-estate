@@ -67,8 +67,11 @@
                         <mat-icon class="subnav-menu-icon ml-1" svgIcon="heroicons_outline:menu"
                             (click)="toggleDrawer()">
                         </mat-icon>
-                        <div class="text-2xl font-bold">
-                            {{selectedScreeen}}
+                        <div class="flex justify-between w-full align-items-center">
+                            <span class="text-2xl font-bold">{{selectedScreeen}}</span>
+                            <div>
+                                <b>Today:</b> {{serverCurrentDate}}
+                            </div>
                         </div>
                     </div>
                     <router-outlet *ngIf="selectedScreeen != 'Website'"></router-outlet>

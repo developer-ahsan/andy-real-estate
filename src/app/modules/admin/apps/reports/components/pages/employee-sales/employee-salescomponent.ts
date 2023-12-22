@@ -197,9 +197,12 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
                 });
               }
             });
+            let orderCount = 0;
             res["data"].forEach((store) => {
               store.date_data = [];
               store.storeDetails.forEach(element => {
+                orderCount += 1;
+                element.orderCount = orderCount;
                 let date_check = moment(new Date(element.date)).format('MMM,yyyy');
                 if (store.date_data.length == 0) {
                   store.date_data.push({ date: moment(new Date(element.date)).format('MMM,yyyy'), data: [element] });
@@ -386,7 +389,7 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
           documentDefinition.content[4].table.body.push(
             [
               { text: store.storeName, colSpan: 3, alignment: 'left', bold: true, margin: [0, 3, 0, 3], fontSize: 10 }, {}, {},
-              { text: this.currencyPipe.transform(Number(store.SALES), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
+              { text: this.currencyPipe.transform(Number(store.SALES), 'USD', 'symbol', '1.2-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
               { text: this.currencyPipe.transform(Number(store.tax), 'USD', 'symbol', '1.2-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
               { text: store.MARGIN ? store.MARGIN?.toFixed(2) + '%' : '0.00%', bold: true, margin: [0, 3, 0, 3] },
               { text: '', margin: [0, 3, 0, 3] },
@@ -395,7 +398,7 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
           )
           // date data
 
-          store.date_data.forEach(dateData => {
+          store.date_data.forEach((dateData, key) => {
             documentDefinition.content[4].table.body.push(
               [
                 { text: dateData.date, fontSize: 10, colSpan: 8, alignment: 'center', bold: true, margin: [0, 3, 0, 3] }, {}, {}, {}, {}, {}, {}, {}
@@ -408,11 +411,11 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
               }
               documentDefinition.content[4].table.body.push(
                 [
-                  d.date,
+                  { text: d.orderCount + '. ' + d.date },
                   { text: d.id, link: `${environment.siteDomain}apps/orders/${d.id}` },
                   d.company,
-                  this.currencyPipe.transform(Number(d.sale), 'USD', 'symbol', '1.0-2', 'en-US'),
-                  this.currencyPipe.transform(Number(d.tax), 'USD', 'symbol', '1.0-2', 'en-US'),
+                  this.currencyPipe.transform(Number(d.sale), 'USD', 'symbol', '1.2-2', 'en-US'),
+                  this.currencyPipe.transform(Number(d.tax), 'USD', 'symbol', '1.2-2', 'en-US'),
                   d.margin ? d.margin + '%' : '0.00%',
                   paid,
                   { text: d.status, color: d.statusTextColor, bold: true }
@@ -425,14 +428,14 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
         documentDefinition.content[8].table.body.push(
           [
             store.storeName,
-            this.currencyPipe.transform(Number(store.SALES), 'USD', 'symbol', '1.0-2', 'en-US'),
-            this.currencyPipe.transform(Number(store.PY), 'USD', 'symbol', '1.0-2', 'en-US'),
+            this.currencyPipe.transform(Number(store.SALES), 'USD', 'symbol', '1.2-2', 'en-US'),
+            this.currencyPipe.transform(Number(store.PY), 'USD', 'symbol', '1.2-2', 'en-US'),
             { text: `${store.percent?.toFixed(2)}%`, color: store?.blnPercent ? 'green' : 'red' },
-            { text: this.currencyPipe.transform(Number(store.DIFF), 'USD', 'symbol', '1.0-2', 'en-US'), color: store?.DIFF >= 0 ? 'green' : 'red' },
+            { text: this.currencyPipe.transform(Number(store.DIFF), 'USD', 'symbol', '1.2-2', 'en-US'), color: store?.DIFF >= 0 ? 'green' : 'red' },
             store.NS,
             store.PYNS,
             store.NS_DIFF,
-            this.currencyPipe.transform(Number(store.AVG), 'USD', 'symbol', '1.0-2', 'en-US'),
+            this.currencyPipe.transform(Number(store.AVG), 'USD', 'symbol', '1.2-2', 'en-US'),
             store.MARGIN ? `${store.MARGIN?.toFixed(2)}%` : '0.00%'
           ]
         )
@@ -440,14 +443,14 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
       documentDefinition.content[8].table.body.push(
         [
           { text: 'Grand Total', bold: true },
-          { text: this.currencyPipe.transform(Number(this.storeTotals.Sales), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
-          { text: this.currencyPipe.transform(Number(this.storeTotals.PY), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
+          { text: this.currencyPipe.transform(Number(this.storeTotals.Sales), 'USD', 'symbol', '1.2-2', 'en-US'), bold: true },
+          { text: this.currencyPipe.transform(Number(this.storeTotals.PY), 'USD', 'symbol', '1.2-2', 'en-US'), bold: true },
           { text: `${(this.storeTotals?.percent)}%`, color: this.storeTotals?.blnPercent ? 'green' : 'red', bold: true },
-          { text: this.currencyPipe.transform(Number(this.storeTotals.DIFF), 'USD', 'symbol', '1.0-2', 'en-US'), color: this.storeTotals?.DIFF >= 0 ? 'green' : 'red', bold: true },
+          { text: this.currencyPipe.transform(Number(this.storeTotals.DIFF), 'USD', 'symbol', '1.2-2', 'en-US'), color: this.storeTotals?.DIFF >= 0 ? 'green' : 'red', bold: true },
           { text: this.storeTotals.NS, bold: true },
           { text: this.storeTotals.PYNS, bold: true },
           { text: '', bold: true },
-          { text: this.currencyPipe.transform(Number((this.storeTotals?.Sales / this.storeTotals?.NS)), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
+          { text: this.currencyPipe.transform(Number((this.storeTotals?.Sales / this.storeTotals?.NS)), 'USD', 'symbol', '1.2-2', 'en-US'), bold: true },
           { text: `${this.storeTotals?.MARGIN?.toFixed(2)}%`, bold: true }
         ]
       )
@@ -479,14 +482,14 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
         documentDefinition.content[5].table.body.push(
           [
             store.storeName,
-            this.currencyPipe.transform(Number(store.SALES), 'USD', 'symbol', '1.0-2', 'en-US'),
-            this.currencyPipe.transform(Number(store.PY)?.toFixed(2), 'USD', 'symbol', '1.0-2', 'en-US'),
+            this.currencyPipe.transform(Number(store.SALES), 'USD', 'symbol', '1.2-2', 'en-US'),
+            this.currencyPipe.transform(Number(store.PY)?.toFixed(2), 'USD', 'symbol', '1.2-2', 'en-US'),
             { text: `${store.percent?.toFixed(2)}%`, color: store?.blnPercent ? 'green' : 'red' },
-            { text: this.currencyPipe.transform(Number(store.DIFF), 'USD', 'symbol', '1.0-2', 'en-US'), color: store?.DIFF >= 0 ? 'green' : 'red' },
+            { text: this.currencyPipe.transform(Number(store.DIFF), 'USD', 'symbol', '1.2-2', 'en-US'), color: store?.DIFF >= 0 ? 'green' : 'red' },
             store.NS,
             store.PYNS,
             store.NS_DIFF,
-            this.currencyPipe.transform(Number(store.AVG), 'USD', 'symbol', '1.0-2', 'en-US'),
+            this.currencyPipe.transform(Number(store.AVG), 'USD', 'symbol', '1.2-2', 'en-US'),
             store.MARGIN ? `${store.MARGIN?.toFixed(2)}%` : '0.00%'
           ]
         )
@@ -494,14 +497,14 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
       documentDefinition.content[5].table.body.push(
         [
           { text: 'Grand Total', bold: true },
-          { text: this.currencyPipe.transform(Number(this.storeTotals.Sales), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
-          { text: this.currencyPipe.transform(Number(this.storeTotals.PY)?.toFixed(2), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
+          { text: this.currencyPipe.transform(Number(this.storeTotals.Sales), 'USD', 'symbol', '1.2-2', 'en-US'), bold: true },
+          { text: this.currencyPipe.transform(Number(this.storeTotals.PY)?.toFixed(2), 'USD', 'symbol', '1.2-2', 'en-US'), bold: true },
           { text: `${(this.storeTotals?.percent)?.toFixed(2)}%`, color: this.storeTotals?.blnPercent ? 'green' : 'red', bold: true },
-          { text: this.currencyPipe.transform(Number(this.storeTotals.DIFF), 'USD', 'symbol', '1.0-2', 'en-US'), color: this.storeTotals?.DIFF >= 0 ? 'green' : 'red', bold: true },
+          { text: this.currencyPipe.transform(Number(this.storeTotals.DIFF), 'USD', 'symbol', '1.2-2', 'en-US'), color: this.storeTotals?.DIFF >= 0 ? 'green' : 'red', bold: true },
           { text: this.storeTotals.NS, bold: true },
           { text: this.storeTotals.PYNS, bold: true },
           { text: '', bold: true },
-          { text: this.currencyPipe.transform(Number((this.storeTotals?.Sales / this.storeTotals?.NS)), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
+          { text: this.currencyPipe.transform(Number((this.storeTotals?.Sales / this.storeTotals?.NS)), 'USD', 'symbol', '1.2-2', 'en-US'), bold: true },
           { text: this.storeTotals?.MARGIN ? `${this.storeTotals?.MARGIN?.toFixed(2)}%` : '0.00%', bold: true }
         ]
       )

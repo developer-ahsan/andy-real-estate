@@ -75,7 +75,8 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let element of generateReportData;let i=index" [ngClass]="{'font-bold': i==0}">
+                        <tr *ngFor="let element of generateReportData;let i=index"
+                            [ngClass]="{'font-bold': element.accountChargeCode=='No Charge Code'}">
                             <td>{{element.accountChargeCode}}</td>
                             <td> {{element.Customer}}</td>
                             <td>{{element.Total | currency}}</td>

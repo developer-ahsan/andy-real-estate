@@ -102,12 +102,12 @@
                                             <td></td>
                                             <td></td>
                                         </tr>
-                                        <ng-container *ngFor="let dateData of item.date_data;let i=index">
+                                        <ng-container *ngFor="let dateData of item.date_data;">
                                             <tr class="text-center">
                                                 <td colspan="8" class="font-bold">{{dateData.date}}</td>
                                             </tr>
-                                            <tr *ngFor="let data of dateData.data">
-                                                <td>{{i + 1}}. {{data.date}}</td>
+                                            <tr *ngFor="let data of dateData.data;let i=index">
+                                                <td>{{data.orderCount}}. {{data.date}}</td>
                                                 <td><a [routerLink]="['/apps/orders',data.id]"
                                                         target="_blank">{{data.id}}</a> </td>
                                                 <td>{{data.company}}<span *ngIf="data.location != 'NULL'">
