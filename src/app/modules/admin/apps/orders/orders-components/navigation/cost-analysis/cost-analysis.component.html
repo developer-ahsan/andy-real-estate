@@ -3,444 +3,575 @@
     </ngx-skeleton-loader>
     <div class="row" *ngIf="!isLoading" cdkScrollable>
         <div class="col-12 my-2">
-            <div class="rounded-2xl shadow bg-card justify-between flex flex-col lg:flex-row w-full px-7">
-
-                <!-- <div class="my-5 rounded-2xl shadow bg-card p-5">
+            <div class="rounded-2xl justify-between flex flex-col ">
+                <button (click)="exportHtmlToPDF('projected')" mat-stroked-button class="w-20">
+                    <span class="test-sm">PDF</span>
+                </button>
+                <div id="projected" class="my-5 rounded-2xl shadow bg-card p-5">
 
                     <div class="mb-3 font-bold">
                         Projected cost Analysis
                     </div>
 
                     <div class="mb-3 font-bold border-b">
-                        CONFIDENTIAL COST ANALYSIS REPORT - PROJECTED #84806
+                        CONFIDENTIAL COST ANALYSIS REPORT - PROJECTED #{{orderDetail.pk_orderID}}
                     </div>
                     <div class="mt-3">
                         <div *ngFor="let item of orderProducts">
                             <mat-accordion>
-                                <mat-expansion-panel>
-                                    <mat-expansion-panel-header>
+                                <mat-expansion-panel class=" my-5">
+                                    <mat-expansion-panel-header class="my-10">
                                         <mat-panel-title>
-                                            This is the expansion title
-                                        </mat-panel-title>
-                                        <mat-panel-description>
-                                            This is a summary of the content
-                                        </mat-panel-description>
-                                    </mat-expansion-panel-header>
-                                    <p>This is the primary content of the panel.</p>
-                                </mat-expansion-panel>
-                            </mat-accordion>
-                        </div>
-                    </div>
-                </div> -->
-
-
-
-
-
-
-                <!-- <div class="my-5 rounded-2xl shadow bg-card p-5">
-                    <mat-accordion>
-                        <mat-expansion-panel hideToggle>
-                            <mat-expansion-panel-header>
-                                <mat-panel-title>
-                                    This is the expansion title
-                                </mat-panel-title>
-                                <mat-panel-description>
-                                    This is a summary of the content
-                                </mat-panel-description>
-                            </mat-expansion-panel-header>
-                            <p>This is the primary content of the panel.</p>
-                        </mat-expansion-panel>
-                        <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false">
-                            <mat-expansion-panel-header>
-                                <mat-panel-title>
-                                    Self aware panel
-                                </mat-panel-title>
-                                <mat-panel-description>
-                                    Currently I am {{panelOpenState ? 'open' : 'closed'}}
-                                </mat-panel-description>
-                            </mat-expansion-panel-header>
-                            <p>I'm visible because I am open</p>
-                        </mat-expansion-panel>
-                    </mat-accordion>
-                </div> -->
-
-
-
-                <div class="p-6 sm:p-8 lg:p-10 w-full">
-                    <div class="text-2xl font-bold ">
-                        Cost Analysis
-                    </div>
-                    <div class="row mt-1 w-full">
-                        <div class="col-12 mb-3">
-                            <button class="float-right mr-3" mat-stroked-button [matTooltip]="'Save report as PDF'"
-                                (click)="exportHtmlToPDF()">
-                                <mat-icon svgIcon="mat_outline:picture_as_pdf"></mat-icon>
-                                <span class="ml-2 mr-1">PDF</span>
-                            </button>
-                        </div>
-                        <div class="col-12 text-center print:overflow-visible" cdkScrollable>
-                            <div class="inline-block  text-left print:p-0 w-full px-5" id="htmltable" #htmltable>
-
-                                <!-- Invoice -->
-                                <div
-                                    class="print:w-auto print:p-0 print:rounded-none print:shadow-none print:bg-transparent">
-
-                                    <div class="flex items-start">
-                                        <div class="grid grid-rows-1 mt-2">
-                                            <div class="grid auto-cols-max grid-flow-col gap-x-2">
-                                                <div class="w-100 text-left text-2xl text-secondary">
-                                                    Confidential Cost Analysis Report
+                                            <div class="flex flex-col gap-y-1 py-2">
+                                                <div class="font-bold">
+                                                    ({{item.products[0]?.pk_productID}})
+                                                    {{item.products[0]?.productNumber}}:
+                                                    {{item.products[0]?.productName}}
                                                 </div>
-                                            </div>
-                                        </div>
-                                        <div class="grid grid-cols-2 gap-x-4 gap-y-1 ml-auto ">
-                                            <div
-                                                class="justify-self-start font-semibold text-secondary text-3xl tracking-tight">
-                                                Order
-                                            </div>
-                                            <div class="justify-self-start text-3xl font-semibold">
-                                                #{{orderDetail.pk_orderID}}</div>
-                                            <div class="justify-self-start font-medium tracking-tight text-secondary">
-                                                ORDER
-                                                DATE</div>
-                                            <div class="font-medium">{{orderDetail?.orderDate ||
-                                                not_available}}</div>
-                                            <div class="justify-self-start font-medium tracking-tight text-secondary">
-                                                Payment Date
-                                            </div>
-                                            <div class="font-medium">{{(orderDetail?.paymentDate | date:'medium') ||
-                                                not_available}}</div>
-                                            <div class="justify-self-start font-medium tracking-tight text-secondary">
-                                                Purchase Order</div>
-                                            <div class="font-medium">{{orderDetail?.purchaseOrderNum ||
-                                                not_available}}</div>
-                                        </div>
-                                    </div>
-
-                                    <div class="grid grid-cols-12 gap-x-1 mt-8" *ngIf="orderProducts?.length > 0">
-                                        <div class="col-span-12 border-b" *ngFor="let item of orderProducts">
-                                            <div class="row ">
-                                                <div class="col-9">
-                                                    <p class="font-bold text-medium">
-                                                        ({{item.products[0]?.pk_productID}})
-                                                        {{item.products[0]?.productNumber}}:
-                                                        {{item.products[0]?.productName}}
-                                                    </p>
-                                                    <p class="font-medium text-secondary text-md py-2">QUANTITY:
-                                                        {{item.totalQuantity}}</p>
+                                                <div>
+                                                    Quantity: {{item?.totalQuantity}}
                                                 </div>
-                                            </div>
-                                            <div class="grid grid-cols-12 gap-x-1 mt-1">
-                                                <div class="col-span-5 font-medium text-md text-secondary">DETAILS</div>
-                                                <div class="font-medium text-md text-center text-secondary">QTY</div>
-                                                <div class="font-medium col-span-2  text-md text-center text-secondary">
-                                                    <p>COST</p>
-                                                    <!-- <p>unit*qty</p> -->
-                                                </div>
-                                                <div class="font-medium col-span-2 text-md text-center text-secondary">
-                                                    <p>PRICE</p>
-                                                    <!-- <p>price*qty</p> -->
-                                                </div>
-                                                <div class="font-medium col-span-1 text-md text-center text-secondary">
-                                                    $
-                                                </div>
-                                                <div class="font-medium col-span-1 text-md text-center text-secondary">
-                                                    Margin %
-                                                </div>
-
-                                                <!-- Divider -->
-                                                <div class="col-span-12 my-3 border-b"></div>
-                                                <div class="col-span-6 font-medium font-bold text-md">
-                                                    <p>COLOR/SIZE BREAKDOWN</p>
-                                                </div>
-                                                <div class="font-medium col-span-1  text-md text-center text-secondary">
-                                                    <p>Unit</p>
-                                                </div>
-                                                <div class="font-medium col-span-1  text-md text-center text-secondary">
-                                                    <p>Total</p>
-                                                </div>
-                                                <div class="font-medium col-span-1  text-md text-center text-secondary">
-                                                    <p>Price</p>
-                                                </div>
-                                                <div class="font-medium col-span-1  text-md text-center text-secondary">
-                                                    <p>Total</p>
-                                                </div>
-                                                <!-- Colors -->
-                                                <div class="col-span-12 my-2" *ngFor="let colors of item.products">
-                                                    <div class="grid grid-cols-12">
-                                                        <div class="col-span-5 font-medium text-md text-secondary">
-                                                            <p>{{colors.colorName}} <span *ngIf="colors.sizeName"> &
-                                                                    {{colors.sizeName}}</span></p>
-                                                        </div>
-                                                        <div class="font-medium text-md  text-center text-secondary">
-                                                            {{colors.quantity}}</div>
-                                                        <div
-                                                            class="col-span-1 text-center font-medium text-md text-secondary">
-                                                            <p>{{colors.cost}}</p>
-                                                        </div>
-                                                        <div
-                                                            class="col-span-1 text-center font-medium text-md  text-secondary">
-                                                            {{(colors.cost * colors.quantity).toFixed(2) }}
-                                                        </div>
-                                                        <div
-                                                            class="col-span-1 text-center font-medium text-md text-secondary">
-                                                            <p>{{colors.price}}</p>
-                                                        </div>
-                                                        <div
-                                                            class="col-span-1 text-center font-medium text-md  text-secondary">
-                                                            {{(colors.price * colors.quantity).toFixed(2) }}
-                                                        </div>
-                                                        <div
-                                                            class="text-center font-medium col-span-1 text-md text-secondary">
-                                                            <p>{{((colors.price * colors.quantity) - (colors.cost *
-                                                                colors.quantity)).toFixed(2) }}</p>
-                                                        </div>
-                                                        <div
-                                                            class="text-center font-medium col-span-1 text-md text-secondary">
-                                                            <p>{{(( 1 - (colors.cost/colors.price))*100).toFixed(2)}} %
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <!-- Imprints -->
-                                                <div class="mt-2 col-span-12 font-medium font-bold text-md">
-                                                    <p>IMPRINTS</p>
-                                                </div>
-                                                <div class="col-span-12 my-2" *ngFor="let imprint of item.imprints">
-                                                    <div class="grid grid-cols-12">
-
-                                                        <div class="col-span-5 font-medium text-md text-secondary">
-                                                            <p>{{imprint?.locationName}} | {{imprint?.methodName}} |
-                                                                Processes: {{imprint?.processQuantity}}</p>
-                                                        </div>
-                                                        <div class="font-medium text-md  text-center text-secondary">
-                                                            {{imprint?.quantity}}
-                                                        </div>
-                                                        <div
-                                                            class=" col-span-1 text-center font-medium text-md  text-secondary">
-                                                            {{(imprint?.runCost)}}
-                                                        </div>
-                                                        <div
-                                                            class=" col-span-1 text-center font-medium text-md  text-secondary">
-                                                            {{(imprint?.runCost * imprint?.quantity).toFixed(2)}}
-                                                        </div>
-                                                        <div
-                                                            class=" col-span-1 text-center font-medium text-md  text-secondary">
-                                                            {{(imprint?.runPrice)}}
-                                                        </div>
-                                                        <div
-                                                            class=" col-span-1 text-center font-medium text-md  text-secondary">
-                                                            {{(imprint?.runPrice *
-                                                            imprint?.quantity).toFixed(2)}}
-                                                        </div>
-                                                        <div
-                                                            class=" col-span-1 text-center font-medium text-md  text-secondary">
-                                                            {{(imprint?.runPrice - imprint?.runCost).toFixed(2)}}
-                                                        </div>
-                                                        <div
-                                                            class="text-center font-medium col-span-1 text-md text-secondary">
-                                                            <p>{{getPercentage(imprint,'imprints').toFixed(2)}} %</p>
-                                                        </div>
-                                                        <!-- Setups -->
-                                                        <div
-                                                            class="mt-2 col-span-5 font-medium text-right text-md text-secondary">
-                                                            <p>Setup(s)</p>
-                                                        </div>
-                                                        <div class="font-medium text-md  text-center text-secondary">
-                                                        </div>
-                                                        <div
-                                                            class="mt-2 col-span-1 text-center font-medium text-md  text-secondary">
-                                                        </div>
-                                                        <div
-                                                            class="mt-2 col-span-1 text-center font-medium text-md  text-secondary">
-                                                            {{(imprint?.setupCost)}}
-                                                        </div>
-                                                        <div
-                                                            class="mt-2 text-center font-medium col-span-1 text-md text-secondary">
-
-                                                        </div>
-                                                        <div
-                                                            class="mt-2 col-span-1 text-center font-medium text-md  text-secondary">
-                                                            {{(imprint?.setupPrice)}}
-                                                        </div>
-                                                        <div
-                                                            class="mt-2 col-span-1 text-center font-medium text-md  text-secondary">
-                                                            {{(imprint?.setupPrice - imprint?.setupCost).toFixed(2)}}
-                                                        </div>
-                                                        <div
-                                                            class="mt-2 text-center font-medium col-span-1 text-md text-secondary">
-                                                            <p>{{getPercentage(imprint,'setup').toFixed(2)}} %
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <!-- ACCESSORIES -->
-                                                <div class="mt-2 col-span-12 font-medium font-bold text-md ">
-                                                    <p>ACCESSORIES</p>
-                                                </div>
-                                                <div class="col-span-12 my-2" *ngFor="let access of item.accessories">
-                                                    <div class="grid grid-cols-12">
-                                                        <div class=" col-span-5 font-medium text-md text-secondary">
-                                                            <p>{{access.packagingName}}</p>
-                                                        </div>
-                                                        <div class=" font-medium text-md  text-center text-secondary">
-                                                            {{access.quantity}}</div>
-                                                        <div
-                                                            class="font-medium text-md text-secondary col-span-1 text-center">
-                                                            {{access?.runCost}}</div>
-                                                        <div
-                                                            class="font-medium text-md text-secondary col-span-1 text-center">
-                                                            {{(access?.runCost * access.quantity).toFixed(2)}}</div>
-                                                        <!-- <div class="col-span-1"></div> -->
-                                                        <div
-                                                            class="font-medium text-md text-secondary col-span-1 text-center">
-                                                            {{access?.runPrice}}</div>
-                                                        <div
-                                                            class="font-medium text-md text-secondary col-span-1 text-center">
-                                                            {{(access?.runPrice * access.quantity).toFixed(2)}}</div>
-                                                        <div
-                                                            class="col-span-1 font-medium text-md text-secondary text-center">
-                                                            {{(access?.runPrice -
-                                                            access?.runCost).toFixed(2)}}</div>
-                                                        <div
-                                                            class=" col-span-1 text-center font-medium text-md text-secondary">
-                                                            {{((1- (access?.runCost/access?.runPrice))*100).toFixed(2)}}
-                                                            %
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <!-- SHIPPING & HANDLING     -->
-                                                <div class="mt-2 col-span-5 font-medium font-bold text-md mb-4">
-                                                    <p>SHIPPING & HANDLING</p>
-                                                </div>
-                                                <div class="font-medium text-md  text-center text-secondary"></div>
-                                                <div class="col-span-1"></div>
-                                                <div
-                                                    class="mt-2 col-span-1 text-secondary text-center font-medium text-md">
-                                                    {{item.products[0]?.shippingCost}}</div>
-                                                <div class="col-span-1"></div>
-                                                <div
-                                                    class="mt-2 col-span-1 text-secondary text-center font-medium text-md">
-                                                    {{item.products[0]?.shippingPrice}}</div>
-                                                <div
-                                                    class="mt-2 col-span-1 text-secondary text-center font-medium text-md">
-                                                    {{(item.products[0]?.shippingPrice -
-                                                    item.products[0]?.shippingCost).toFixed(2)}}
-                                                </div>
-                                                <div
-                                                    class="mt-2 col-span-1 text-secondary text-center font-medium text-md">
-                                                    {{getPercentage(item, 'shipping').toFixed(2)}} %
-                                                </div>
-
-                                                <!-- Mechandise Subtotal -->
-                                                <div class="mt-2 col-span-5 font-bold font-medium text-md  mb-4">
-                                                    <p>Merchandise SubTotal</p>
-                                                </div>
-                                                <div class="font-medium text-md  text-center text-secondary"></div>
-                                                <div class="col-span-1"></div>
-                                                <div class="mt-2 col-span-1 text-center font-medium text-md  font-bold">
-                                                    {{item.totalMercandiseCost.toFixed(2) | currency}}
-                                                    <!-- {{((item.imprints?.runCost * item.product?.quantity) +
-                                                    (item.product?.cost * item.product?.quantity) +
-                                                    (item.imprints?.setupCost) +(item.product?.shippingCost) ) | currency}} -->
-                                                </div>
-                                                <div class="col-span-1"></div>
-                                                <div class="mt-2 text-center font-medium col-span-1 text-md font-bold">
+                                                <div>
                                                     {{item.totalMerchendisePrice.toFixed(2) | currency}}
                                                 </div>
-                                                <div class="mt-2 text-center font-medium col-span-1 text-md font-bold">
-                                                    {{(item.totalMerchendisePrice - item.totalMercandiseCost).toFixed(2)
-                                                    |
-                                                    currency}}
+                                            </div>
+                                        </mat-panel-title>
+                                        <!-- <mat-panel-description>
+                                            This is a summary of the content
+
+                                        </mat-panel-description> -->
+                                    </mat-expansion-panel-header>
+                                    <div class="grid grid-cols-12 gap-x-1 my-5">
+                                        <div class="col-span-5 font-medium text-md text-secondary">DETAILS</div>
+                                        <div class="font-medium text-md text-center text-secondary">QTY</div>
+                                        <div class="font-medium col-span-2  text-md text-center text-secondary">
+                                            <p>COST</p>
+                                            <!-- <p>unit*qty</p> -->
+                                        </div>
+                                        <div class="font-medium col-span-2 text-md text-center text-secondary">
+                                            <p>PRICE</p>
+                                            <!-- <p>price*qty</p> -->
+                                        </div>
+                                        <div class="font-medium col-span-1 text-md text-center text-secondary">
+                                            $
+                                        </div>
+                                        <div class="font-medium col-span-1 text-md text-center text-secondary">
+                                            Margin %
+                                        </div>
+
+                                        <!-- Divider -->
+                                        <div class="col-span-12 my-3 border-b"></div>
+                                        <div class="col-span-6 font-medium font-bold text-md">
+                                            <p>COLOR/SIZE BREAKDOWN</p>
+                                        </div>
+                                        <div class="font-medium col-span-1  text-md text-center text-secondary">
+                                            <p>Unit</p>
+                                        </div>
+                                        <div class="font-medium col-span-1  text-md text-center text-secondary">
+                                            <p>Total</p>
+                                        </div>
+                                        <div class="font-medium col-span-1  text-md text-center text-secondary">
+                                            <p>Price</p>
+                                        </div>
+                                        <div class="font-medium col-span-1  text-md text-center text-secondary">
+                                            <p>Total</p>
+                                        </div>
+                                        <!-- Colors -->
+                                        <div class="col-span-12 my-2" *ngFor="let colors of item.products">
+                                            <div class="grid grid-cols-12">
+                                                <div class="col-span-5 font-medium text-md text-secondary">
+                                                    <p>{{colors.colorName}} <span *ngIf="colors.sizeName"> &
+                                                            {{colors.sizeName}}</span></p>
                                                 </div>
-                                                <div class="mt-2 text-center font-medium col-span-1 text-md font-bold">
-                                                    {{((1 - (item.totalMercandiseCost /
-                                                    item.totalMerchendisePrice))*100).toFixed(2)}}%
+                                                <div class="font-medium text-md  text-center text-secondary">
+                                                    {{colors.quantity}}</div>
+                                                <div class="col-span-1 text-center font-medium text-md text-secondary">
+                                                    <p>{{colors.cost}}</p>
+                                                </div>
+                                                <div class="col-span-1 text-center font-medium text-md  text-secondary">
+                                                    {{(colors.cost * colors.quantity).toFixed(2) }}
+                                                </div>
+                                                <div class="col-span-1 text-center font-medium text-md text-secondary">
+                                                    <p>{{colors.price}}</p>
+                                                </div>
+                                                <div class="col-span-1 text-center font-medium text-md  text-secondary">
+                                                    {{(colors.price * colors.quantity).toFixed(2) }}
+                                                </div>
+                                                <div class="text-center font-medium col-span-1 text-md text-secondary">
+                                                    <p>{{((colors.price * colors.quantity) - (colors.cost *
+                                                        colors.quantity)).toFixed(2) }}</p>
+                                                </div>
+                                                <div class="text-center font-medium col-span-1 text-md text-secondary">
+                                                    <p>{{(( 1 - (colors.cost/colors.price))*100).toFixed(2)}} %
+                                                    </p>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div
-                                            class="col-span-5 self-center my-2 font-medium tracking-tight text-secondary">
-                                            TOTAL DISCOUNT
+                                        <!-- Imprints -->
+                                        <div class="mt-2 col-span-12 font-medium font-bold text-md">
+                                            <p>IMPRINTS</p>
                                         </div>
-                                        <div class="font-medium text-md my-2  text-center text-secondary"></div>
+                                        <div class="col-span-12 my-2" *ngFor="let imprint of item.imprints">
+                                            <div class="grid grid-cols-12">
+
+                                                <div class="col-span-5 font-medium text-md text-secondary">
+                                                    <p>{{imprint?.locationName}} | {{imprint?.methodName}} |
+                                                        Processes: {{imprint?.processQuantity}}</p>
+                                                </div>
+                                                <div class="font-medium text-md  text-center text-secondary">
+                                                    {{imprint?.quantity}}
+                                                </div>
+                                                <div
+                                                    class=" col-span-1 text-center font-medium text-md  text-secondary">
+                                                    {{(imprint?.runCost)}}
+                                                </div>
+                                                <div
+                                                    class=" col-span-1 text-center font-medium text-md  text-secondary">
+                                                    {{(imprint?.runCost * imprint?.quantity).toFixed(2)}}
+                                                </div>
+                                                <div
+                                                    class=" col-span-1 text-center font-medium text-md  text-secondary">
+                                                    {{(imprint?.runPrice)}}
+                                                </div>
+                                                <div
+                                                    class=" col-span-1 text-center font-medium text-md  text-secondary">
+                                                    {{(imprint?.runPrice *
+                                                    imprint?.quantity).toFixed(2)}}
+                                                </div>
+                                                <div
+                                                    class=" col-span-1 text-center font-medium text-md  text-secondary">
+                                                    {{(imprint?.runPrice - imprint?.runCost).toFixed(2)}}
+                                                </div>
+                                                <div class="text-center font-medium col-span-1 text-md text-secondary">
+                                                    <p>{{getPercentage(imprint,'imprints').toFixed(2)}} %</p>
+                                                </div>
+                                                <!-- Setups -->
+                                                <div
+                                                    class="mt-2 col-span-5 font-medium text-right text-md text-secondary">
+                                                    <p>Setup(s)</p>
+                                                </div>
+                                                <div class="font-medium text-md  text-center text-secondary">
+                                                </div>
+                                                <div
+                                                    class="mt-2 col-span-1 text-center font-medium text-md  text-secondary">
+                                                </div>
+                                                <div
+                                                    class="mt-2 col-span-1 text-center font-medium text-md  text-secondary">
+                                                    {{(imprint?.setupCost)}}
+                                                </div>
+                                                <div
+                                                    class="mt-2 text-center font-medium col-span-1 text-md text-secondary">
+
+                                                </div>
+                                                <div
+                                                    class="mt-2 col-span-1 text-center font-medium text-md  text-secondary">
+                                                    {{(imprint?.setupPrice)}}
+                                                </div>
+                                                <div
+                                                    class="mt-2 col-span-1 text-center font-medium text-md  text-secondary">
+                                                    {{(imprint?.setupPrice - imprint?.setupCost).toFixed(2)}}
+                                                </div>
+                                                <div
+                                                    class="mt-2 text-center font-medium col-span-1 text-md text-secondary">
+                                                    <p>{{getPercentage(imprint,'setup').toFixed(2)}} %
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- ACCESSORIES -->
+                                        <div class="mt-2 col-span-12 font-medium font-bold text-md ">
+                                            <p>ACCESSORIES</p>
+                                        </div>
+                                        <div class="col-span-12 my-2" *ngFor="let access of item.accessories">
+                                            <div class="grid grid-cols-12">
+                                                <div class=" col-span-5 font-medium text-md text-secondary">
+                                                    <p>{{access.packagingName}}</p>
+                                                </div>
+                                                <div class=" font-medium text-md  text-center text-secondary">
+                                                    {{access.quantity}}</div>
+                                                <div class="font-medium text-md text-secondary col-span-1 text-center">
+                                                    {{access?.runCost}}</div>
+                                                <div class="font-medium text-md text-secondary col-span-1 text-center">
+                                                    {{(access?.runCost * access.quantity).toFixed(2)}}</div>
+                                                <!-- <div class="col-span-1"></div> -->
+                                                <div class="font-medium text-md text-secondary col-span-1 text-center">
+                                                    {{access?.runPrice}}</div>
+                                                <div class="font-medium text-md text-secondary col-span-1 text-center">
+                                                    {{(access?.runPrice * access.quantity).toFixed(2)}}</div>
+                                                <div class="col-span-1 font-medium text-md text-secondary text-center">
+                                                    {{(access?.runPrice -
+                                                    access?.runCost).toFixed(2)}}</div>
+                                                <div class=" col-span-1 text-center font-medium text-md text-secondary">
+                                                    {{((1- (access?.runCost/access?.runPrice))*100).toFixed(2)}}
+                                                    %
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- SHIPPING & HANDLING     -->
+                                        <div class="mt-2 col-span-5 font-medium font-bold text-md mb-4">
+                                            <p>SHIPPING & HANDLING</p>
+                                        </div>
+                                        <div class="font-medium text-md  text-center text-secondary"></div>
                                         <div class="col-span-1"></div>
+                                        <div class="mt-2 col-span-1 text-secondary text-center font-medium text-md">
+                                            {{item.products[0]?.shippingCost}}</div>
                                         <div class="col-span-1"></div>
+                                        <div class="mt-2 col-span-1 text-secondary text-center font-medium text-md">
+                                            {{item.products[0]?.shippingPrice}}</div>
+                                        <div class="mt-2 col-span-1 text-secondary text-center font-medium text-md">
+                                            {{(item.products[0]?.shippingPrice -
+                                            item.products[0]?.shippingCost).toFixed(2)}}
+                                        </div>
+                                        <div class="mt-2 col-span-1 text-secondary text-center font-medium text-md">
+                                            {{getPercentage(item, 'shipping').toFixed(2)}} %
+                                        </div>
+
+                                        <!-- Internal Royalties -->
+                                        <div class="mt-2 col-span-5 font-bold font-medium text-md  mb-4">
+                                            <p>Internal Royalties</p>
+                                        </div>
+                                        <div class="font-medium text-md  text-center text-secondary"></div>
                                         <div class="col-span-1"></div>
-                                        <div class="col-span-1 text-center my-2  font-medium text-md">
-                                            -{{orderTotal.discount.toFixed(2)}}
+                                        <div class="mt-2 col-span-1 text-center font-medium text-md  font-bold">
+                                            {{item.totalMercandiseCost.toFixed(2) | currency}}
+                                            <!-- {{((item.imprints?.runCost * item.product?.quantity) +
+                                            (item.product?.cost * item.product?.quantity) +
+                                            (item.imprints?.setupCost) +(item.product?.shippingCost) ) | currency}} -->
                                         </div>
-                                        <div class="col-span-1 text-center my-2 font-medium text-md">
-                                            -{{orderTotal.discount.toFixed(2)}}
-                                        </div>
-                                        <div
-                                            class="col-span-5 self-center my-2 font-medium tracking-tight text-secondary">
-                                            TOTAL B T
-                                        </div>
-                                        <div class="font-medium text-md my-2 text-center text-secondary"></div>
                                         <div class="col-span-1"></div>
-                                        <div class="col-span-1 text-center my-2 font-medium text-md">
-                                            {{orderTotal.cost.toFixed(2)}}</div>
+                                        <div class="mt-2 text-center font-medium col-span-1 text-md font-bold">
+                                            {{item.totalMerchendisePrice.toFixed(2) | currency}}
+                                        </div>
+                                        <div class="mt-2 text-center font-medium col-span-1 text-md font-bold">
+                                            {{(item.totalMerchendisePrice - item.totalMercandiseCost).toFixed(2)
+                                            |
+                                            currency}}
+                                        </div>
+                                        <div class="mt-2 text-center font-medium col-span-1 text-md font-bold">
+                                            {{((1 - (item.totalMercandiseCost /
+                                            item.totalMerchendisePrice))*100).toFixed(2)}}%
+                                        </div>
+
+
+
+                                        <!-- Mechandise Subtotal -->
+                                        <div class="mt-2 col-span-5 font-bold font-medium text-md  mb-4">
+                                            <p>Merchandise SubTotal</p>
+                                        </div>
+                                        <div class="font-medium text-md  text-center text-secondary"></div>
                                         <div class="col-span-1"></div>
-                                        <div class="col-span-1 text-center my-2 font-medium text-md">
-                                            {{orderTotal.price.toFixed(2)}}
+                                        <div class="mt-2 col-span-1 text-center font-medium text-md  font-bold">
+                                            {{item.totalMercandiseCost.toFixed(2) | currency}}
+                                            <!-- {{((item.imprints?.runCost * item.product?.quantity) +
+                                            (item.product?.cost * item.product?.quantity) +
+                                            (item.imprints?.setupCost) +(item.product?.shippingCost) ) | currency}} -->
                                         </div>
-                                        <div class="col-span-1 text-center my-2 font-medium text-md">{{(orderTotal.price
-                                            -
-                                            orderTotal.cost).toFixed(2)}}
-                                        </div>
-                                        <div class="col-span-1 text-center my-2 font-medium text-md">
-                                            {{orderTotal.margin.toFixed(2)}}%
-                                        </div>
-                                        <div
-                                            class="col-span-5 self-center my-2 font-medium tracking-tight text-secondary">
-                                            TOTAL TAX
-                                        </div>
-                                        <div class="font-medium text-md my-2 text-center text-secondary"></div>
                                         <div class="col-span-1"></div>
-                                        <div class="col-span-1"></div>
-                                        <div class="col-span-1  text-center my-2 font-medium text-md"></div>
-                                        <div class="col-span-1  text-center my-2  font-medium text-md">
-                                            {{orderTotal.tax}}
+                                        <div class="mt-2 text-center font-medium col-span-1 text-md font-bold">
+                                            {{item.totalMerchendisePrice.toFixed(2) | currency}}
                                         </div>
-                                        <!-- <div class="col-span-5 self-center font-medium tracking-tight text-secondary">
-                                            ADJUSTMENTS
-                                        </div> -->
-                                        <!-- <div class="col-span-1  text-center  font-medium text-md">$0.00</div> -->
-                                        <div
-                                            class="col-span-5 self-center my-2 font-medium tracking-tight text-secondary">
-                                            GRAND TOTAL
+                                        <div class="mt-2 text-center font-medium col-span-1 text-md font-bold">
+                                            {{(item.totalMerchendisePrice - item.totalMercandiseCost).toFixed(2)
+                                            |
+                                            currency}}
                                         </div>
-                                        <div class="font-medium text-md my-2 text-center text-secondary"></div>
-                                        <div class="col-span-1"></div>
-                                        <div class="col-span-1 my-2 text-center  font-medium text-md font-bold">
-                                            {{orderTotal.cost.toFixed(2) | currency}}</div>
-                                        <div class="col-span-1"></div>
-                                        <div class="col-span-1 my-2 text-center  font-medium text-md font-bold">
-                                            {{orderTotal.total.toFixed(2) | currency}}
+                                        <div class="mt-2 text-center font-medium col-span-1 text-md font-bold">
+                                            {{((1 - (item.totalMercandiseCost /
+                                            item.totalMerchendisePrice))*100).toFixed(2)}}%
                                         </div>
                                     </div>
+                                </mat-expansion-panel>
+                            </mat-accordion>
 
+                        </div>
+                        <div class="my-5">
+                            <div class="grid grid-cols-12 gap-x-1 mt-8" *ngIf="orderProducts?.length > 0">
 
-
-
-                                    <div class="mt-10">
-                                        <div style="text-align: -webkit-center;">
-                                            <img class="w-40" src="assets/images/logo/consolidus-logo.jpeg">
-                                        </div>
-                                    </div>
+                                <div class="col-span-5 self-center my-2 font-medium tracking-tight text-secondary">
+                                    TOTAL DISCOUNT
                                 </div>
+                                <div class="font-medium text-md my-2  text-center text-secondary"></div>
+                                <div class="col-span-1"></div>
+                                <div class="col-span-1"></div>
+                                <div class="col-span-1"></div>
+                                <div class="col-span-1 text-center my-2  font-medium text-md">
+                                    -{{orderTotal.discount.toFixed(2)}}
+                                </div>
+                                <div class="col-span-1 text-center my-2 font-medium text-md">
+                                    -{{orderTotal.discount.toFixed(2)}}
+                                </div>
+                                <div class="col-span-5 self-center my-2 font-medium tracking-tight text-secondary">
+                                    TOTAL B T
+                                </div>
+                                <div class="font-medium text-md my-2 text-center text-secondary"></div>
+                                <div class="col-span-1"></div>
+                                <div class="col-span-1 text-center my-2 font-medium text-md">
+                                    {{orderTotal.cost.toFixed(2)}}</div>
+                                <div class="col-span-1"></div>
+                                <div class="col-span-1 text-center my-2 font-medium text-md">
+                                    {{orderTotal.price.toFixed(2)}}
+                                </div>
+                                <div class="col-span-1 text-center my-2 font-medium text-md">{{(orderTotal.price
+                                    -
+                                    orderTotal.cost).toFixed(2)}}
+                                </div>
+                                <div class="col-span-1 text-center my-2 font-medium text-md">
+                                    {{orderTotal.margin.toFixed(2)}}%
+                                </div>
+                                <div class="col-span-5 self-center my-2 font-medium tracking-tight text-secondary">
+                                    TOTAL TAX
+                                </div>
+                                <div class="font-medium text-md my-2 text-center text-secondary"></div>
+                                <div class="col-span-1"></div>
+                                <div class="col-span-1"></div>
+                                <div class="col-span-1  text-center my-2 font-medium text-md"></div>
+                                <div class="col-span-1  text-center my-2  font-medium text-md">
+                                    {{orderTotal.tax}}
+                                </div>
+                                <!-- <div class="col-span-5 self-center font-medium tracking-tight text-secondary">
+                                ADJUSTMENTS
+                            </div> -->
+                                <!-- <div class="col-span-1  text-center  font-medium text-md">$0.00</div> -->
+                                <div class="col-span-5 self-center my-2 font-medium tracking-tight text-secondary">
+                                    GRAND TOTAL
+                                </div>
+                                <div class="font-medium text-md my-2 text-center text-secondary"></div>
+                                <div class="col-span-1"></div>
+                                <div class="col-span-1 my-2 text-center  font-medium text-md font-bold">
+                                    {{orderTotal.cost.toFixed(2) | currency}}</div>
+                                <div class="col-span-1"></div>
+                                <div class="col-span-1 my-2 text-center  font-medium text-md font-bold">
+                                    {{orderTotal.total.toFixed(2) | currency}}
+                                </div>
+                            </div>
 
+
+
+
+                            <div class="mt-10">
+                                <div style="text-align: -webkit-center;">
+                                    <img class="w-40" src="assets/images/logo/consolidus-logo.jpeg">
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
+                <button (click)="exportHtmlToPDF('actual')" mat-stroked-button class="w-20">
+                    <span class="test-sm">PDF</span>
+                </button>
+                <div id="actual" class="my-5 rounded-2xl shadow bg-card p-5">
+
+                    <div class="mb-3 font-bold">
+                        Actual cost Analysis
+                    </div>
+
+                    <div class="mb-3 font-bold border-b">
+                        CONFIDENTIAL COST ANALYSIS REPORT - Actual #{{orderDetail.pk_orderID}}
+                    </div>
+                    <div class="mt-3">
+                        <div *ngFor="let item of orderProducts">
+                            <mat-accordion>
+                                <mat-expansion-panel class=" my-5">
+                                    <mat-expansion-panel-header class="my-10">
+                                        <mat-panel-title>
+                                            <div class="flex flex-col gap-y-1 py-2">
+                                                <div class="font-bold">
+                                                    {{item.products[0]?.productNumber}}:
+                                                    {{item.products[0]?.productName}}
+                                                </div>
+                                                <div>
+                                                    PO: 84806-155516
+                                                </div>
+                                                <div>
+                                                    Status: New Order
+                                                </div>
+                                                <div>
+                                                    Quantity: {{item?.totalQuantity}}
+                                                </div>
+                                                <div class="flex flex-col h-full justify-between">
+                                                    {{getTotal(item)}}
+                                                </div>
+                                            </div>
+                                        </mat-panel-title>
+                                        <!-- <mat-panel-description>
+                                           
+
+                                        </mat-panel-description> -->
+                                    </mat-expansion-panel-header>
+                                    <div class="grid grid-cols-12 gap-x-1 mb-5 mt-15">
+
+                                        <div class="col-span-9 font-medium font-bold text-md">
+                                            <p>COLOR/SIZE BREAKDOWN</p>
+                                        </div>
+                                        <div
+                                            class="font-bold font-medium col-span-1  text-md text-center text-secondary">
+                                            <p>QTY</p>
+                                        </div>
+                                        <div
+                                            class="font-bold font-medium col-span-1  text-md text-center text-secondary">
+                                            <p>Unit</p>
+                                        </div>
+                                        <div
+                                            class="font-bold font-medium col-span-1  text-md text-center text-secondary">
+                                            <p>Total</p>
+                                        </div>
+
+                                        <div class="col-span-12 my-2" *ngFor="let colors of item.products">
+                                            <div class="grid grid-cols-12">
+                                                <div class="col-span-9 font-medium text-md text-secondary">
+                                                    <p>{{colors.colorName}} <span *ngIf="colors.sizeName"> &
+                                                            {{colors.sizeName}}</span></p>
+                                                </div>
+                                                <div class="font-medium col-span-1  text-md text-center text-secondary">
+                                                    {{colors.quantity}}
+                                                </div>
+                                                <div class="font-medium col-span-1  text-md text-center text-secondary">
+                                                    <p>{{colors.cost}}</p>
+                                                </div>
+                                                <div class="font-medium col-span-1  text-md text-center text-secondary">
+                                                    {{(colors.cost * colors.quantity).toFixed(2) }}
+                                                </div>
+                                            </div>
+                                        </div>
 
 
 
 
+                                        <!-- Imprints -->
+                                        <div class="mt-2 col-span-9 font-medium font-bold text-md">
+                                            <p>IMPRINTS</p>
+                                        </div>
+                                        <div
+                                            class="font-bold font-medium col-span-1  text-md text-center text-secondary">
+                                            <p>QTY</p>
+                                        </div>
+                                        <div
+                                            class="font-bold font-medium col-span-1  text-md text-center text-secondary">
+                                            <p>Unit</p>
+                                        </div>
+                                        <div
+                                            class="font-bold font-medium col-span-1  text-md text-center text-secondary">
+                                            <p>Total</p>
+                                        </div>
+                                        <div class="col-span-12 my-2" *ngFor="let imprint of item.imprints">
+                                            <div class="grid grid-cols-12">
+
+                                                <div class="col-span-9 font-medium text-md text-secondary">
+                                                    <p>{{imprint?.locationName}} | {{imprint?.methodName}} |
+                                                        Processes: {{imprint?.processQuantity}}</p>
+                                                </div>
+                                                <div class="col-span-1 font-medium text-md  text-center text-secondary">
+                                                    {{imprint?.quantity}}
+                                                </div>
+                                                <div
+                                                    class=" col-span-1 text-center font-medium text-md  text-secondary">
+                                                    {{(imprint?.runCost * imprint?.quantity).toFixed(2)}}
+                                                </div>
+                                                <div
+                                                    class=" col-span-1 text-center font-medium text-md  text-secondary">
+                                                    {{(imprint?.setupCost)}}
+                                                </div>
+
+                                                <!-- Setups -->
+                                                <div class="mt-2 col-span-11 font-medium  text-md text-secondary">
+                                                    <p>Setup(s)</p>
+                                                </div>
+
+                                                <div
+                                                    class="mt-2 col-span-1 text-center font-medium text-md  text-secondary">
+                                                    {{(imprint?.setupCost)}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- ACCESSORIES -->
+                                        <div *ngIf="item.accessories > 0"
+                                            class="mt-2 col-span-9 font-medium font-bold text-md ">
+                                            <p>ACCESSORIES</p>
+                                        </div>
+                                        <div *ngIf="item.accessories > 0"
+                                            class="font-bold font-medium col-span-1  text-md text-center text-secondary">
+                                            <p>QTY</p>
+                                        </div>
+                                        <div *ngIf="item.accessories > 0"
+                                            class="font-bold font-medium col-span-1  text-md text-center text-secondary">
+                                            <p>Unit</p>
+                                        </div>
+                                        <div *ngIf="item.accessories > 0"
+                                            class="font-bold font-medium col-span-1  text-md text-center text-secondary">
+                                            <p>Total</p>
+                                        </div>
+                                        <div class="col-span-12 my-2" *ngFor="let access of item.accessories">
+                                            <div class="grid grid-cols-12">
+                                                <div class=" col-span-9 font-medium text-md text-secondary">
+                                                    <p>{{access.packagingName}}</p>
+                                                </div>
+                                                <div class="col-span-1 font-medium text-md  text-center text-secondary">
+                                                    {{access.quantity}}</div>
+                                                <div class="font-medium text-md text-secondary col-span-1 text-center">
+                                                    {{access?.runCost}}</div>
+                                                <div class="font-medium text-md text-secondary col-span-1 text-center">
+                                                    {{(access?.runCost * access.quantity).toFixed(2)}}</div>
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </mat-expansion-panel>
+                            </mat-accordion>
+
+                        </div>
+
+                    </div>
+                    <div class="my-5">
+                        <div class="grid grid-cols-12 gap-x-1 mt-8" *ngIf="orderProducts?.length > 0">
+
+                            <div class="col-span-11 self-center my-2 font-medium tracking-tight text-secondary">
+                                ACTUAL COST
+                            </div>
+                            <div class="col-span-1 text-center my-2  font-medium text-md">
+                                {{calculateGrandTotal()}}
+                            </div>
+
+
+                            <div class="col-span-11 self-center my-2 font-medium tracking-tight text-secondary">
+                                ORDER PRICE
+                            </div>
+
+                            <div class="col-span-1 text-center my-2 font-medium text-md">
+                                {{this.orderDetail.orderPrice.toFixed(2)}}
+                            </div>
+
+
+                            <div class="col-span-11 self-center my-2 font-medium tracking-tight text-secondary">
+                                DIFF
+                            </div>
+
+                            <div class="col-span-1  text-center my-2  font-medium text-md">
+                                {{(this.orderDetail.orderPrice.toFixed(2) - grandTotal.toFixed(2)).toFixed(2)}}
+                            </div>
+
+
+                            <div class="col-span-11 self-center my-2 font-medium tracking-tight text-secondary">
+                                MARGIN
+                            </div>
+
+                            <div class="col-span-1 my-2 text-center  font-medium text-md font-bold">
+                                {{(((this.orderDetail.orderPrice.toFixed(2) -
+                                grandTotal.toFixed(2)).toFixed(2)/this.orderDetail.orderPrice.toFixed(2))*100).toFixed(3)}}%
+                            </div>
+                        </div>
+
+
+
+
+                        <div class="mt-10">
+                            <div style="text-align: -webkit-center;">
+                                <img class="w-40" src="assets/images/logo/consolidus-logo.jpeg">
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
