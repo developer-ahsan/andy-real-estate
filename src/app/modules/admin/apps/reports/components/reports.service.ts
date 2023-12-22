@@ -115,16 +115,15 @@ export class ReportsService {
         } else if (this.ngPlan == 'yearly') {
             var currentDate = moment();
             const currentYear = moment().year();
+            console.log(currentYear);
             let d = new Date(this.yearlyYear, 0, 1);
             this.startDate = moment(d).startOf('year').format('yyyy-MM-DD');
             this.endDate = moment(d).endOf('year').format('yyyy-MM-DD');
-            if (this.yearlyYear < currentYear) {
+            if (this.yearlyYear == currentYear) {
                 this.endDate = moment(currentDate).endOf('year').format('YYYY-MM-DD');
-            } else {
-                this.endDate = moment().format('YYYY-MM-DD');
             }
             this.lastStartDate = moment(d).startOf('year').subtract(1, 'year').format('yyyy-MM-DD');
-            this.lastEndDate = moment(currentDate).subtract(1, 'year').format('yyyy-MM-DD');
+            this.lastEndDate = moment(this.endDate).subtract(1, 'year').format('yyyy-MM-DD');
 
         } else if (this.ngPlan == 'range') {
             this.startDate = moment(this.ngRangeStart).format('yyyy-MM-DD');

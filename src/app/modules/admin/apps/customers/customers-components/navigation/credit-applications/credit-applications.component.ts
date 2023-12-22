@@ -146,8 +146,8 @@ export class CreditApplicationsComponent implements OnInit {
     const result = [];
 
     dataArray.forEach(item => {
-      const [id, state, index] = item.split("::");
-      result.push({ id: parseInt(id), state, index: parseInt(index) });
+      const [id, state, name, index] = item.split("::");
+      result.push({ id: parseInt(id), state, name, index: parseInt(index) });
     });
 
     return result;

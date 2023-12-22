@@ -105,8 +105,8 @@ export class VendorsInfoComponent implements OnInit, OnDestroy {
     const result = [];
 
     dataArray.forEach(item => {
-      const [id, state, index] = item.split("::");
-      result.push({ id: parseInt(id), state, index: parseInt(index) });
+      const [id, state, name, index] = item.split("::");
+      result.push({ id: parseInt(id), state, name, index: parseInt(index) });
     });
 
     return result;
@@ -212,12 +212,12 @@ export class VendorsInfoComponent implements OnInit, OnDestroy {
       formattedFax = fax?.trim() ? this.format_phone(fax, '') : '';
     }
 
-    if(coopPricing.length > 500 || netSetup.length > 500 || ltm.length > 500 || freeRandomSamples.length > 500 || specSamples.length > 500 || production.length > 500 ) {
+    if (coopPricing.length > 500 || netSetup.length > 500 || ltm.length > 500 || freeRandomSamples.length > 500 || specSamples.length > 500 || production.length > 500) {
       this._vendorService.snackBar('Max length should be 500');
       return;
     }
 
-    if(notes.length > 5000) {
+    if (notes.length > 5000) {
       this._vendorService.snackBar('Max length should be 5000');
       return;
     }
@@ -229,7 +229,7 @@ export class VendorsInfoComponent implements OnInit, OnDestroy {
     }
 
     let payload: UpdateCompany = {
-      company_id: pk_companyID, imprintDetails:imprintDetails?.trim()?.replace(/'/g, "''"), companyName: companyName?.replace(/'/g, "''"), address: address?.replace(/'/g, "''"), city: city?.replace(/'/g, "''"), state, zipCode, phone, fax, ASI, PPAI, artworkEmail, ordersEmail, websiteURL, outsideRep, insideRep, outsideRepPhone, outsideRepEmail, insideRepPhone, insideRepEmail, samplesContactEmail, vendorRelation, screenprintEmail, embroideryEmail, coopPricing: coopPricing?.replace(/'/g, "''"), netSetup: netSetup?.replace(/'/g, "''"), ltm: ltm?.replace(/'/g, "''"), freeRandomSamples: freeRandomSamples?.replace(/'/g, "''"), specSamples: specSamples?.replace(/'/g, "''"), production: production?.replace(/'/g, "''"), update_company: true, additionalOrderEmails: this.additionalOrderEmails.toString(), customerAccountNumber, shippingComment: shippingComment?.replace(/'/g, "''"), notes: notes?.replace(/'/g, "''")
+      company_id: pk_companyID, imprintDetails: imprintDetails?.trim()?.replace(/'/g, "''"), companyName: companyName?.replace(/'/g, "''"), address: address?.replace(/'/g, "''"), city: city?.replace(/'/g, "''"), state, zipCode, phone, fax, ASI, PPAI, artworkEmail, ordersEmail, websiteURL, outsideRep, insideRep, outsideRepPhone, outsideRepEmail, insideRepPhone, insideRepEmail, samplesContactEmail, vendorRelation, screenprintEmail, embroideryEmail, coopPricing: coopPricing?.replace(/'/g, "''"), netSetup: netSetup?.replace(/'/g, "''"), ltm: ltm?.replace(/'/g, "''"), freeRandomSamples: freeRandomSamples?.replace(/'/g, "''"), specSamples: specSamples?.replace(/'/g, "''"), production: production?.replace(/'/g, "''"), update_company: true, additionalOrderEmails: this.additionalOrderEmails.toString(), customerAccountNumber, shippingComment: shippingComment?.replace(/'/g, "''"), notes: notes?.replace(/'/g, "''")
     }
     this.isUpdateLoader = true;
     this._vendorService.putVendorsData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {

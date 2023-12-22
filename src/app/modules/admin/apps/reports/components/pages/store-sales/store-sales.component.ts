@@ -85,49 +85,35 @@ export class ReportsStoreSalesComponent implements OnInit, OnDestroy {
       });
       this.storesList.push(...filteredData);
     });
-
   }
-
   getStates() {
-    this._reportService.States$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.searchStatesCtrl.setValue({ name: 'All States', pk_stateID: '' });
-      this.allStates.push({ name: 'All States', pk_stateID: '' });
-      this.allStates = this.allStates.concat(res["data"]);
-      this.selectedStates = this.allStates[0];
-    });
-    let params;
-    this.searchStatesCtrl.valueChanges.pipe(
-      filter((res: any) => {
-        params = {
-          states: true,
-          keyword: res
-        }
-        return res !== null && res.length >= 2
-      }),
-      distinctUntilChanged(),
-      debounceTime(300),
-      tap(() => {
-        this.allStates = [];
-        this.isSearchingStates = true;
-        this._changeDetectorRef.markForCheck();
-      }),
-      switchMap(value => this._reportService.getAPIData(params)
-        .pipe(
-          finalize(() => {
-            this.isSearchingStates = false
-            this._changeDetectorRef.markForCheck();
-          }),
-        )
-      )
-    ).subscribe((data: any) => {
-      this.allStates = data['data'];
-    });
+    const storedValue = JSON.parse(sessionStorage.getItem('storeStateSupplierData'));
+    this.allStates.push({ name: 'All States', pk_stateID: '' });
+    this.allStates = this.allStates.concat(this.splitData(storedValue.data[2][0].states, 'states'));
+    this.selectedStates = this.allStates[0];
   }
-  onSelectedStates(ev) {
-    this.selectedStates = ev.option.value;
+  getPromoCodes() {
+    const storedValue = JSON.parse(sessionStorage.getItem('storeStateSupplierData'));
+    this.allPromoCodes.push({ promocode: 'Any Promocode' });
+    this.allPromoCodes = this.allPromoCodes.concat(this.splitData(storedValue.data[3][0].promocodes, 'promos'));
+    this.selectedPromoCodes = this.allPromoCodes[0];
+    this._changeDetectorRef.markForCheck();
   }
-  displayWithStates(value: any) {
-    return value?.name;
+  splitData(data, type) {
+    const dataArray = data.split(",,");
+    const result = [];
+    if (type == 'states') {
+      dataArray.forEach(item => {
+        const [id, state, name, index] = item.split("::");
+        result.push({ pk_stateID: parseInt(id), name });
+      });
+    } else {
+      dataArray.forEach(item => {
+        const [promocode, active] = item.split("::");
+        result.push({ promocode, active });
+      });
+    }
+    return result;
   }
   selectedUnSelected(check) {
     if (check) {
@@ -139,47 +125,6 @@ export class ReportsStoreSalesComponent implements OnInit, OnDestroy {
         element.isChecked = false;
       });
     }
-  }
-  getPromoCodes() {
-    this._reportService.PromoCodes$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.searchPromoCodesCtrl.setValue({ promocode: 'Any Promocode' });
-      this.allPromoCodes.push({ promocode: 'Any Promocode' });
-      this.allPromoCodes = this.allPromoCodes.concat(res["data"]);
-      this.selectedPromoCodes = this.allPromoCodes[0];
-    });
-    let params;
-    this.searchPromoCodesCtrl.valueChanges.pipe(
-      filter((res: any) => {
-        params = {
-          promocodes: true,
-          keyword: res
-        }
-        return res !== null && res.length >= 2
-      }),
-      distinctUntilChanged(),
-      debounceTime(300),
-      tap(() => {
-        this.allPromoCodes = [];
-        this.isSearchingPromoCodes = true;
-        this._changeDetectorRef.markForCheck();
-      }),
-      switchMap(value => this._reportService.getAPIData(params)
-        .pipe(
-          finalize(() => {
-            this.isSearchingPromoCodes = false
-            this._changeDetectorRef.markForCheck();
-          }),
-        )
-      )
-    ).subscribe((data: any) => {
-      this.allPromoCodes = data['data'];
-    });
-  }
-  onSelectedPromoCodes(ev) {
-    this.selectedPromoCodes = ev.option.value;
-  }
-  displayWithPromoCodes(value: any) {
-    return value?.promocode;
   }
   generateReport(page) {
     this.generateReportData = null;
@@ -221,11 +166,11 @@ export class ReportsStoreSalesComponent implements OnInit, OnDestroy {
     this.isGenerateReportLoader = true;
     let state = '';
     if (this.selectedStates.name != 'All States') {
-      state = this.selectedPromoCodes.promocode;
+      state = this.selectedStates.name;
     }
     let promo = '';
     if (this.selectedPromoCodes.promocode != 'Any Promocode') {
-      promo = this.selectedStates.name;
+      promo = this.selectedPromoCodes.promocode;
     }
     let params = {
       is_weekly: this._reportService.ngPlan == 'weekly' ? true : false,
@@ -576,13 +521,13 @@ export class ReportsStoreSalesComponent implements OnInit, OnDestroy {
         { text: this.totalStoreSummary.NS, bold: true },
         { text: this.totalStoreSummary.PYNS, bold: true },
         { text: this.currencyPipe.transform(Number(this.totalStoreSummary?.AVG), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
-        { text: `${this.totalStoreSummary?.MARGIN}%`, bold: true }
+        { text: this.totalStoreSummary?.MARGIN ? `${this.totalStoreSummary?.MARGIN}%` : '0.00%', bold: true }
       ]
     )
     // Employee Summary
     documentDefinition.content.push(
       // 5 index
-      { text: 'Employee Sales Summary', margin: [0, 2, 0, 5] },
+      { text: 'Employee Sales Summary', margin: [0, 2, 0, 5], pageBreak: 'before' },
       // 6 Index
       {
         table: {

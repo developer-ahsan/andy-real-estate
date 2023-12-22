@@ -74,8 +74,8 @@ export class NewVendorsComponent implements OnInit, OnDestroy {
     const result = [];
 
     dataArray.forEach(item => {
-      const [id, state, index] = item.split("::");
-      result.push({ id: parseInt(id), state, index: parseInt(index) });
+      const [id, state, name, index] = item.split("::");
+      result.push({ id: parseInt(id), state, name, index: parseInt(index) });
     });
 
     return result;
@@ -97,7 +97,7 @@ export class NewVendorsComponent implements OnInit, OnDestroy {
     let errorMessage = '';
     const { companyName, address, city, zipCode, phone, fax, ASI, PPAI, artworkEmail, ordersEmail, websiteURL, outsideRep, insideRep, outsideRepPhone, outsideRepEmail, insideRepPhone, insideRepEmail, samplesContactEmail, customerAccountNumber, phoneExt } = this.addCompanyForm.getRawValue();
     const state = this.selectedState;
-    if(companyName?.trim() === '' || address?.trim() === '' || city?.trim() === '' || zipCode?.trim() === '' || zipCode?.trim() === '' || phoneExt?.trim() === '') {
+    if (companyName?.trim() === '' || address?.trim() === '' || city?.trim() === '' || zipCode?.trim() === '' || zipCode?.trim() === '' || phoneExt?.trim() === '') {
       this._vendorService.snackBar('Please fill all the required fields');
       return;
     }
@@ -123,12 +123,12 @@ export class NewVendorsComponent implements OnInit, OnDestroy {
       errorMessage = 'Name, address, city, zip, and phone are required.';
     } else if (!this.formVal_zipCode(zipCode)) {
       errorMessage = 'Zip code appears invalid. Enter 5-digit U.S. zip codes only.';
-    } 
+    }
     else if (!validatePhone(phone, phoneExt)) {
       errorMessage = 'Phone number appears invalid. Enter 10-digit U.S. phone numbers only.';
     } else if (!validatePhone(fax, '')) {
       errorMessage = 'Fax number appears invalid. Enter 10-digit U.S. phone numbers only or leave blank.';
-    } 
+    }
     else if (!validateEmail(artworkEmail)) {
       errorMessage = 'Graphics email appears non-valid.';
     } else if (!validateEmail(ordersEmail)) {

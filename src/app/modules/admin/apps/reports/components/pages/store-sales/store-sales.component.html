@@ -48,32 +48,16 @@
             </div>
             <div class="col-12 col-md-4">
                 <mat-form-field class="w-full">
-                    <input matInput placeholder="Search states" matTooltip="Search states by name"
-                        [matAutocomplete]="auto" [formControl]="searchStatesCtrl">
-                    <mat-autocomplete class="w-full" #auto="matAutocomplete" (optionSelected)="onSelectedStates($event)"
-                        [displayWith]="displayWithStates">
-                        <mat-option *ngIf="isSearchingStates" class="is-loading">Loading...</mat-option>
-                        <ng-container *ngIf="!isSearchingStates">
-                            <mat-option *ngFor="let item of allStates" [value]="item">
-                                <span>{{item.name}}</span>
-                            </mat-option>
-                        </ng-container>
-                    </mat-autocomplete>
+                    <mat-select matInput [(ngModel)]="selectedStates">
+                        <mat-option *ngFor="let item of allStates" [value]="item">{{item.name}}</mat-option>
+                    </mat-select>
                 </mat-form-field>
             </div>
             <div class="col-12 col-md-4">
                 <mat-form-field class="w-full">
-                    <input matInput placeholder="Search promocodes" matTooltip="Search promocodes"
-                        [matAutocomplete]="auto1" [formControl]="searchPromoCodesCtrl">
-                    <mat-autocomplete class="w-full" #auto1="matAutocomplete"
-                        (optionSelected)="onSelectedPromoCodes($event)" [displayWith]="displayWithPromoCodes">
-                        <mat-option *ngIf="isSearchingPromoCodes" class="is-loading">Loading...</mat-option>
-                        <ng-container *ngIf="!isSearchingPromoCodes">
-                            <mat-option *ngFor="let item of allPromoCodes" [value]="item">
-                                <span>{{item.promocode}}</span>
-                            </mat-option>
-                        </ng-container>
-                    </mat-autocomplete>
+                    <mat-select matInput [(ngModel)]="selectedPromoCodes">
+                        <mat-option *ngFor="let item of allPromoCodes" [value]="item">{{item.promocode}}</mat-option>
+                    </mat-select>
                 </mat-form-field>
             </div>
             <div class="col-12 col-md-4">

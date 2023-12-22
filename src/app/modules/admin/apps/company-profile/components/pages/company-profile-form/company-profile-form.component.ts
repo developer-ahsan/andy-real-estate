@@ -99,8 +99,8 @@ export class CompanyProfileFormComponent implements OnInit, OnDestroy {
     const result = [];
 
     dataArray.forEach(item => {
-      const [id, state, index] = item.split("::");
-      result.push({ id: parseInt(id), state, index: parseInt(index) });
+      const [id, state, name, index] = item.split("::");
+      result.push({ id: parseInt(id), state, name, index: parseInt(index) });
     });
 
     return result;
@@ -297,12 +297,12 @@ export class CompanyProfileFormComponent implements OnInit, OnDestroy {
 
   replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
     for (const key in obj) {
-        if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
-            obj[key] = obj[key]?.replace(/'/g, "''");
-        }
+      if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+        obj[key] = obj[key]?.replace(/'/g, "''");
+      }
     }
     return obj;
-}
+  }
 
   setStoreId(id) {
     this.selectedStoreId = id;
@@ -354,10 +354,10 @@ export class CompanyProfileFormComponent implements OnInit, OnDestroy {
       })
   };
 
-  navigate(location:boolean) {
-    location?
-    this.router.navigateByUrl('/apps/companies/company-location')
-    :this.router.navigateByUrl('/apps/companies/company-logo');
+  navigate(location: boolean) {
+    location ?
+      this.router.navigateByUrl('/apps/companies/company-location')
+      : this.router.navigateByUrl('/apps/companies/company-logo');
   }
 
   /**
