@@ -71,8 +71,7 @@
                         <button class="min-w-50" mat-button mat-stroked-button (click)="backToList()">Back To
                             Search</button>
                         <p class="cursor-pointer mt-2" *ngIf="blnIndividualOrders == 1" (click)="goToSummary()">Go To
-                            Report
-                            Summary</p>
+                            Report Summary</p>
                     </div>
                 </div>
                 <div>
@@ -99,7 +98,7 @@
                                             </td>
                                             <td><b>{{item?.SALES | currency}}</b></td>
                                             <td><b>{{item?.tax | currency}}</b></td>
-                                            <td><b>{{item?.MARGIN}} %</b></td>
+                                            <td><b>{{item?.MARGIN.toFixed(2)}} %</b></td>
                                             <td></td>
                                             <td></td>
                                         </tr>
@@ -108,7 +107,7 @@
                                                 <td colspan="8" class="font-bold">{{dateData.date}}</td>
                                             </tr>
                                             <tr *ngFor="let data of dateData.data">
-                                                <td>{{data.date | date: 'MM/dd/yyyy'}}</td>
+                                                <td>{{data.date}}</td>
                                                 <td><a [routerLink]="['/apps/orders',data.id]"
                                                         target="_blank">{{data.id}}</a> </td>
                                                 <td>{{data.company}}<span *ngIf="data.location != 'NULL'">
@@ -131,7 +130,7 @@
                                                         *ngIf="data.paid"></mat-icon>
                                                 </td>
                                                 <td>
-                                                    <span class="{{data.statusColor}}">{{data.status}}</span>
+                                                    <span class="{{data.statusColor}} font-bold">{{data.status}}</span>
                                                 </td>
                                             </tr>
                                         </ng-container>
@@ -242,7 +241,7 @@
                                     <td>{{item.PYNS}}</td>
                                     <td>{{item.NS_DIFF}}</td>
                                     <td>{{item.AVG | currency}}</td>
-                                    <td>{{item.MARGIN || '0.00'}}%</td>
+                                    <td>{{item.MARGIN?.toFixed(2) || '0.00'}}%</td>
                                 </tr>
                                 <tr class="columnHeader2" class="font-bold">
                                     <th>Grand Total</th>

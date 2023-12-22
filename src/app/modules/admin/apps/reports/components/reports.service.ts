@@ -54,6 +54,7 @@ export class ReportsService {
     private _distributionCodes: BehaviorSubject<any | null> = new BehaviorSubject(null);
 
     private _states: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
+    private _currentDate: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _stores: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _promoCodes: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
 
@@ -149,6 +150,9 @@ export class ReportsService {
     };
     get Single_Suppliers$(): Observable<any[]> {
         return this._single_suppliers.asObservable();
+    };
+    get currentDate$(): Observable<any[]> {
+        return this._currentDate.asObservable();
     };
     get States$(): Observable<any[]> {
         return this._states.asObservable();
@@ -299,7 +303,7 @@ export class ReportsService {
     getAPIData(params): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.reports, {
             params: params
-        });
+        }).pipe(retry(3));
     };
     getVendorsData(params): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.vendors, {
@@ -346,10 +350,21 @@ export class ReportsService {
         );
     };
     // GEt States
+    getCurrentDate(): Observable<any[]> {
+        return this._httpClient.get<any[]>(environment.reports, {
+            params: {
+                current_date: true
+            }
+        }).pipe(
+            tap((response: any) => {
+                this._currentDate.next(response);
+            })
+        );
+    };
     getStates(): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.reports, {
             params: {
-                states: true
+                current_date: true
             }
         }).pipe(
             tap((response: any) => {
@@ -389,37 +404,58 @@ export class ReportsService {
 
     // Convert Value TO Status
     getStatusValue(statusValues: any) {
+        const status = statusValues?.split('|').map(Number);
         let statusColor = '';
         let statusValue = '';
-        let status = statusValues?.split('|');
-        status.forEach(element => {
-            let status = Number(element);
-            if (status == 1 || status == 2 || status == 3 || status == 4) {
+        let textColor = '';
+
+        switch (true) {
+            case status.includes(1):
+            case status.includes(2):
+            case status.includes(3):
+            case status.includes(4):
                 statusValue = 'Processing';
                 statusColor = 'text-red-500';
-            } else if (status == 5) {
+                textColor = 'red';
+                break;
+            case status.includes(5):
                 statusValue = 'Shipped';
                 statusColor = 'text-green-500';
-            } else if (status == 6) {
+                textColor = 'green';
+                break;
+            case status.includes(6):
+            case status.includes(8):
+            case status.includes(11):
+            case status.includes(12):
+            case status.includes(13):
                 statusValue = 'Delivered';
                 statusColor = 'text-green-500';
-            } else if (status == 7) {
+                textColor = 'green';
+                break;
+            case status.includes(7):
                 statusValue = 'P.O. Needed';
                 statusColor = 'text-purple-500';
-            } else if (status == 8) {
-                statusValue = 'Picked up';
-                statusColor = 'text-green-500';
-            } else if (status == 10) {
+                textColor = 'purple';
+                break;
+            // case status.includes(8):
+            //     statusValue = 'Picked up';
+            //     statusColor = 'text-green-500';
+            //     break;
+            case status.includes(10):
                 statusValue = 'Awaiting Group Order';
                 statusColor = 'text-orange-500';
-            } else {
+                textColor = 'orange';
+                break;
+            default:
                 statusValue = 'N/A';
-            }
-        });
-        let result = {
-            statusColor: statusColor,
-            statusValue: statusValue
+                break;
         }
-        return result;
+
+        return {
+            statusColor,
+            statusValue,
+            textColor
+        };
     }
+
 }

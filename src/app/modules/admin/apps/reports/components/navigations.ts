@@ -40,7 +40,7 @@ export const navigations = [
                 route: 'customerPurchases'
             },
             {
-                title: 'Account Code Report',
+                title: 'Account Code Purchases',
                 icon: 'heroicons_outline:document-report',
                 route: 'selectAccountCode'
             },

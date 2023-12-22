@@ -59,7 +59,7 @@ export class SuppliersByIdResolver implements Resolve<any>
 @Injectable({
     providedIn: 'root'
 })
-export class StatesResolver implements Resolve<any>
+export class CurrentDateResolver implements Resolve<any>
 {
     /**
      * Constructor
@@ -78,7 +78,7 @@ export class StatesResolver implements Resolve<any>
      * @param state
      */
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any[]> {
-        return this._reportService.getStates();
+        return this._reportService.getCurrentDate();
     }
 }
 // Get Stores

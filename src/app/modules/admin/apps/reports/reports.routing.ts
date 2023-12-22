@@ -20,16 +20,16 @@ import { ReportsComponent } from './components/reports.component';
 import { ReportVendorRelationsComponent } from './components/pages/vendor-relations/vendor-relations.component';
 import { ReportSupportComponent } from './components/pages/support-report/support-report.component';
 import { ReportsDetailsComponent } from './components/details/details-reports.component';
-import { PromoCodesResolver, StatesResolver, StoresResolver } from './components/reports.resolvers';
+import { PromoCodesResolver, CurrentDateResolver, StoresResolver } from './components/reports.resolvers';
 export const vendorsRoutes: Route[] = [
 
     {
         path: '',
         component: ReportsDetailsComponent,
         resolve: {
-            states: StatesResolver,
+            states: CurrentDateResolver,
             // stores: StoresResolver,
-            codes: PromoCodesResolver
+            // codes: PromoCodesResolver
         },
         children: [
             {
@@ -89,7 +89,7 @@ export const vendorsRoutes: Route[] = [
                 path: 'selectAccountCode',
                 component: ReportAccountCodeComponent,
                 data: {
-                    title: 'Account Code Report',
+                    title: 'Account Code Purchases',
                     url: 'selectAccountCode'
                 }
             },

@@ -99,6 +99,7 @@ export class ReportFiltersComponent implements OnInit, OnDestroy {
   report_type = '';
   fileDownloadLoader: boolean;
 
+  serverCurrentDate = '';
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     public _reportsService: ReportsService
@@ -140,7 +141,7 @@ export class ReportFiltersComponent implements OnInit, OnDestroy {
         price: '40'
       }
     ];
-    this._reportsService.WeekDate = new Date();
+    this._reportsService.WeekDate = new Date(this.serverCurrentDate);
     this._reportsService.monthlyMonth = moment().month() + 1;
     this._reportsService.monthlyYear = new Date().getFullYear();
     this._reportsService.quarterMonth = moment().quarter();
@@ -154,8 +155,14 @@ export class ReportFiltersComponent implements OnInit, OnDestroy {
     this._reportsService.reportType = 'Weekly Sales';
   }
   ngOnInit(): void {
-    this.initForm();
+    this.getCurrentDate();
   };
+  getCurrentDate() {
+    this._reportsService.currentDate$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.serverCurrentDate = res["currentDate"];
+      this.initForm();
+    })
+  }
   changePlan(plan) {
     this.ngPlan = plan;
     this._reportsService.ngPlan = plan;
