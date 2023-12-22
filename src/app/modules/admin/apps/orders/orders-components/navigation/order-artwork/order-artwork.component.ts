@@ -8,6 +8,7 @@ import { OrdersService } from '../../orders.service';
 import { AddArtworkComment, updateArtworkStatus } from '../../orders.types';
 import moment from 'moment';
 import { AuthService } from 'app/core/auth/auth.service';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 declare var $: any;
 @Component({
   selector: 'app-order-artwork',
@@ -41,11 +42,15 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
   artworkIndex: any;
   user: any;
   randomString: any = new Date().getTime();
+  removeContent: any;
+
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _authService: AuthService,
-    private _orderService: OrdersService
+    private _orderService: OrdersService,
+    private _commonService: DashboardsService,
+
   ) { }
 
   ngOnInit(): void {
@@ -154,7 +159,6 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
           }
         });
       });
-      // console.log(this.orderProducts)
       this.isLoading = false;
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
@@ -211,7 +215,6 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
     }
   };
   openSideNav(item) {
-    // console.log(item)
     this.sideNavData = item;
     this.sidenav.toggle();
   }
@@ -234,8 +237,11 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
     }
   };
   uploadArtworkMedia(imprint) {
-    imprint.uploadLoader = true;
     let count = imprint.artworkFiles.length + 1;
+    if(!this.imageValue) {
+      this._orderService.snackBar('Please select a file');
+      return;
+    }
     const { imageUpload, name, type } = this.imageValue;
     const base64 = imageUpload.split(",")[1];
     const payload = {
@@ -243,10 +249,12 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
       image_file: base64,
       image_path: `/artwork/${this.orderDetail.fk_storeID}/${this.orderDetail.fk_storeUserID}/${this.orderDetail.pk_orderID}/${imprint.fk_orderLineID}/${count}-${imprint.pk_imprintID}.${type}`
     };
+    imprint.uploadLoader = true;
     this._orderService.getFiles(payload)
       .subscribe((response) => {
         // Mark for check
         this.getArworkFilesNew(imprint);
+        this.imageValue = undefined;
         this.fileInput.nativeElement.value = '';
         this._changeDetectorRef.markForCheck();
       }, err => {
@@ -320,15 +328,16 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
     this.removeModalIndex = imprintIndex;
     $(this.removeArtwork.nativeElement).modal('show');
   }
+
   removeImage() {
     $(this.removeArtwork.nativeElement).modal('hide');
     this.orderProducts[this.removeModalOrderIndex].imprints[this.removeModalIndex].artworkFiles[this.artworkIndex].delLoader = true;
     this._changeDetectorRef.markForCheck();
     let payload = {
-      image_path: `/artwork/${this.orderDetail.fk_storeID}/${this.orderDetail.fk_storeUserID}/${this.orderDetail.pk_orderID}/${this.orderProducts[this.removeModalOrderIndex].imprints[this.removeModalIndex].fk_orderLineID}/${this.removeFileName}`,
-      delete_image: true
+      files: [`/artwork/${this.orderDetail.fk_storeID}/${this.orderDetail.fk_storeUserID}/${this.orderDetail.pk_orderID}/${this.orderProducts[this.removeModalOrderIndex].imprints[this.removeModalIndex].fk_orderLineID}/${this.removeFileName}`],
+      delete_multiple_files: true
     }
-    this._orderService.removeMedia(payload)
+    this._commonService.removeMediaFiles(payload)
       .subscribe((response) => {
         this._orderService.snackBar('Artwork File Removed Successfully');
         this.orderProducts[this.removeModalOrderIndex].imprints[this.removeModalIndex].artworkFiles.splice(this.artworkIndex, 1);

@@ -37,7 +37,7 @@
                                 </div>
                             </td>
                             <td width="40%">
-                                {{imprint?.status.statusName || not_available}}
+                                {{imprint?.status?.statusName || not_available}}
                                 <button type="button"
                                     class="ml-2 min-w-40 inline-flex items-center gap-x-1.5 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
                                     (click)="updateMarkRevisionNeeded(imprint)" [disabled]="imprint.revisionLoader">
@@ -51,7 +51,7 @@
 
                             <td width="1%" align="center" valign="top">
                                 <span class="fa fa-comments fa-lg clickable cursor-pointer" data-toggle="modal"
-                                    title="View artwork comments" (click)="openCommentModal(imprint)"></span>
+                                    matTooltip="View artwork comments" (click)="openCommentModal(imprint)"></span>
                             </td>
                         </tr>
                         <tr *ngFor="let artwork of imprint.artworkFiles; let i=index">
@@ -63,6 +63,41 @@
                                     target="_blank">Artwork File #{{i+1}}</a>
                                 <span *ngIf="imprint.artworkFiles.length == 0">---</span>
                             </td>
+                            <!-- <td width="40%">
+                                <ng-container *ngIf="imprint.logoBankID != 0; else customerLogoBlock">
+                                    <a target="_blank"
+                                        href="https://assets.consolidus.com/globalAssets/Stores/logoBank2/{{orderDetail.fk_storeID}}/Thumbs/{{imprint.logoBankID}}.jpg">
+                                        Artwork File #{{artwork.count}}
+                                    </a>
+                                </ng-container>
+
+                                <ng-template #customerLogoBlock>
+                                    <ng-container *ngIf="imprint.customerLogoBankID != 0; else locationLogoBlock">
+                                        <a target="_blank"
+                                            href="https://assets.consolidus.com/globalAssets/StoreUser/LogoBank/{{orderDetail.fk_storeUserID}}/{{orderDetail.fk_storeID}}/Thumbs/{{imprint.customerLogoBankID}}.jpg">
+                                            Artwork File #{{artwork.count}}
+                                        </a>
+                                    </ng-container>
+
+                                    <ng-template #locationLogoBlock>
+                                        <ng-container *ngIf="imprint.locationLogoBankID != 0; else artworkFilesBlock">
+                                            <a target="_blank"
+                                                href="https://assets.consolidus.com/globalAssets/Stores/locationLogoBank/{{orderDetail.pk_locationID}}/Thumbs/{{imprint.locationLogoBankID}}.jpg">
+                                                Artwork File #{{artwork.count}}
+                                            </a>
+                                        </ng-container>
+
+                                        <ng-template #artworkFilesBlock>
+                                            <a target="_blank" class="text-blue-500"
+                                                *ngIf="imprint.artworkFiles.length > 0"
+                                                href="https://assets.consolidus.com/artwork/quotes/{{orderDetail.fk_storeID}}/{{orderDetail.fk_storeUserID}}/{{orderDetail.pk_orderID}}/{{orderDetail.pk_orderLineID}}/{{artwork?.ID}}.{{artwork?.EXTENSION}}?{{tempDate}}"
+                                                target="_blank">
+                                                Artwork File #{{artwork.count}}
+                                            </a>
+                                        </ng-template>
+                                    </ng-template>
+                                </ng-template>
+                            </td> -->
                             <td width="1%" align="center" valign="top" *ngIf="imprint.artworkFiles.length > 0">
                                 <mat-icon svgIcon="heroicons_outline:trash"
                                     class="icon-size-4 cursor-pointer text-red-500" matTooltip="Delete File"
