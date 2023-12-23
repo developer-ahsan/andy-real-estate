@@ -220,7 +220,7 @@ export class RoyalitiesReportComponent implements OnInit, OnDestroy {
       pageMargins: [10, 10, 10, 10],
       content: [
         // Add a title for your PDF
-        { text: this._reportService.ngPlan.toUpperCase(), fontSize: 14 },
+        { text: this._reportService.reportType.toUpperCase(), fontSize: 14 },
         { text: 'Range: ' + this._reportService.startDate + ' - ' + this._reportService.endDate, fontSize: 10 },
         // Add a spacer element to create a margin above the table
         { text: '', margin: [0, 20, 0, 0] },
@@ -249,10 +249,10 @@ export class RoyalitiesReportComponent implements OnInit, OnDestroy {
         }
       }
     };
-    this.generateReportData.forEach(element => {
+    this.generateReportData.forEach((element, key) => {
       documentDefinition.content[3].table.body.push(
         [
-          element.orderDate,
+          key + 1 + '. ' + element.orderDate,
           element.paymentDate,
           { text: element.pk_orderID, link: `${environment.siteDomain}apps/orders/'${element.pk_orderID}` },
           element.companyName,
@@ -263,6 +263,18 @@ export class RoyalitiesReportComponent implements OnInit, OnDestroy {
         ]
       )
     });
+    documentDefinition.content[3].table.body.push(
+      [
+        'Totals: ',
+        '',
+        '',
+        '',
+        { text: this.currencyPipe.transform(Number(this.totalSales), 'USD', 'symbol', '1.2-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
+        { text: this.currencyPipe.transform(Number(this.totalRoyalities), 'USD', 'symbol', '1.2-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
+        '',
+        ''
+      ]
+    )
     pdfMake.createPdf(documentDefinition).download(`${this.selectedStores.storeName}-Royalty-Report-${this._reportService.startDate}-${this._reportService.endDate}.pdf`);
   }
 

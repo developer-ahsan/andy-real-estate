@@ -144,6 +144,7 @@ export class ReportsService {
             }
             this.lastStartDate = moment(d).startOf('year').subtract(1, 'year').format('yyyy-MM-DD');
             this.lastEndDate = moment(this.endDate).subtract(1, 'year').format('yyyy-MM-DD');
+            this.reportType = 'Yearly Sales';
 
         } else if (this.ngPlan == 'range') {
             this.startDate = moment(this.ngRangeStart).format('yyyy-MM-DD');

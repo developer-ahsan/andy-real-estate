@@ -93,7 +93,7 @@ export class ReportStandardMarginComponent implements OnInit, OnDestroy {
   generatePdf() {
     const documentDefinition: any = {
       pageSize: 'A4',
-      pageOrientation: 'portrait',
+      pageOrientation: 'landscape',
       pageMargins: [10, 10, 10, 10],
       content: [
         // Add a title for your PDF

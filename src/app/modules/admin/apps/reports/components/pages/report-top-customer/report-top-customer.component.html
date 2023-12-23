@@ -69,8 +69,9 @@
                         <button class="min-w-50" mat-button mat-stroked-button (click)="backToList()">Back To
                             Search</button>
                         <br>
-                        <p class="cursor-pointer mt-2" (click)="goToSummary()">Go To
-                            Report Summary</p>
+                        <button class="min-w-50  mt-2" mat-button mat-flat-button color="primary"
+                            (click)="goToSummary()">Go To
+                            Report Summary</button>
                     </div>
                 </div>
                 <table class="table table-striped" matSort (matSortChange)="customSort($event)">

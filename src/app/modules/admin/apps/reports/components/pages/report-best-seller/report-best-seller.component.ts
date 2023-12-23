@@ -229,7 +229,7 @@ export class ReportBestSellerComponent implements OnInit, OnDestroy {
         [
           item.SALES,
           item?.totalQuantity,
-          { text: item.pk_productID, link: `${environment.siteDomain}apps/ecommerce/inventory/${item.pk_productID}/net-cost` },
+          { text: `(${item?.pk_productID}) ${item?.productNumber}:${item?.productName}`, link: `${environment.siteDomain}apps/ecommerce/inventory/${item.pk_productID}/net-cost` },
           item?.companyName
         ]
       );

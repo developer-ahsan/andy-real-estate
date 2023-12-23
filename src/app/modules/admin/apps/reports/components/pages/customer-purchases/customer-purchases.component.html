@@ -48,7 +48,9 @@
                     <div>
                         <button class="min-w-50" mat-button mat-stroked-button (click)="backToList()">Back To
                             Search</button>
-                        <p class="cursor-pointer mt-2 text-blue-800" (click)="goToTotals()">Go to totals</p>
+                        <br>
+                        <button class="min-w-50" mat-button mat-stroked-button (click)="goToTotals()">Go to
+                            totals</button>
                     </div>
                 </div>
                 <table class="table table-striped" matSort (matSortChange)="customSort($event)">
@@ -140,9 +142,8 @@
                     </tbody>
                 </table>
                 <div class="text-right">
-                    <p class="cursor-pointer m-2 text-blue-800" (click)="backtoTop()">Back to top</p>
+                    <button class="min-w-50" mat-button mat-stroked-button (click)="backtoTop()">Back to top</button>
                 </div>
             </div>
         </div>
     </div>
-</div>

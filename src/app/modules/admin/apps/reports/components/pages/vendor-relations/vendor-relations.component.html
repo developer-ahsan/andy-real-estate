@@ -47,8 +47,9 @@
                         <tr *ngFor="let item of generateReportData">
                             <td>{{item.pk_companyID}}</td>
                             <td>
-                                <a [routerLink]="['/apps/vendors',item.pk_companyID]"
-                                    target="_blank">{{item.companyName}}</a>
+                                <a [routerLink]="['/apps/vendors',item.pk_companyID]" target="_blank">
+                                    <span [innerHTML]="item.companyName"></span>
+                                </a>
                             </td>
                             <td>
                                 <span *ngIf="item.vendorRelation == 1">Normal</span>

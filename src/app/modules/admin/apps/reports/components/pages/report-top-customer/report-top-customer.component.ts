@@ -104,7 +104,7 @@ export class ReportTopCustomerComponent implements OnInit, OnDestroy {
                 existingCustomer.sale += saleAmount;
                 existingCustomer.counter += counterValue;
               } else {
-                stores.customers.push({ storeID: stores.pk_storeID, id, name, company, phone, address, street1, city, zip, sale: saleAmount, counter: counterValue, unit, division, organisation, firstName, lastName, state });
+                stores.customers.push({ storeID: stores.pk_storeID, id, name, company, phone, address, street1, city, zip, sale: saleAmount, counter: counterValue, unit, division, organisation, firstName, lastName, state, location });
               }
             }
             stores.customers.sort((a, b) => b.sale - a.sale);
@@ -182,6 +182,7 @@ export class ReportTopCustomerComponent implements OnInit, OnDestroy {
       { header: "ZIPCODE", key: "zip", width: 30 },
       { header: "FIRSTNAME", key: "firstName", width: 30 },
       { header: "LASTNAME", key: "lastName", width: 30 },
+      { header: "LOCATIONNAME", key: "location", width: 30 },
       { header: "UNIT", key: "unit", width: 30 },
       { header: "DIVISION", key: "division", width: 30 },
       { header: "ORGANIZATION", key: "organisation", width: 30 },

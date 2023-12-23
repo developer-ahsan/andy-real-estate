@@ -101,10 +101,11 @@
             <tbody>
                 <tr *ngFor="let item of dataSource">
                     <td>{{item?.SALES }}</td>
-                    <td>{{item?.totalQuantity | number}}</td>
+                    <td>{{item?.totalQuantity}}</td>
                     <td>
                         <a [routerLink]="['/apps/ecommerce/inventory',item.pk_productID,'net-cost']"
-                            target="_blank">({{item.pk_productID}}) {{item.productNumber}}:{{item?.productName}}</a>
+                            target="_blank">({{item.pk_productID}}) {{item.productNumber}}:<span
+                                [innerHTML]="item?.productName"></span></a>
                     </td>
                     <td>
                         {{item?.companyName}}

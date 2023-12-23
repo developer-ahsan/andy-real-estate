@@ -16,7 +16,7 @@
                     </tr>
                     <tr>
                         <td valign="top">{{element.name}}</td>
-                        <td valign="top"> {{element.percentage | number:'1.2-2'}} %</td>
+                        <td valign="top"> {{element?.percentage | number:'1.2-2'}} %</td>
                         <td valign="top">
                             <span *ngIf="element.blnSales">Sales</span>
                             <span *ngIf="!element.blnSales">Gross profit</span>
