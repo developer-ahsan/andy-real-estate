@@ -38,6 +38,25 @@ export class OrdersEntitiesListComponent implements OnInit {
     })
   }
   getOrderProducts() {
+
+    this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      res["data"].forEach(element => {
+        const index = this.supplierList.findIndex(item => item.id == element.fk_supplierID);
+        if (index < 0) {
+          this.supplierList.push({ name: element.companyName, id: element.fk_supplierID });
+        }
+
+        if (element.Vendor) {
+          const index = this.supplierList.findIndex(item => item.id == element.VendorID);
+          if (index < 0) {
+            this.supplierList.push({ name: element.Vendor, id: element.VendorID });
+          }
+        }
+      });
+      this.isLoading = false;
+      this.isLoadingChange.emit(false);
+      this._changeDetectorRef.markForCheck();
+    })
     this._orderService.orderLineProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (!res) {
         this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -54,10 +73,6 @@ export class OrdersEntitiesListComponent implements OnInit {
           const proIndex = this.productsList.findIndex(item => item.id == element.pk_productID);
           if (proIndex < 0) {
             this.productsList.push({ name: element.productName, id: element.pk_productID });
-          }
-          const index = this.supplierList.findIndex(item => item.id == element.supplier_id);
-          if (index < 0) {
-            this.supplierList.push({ name: element.supplier_name, id: element.supplier_id, link: element.supplierLink });
           }
         });
         this.isLoading = false;
