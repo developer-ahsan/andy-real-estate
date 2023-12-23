@@ -48,6 +48,7 @@
                     <div>
                         <button class="min-w-50" mat-button mat-stroked-button (click)="backToList()">Back To
                             Search</button>
+                        <p class="cursor-pointer mt-2 text-blue-800" (click)="goToTotals()">Go to totals</p>
                     </div>
                 </div>
                 <table class="table table-striped" matSort (matSortChange)="customSort($event)">
@@ -100,24 +101,24 @@
                         <tr *ngFor="let item of generateReportData;let i=index;">
                             <td>{{i+1}}</td>
                             <td>
-                                <a class="text-blue-700" [routerLink]="['apps/customers',item.fk_storeUserID]"
+                                <a class="text-blue-700" [routerLink]="['/apps/customers',item.fk_storeUserID]"
                                     target="_blank">{{item.fk_storeUserID}}</a>
                             </td>
                             <td>
-                                <a class="text-blue-700" [routerLink]="['apps/customers',item.fk_storeUserID]"
+                                <a class="text-blue-700" [routerLink]="['/apps/customers',item.fk_storeUserID]"
                                     target="_blank">{{item.firstName}}</a>
                             </td>
                             <td>
-                                <a class="text-blue-700" [routerLink]="['apps/customers',item.fk_storeUserID]"
+                                <a class="text-blue-700" [routerLink]="['/apps/customers',item.fk_storeUserID]"
                                     target="_blank">{{item.lastName}}</a>
                             </td>
                             <td>
-                                <a class="text-blue-700" [routerLink]="['apps/customers',item.fk_storeUserID]"
+                                <a class="text-blue-700" [routerLink]="['/apps/customers',item.fk_storeUserID]"
                                     target="_blank"> {{item.email}}</a>
                             </td>
                             <td>
                                 <a class="text-blue-700"
-                                    [routerLink]="['apps/customers',item.fk_storeUserID]">{{item.companyName}}</a>
+                                    [routerLink]="['/apps/customers',item.fk_storeUserID]">{{item.companyName}}</a>
                             </td>
                             <td>{{item.NO}}</td>
                             <td>{{item.PV | currency}}</td>
@@ -128,7 +129,7 @@
                                 <span class="text-green-500" *ngIf="item.PV == item.TPV">YES</span>
                             </td>
                         </tr>
-                        <tr class="font-bold">
+                        <tr class="font-bold" #summaryScrollAnchor>
                             <td colspan="6">TOTALS</td>
                             <td>{{totalsData.NO}}</td>
                             <td>{{totalsData.PV | currency}}</td>
@@ -138,6 +139,9 @@
                         </tr>
                     </tbody>
                 </table>
+                <div class="text-right">
+                    <p class="cursor-pointer m-2 text-blue-800" (click)="backtoTop()">Back to top</p>
+                </div>
             </div>
         </div>
     </div>

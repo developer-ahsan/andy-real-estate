@@ -8,6 +8,7 @@ import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.servic
 import { Sort } from '@angular/material/sort';
 import moment from 'moment';
 import * as Excel from 'exceljs/dist/exceljs.min.js';
+import { CurrencyPipe } from '@angular/common';
 
 @Component({
   selector: 'app-customer-purchases',
@@ -16,6 +17,7 @@ import * as Excel from 'exceljs/dist/exceljs.min.js';
 })
 export class ReportCustomerPurchaseComponent implements OnInit, OnDestroy {
   @ViewChild('topScrollAnchor') topScroll: ElementRef;
+  @ViewChild('summaryScrollAnchor') summaryScrollAnchor: ElementRef;
 
   @ViewChild('paginator') paginator: MatPaginator;
   isLoading: boolean;
@@ -42,7 +44,7 @@ export class ReportCustomerPurchaseComponent implements OnInit, OnDestroy {
   generateExcelLoader: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private commonService: DashboardsService,
+    private commonService: DashboardsService, private currencyPipe: CurrencyPipe,
     private _reportService: ReportsService
   ) { }
 
@@ -91,7 +93,7 @@ export class ReportCustomerPurchaseComponent implements OnInit, OnDestroy {
           this.totalsData.PV += element.PV;
           this.totalsData.TNO += element.TNO;
           this.totalsData.TPV += element.TPV;
-          if (element.PV == element.TPV) {
+          if (element.NO == element.TNO) {
             this.totalsData.NC += 1;
             element.New_Customer = 'Yes';
           }
@@ -179,8 +181,23 @@ export class ReportCustomerPurchaseComponent implements OnInit, OnDestroy {
     ]
     worksheet.columns = columns;
     for (const obj of this.generateReportData) {
+      obj.PV = this.currencyPipe.transform(Number(obj.PV), 'USD', 'symbol', '1.2-2', 'en-US');
+      obj.TPV = this.currencyPipe.transform(Number(obj.TPV), 'USD', 'symbol', '1.2-2', 'en-US');
       worksheet.addRow(obj);
     }
+    const totalsRow = {
+      firstName: "Grand Total",
+      NO: this.totalsData.NO,
+      PV: this.currencyPipe.transform(Number(this.totalsData.PV), 'USD', 'symbol', '1.2-2', 'en-US'),
+      TNO: this.totalsData.TNO,
+      TPV: this.currencyPipe.transform(Number(this.totalsData.TPV), 'USD', 'symbol', '1.2-2', 'en-US'),
+      New_Customer: this.totalsData.NC
+      // ... Add more properties if needed
+    };
+
+    // Add totals row to the worksheet
+    worksheet.addRow(totalsRow);
+
     workbook.xlsx.writeBuffer()
       .then((data: any) => {
         const blob = new Blob([data], {
@@ -199,6 +216,11 @@ export class ReportCustomerPurchaseComponent implements OnInit, OnDestroy {
         this.generateExcelLoader = false;
         this._changeDetectorRef.markForCheck();
       });
+  }
+  goToTotals() {
+    setTimeout(() => {
+      this.summaryScrollAnchor.nativeElement.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
   }
   /**
      * On destroy
