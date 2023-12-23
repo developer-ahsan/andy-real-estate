@@ -43,6 +43,7 @@ export class ReportInventorySummaryComponent implements OnInit, OnDestroy {
     this.getStores();
   };
   getStores() {
+    // inventory_summary_stores
     this.commonService.storesData$.pipe(
       takeUntil(this._unsubscribeAll),
       map(res => res["data"].filter(element => element.blnActive))

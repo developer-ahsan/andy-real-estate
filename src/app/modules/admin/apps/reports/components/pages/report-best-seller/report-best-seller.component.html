@@ -116,7 +116,7 @@
                             (click)="item.isViewCustomer = false">Hide</span>
                         <ng-container *ngIf="item.isViewCustomer">
                             <p *ngFor="let customer of item.customers; let i=index">
-                                <a [routerLink]="['apps/customers',customer.id]" target="_blank">{{i+1 + '. '
+                                <a [routerLink]="['/apps/customers',customer.id]" target="_blank">{{i+1 + '. '
                                     +customer.name + '(' + customer.counter + 'x)'}}</a>
                             </p>
                         </ng-container>
