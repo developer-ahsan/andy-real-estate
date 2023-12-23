@@ -4,6 +4,7 @@ import { FileManagerService } from 'app/modules/admin/apps/file-manager/store-ma
 import { takeUntil } from 'rxjs/operators';
 import moment from 'moment';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-surveys',
@@ -32,7 +33,8 @@ export class SurveysComponent implements OnInit, OnDestroy {
   constructor(
     private _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+    private router: Router,
   ) { }
 
   ngOnInit(): void {
@@ -188,6 +190,11 @@ export class SurveysComponent implements OnInit, OnDestroy {
   back() {
     this.isUpdateSurveys = false;
     this.surveyName = '';
+  }
+
+  surveysAnalytics() {
+    const { pk_storeID } = this.selectedStore;
+    this.router.navigateByUrl(`/apps/stores/${pk_storeID}/surveys-analytics`);
   }
 
   ngOnDestroy(): void {

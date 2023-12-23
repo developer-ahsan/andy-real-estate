@@ -41,6 +41,7 @@ import { ProductClicksComponent } from './navigation/product-clicks/product-clic
 import { ShippingNotificaitonComponent } from './navigation/shipping-notificaiton/shipping-notificaiton.component';
 import { StoreProcurementSettingsComponent } from './navigation/store-procurement-settings/store-procurement-settings.component';
 import { ReferalLocationsComponent } from './navigation/referal-locations/referal-locations.component';
+import { SurveysAnalyticsComponent } from './navigation/surveys/Analytics/analytics.component';
 
 export const storeRoutes: Route[] = [
     {
@@ -94,6 +95,14 @@ export const storeRoutes: Route[] = [
                 data: {
                     title: 'Surveys',
                     url: 'surveys'
+                }
+            },
+            {
+                path: 'surveys-analytics',
+                component: SurveysAnalyticsComponent,
+                data: {
+                    title: 'Surveys Analytics',
+                    url: 'surveys-analytics'
                 }
             },
             {

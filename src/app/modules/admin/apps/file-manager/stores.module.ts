@@ -98,6 +98,7 @@ import { ProductSubCategoriesComponent } from "./navigation/product-categories/p
 import { ScrollingModule } from "@angular/cdk/scrolling";
 import { CKEditorModule } from 'ckeditor4-angular';
 import { StoreProcurementSettingsComponent } from "./navigation/store-procurement-settings/store-procurement-settings.component";
+import { SurveysAnalyticsComponent } from "./navigation/surveys/Analytics/analytics.component";
 
 @NgModule({
   declarations: [
@@ -159,7 +160,9 @@ import { StoreProcurementSettingsComponent } from "./navigation/store-procuremen
     PresentationHeaderImageComponent,
     SimpleEmailBlastComponent,
     ProductMainCategoriesComponent,
-    ProductSubCategoriesComponent, StoreProcurementSettingsComponent
+    ProductSubCategoriesComponent,
+    StoreProcurementSettingsComponent,
+    SurveysAnalyticsComponent
   ],
   imports: [
     RouterModule.forChild(storeRoutes),
