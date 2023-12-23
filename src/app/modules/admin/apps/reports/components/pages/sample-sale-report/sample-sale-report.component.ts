@@ -102,9 +102,12 @@ export class ReportSampleSaleComponent implements OnInit, OnDestroy {
             });
           }
         });
+        let orderCount = 0;
         res["data"].forEach((store) => {
           store.date_data = [];
           store.storeDetails.forEach(element => {
+            orderCount += 1;
+            element.orderCount = orderCount;
             let date_check = moment(element.date).format('MMM,yyyy');
             if (store.date_data.length == 0) {
               store.date_data.push({ date: moment(element.date).format('MMM,yyyy'), data: [element] });

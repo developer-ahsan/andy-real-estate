@@ -59,6 +59,7 @@
                             </fuse-alert>
                         </div>
                         <p class="text-lg text-capitalize"><strong>{{_reportService.ngPlan}}</strong></p>
+
                         <p>{{this.selectedStores.storeName}}</p>
                         <p>Range: {{this._reportService.startDate | date: 'MM/dd/yyyy'}}-{{this._reportService.endDate |
                             date: 'MM/dd/yyyy'}}</p>
@@ -67,6 +68,9 @@
                     <div>
                         <button class="min-w-50" mat-button mat-stroked-button (click)="backToList()">Back To
                             Search</button>
+                        <br>
+                        <p class="cursor-pointer mt-2" (click)="goToSummary()">Go To
+                            Report Summary</p>
                     </div>
                 </div>
                 <table class="table table-striped" matSort (matSortChange)="customSort($event)">
@@ -103,7 +107,8 @@
                         </ng-container>
                     </tbody>
                 </table>
-                <div class="text-lg font-medium tracking-tight leading-6 truncate">Report Summary</div>
+                <div #summaryScrollAnchor class="text-lg font-medium tracking-tight leading-6 truncate">Report Summary
+                </div>
                 <table class="table table-striped">
                     <thead>
                         <tr>

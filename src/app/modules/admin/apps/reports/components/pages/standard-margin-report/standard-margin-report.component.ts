@@ -1,13 +1,18 @@
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { ReportsService } from '../../reports.service';
 import { ApplyBlanketFOBlocation, applyCompanyWideCoop, updateCompanySettings } from '../../reports.types';
+import { Sort } from '@angular/material/sort';
+import * as pdfMake from "pdfmake/build/pdfmake";
+import * as pdfFonts from "pdfmake/build/vfs_fonts";
+import { CurrencyPipe } from '@angular/common';
+import { environment } from 'environments/environment';
 
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 @Component({
   selector: 'app-standard-margin-report',
   templateUrl: './standard-margin-report.component.html',
@@ -15,79 +20,124 @@ import { ApplyBlanketFOBlocation, applyCompanyWideCoop, updateCompanySettings } 
 })
 export class ReportStandardMarginComponent implements OnInit, OnDestroy {
   @Input() isLoading: boolean;
-  @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
-  @ViewChild('paginator') paginator: MatPaginator;
 
-  blnSettings: boolean = true;
-  isUpdateLoader: boolean = false;
-  supplierData: any;
-
-  searchCoopCtrl = new FormControl();
-  selectedCoop: any;
-  isSearchingCoop = false;
 
   allCoops = [];
   dataSource = [];
-  displayedColumns: string[] = ['store', 'm1', 'm2', 'm3', 'm4', 'm5', 'm6'];
-  total = 0;
-  page = 1;
+  initialData = [];
 
-  isSearching: boolean = false;
-  keyword = '';
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _reportService: ReportsService
   ) { }
 
   ngOnInit(): void {
-    this._reportService.Stores$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.dataSource = res["data"];
-      this.total = res["totalRecords"];
-    });
+    this.isLoading = true;
+    this.getMarginReports();
   }
-  getNextData(event) {
-    const { previousPageIndex, pageIndex } = event;
-    if (pageIndex > previousPageIndex) {
-      this.page++;
-    } else {
-      this.page--;
-    };
-    this.getStores(this.page);
-  };
-  getStores(page) {
-    if (page == 1) {
-      this.page = 1;
-      this.paginator.pageIndex = 0;
-    }
-    if (this.keyword != '') {
-      this.isSearching = true;
-      this._changeDetectorRef.markForCheck();
-    }
+  getMarginReports() {
     let params = {
-      page: page,
-      keyword: this.keyword,
-      size: 20,
-      stores: true
+      store_margins_report: true
     }
-    this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.isSearching = false;
+    this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.isLoading = false;
       this._changeDetectorRef.markForCheck();
-      this.dataSource = res["data"];
-      this.total = res["totalRecords"];
-    }, err => {
-      this.isSearching = false;
-      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      const data = res["data"];
+      if (data.length) {
+        const storeMargins = data[0].storeMargins.split(',,');
+        this.dataSource = storeMargins.map(store => {
+          const [pk_storeID, storeName, margin1, margin2, margin3, margin4, margin5, margin6] = store.split('::');
+          return {
+            pk_storeID,
+            storeName,
+            margin1: Math.round(Number(margin1) * 100),
+            margin2: Math.round(Number(margin2) * 100),
+            margin3: Math.round(Number(margin3) * 100),
+            margin4: Math.round(Number(margin4) * 100),
+            margin5: Math.round(Number(margin5) * 100),
+            margin6: Math.round(Number(margin6) * 100),
+          };
+        });
+      }
+      this.initialData = this.dataSource;
     });
   }
-  resetSearch() {
-    this._reportService.Stores$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.page = 1;
-      this.keyword = '';
-      this.paginator.pageIndex = 0;
-      this.dataSource = res["data"];
-      this.total = res["totalRecords"]
+  sortData(event: Sort): void {
+    const sortHeaderId = event.active;
+    const sortDirection = event.direction;
+
+    if (sortDirection === '') {
+      this.dataSource = [...this.initialData];
+      return;
+    }
+    this.dataSource.sort((a, b) => {
+      const valueA = a[sortHeaderId];
+      const valueB = b[sortHeaderId];
+      if (typeof valueA === 'number' && typeof valueB === 'number') {
+        if (sortDirection === 'asc') {
+          return valueA - valueB;
+        } else {
+          return valueB - valueA;
+        }
+      } else {
+        if (sortDirection === 'asc') {
+          return valueA.toString().localeCompare(valueB.toString());
+        } else {
+          return valueB.toString().localeCompare(valueA.toString());
+        }
+      }
     });
+  }
+  generatePdf() {
+    const documentDefinition: any = {
+      pageSize: 'A4',
+      pageOrientation: 'portrait',
+      pageMargins: [10, 10, 10, 10],
+      content: [
+        // Add a title for your PDF
+        { text: 'Standard Store Margins', fontSize: 14 },
+        // Add a spacer element to create a margin above the table
+        { text: '', margin: [0, 20, 0, 0] },
+        {
+          table: {
+            widths: ['*', '*', '*', '*', '*', '*', '*'],
+            body: [
+              [
+                { text: 'Store', bold: true },
+                { text: 'Margin1', bold: true },
+                { text: 'Margin2', bold: true },
+                { text: 'Margin3', bold: true },
+                { text: 'Margin4', bold: true },
+                { text: 'Margin5', bold: true },
+                { text: 'Margin6', bold: true }
+              ]
+            ]
+          },
+          fontSize: 8
+        }
+      ],
+      styles: {
+        tableHeader: {
+          bold: true
+        }
+      }
+    };
+    this.dataSource.forEach(element => {
+      documentDefinition.content[2].table.body.push(
+        [
+          { text: element.storeName, link: `${environment.siteDomain}apps/orders/'${element.pk_storeID}/store-products` },
+          element.margin1 + '%',
+          element.margin2 + '%',
+          element.margin3 + '%',
+          element.margin4 + '%',
+          element.margin5 + '%',
+          element.margin6 + '%'
+        ]
+      )
+    });
+    pdfMake.createPdf(documentDefinition).download(`Standard-Store-Margins-Report.pdf`);
   }
   /**
      * On destroy

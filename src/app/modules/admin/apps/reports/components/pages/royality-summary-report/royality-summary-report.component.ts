@@ -12,9 +12,7 @@ import { AddSizeChart, RemoveSizeChart, UpdateSizeChart } from '../../reports.ty
   styles: [".mat-paginator {border-radius: 16px !important}"]
 })
 export class RoyalitySummaryReportComponent implements OnInit, OnDestroy {
-  @ViewChild('paginator') paginator: MatPaginator;
   isLoading: boolean = true;
-  @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   dataSource = [];
@@ -22,6 +20,7 @@ export class RoyalitySummaryReportComponent implements OnInit, OnDestroy {
   totalData = 0;
   page = 1;
   not_available = 'N/A';
+  isLoadMore: boolean = false;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -36,26 +35,25 @@ export class RoyalitySummaryReportComponent implements OnInit, OnDestroy {
       is_weekly: this._reportService.ngPlan == 'weekly' ? true : false,
       page: this.page,
       royalty_summaries: true,
-      size: 20
+      size: 50
     }
     this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.dataSource = res["data"];
+      this.dataSource = this.dataSource.concat(res["data"]);
       this.totalData = res["totalRecords"];
+      this.isLoadMore = false;
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
+      this.isLoadMore = false;
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
 
     })
   }
-  getNextData(event) {
-    const { previousPageIndex, pageIndex } = event;
-    if (pageIndex > previousPageIndex) {
-      this.page++;
-    } else {
-      this.page--;
-    };
+  getNextData() {
+    this.isLoadMore = true;
+    this._changeDetectorRef.markForCheck();
+    this.page++;
     this.getRoyaltySummary();
   };
   /**

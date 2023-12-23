@@ -19,6 +19,7 @@ import * as Excel from 'exceljs/dist/exceljs.min.js';
 })
 export class ReportTopCustomerComponent implements OnInit, OnDestroy {
   @ViewChild('topScrollAnchor') topScroll: ElementRef;
+  @ViewChild('summaryScrollAnchor') summaryScrollAnchor: ElementRef;
 
   @ViewChild('paginator') paginator: MatPaginator;
   isLoading: boolean;
@@ -211,6 +212,12 @@ export class ReportTopCustomerComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
       });
   }
+  goToSummary() {
+    setTimeout(() => {
+      this.summaryScrollAnchor.nativeElement.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  }
+
 
   /**
      * On destroy

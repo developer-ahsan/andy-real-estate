@@ -2,7 +2,6 @@
 <div class="w-full">
     <div class="px-8 pb-4">
         <div class="row" *ngIf="!generateReportData">
-            <div class="col-12 text-right font-bold">Today: {{todayDate | date: 'MM/dd/yyyy'}}</div>
             <div class="col-12 col-md-6">
                 <mat-form-field class="w-full">
                     <mat-label>Select Store</mat-label>
@@ -36,7 +35,8 @@
             <div class="col-12">
                 <div class="flex justify-between">
                     <div>
-                        <p class="text-lg text-capitalize"><strong>{{_reportService.ngPlan}}</strong></p>
+                        <p class="text-lg text-capitalize"><strong>{{selectedStores.storeName}} -
+                                {{_reportService.ngPlan}}</strong></p>
                         <p>Range: {{this._reportService.startDate | date: 'MM/dd/yyyy'}}-{{this._reportService.endDate |
                             date: 'MM/dd/yyyy'}}</p>
                     </div>
@@ -82,10 +82,11 @@
                                 </tr>
                                 <ng-container *ngFor="let dateData of item.date_data">
                                     <tr class="text-center">
-                                        <td colspan="6" class="font-bold">{{dateData.date}}</td>
+                                        <td colspan="6" class="font-bold">{{dateData.date}}
+                                        </td>
                                     </tr>
                                     <tr *ngFor="let data of dateData.data">
-                                        <td>{{data.date | date: 'MM/dd/yyyy'}}</td>
+                                        <td>{{data.orderCount}}. {{data.date | date: 'MM/dd/yyyy'}}</td>
                                         <td><a class="text-blue-600" [routerLink]="['/apps/orders',data.id]"
                                                 target="_blank">{{data.id}}</a>
                                         </td>
