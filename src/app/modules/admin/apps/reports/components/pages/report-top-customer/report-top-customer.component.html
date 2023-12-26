@@ -82,7 +82,7 @@
                             <th>COMPANY</th>
                             <th>PHONE</th>
                             <th>ADDRESS</th>
-                            <th mat-sort-header="sale">SALE</th>
+                            <th mat-sort-header="theTotal">SALE</th>
                             <th>#</th>
                         </tr>
                     </thead>
@@ -91,18 +91,18 @@
                             <tr class="font-bold">
                                 <td colspan="7">{{item.storeName}}</td>
                             </tr>
-                            <ng-container *ngFor="let customer of item.customers;">
+                            <ng-container *ngFor="let customer of item.data;">
                                 <tr>
                                     <td>
-                                        <a [routerLink]="['/apps/customers',customer.id,'order-history']"
-                                            target="_blank" class="text-blue-500">{{customer.id}}</a>
+                                        <a [routerLink]="['/apps/customers',customer.fk_storeUserID,'order-history']"
+                                            target="_blank" class="text-blue-500">{{customer.fk_storeUserID}}</a>
                                     </td>
-                                    <td>{{customer.name}}</td>
-                                    <td>{{customer.company}}</td>
-                                    <td>{{customer.phone}}</td>
-                                    <td>{{customer.address}}</td>
-                                    <td>{{customer.sale | currency}}</td>
-                                    <td>{{customer.counter}}</td>
+                                    <td>{{customer.firstName + ' ' + customer.lastName}}</td>
+                                    <td>{{customer.companyName}}</td>
+                                    <td>{{customer.dayPhone}}</td>
+                                    <td>{{customer.address1}}</td>
+                                    <td>{{customer.theTotal | currency}}</td>
+                                    <td>{{customer.userCounter}}</td>
                                 </tr>
                             </ng-container>
                         </ng-container>
@@ -122,12 +122,12 @@
                         <tr *ngFor="let item of generateReportData">
                             <td>{{item.storeName}}</td>
                             <td>
-                                <a [routerLink]="['/apps/customers',item.topCustomer.id,'order-history']"
-                                    target="_blank" class="text-blue-500">{{item.topCustomer.name}}</a>
+                                <a [routerLink]="['/apps/customers',item.fk_storeUserID,'order-history']"
+                                    target="_blank" class="text-blue-500">{{item?.firstNameMaxtheTotal}}</a>
                             </td>
                             <td>
-                                <a [routerLink]="['/apps/customers',item.topSales.id,'order-history']" target="_blank"
-                                    class="text-blue-500">{{item.topSales.name}}</a>
+                                <a [routerLink]="['/apps/customers',item.fk_storeUserID,'order-history']"
+                                    target="_blank" class="text-blue-500">{{item?.firstNameMaxUserCounter}}</a>
                             </td>
                         </tr>
                     </tbody>

@@ -107,10 +107,10 @@
                             class="text-blue-600">{{item?.fk_orderID}}</a>
                     </td>
                     <td>
-                        {{item?.date | date: 'MM-dd-yyyy'}}
+                        {{item?.formattedDate}}
                     </td>
                     <td>
-                        {{item?.dateModified | date: 'MM-dd-yyyy @ hh-mm a'}}
+                        {{item?.formattedModifiedDate}}
                     </td>
                     <td>
                         {{item?.submittedBy}}
@@ -135,7 +135,7 @@
                     </td>
                 </tr>
                 <tr class="font-bold">
-                    <td colspan="5">GRAND TOTAL</td>
+                    <td colspan="6">GRAND TOTAL</td>
                     <td>{{GrandTotal | currency}}</td>
                     <td colspan="3"></td>
                 </tr>

@@ -151,23 +151,7 @@ export class RoyalitiesReportComponent implements OnInit, OnDestroy {
           } else {
             element.paid = false;
           }
-          let statusColor = '';
-          let statusValue = '';
-          let textColor = '';
-
-          if (element.blnCancelled) {
-            statusColor = 'text-red-500';
-            statusValue = 'Cancelled';
-            textColor = 'red';
-            element.status = { statusColor, statusValue, textColor };
-          } else if (element.blnClosed) {
-            statusColor = 'text-red-500';
-            statusValue = 'Closed';
-            textColor = 'red';
-            element.status = { statusColor, statusValue, textColor };
-          } else {
-            element.status = this._reportService.getStatusValue(element.orderLinesStatus);
-          }
+          this.setReportStatus(element);
         });
         this.generateReportData = res["data"];
         this.initialData = res["data"];
@@ -182,6 +166,37 @@ export class RoyalitiesReportComponent implements OnInit, OnDestroy {
       this.isGenerateReportLoader = false;
       this._changeDetectorRef.markForCheck();
     });
+  }
+  setReportStatus(report) {
+    const status = report.orderLinesStatus?.split('|').map(Number);
+    let statusColor = '';
+    let statusValue = '';
+    let textColor = '';
+    if (status) {
+      switch (true) {
+        case status.includes(1):
+        case status.includes(2):
+        case status.includes(3):
+        case status.includes(4):
+          statusValue = 'Processing';
+          statusColor = 'text-red-500';
+          textColor = 'red';
+          break;
+        case status.includes(7):
+          statusValue = 'P.O. Needed';
+          statusColor = 'text-purple-500';
+          textColor = 'purple';
+          break;
+        default:
+          statusValue = 'Shipped';
+          statusColor = 'text-green-500';
+          textColor = 'green';
+          break;
+      }
+    } else {
+      statusValue = 'N/A';
+    }
+    report.status = { statusColor, statusValue, textColor };
   }
   sortData(event: Sort): void {
     const sortHeaderId = event.active;
@@ -259,7 +274,7 @@ export class RoyalitiesReportComponent implements OnInit, OnDestroy {
           { text: this.currencyPipe.transform(Number(element.thisOrderTotal), 'USD', 'symbol', '1.2-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
           { text: this.currencyPipe.transform(Number(element.Royalties), 'USD', 'symbol', '1.2-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
           { text: element.paid ? 'Paid' : 'Not Paid', color: element.paid ? 'green' : 'red', bold: true },
-          { text: element.status.statusValue, color: element.status.statusTextColor, bold: true }
+          { text: element.status.statusValue, color: element.status.textColor, bold: true }
         ]
       )
     });
