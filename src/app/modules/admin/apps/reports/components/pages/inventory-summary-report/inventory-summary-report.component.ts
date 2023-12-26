@@ -123,20 +123,19 @@ export class ReportInventorySummaryComponent implements OnInit, OnDestroy {
 
         if (event.direction == 'asc') {
           acc[pk_storeID].data.sort((a, b) => {
-            const aValue = typeof a[event.active] === 'number' ? a[event.active] : parseFloat(a[event.active]);
-            const bValue = typeof b[event.active] === 'number' ? b[event.active] : parseFloat(b[event.active]);
+            const aValue = typeof a[event.active] === 'number' ? a[event.active] : a[event.active].toString();
+            const bValue = typeof b[event.active] === 'number' ? b[event.active] : b[event.active].toString();
 
-            return aValue - bValue;
+            return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
           });
         } else {
           acc[pk_storeID].data.sort((a, b) => {
-            const aValue = typeof a[event.active] === 'number' ? a[event.active] : parseFloat(a[event.active]);
-            const bValue = typeof b[event.active] === 'number' ? b[event.active] : parseFloat(b[event.active]);
+            const aValue = typeof a[event.active] === 'number' ? a[event.active] : a[event.active].toString();
+            const bValue = typeof b[event.active] === 'number' ? b[event.active] : b[event.active].toString();
 
-            return bValue - aValue;
+            return bValue < aValue ? -1 : bValue > aValue ? 1 : 0;
           });
         }
-
         return acc;
       }, {}));
       stores.sort((a, b) => a.storeName.localeCompare(b.storeName));
