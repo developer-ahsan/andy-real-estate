@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { OrdersService } from '../../orders.service';
 
 @Component({
@@ -28,6 +28,7 @@ export class OrderReorderEmailComponent implements OnInit, OnDestroy {
 
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.orderDetail = res["data"][0];
+      console.log(this.orderDetail)
       this.getReorderEmail();
     })
   };
@@ -56,8 +57,22 @@ export class OrderReorderEmailComponent implements OnInit, OnDestroy {
 
   sendEmail() {
     this.emailLoader = true;
-
-    this.emailLoader = false;
+    let payload = {
+      order_id: this.orderDetail.pk_orderID,
+      emails: [
+        this.orderDetail.userEmail//email of the user who ordered
+      ],
+      message: null,
+      reorder_email: true
+    }
+    this._orderService.orderPostCalls(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.emailLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe((res: any) => {
+      if (res) {
+        this._orderService.snackBar(res?.message);
+      }
+    });
   }
 
 

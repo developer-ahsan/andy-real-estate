@@ -2,8 +2,9 @@ import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { OrdersService } from '../../orders.service';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-order-review-email',
@@ -24,9 +25,12 @@ export class OrderReviewEmailComponent implements OnInit, OnDestroy {
 
   emailData: any;
   optedEmail: boolean = false;
+  emailLoader: boolean;
+  ngMessage = ''
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _orderService: OrdersService
+    private _orderService: OrdersService,
+    private _commonService: DashboardsService
   ) { }
 
   ngOnInit(): void {
@@ -60,8 +64,8 @@ export class OrderReviewEmailComponent implements OnInit, OnDestroy {
   }
   add(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
-    if (value) {
-      this.emails.push({ email: value });
+    if (value && !this.emails.includes(value)) {
+      this.emails.push(value);
     }
     event.chipInput!.clear();
   }
@@ -71,6 +75,29 @@ export class OrderReviewEmailComponent implements OnInit, OnDestroy {
     if (index >= 0) {
       this.emails.splice(index, 1);
     }
+  }
+
+  sendEmail() {
+    if (this.emails.length == 0) {
+      this._orderService.snackBar('Please add an email to notify');
+      return;
+    }
+    this.emailLoader = true;
+    let payload = {
+      order_id: this.orderDetail.pk_orderID,
+      emails: this.emails,
+      message: this.ngMessage,
+      review_email: true
+    }
+    payload = this._commonService.replaceNullSpaces(payload);
+    this._orderService.orderPostCalls(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.emailLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe((res: any) => {
+      if (res) {
+        this._orderService.snackBar(res?.message);
+      }
+    });
   }
   /**
      * On destroy

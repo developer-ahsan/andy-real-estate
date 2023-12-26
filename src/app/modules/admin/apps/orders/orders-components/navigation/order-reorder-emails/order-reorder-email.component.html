@@ -47,11 +47,11 @@
                             </fuse-alert>
                         </div>
                         <div class="col-12 text-right">
-                            <button (click)="sendEmail()" [matTooltip]="'Send Reorder Email'" class="min-w-40" mat-stroked-button>
-                                <!-- <mat-progress-spinner *ngIf="createProductDetailLoader" [diameter]="24"
-                                                [mode]="'indeterminate'">
-                                            </mat-progress-spinner> -->
-                                <span>Send Email</span>
+                            <button (click)="sendEmail()" [disabled]="emailLoader" [matTooltip]="'Send Reorder Email'"
+                                class="min-w-40" mat-stroked-button>
+                                <mat-progress-spinner *ngIf="emailLoader" [diameter]="24" [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                                <span *ngIf="!emailLoader">Send Email</span>
                             </button>
                         </div>
                     </div>
