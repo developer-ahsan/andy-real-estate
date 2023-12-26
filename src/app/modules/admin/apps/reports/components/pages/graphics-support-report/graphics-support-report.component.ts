@@ -93,10 +93,11 @@ export class GraphicsSupportReportComponent implements OnInit, OnDestroy {
           this.grandTotal.revenue = grandTotalRevenue;
 
 
-          const ttParts = element.TT.split(":");
-          this.totalHours += parseInt(ttParts[0]);
-          this.totalMinutes += parseInt(ttParts[1]);
-          this.totalSeconds += parseInt(ttParts[2]);
+          const ttParts = element.TT.split(":").map(part => parseInt(part) || 0);
+          for (let i = 0; i < Math.min(ttParts.length, 3); i++) {
+            this[`total${i === 0 ? 'Hours' : i === 1 ? 'Minutes' : 'Seconds'}`] += ttParts[i];
+          }
+
 
 
           element.percent = ((Number(TotalRevenue) / grandTotalRevenue) * 100).toFixed(2);

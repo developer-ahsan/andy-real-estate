@@ -241,9 +241,10 @@ export class RoyalitiesReportComponent implements OnInit, OnDestroy {
         { text: '', margin: [0, 20, 0, 0] },
         {
           table: {
-            widths: ['*', '*', '*', '*', '*', '*', '*', '*'],
+            widths: ['*', '*', '*', '*', '*', '*', '*', '*', '*'],
             body: [
               [
+                { text: '#', bold: true },
                 { text: 'Order Date', bold: true },
                 { text: 'Payment Date', bold: true },
                 { text: 'ID', bold: true },
@@ -267,7 +268,8 @@ export class RoyalitiesReportComponent implements OnInit, OnDestroy {
     this.generateReportData.forEach((element, key) => {
       documentDefinition.content[3].table.body.push(
         [
-          key + 1 + '. ' + element.orderDate,
+          key + 1,
+          element.orderDate,
           element.paymentDate,
           { text: element.pk_orderID, link: `${environment.siteDomain}apps/orders/'${element.pk_orderID}` },
           element.companyName,
@@ -281,6 +283,7 @@ export class RoyalitiesReportComponent implements OnInit, OnDestroy {
     documentDefinition.content[3].table.body.push(
       [
         'Totals: ',
+        '',
         '',
         '',
         '',

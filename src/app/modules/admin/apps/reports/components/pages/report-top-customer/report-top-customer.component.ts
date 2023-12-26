@@ -183,7 +183,7 @@ export class ReportTopCustomerComponent implements OnInit, OnDestroy {
       { header: "LOCATIONNAME", key: "locationName", width: 30 },
       { header: "UNIT", key: "unit", width: 30 },
       { header: "DIVISION", key: "division", width: 30 },
-      { header: "ORGANIZATION", key: "organisation", width: 30 },
+      { header: "ORGANIZATION", key: "organization", width: 30 },
       { header: "THETOTAL", key: "theTotal", width: 30 },
     ]
     worksheet.columns = columns;

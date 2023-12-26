@@ -47,21 +47,17 @@ export class ReportInventorySummaryComponent implements OnInit, OnDestroy {
     this.getStores();
   };
   getStores() {
-    // inventory_summary_stores
-    this.commonService.storesData$
-      .pipe(
-        takeUntil(this._unsubscribeAll),
-        map(res => res["data"].filter(element => element.blnActive))
-      )
-      .subscribe(filteredData => {
-        this.allStores = [
-          { storeName: 'All Stores', pk_storeID: '' },
-          ...filteredData
-        ];
-        this.selectedStores = this.allStores[0];
-        this.generateReport();
-      });
-
+    let param = {
+      inventory_summary_stores: true
+    }
+    this._reportService.getAPIData(param).subscribe(res => {
+      this.allStores = [
+        { storeName: 'All Stores', storeID: '' },
+        ...res["data"]
+      ];
+      this.selectedStores = this.allStores[0];
+      this.generateReport();
+    });
   }
   generateReport() {
     let is_weekly = false;
@@ -69,11 +65,12 @@ export class ReportInventorySummaryComponent implements OnInit, OnDestroy {
       is_weekly = true;
     }
     this.isGenerateReportLoader = true;
+    this.isLoading = true;
     let params = {
       inventory_summary: true,
       inventory: this.inventory,
       keyword: this.keyword,
-      store_list: this.selectedStores.pk_storeID,
+      store_list: this.selectedStores.storeID,
       is_weekly
     }
     this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {

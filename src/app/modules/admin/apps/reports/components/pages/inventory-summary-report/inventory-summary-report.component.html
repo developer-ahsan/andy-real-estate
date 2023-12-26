@@ -14,7 +14,7 @@
             <div class="col-md-4 col-12">
                 <mat-form-field class="w-full">
                     <mat-label>Select Store</mat-label>
-                    <mat-select [(ngModel)]="selectedStores" matInput>
+                    <mat-select [(ngModel)]="selectedStores" matInput [disabled]="isLoading">
                         <mat-option *ngFor="let item of allStores" [value]="item">
                             <span>{{item.storeName}}</span>
                         </mat-option>
@@ -24,13 +24,13 @@
             <div class="col-md-4 col-12">
                 <mat-form-field class="w-full">
                     <mat-label>Keyword</mat-label>
-                    <input matInput [(ngModel)]="keyword">
+                    <input matInput [(ngModel)]="keyword" [disabled]="isLoading">
                 </mat-form-field>
             </div>
             <div class="col-12 col-md-4">
                 <mat-form-field class="w-full">
                     <mat-label>Select a Inventory:</mat-label>
-                    <mat-select matInput [(ngModel)]="inventory">
+                    <mat-select matInput [(ngModel)]="inventory" [disabled]="isLoading">
                         <mat-option [value]="0">All inventory</mat-option>
                         <mat-option [value]="1">No inventory</mat-option>
                         <mat-option [value]="2">Below threshold</mat-option>
@@ -39,7 +39,7 @@
                 </mat-form-field>
             </div>
             <div class="col-12 text-right">
-                <button mat-flat-button class="min-w-40" [color]="'primary'" [disabled]="isGenerateReportLoader"
+                <button mat-flat-button class="min-w-40" [color]="'primary'" [disabled]="isLoading"
                     (click)="generateReport()">
                     <span *ngIf="!isGenerateReportLoader">Filter</span>
                     <mat-progress-spinner *ngIf="isGenerateReportLoader" [diameter]="24" [mode]="'indeterminate'">
