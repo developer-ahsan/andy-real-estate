@@ -78,12 +78,11 @@
                     <ng-container *ngFor="let inventory of item.data;">
                         <tr class="{{inventory.bgColor}}">
                             <td>
-                                <a [routerLink]="['/apps/ecommerce/inventory',inventory.pk_productID,'warehouse-options']"
-                                    target="_blank">
-                                    {{inventory.pk_productID}}
-                                </a>
+                                {{inventory.pk_productID}}
                             </td>
-                            <td>{{inventory.pk_storeProductID}}</td>
+                            <td><a class="text-blue-500 underline"
+                                    [routerLink]="['/apps/ecommerce/inventory',inventory.pk_productID,'warehouse-options']"
+                                    target="_blank">{{inventory.pk_storeProductID}}</a></td>
                             <td>{{inventory.productNumber}}</td>
                             <td><span [innerHTML]="inventory.productName"></span></td>
                             <td>{{inventory.inventory}}</td>
