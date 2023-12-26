@@ -79,6 +79,7 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
         }
       });
     })
+    console.log(this.orderProducts)
   }
   getLineProducts(value) {
     let params = {
