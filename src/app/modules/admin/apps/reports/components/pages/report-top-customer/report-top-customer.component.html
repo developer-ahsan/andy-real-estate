@@ -100,7 +100,8 @@
                                     <td>{{customer.firstName + ' ' + customer.lastName}}</td>
                                     <td>{{customer.companyName}}</td>
                                     <td>{{customer.dayPhone}}</td>
-                                    <td>{{customer.address1}}</td>
+                                    <td>{{customer.address1}},{{customer.city + ' ' + customer.state + ' ' +
+                                        customer.zipCode}} </td>
                                     <td>{{customer.theTotal | currency}}</td>
                                     <td>{{customer.userCounter}}</td>
                                 </tr>

@@ -45,7 +45,7 @@ export const navigations = [
                 route: 'selectAccountCode'
             },
             {
-                title: 'Item Report',
+                title: 'Itemized Report',
                 icon: 'mat_outline:system_update_alt',
                 route: 'selectItemReport'
             },

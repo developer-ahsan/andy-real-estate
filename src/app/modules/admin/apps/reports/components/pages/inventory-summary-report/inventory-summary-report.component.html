@@ -1,6 +1,16 @@
 <div class="w-full">
     <div class="px-8 pb-4">
         <div class="row">
+            <div class="col-12" *ngIf="!isLoading">
+                <div class="text-lg mb-2 font-medium tracking-tight leading-6 truncate cursor-pointer">
+                    <fuse-alert [appearance]="'soft'" [dismissed]="false" [name]="'alertBox1'" [type]="'success'">
+                        <mat-progress-spinner *ngIf="generateExcelLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                        <span (click)="downloadExcelWorkSheet()" *ngIf="!generateExcelLoader">Click here to
+                            download Excel file.</span>
+                    </fuse-alert>
+                </div>
+            </div>
             <div class="col-md-4 col-12">
                 <mat-form-field class="w-full">
                     <mat-label>Select Store</mat-label>
@@ -30,7 +40,7 @@
             </div>
             <div class="col-12 text-right">
                 <button mat-flat-button class="min-w-40" [color]="'primary'" [disabled]="isGenerateReportLoader"
-                    (click)="generateReport(1)">
+                    (click)="generateReport()">
                     <span *ngIf="!isGenerateReportLoader">Filter</span>
                     <mat-progress-spinner *ngIf="isGenerateReportLoader" [diameter]="24" [mode]="'indeterminate'">
                     </mat-progress-spinner>
@@ -43,76 +53,50 @@
         </div>
     </div>
     <div *ngIf="dataSource.length > 0 && !isLoading;else other_content" class="w-full">
-        <table mat-table [dataSource]="dataSource" class="w-full border-t">
-            <ng-container matColumnDef="pid">
-                <th mat-header-cell *matHeaderCellDef class="">
-                    PID
-                </th>
-                <td mat-cell *matCellDef="let element">
-                    {{element?.pk_productID}}
-                </td>
-            </ng-container>
-            <ng-container matColumnDef="spid">
-                <th mat-header-cell *matHeaderCellDef class="">
-                    SPID
-                </th>
-                <td mat-cell *matCellDef="let element">
-                    {{element?.pk_storeProductID}}
-                </td>
-            </ng-container>
-            <ng-container matColumnDef="sid">
-                <th mat-header-cell *matHeaderCellDef class="">
-                    SID
-                </th>
-                <td mat-cell *matCellDef="let element">
-                    {{element?.productNumber}}
-                </td>
-            </ng-container>
-            <ng-container matColumnDef="store">
-                <th mat-header-cell *matHeaderCellDef class="">
-                    Store
-                </th>
-                <td mat-cell *matCellDef="let element">
-                    {{element?.storeName}}
-                </td>
-            </ng-container>
-            <ng-container matColumnDef="product">
-                <th mat-header-cell *matHeaderCellDef class="">
-                    Product
-                </th>
-                <td mat-cell *matCellDef="let element">
-                    {{element?.productName}}
-                </td>
-            </ng-container>
-            <ng-container matColumnDef="inventory">
-                <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10">
-                    Inventory
-                </th>
-                <td mat-cell *matCellDef="let element">
-                    {{element?.inventory}}
-                </td>
-            </ng-container>
-            <ng-container matColumnDef="threshold">
-                <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10">
-                    Threshold
-                </th>
-                <td mat-cell *matCellDef="let element">
-                    {{element?.inventoryThreshold}}
-                </td>
-            </ng-container>
-            <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-                class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
-            </tr>
+        <table class="table table-striped" matSort (matSortChange)="customSort($event)">
+            <thead>
+                <tr>
+                    <th mat-sort-header="pk_productID">PID</th>
+                    <th mat-sort-header="pk_storeProductID">SPID</th>
+                    <th mat-sort-header="productNumber">
+                        <div class="flex align-items-center">
+                            <span>SID</span>
+                            <mat-icon class="icon-size-4 ml-1" matTooltip="Supplier ID Number"
+                                [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                        </div>
+                    </th>
+                    <th mat-sort-header="productName">Product</th>
+                    <th mat-sort-header="inventory">Inventory</th>
+                    <th mat-sort-header="inventoryThreshold">Threshold</th>
+                </tr>
+            </thead>
+            <tbody>
+                <ng-container *ngFor="let item of generateReportData;">
+                    <tr class="font-bold">
+                        <td colspan="7">{{item.storeName}}</td>
+                    </tr>
+                    <ng-container *ngFor="let inventory of item.data;">
+                        <tr class="{{inventory.bgColor}}">
+                            <td>
+                                <a [routerLink]="['/apps/ecommerce/inventory',inventory.pk_productID,'warehouse-options']"
+                                    target="_blank">
+                                    {{inventory.pk_productID}}
+                                </a>
+                            </td>
+                            <td>{{inventory.pk_storeProductID}}</td>
+                            <td>{{inventory.productNumber}}</td>
+                            <td><span [innerHTML]="inventory.productName"></span></td>
+                            <td>{{inventory.inventory}}</td>
+                            <td>{{inventory.inventoryThreshold}}</td>
+                        </tr>
+                    </ng-container>
+                </ng-container>
+            </tbody>
         </table>
-        <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-            [ngClass]="{'pointer-events-none': isLoading}" [length]="totalData" [pageIndex]="0" [pageSize]="20"
-            (page)="getNextReportData($event)" [hidePageSize]="true">
-        </mat-paginator>
     </div>
     <!-- No color Found -->
     <ng-template #other_content>
-        <div class="text-secondary font-semibold p-5 text-center" *ngIf="!isLoading">
+        <div class="text-secondary alert alert-warning font-semibold p-5 text-center" *ngIf="!isLoading">
             There are currently no inventory summary.
         </div>
     </ng-template>

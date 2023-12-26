@@ -45,6 +45,7 @@ export class ReportBestSellerComponent implements OnInit, OnDestroy {
   selectedSuppliers: any;
   isSearchingSuppliers = false;
   isGenerateReportLoader: boolean;
+  isPDFLoader: boolean = false;
 
   singleItem: any;
 
@@ -194,7 +195,46 @@ export class ReportBestSellerComponent implements OnInit, OnDestroy {
     this.getCustomers(this.singleItem);
 
   }
-  generatePdf() {
+  generateReportForPDF() {
+    this.isPDFLoader = true;
+    let start = '';
+    let end = '';
+    if (this.ngStart != '') {
+      start = moment(this.ngStart).format('MM/DD/yyyy');
+    }
+    if (this.ngEnd != '') {
+      end = moment(this.ngEnd).format('MM/DD/yyyy');
+    }
+
+    let params = {
+      is_weekly: this._reportService.ngPlan == 'weekly' ? true : false,
+      best_sellers: true,
+      product_type: this.productType,
+      keyword: this.keyword,
+      store_id: this.selectedStores.pk_storeID,
+      supplier_id: this.selectedSuppliers.pk_companyID,
+      start_date: start,
+      end_date: end,
+      size: this.totalData
+    }
+    this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      res["data"].forEach(element => {
+        element.isViewCustomer = false;
+        element.customers = (element.CUSTOMERS || '').split(',').map(customer => {
+          const [id, name, counter] = customer.split('::');
+          return { id, name, counter };
+        });
+        element.customers.sort((a, b) => b.counter - a.counter);
+      });
+      this.generatePdf(res["data"]);
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isLoading = false;
+      this.isGenerateReportLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  generatePdf(data) {
     const documentDefinition: any = {
       pageSize: 'A4',
       pageOrientation: 'landscape',
@@ -223,7 +263,7 @@ export class ReportBestSellerComponent implements OnInit, OnDestroy {
       },
       { text: '', margin: [0, 20, 0, 0] },
     );
-    this.dataSource.forEach(item => {
+    data.forEach(item => {
       // First Table Data
       documentDefinition.content[0].table.body.push(
         [
@@ -235,6 +275,7 @@ export class ReportBestSellerComponent implements OnInit, OnDestroy {
       );
     });
     pdfMake.createPdf(documentDefinition).download(`Best-Seller-Report.pdf`);
+    this.isPDFLoader = false;
     this._changeDetectorRef.markForCheck();
   }
 

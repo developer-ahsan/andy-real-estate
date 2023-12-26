@@ -97,7 +97,7 @@ export const vendorsRoutes: Route[] = [
                 path: 'selectItemReport',
                 component: ReportItemsComponent,
                 data: {
-                    title: 'Item Report',
+                    title: 'Itemized Report',
                     url: 'selectItemReport'
                 }
             },

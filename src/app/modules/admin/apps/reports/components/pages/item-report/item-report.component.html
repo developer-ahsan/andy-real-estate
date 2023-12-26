@@ -17,6 +17,10 @@
                     </div>
                 </div>
             </div>
+            <div class="col-12 text-right my-2">
+                <span class="cursor-pointer" (click)="selectAll()">Select All / </span>
+                <span class="cursor-pointer" (click)="unselectAll()">Unselect All</span>
+            </div>
             <div class="col-12 col-md-4">
                 <mat-form-field class="w-full">
                     <mat-label>Payment status</mat-label>
@@ -40,6 +44,8 @@
                 <mat-form-field class="w-full">
                     <mat-label>Select columns</mat-label>
                     <mat-select matInput multiple="true" [(ngModel)]="ngSelectedColumns">
+                        <!-- <mat-option [value]="allColumns" (click)="selectAll()">Select All</mat-option>
+                        <mat-option [value]="[]" (click)="unselectAll()">Unselect All</mat-option> -->
                         <mat-option [value]="'price'">Unit price</mat-option>
                         <mat-option [value]="'runs'">Runs</mat-option>
                         <mat-option [value]="'setups'">Setups</mat-option>
@@ -48,6 +54,10 @@
                         <mat-option [value]="'paid'">Paid/unpaid</mat-option>
                         <mat-option [value]="'internalRoyalty'">Internal royalty</mat-option>
                         <mat-option [value]="'zip'">Zip code</mat-option>
+                        <mat-option [value]="'customer'">Customer PO</mat-option>
+                        <mat-option [value]="'acc'">Account charge code</mat-option>
+                        <mat-option [value]="'ccc'">Cost center code</mat-option>
+                        <mat-option [value]="'gov'">GovMVMT Contract Number</mat-option>
                     </mat-select>
                 </mat-form-field>
             </div>

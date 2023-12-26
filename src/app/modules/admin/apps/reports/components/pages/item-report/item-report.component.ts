@@ -36,7 +36,9 @@ export class ReportItemsComponent implements OnInit, OnDestroy {
   blnShowCancelled = 0;
   paymentStatus = 1;
   ngStore = 637;
-  ngSelectedColumns = ['price', 'setups', 'runs', 'shipping', 'subtotal', 'paid', 'internalRoyalty', 'zip'];
+  ngSelectedColumns = ['price', 'setups', 'runs', 'shipping', 'subtotal', 'paid', 'internalRoyalty', 'zip', 'customer', 'acc', 'ccc', 'gov'];
+  allColumns: string[] = ['price', 'runs', 'setups', 'shipping', 'subtotal', 'paid', 'internalRoyalty', 'zip', 'customer', 'acc', 'ccc', 'gov'];
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _reportService: ReportsService,
@@ -95,68 +97,6 @@ export class ReportItemsComponent implements OnInit, OnDestroy {
     this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["data"].length > 0) {
         const resData = res["data"];
-
-        // Create IDsData object with unique IDs and sorted data
-        // const IDsData = resData.reduce((acc, element) => {
-        //   const id = element.ID;
-        //   if (!acc[id]) {
-        //     acc[id] = { ID: id, data: [] };
-        //   }
-        //   acc[id].data.push(element);
-        //   acc[id].data.sort((a, b) => {
-        //     const aContainsWomen = a.Description.includes("Women");
-        //     const bContainsWomen = b.Description.includes("Women");
-        //     const aContainsMen = a.Description.includes("Men");
-        //     const bContainsMen = b.Description.includes("Men");
-
-        //     if (aContainsWomen && !bContainsWomen) {
-        //       return -1;
-        //     } else if (!aContainsWomen && bContainsWomen) {
-        //       return 1;
-        //     } else if (aContainsMen && !bContainsMen) {
-        //       return -1;
-        //     } else if (!aContainsMen && bContainsMen) {
-        //       return 1;
-        //     } else {
-        //       return 0;
-        //     }
-        //   });
-        //   return acc;
-        // }, {});
-
-        // const customSort = (a, b) => {
-        //   const aContainsWomen = a.Description.includes("Women");
-        //   const bContainsWomen = b.Description.includes("Women");
-        //   const aContainsMen = a.Description.includes("Men");
-        //   const bContainsMen = b.Description.includes("Men");
-        //   const aPkSizeID = a.pk_sizeID;
-        //   const bPkSizeID = b.pk_sizeID;
-
-        //   if (aContainsWomen && !bContainsWomen) {
-        //     return -1;
-        //   } else if (!aContainsWomen && bContainsWomen) {
-        //     return 1;
-        //   } else if (aContainsMen && !bContainsMen) {
-        //     return -1;
-        //   } else if (!aContainsMen && bContainsMen) {
-        //     return 1;
-        //   } else {
-        //     // Sort by pk_sizeID in ascending order for all other cases
-        //     return aPkSizeID - bPkSizeID;
-        //   }
-        // };
-
-        // // Iterate over each group and sort their data array
-        // for (const id in IDsData) {
-        //   if (IDsData.hasOwnProperty(id)) {
-        //     IDsData[id].data.sort(customSort);
-        //   }
-        // }
-
-
-        // // Flatten the IDsData into excelData
-        // const excelData = Object.values(IDsData).reduce((acc: any, { data }) => acc.concat(data), []);
-        // console.log(IDsData)
         this.downloadExcelWorkSheet(resData);
       } else {
         this.generateReportData = null;
@@ -203,7 +143,11 @@ export class ReportItemsComponent implements OnInit, OnDestroy {
       subtotal: { header: "Subtotal", key: "Subtotal", width: 10 },
       paid: { header: "Paid", key: "Paid", width: 10 },
       internalRoyalty: { header: "InternalRoyalty", key: "InternalRoyalty", width: 20 },
-      zip: { header: "BillingZip", key: "BillingZip", width: 20 }
+      zip: { header: "BillingZip", key: "BillingZip", width: 20 },
+      customer: { header: "CustomerPO", key: "CustomerPO", width: 20 },
+      acc: { header: "AccountChargeCode", key: "AccountChargeCode", width: 20 },
+      ccc: { header: "CostCenterCode", key: "CostCenterCode", width: 20 },
+      gov: { header: "GovMVMTContractNumber", key: "GovMVMTContractNumber", width: 20 }
     };
     columns.push(
       { header: "Quantity", key: "Quantity", width: 10 },
@@ -216,14 +160,6 @@ export class ReportItemsComponent implements OnInit, OnDestroy {
       }
     });
 
-    // Additional static columns
-    columns.push(
-      { header: "CustomerPO", key: "CustomerPO", width: 20 },
-      { header: "AccountChargeCode", key: "AccountChargeCode", width: 20 },
-      { header: "CostCenterCode", key: "CostCenterCode", width: 20 },
-      { header: "GovMVMTContractNumber", key: "GovMVMTContractNumber", width: 20 }
-    );
-
     worksheet.columns = columns;
     // Format and add data to the worksheet
 
@@ -234,18 +170,6 @@ export class ReportItemsComponent implements OnInit, OnDestroy {
         obj.Runs = '';
         obj.Item = '';
       }
-      // else {
-      //   const index = lastIDs.findIndex(idObj => idObj.ID == obj.ID && idObj.Item === obj.Item);
-      //   if (index > -1) {
-      //     obj.Subtotal = obj.Subtotal - obj.Setups;
-      //     obj.Subtotal = obj.Subtotal - obj.Shipping;
-      //     obj.Setups = 0;
-      //     obj.Shipping = 0;
-      //     obj.Runs = 0;
-      //   } else {
-      //     lastIDs.push({ ID: obj.ID, Item: obj.Item });
-      //   }
-      // }
       obj.InvoiceDate = moment(obj.InvoiceDate).format('yyyy-MM-DD');
       const row = worksheet.addRow(obj);
       row.eachCell(cell => {
@@ -273,6 +197,13 @@ export class ReportItemsComponent implements OnInit, OnDestroy {
     }, 500);
 
 
+  }
+  selectAll() {
+    this.ngSelectedColumns = [...this.allColumns];
+  }
+
+  unselectAll() {
+    this.ngSelectedColumns = [];
   }
   /**
      * On destroy

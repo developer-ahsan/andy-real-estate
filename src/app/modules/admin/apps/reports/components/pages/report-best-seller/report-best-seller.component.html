@@ -9,10 +9,12 @@
                 <span class="text-red-500">This report excludes all sample orders, disabled products, and cancelled
                     orders.</span>
                 <div>
-                    <button (click)="generatePdf()" mat-flat-button color="primary" [disabled]="isPdfLoader"
+                    <button (click)="generateReportForPDF()" mat-flat-button color="primary" [disabled]="isPDFLoader"
                         [matTooltip]="'Save report as PDF'">
-                        <mat-icon svgIcon="mat_outline:picture_as_pdf"></mat-icon>
-                        <span class="ml-2 mr-1">PDF</span>
+                        <mat-progress-spinner *ngIf="isPDFLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                        <mat-icon *ngIf="!isPDFLoader" svgIcon="mat_outline:picture_as_pdf"></mat-icon>
+                        <span *ngIf="!isPDFLoader" class="ml-2 mr-1">PDF</span>
                     </button>
                 </div>
             </div>
