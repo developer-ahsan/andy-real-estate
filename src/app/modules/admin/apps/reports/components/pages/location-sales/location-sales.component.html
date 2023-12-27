@@ -108,11 +108,35 @@
                         <tr>
                             <th>STORE</th>
                             <th>SALES</th>
-                            <th>PY</th>
+                            <th>
+                                <div class="flex">
+                                    <span>PY</span>
+                                    <mat-icon class="icon-size-4 ml-1" matTooltip="Previous year sales"
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
                             <th>%</th>
-                            <th>NS</th>
-                            <th>PYNS</th>
-                            <th>AVG</th>
+                            <th>
+                                <div class="flex">
+                                    <span>NS</span>
+                                    <mat-icon class="icon-size-4 ml-1" matTooltip="Number of sales"
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <th>
+                                <div class="flex">
+                                    <span>PYNS</span>
+                                    <mat-icon class="icon-size-4 ml-1" matTooltip="Previous year number of sales"
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
+                            <th>
+                                <div class="flex">
+                                    <span>AVG</span>
+                                    <mat-icon class="icon-size-4 ml-1" matTooltip="Average Sale"
+                                        [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                </div>
+                            </th>
                             <th>Margin</th>
                         </tr>
                     </thead>

@@ -152,6 +152,19 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   attachmentName: string = '';
   @ViewChild('attachmentFile') attachmentFile: ElementRef;
   allStates = [];
+
+  statusOptions = [
+    { value: 1, label: 'New-Pending' },
+    { value: 2, label: 'Artwork Approved' },
+    { value: 3, label: 'Purchase Order Sent' },
+    { value: 4, label: 'Purchase Order Acknowledged' },
+    { value: 5, label: 'Shipped' },
+    { value: 6, label: 'Delivered' },
+    { value: 8, label: 'Picked up' },
+    { value: 10, label: 'Waiting For GroupBuy' },
+  ];
+
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _activeRoute: ActivatedRoute,
@@ -200,9 +213,9 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     }
     this._OrderManageService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.orderData = res["data"][0];
-      this.orderData.formattedInHandsDate = new Date(this.orderData.formattedInHandsDate);
-      this.orderData.formattedShippingDate = new Date(this.orderData.formattedShippingDate);
-      this.orderData.formattedEstimatedShippingDate = new Date(this.orderData.formattedEstimatedShippingDate);
+
+      this.setValues();
+
       this.imprintInformation = res["imprintInformation"];
       this.checkImprintProofExists();
       if (res["purchaseOrders"].length > 0) {
@@ -223,7 +236,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
         if (this.orderDataPO.vendorInvoiceNetTerms) {
           vendorTerm = this.orderDataPO.vendorInvoiceNetTerms;
         } else {
-          vendorTerm = 0;
+          vendorTerm = this.orderData.netTerms;
         }
         this.vendorBillData = {
           vendorInvoiceNumber: this.orderDataPO.vendorInvoiceNumber ? this.orderDataPO.vendorInvoiceNumber : null,
@@ -258,6 +271,16 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     });
+  }
+  // 
+  setValues() {
+    this.orderData.formattedInHandsDate = this.orderData.formattedInHandsDate ? new Date(this.orderData.formattedInHandsDate) : null;
+    this.orderData.formattedShippingDate = this.orderData.formattedShippingDate ? new Date(this.orderData.formattedShippingDate) : null;
+    this.orderData.formattedEstimatedShippingDate = this.orderData.formattedEstimatedShippingDate ? new Date(this.orderData.formattedEstimatedShippingDate) : null;
+
+    if (!this.orderData.shippingCarrier) {
+      this.orderData.shippingCarrier = 1;
+    }
   }
   // Bill Pay
   setBillPayData() {
@@ -453,6 +476,8 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       blnRevised: this.blnRevised,
       update_shipping_tracking: true
     }
+    payload = this._commonService.replaceNullSpaces(payload);
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
     this._OrderManageService.PutAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this._OrderManageService.snackBar(res["message"]);
@@ -494,7 +519,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   updateBillPay() {
     const paymentDate = this.BillData.billPayPaymentDate ? moment(this.BillData.billPayPaymentDate).format('L') : null;
 
-    const payload: saveBillPay = {
+    let payload: saveBillPay = {
       orderLinePOID: this.orderDataPO.pk_orderLinePOID,
       billPayPaymentMethod: this.BillData.billPayPaymentMethod,
       billPayReference: this.BillData.billPayReference,
@@ -502,7 +527,8 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       blnPaid: this.BillData.blnPaid,
       update_save_bill_pay: true
     };
-
+    payload = this._commonService.replaceNullSpaces(payload);
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
     this.isBillLoader = true;
 
     this._OrderManageService.PutAPIData(payload)
@@ -524,16 +550,18 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   // Update Vendor Bills
   updateVendorBills() {
     const invoiceDate = this.vendorBillData.vendorInvoiceDate ? moment(this.vendorBillData.vendorInvoiceDate).format('L') : null;
-    const invoiceNetTerms = this.vendorBillData.vendorInvoiceNetTerms === '0' ? null : this.vendorBillData.vendorInvoiceNetTerms;
+    const invoiceNetTerms = this.vendorBillData.vendorInvoiceNetTerms == '0' ? null : this.vendorBillData.vendorInvoiceNetTerms;
 
-    const payload: saveVendorBill = {
+    let payload: saveVendorBill = {
       orderLinePOID: this.orderDataPO.pk_orderLinePOID,
       vendorInvoiceNumber: this.vendorBillData.vendorInvoiceNumber,
       vendorInvoiceDate: invoiceDate,
       vendorInvoiceNetTerms: invoiceNetTerms,
-      blnInvoiced: this.vendorBillData.blnInvoiced,
+      blnInvoiced: true,
       update_save_vendor_bill: true
     };
+    payload = this._commonService.replaceNullSpaces(payload);
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
 
     this.isVendorBillLoader = true;
 
@@ -1180,7 +1208,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     let payload: AddAttachment = {
       orderLinePOID: this.orderDataPO.pk_orderLinePOID,
       extension: type,
-      name: this.attachmentName,
+      name: this.attachmentName.trim(),
       mimeType: mime,
       add_attachment: true
     }

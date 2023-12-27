@@ -29,16 +29,8 @@
                     <div class="space-y-2">
                         <mat-form-field class="w-full">
                             <mat-select [(ngModel)]="orderDataPO.statusID">
-                                <mat-option [value]="1">New-Pending</mat-option>
-                                <mat-option [value]="2">Artwork Approved</mat-option>
-                                <mat-option [value]="3">Purchase Order Sent</mat-option>
-                                <mat-option [value]="4">Purchase Order Acknowledged</mat-option>
-                                <mat-option [value]="5">Shipped</mat-option>
-                                <mat-option [value]="6">Delivered</mat-option>
-                                <mat-option [value]="8">Picked up</mat-option>
-                                <mat-option [value]="10">Waiting For GroupBuy</mat-option>
-                                <mat-option [value]="12">Paid</mat-option>
-                                <mat-option [value]="11">Billed</mat-option>
+                                <mat-option [value]="item.value"
+                                    *ngFor="let item of statusOptions">{{item.label}}</mat-option>
                             </mat-select>
                         </mat-form-field>
                         <button class="min-w-40 btn buttonComment hover:bg-gray-200"
@@ -64,6 +56,7 @@
                             {{orderData.formattedInHandsDate |
                             date: 'MM/dd/YYYY'}}</div>
                         <div class="font-bold">
+                            <span>Rush Flexibilty: </span>
                             <span
                                 [ngClass]="{'text-red-500': !orderData.blnRushFlexibility, 'text-green-500': orderData.blnRushFlexibility}">
                                 {{ orderData.blnRushFlexibility ? 'Yes' : 'No' }}
@@ -132,7 +125,7 @@
                         <div>
                             <mat-form-field class="w-full">
                                 <mat-label>Tracking:</mat-label>
-                                <input matInput [(ngModel)]="orderData.trackingNumber">
+                                <input matInput maxlength="50" [(ngModel)]="orderData.trackingNumber">
                             </mat-form-field>
                         </div>
                         <div>
@@ -211,7 +204,7 @@
                         </fuse-alert>
                         <mat-form-field class="w-full">
                             <mat-label>Add a comment:</mat-label>
-                            <textarea matInput rows="5" [(ngModel)]="ngComment"></textarea>
+                            <textarea matInput rows="5" maxlength="1000" [(ngModel)]="ngComment"></textarea>
                         </mat-form-field>
                         <mat-form-field class="w-full">
                             <mat-label>Select Recipients:</mat-label>
@@ -266,7 +259,7 @@
                         </div>
                         <mat-form-field class="w-full">
                             <mat-label>Name</mat-label>
-                            <input matInput [(ngModel)]="attachmentName">
+                            <input matInput maxlength="200" [(ngModel)]="attachmentName">
                         </mat-form-field>
                         <input type="file" #attachmentFile (change)="uploadAttachmentFile($event)">
                         <button class="min-w-40 btn buttonComment hover:bg-gray-200" [disabled]="isAttachmentLoader"
@@ -292,8 +285,8 @@
                             <mat-select mayInput [(ngModel)]="BillData.billPayPaymentMethod">
                                 <mat-option [value]="0">None</mat-option>
                                 <mat-option value="American Express">American Express</mat-option>
-                                <mat-option value="Capital One">Capital One</mat-option>
-                                <mat-option value="Chase Visa">Chase Visa</mat-option>
+                                <mat-option value="MasterCard">MasterCard</mat-option>
+                                <mat-option value="Credit card">Credit card</mat-option>
                                 <mat-option value="Vendor Website">Vendor Website</mat-option>
                                 <mat-option value="ACH">ACH</mat-option>
                                 <mat-option value="Check">Check</mat-option>
@@ -301,7 +294,7 @@
                         </mat-form-field>
                         <mat-form-field class="w-full">
                             <mat-label>Payment reference:</mat-label>
-                            <input matInput [(ngModel)]="BillData.billPayReference">
+                            <input matInput maxlength="100" [(ngModel)]="BillData.billPayReference">
                         </mat-form-field>
                         <mat-form-field class="w-full">
                             <mat-label>Payment date:</mat-label>
@@ -336,7 +329,7 @@
                     <div class="space-y-2">
                         <mat-form-field class="w-full">
                             <mat-label>Vendor invoice number:</mat-label>
-                            <input matInput [(ngModel)]="vendorBillData.vendorInvoiceNumber">
+                            <input matInput maxlength="100" [(ngModel)]="vendorBillData.vendorInvoiceNumber">
                         </mat-form-field>
                         <mat-form-field class="w-full">
                             <mat-label>Vendor invoice date:</mat-label>
@@ -359,7 +352,7 @@
                                 <mat-option value="2% 15, Net 30">2% 15, Net 30</mat-option>
                             </mat-select>
                         </mat-form-field>
-                        <mat-checkbox class="w-full" [(ngModel)]="vendorBillData.blnInvoiced">Invoiced</mat-checkbox>
+                        <!-- <mat-checkbox class="w-full" [(ngModel)]="vendorBillData.blnInvoiced">Invoiced</mat-checkbox> -->
                         <button class="min-w-40 btn buttonComment hover:bg-gray-200" (click)="updateVendorBills()"
                             [disabled]="isVendorBillLoader">
                             <span *ngIf="!isVendorBillLoader">Save vendor bill</span>
