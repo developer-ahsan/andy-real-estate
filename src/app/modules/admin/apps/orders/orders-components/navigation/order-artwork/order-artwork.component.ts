@@ -44,7 +44,6 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
   randomString: any = new Date().getTime();
   removeContent: any;
 
-
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _authService: AuthService,
@@ -186,9 +185,16 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
       files_fetch: true,
       path: `/artwork/${this.orderDetail.fk_storeID}/${this.orderDetail.fk_storeUserID}/${this.orderDetail.pk_orderID}/${pk_orderLineID}/`
     }
+    let i=1;
     this._changeDetectorRef.markForCheck();
     this._orderService.getFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(files => {
       this.orderProducts[index].artworkFiles = files["data"];
+      this.orderProducts?.forEach(data => {
+        data?.artworkFiles?.forEach(item => {
+          item.counter = i;
+          i++;
+        })
+      })
       this._changeDetectorRef.markForCheck();
     }, err => {
       this._changeDetectorRef.markForCheck();
@@ -238,7 +244,7 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
   };
   uploadArtworkMedia(imprint) {
     let count = imprint.artworkFiles.length + 1;
-    if(!this.imageValue) {
+    if (!this.imageValue) {
       this._orderService.snackBar('Please select a file');
       return;
     }
@@ -287,8 +293,18 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
     this.modalContent = data;
     $(this.commentModal.nativeElement).modal('show');
   }
+
+  replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+        obj[key] = obj[key]?.replace(/'/g, "''");
+      }
+    }
+    return obj;
+  }
+
   addNewComment() {
-    if (!this.artworkComment) {
+    if (this.artworkComment.trim() === '') {
       this._orderService.snackBar('Please add any comment');
       return
     }
@@ -308,7 +324,7 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
       comment: this.artworkComment,
       add_artwork_comment: true
     }
-    this._orderService.orderPostCalls(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._orderService.orderPostCalls(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this._orderService.snackBar(res["message"]);
       }
