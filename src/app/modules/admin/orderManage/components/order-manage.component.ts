@@ -91,9 +91,26 @@ export class OrderManageComponent {
         this.getStatuses();
     }
     getStatuses() {
-        this._rapidService.orderManageStatus$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-            this.allStatus = res["data"];
-        });
+        this.allStatus = [
+            { pk_statusID: 1, statusName: 'New Orders' },
+            { pk_statusID: 2, statusName: 'Artwork Approved' },
+            { pk_statusID: 3, statusName: 'Purchase Order Sent' },
+            { pk_statusID: 4, statusName: 'Purchase Order Acknowledged' },
+            { pk_statusID: 5, statusName: 'Shipped' },
+            { pk_statusID: 6, statusName: 'Delivered' },
+            { pk_statusID: 8, statusName: 'Picked up' },
+            { pk_statusID: 11, statusName: 'Billed' },
+            { pk_statusID: 12, statusName: 'Paid' },
+            { pk_statusID: 9, statusName: 'Backorder' },
+            { pk_statusID: 15, statusName: 'Rush Orders' },
+            { pk_statusID: 16, statusName: 'Fulfillment Orders' },
+            { pk_statusID: 13, statusName: 'Hidden' },
+            { pk_statusID: 10, statusName: 'Waiting For Group Order' },
+            { pk_statusID: 14, statusName: 'Semi-Rush' },
+        ]
+        // this._rapidService.orderManageStatus$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+        //     this.allStatus = res["data"];
+        // });
     }
     getStores() {
         this.commonService.storesData$.pipe(

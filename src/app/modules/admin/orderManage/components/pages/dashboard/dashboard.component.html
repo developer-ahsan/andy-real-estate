@@ -50,8 +50,8 @@
             <div class="flex">
                 <mat-form-field class="min-w-100 mr-2">
                     <mat-select [(ngModel)]="ngstatusID" matInput>
-                        <mat-option *ngFor="let option of statusOptions" [value]="option.value">
-                            {{ option.label }}
+                        <mat-option *ngFor="let option of statusOptions" [value]="option.pk_statusID">
+                            {{ option.statusName }}
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
@@ -93,6 +93,7 @@
                         <th mat-sort-header="productName">Product</th>
                         <th mat-sort-header="supplierName">Vendor</th>
                         <th mat-sort-header="statusName">Status</th>
+                        <th mat-sort-header="POTotal">Total</th>
                         <th mat-sort-header="Age">Age</th>
                         <th mat-sort-header="storeCode">Store</th>
                         <th mat-sort-header="orderDate">
@@ -161,7 +162,10 @@
                                 {{item?.statusName}}
                             </td>
                             <td (click)="goToOrderDetails(item)">
-                                <span>{{item?.age }}</span>
+                                {{item?.statusName}}
+                            </td>
+                            <td (click)="goToOrderDetails(item)">
+                                <span>{{item?.POTotal | currency }}</span>
                             </td>
                             <td (click)="goToOrderDetails(item)">
                                 {{item?.storeCode}}

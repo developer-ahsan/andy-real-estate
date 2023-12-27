@@ -168,7 +168,7 @@ export class GraphicsSupportReportComponent implements OnInit, OnDestroy {
         { text: '', margin: [0, 20, 0, 0] },
         {
           table: {
-            widths: ['20%', '15%', '10%', '10%', '10%', '5%', '5%', '10%', '5%', '5%', '5%'],
+            widths: ['20%', '15%', '10%', '10%', '10%', '5%', '5%', '10%', '5%', '5%'],
             body: [
               [
                 { text: 'Employee', bold: true },
@@ -180,8 +180,8 @@ export class GraphicsSupportReportComponent implements OnInit, OnDestroy {
                 { text: 'PS', bold: true },
                 { text: 'Num. Sales', bold: true },
                 { text: 'IR', bold: true },
-                { text: 'COI', bold: true },
-                { text: 'TT', bold: true }
+                { text: 'COI', bold: true }
+                // { text: 'TT', bold: true }
               ]
             ]
           },
@@ -227,8 +227,8 @@ export class GraphicsSupportReportComponent implements OnInit, OnDestroy {
             data.ps,
             data.ns,
             data.ir,
-            { text: this.currencyPipe.transform(Number(data.coi), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
-            data.tt
+            { text: this.currencyPipe.transform(Number(data.coi), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] }
+            // data.tt
           ]
         );
       });
@@ -245,8 +245,8 @@ export class GraphicsSupportReportComponent implements OnInit, OnDestroy {
           employee.ProofSent,
           employee.ns,
           employee.ir,
-          { text: this.currencyPipe.transform(Number(employee.coi), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
-          employee.TT
+          { text: this.currencyPipe.transform(Number(employee.coi), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] }
+          // employee.TT
         ]
       );
 
@@ -276,8 +276,8 @@ export class GraphicsSupportReportComponent implements OnInit, OnDestroy {
         this.grandTotal.ps,
         this.grandTotal.ns,
         this.grandTotal.ir,
-        { text: this.currencyPipe.transform(Number(this.grandTotal.coi), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] },
-        this.grandTotal.GTT
+        { text: this.currencyPipe.transform(Number(this.grandTotal.coi), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true, margin: [0, 3, 0, 3] }
+        // this.grandTotal.GTT
       ]
     );
 

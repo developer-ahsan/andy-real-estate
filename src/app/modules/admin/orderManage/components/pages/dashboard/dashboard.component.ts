@@ -35,21 +35,20 @@ export class OrderManageDashboardComponent implements OnInit, OnDestroy {
   sort_by = '';
   sort_order = ''
   statusOptions = [
-    { value: 1, label: 'New Orders' },
-    { value: 2, label: 'Artwork Approved' },
-    { value: 3, label: 'Purchase Order Sent' },
-    { value: 4, label: 'Purchase Order Acknowledged' },
-    { value: 5, label: 'Shipped' },
-    { value: 6, label: 'Delivered' },
-    { value: 8, label: 'Picked up' },
-    { value: 11, label: 'Billed' },
-    { value: 12, label: 'Paid' },
-    { value: 9, label: 'Backorder' },
-    { value: 15, label: 'Rush Orders' },
-    { value: 16, label: 'Fulfillment Orders' },
-    { value: 13, label: 'Hidden' },
-    { value: 10, label: 'Waiting For Group Order' },
-    { value: 14, label: 'Semi-Rush' },
+    { pk_statusID: 1, statusName: 'New Order' },
+    { pk_statusID: 2, statusName: 'Artwork Approved' },
+    { pk_statusID: 3, statusName: 'PO Sent' },
+    { pk_statusID: 4, statusName: 'PO Acknowledged' },
+    { pk_statusID: 5, statusName: 'Shipped' },
+    { pk_statusID: 6, statusName: 'Delivered' },
+    { pk_statusID: 8, statusName: 'Picked up' },
+    { pk_statusID: 9, statusName: 'Backorder' },
+    { pk_statusID: 16, statusName: 'Not on backorder' },
+    { pk_statusID: 10, statusName: 'Waiting For GroupBuy' },
+    { pk_statusID: 11, statusName: 'Hidden' },
+    { pk_statusID: 12, statusName: 'Unhidden' },
+    { pk_statusID: 14, statusName: 'Semi-rush' },
+    { pk_statusID: 15, statusName: 'Un-semi-rush' },
   ];
 
   isPaginatedLoader: boolean = false;
@@ -57,6 +56,7 @@ export class OrderManageDashboardComponent implements OnInit, OnDestroy {
 
   ngBackDate: any;
   isUpdateBulkLoader: boolean = false;
+  allStatus = [];
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _orderService: OrderManageService,
@@ -95,9 +95,15 @@ export class OrderManageDashboardComponent implements OnInit, OnDestroy {
       }
       this.isLoading = true;
       this.getOrderManage(1);
+      this.getStatus();
     });
 
   };
+  getStatus() {
+    this._orderService.orderManageStatus$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.allStatus = res["data"];
+    });
+  }
   getOrderManage(page) {
     let params = {
       user_id: this.userData.pk_userID,
@@ -157,7 +163,6 @@ export class OrderManageDashboardComponent implements OnInit, OnDestroy {
     }));
 
     this._orderService.getMultipleFilesData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      console.log(res);
       res["data"].forEach(element => {
         if (element.data.length) {
           const foundItem = this.dataSource.find(item => item.fk_orderLineID === element.orderLineID);
