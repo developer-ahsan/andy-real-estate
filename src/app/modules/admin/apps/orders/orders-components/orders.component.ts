@@ -134,7 +134,7 @@ export class OrdersComponent {
             size: sizes,
             // keyword: this.keyword,
             page: pageNo,
-            store_id,
+            store_id:this.storeId,
             range_end,
             range_start,
             order_type: this.orderType,
