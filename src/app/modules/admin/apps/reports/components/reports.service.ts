@@ -123,13 +123,17 @@ export class ReportsService {
             }
             this.startDate = moment(s).startOf('month').format('yyyy-MM-DD');
             if (this.quarterYear == currentYear) {
-                if (currentQuarter == this.quarterMonth) {
-                    this.endDate = moment(currentDate).endOf('month').format('YYYY-MM-DD');
+                if (this.quarterMonth == 4) {
+                    this.endDate = moment(e).endOf('month').subtract(1, 'days').format('YYYY-MM-DD');
                 } else {
                     this.endDate = moment(e).endOf('month').format('YYYY-MM-DD');
                 }
             } else {
-                this.endDate = moment(e).endOf('month').format('yyyy-MM-DD');
+                if (this.quarterMonth == 4) {
+                    this.endDate = moment(e).endOf('month').subtract(1, 'days').format('YYYY-MM-DD');
+                } else {
+                    this.endDate = moment(e).endOf('month').format('YYYY-MM-DD');
+                }
             }
             this.reportType = 'Quarterly Sales';
             this.lastStartDate = moment(s).startOf('month').subtract(1, 'year').format('yyyy-MM-DD');
