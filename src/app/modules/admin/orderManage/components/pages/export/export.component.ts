@@ -77,19 +77,18 @@ export class OrderExportComponent implements OnInit, OnDestroy {
     // Basic columns
     let columns = [
       { header: "Date", key: "orderDate", width: 15 },
-      { header: "ESD", key: "shippingDate", width: 15 },
-      { header: "In-Hands", key: "inHandsDate", width: 15 },
-      { header: "Order", key: "fk_orderID", width: 15 },
-      { header: "PO Number", key: "CPO", width: 15 },
+      { header: "EstimatedShippingDate", key: "shippingDate", width: 15 },
+      { header: "InHandsDate", key: "inHandsDate", width: 15 },
+      { header: "OrderID", key: "pk_orderID", width: 15 },
+      { header: "PONumber", key: "purchaseOrderNumber", width: 15 },
       { header: "Customer", key: "Customer", width: 20 },
-      { header: "Product", key: "productName", width: 40 },
-      { header: "Vendor", key: "supplierName", width: 20 },
+      { header: "Product", key: "productName", width: 70 },
+      { header: "Vendor", key: "companyName", width: 20 },
       { header: "Status", key: "statusName", width: 15 },
       { header: "Age", key: "Age", width: 15 },
-      { header: "Store Name", key: "storeName", width: 20 },
-      { header: "Store", key: "storeCode", width: 15 },
-      { header: "CPO", key: "CPO", width: 15 },
-      { header: "CC", key: "CC", width: 15 },
+      { header: "Store", key: "storeName", width: 20 },
+      { header: "CustomerPONumber", key: "CPO", width: 15 },
+      { header: "AccountChargeCode", key: "accountChargeCode", width: 15 },
       { header: "Paid", key: "Paid", width: 15 },
       { header: "TRX", key: "trackingNumber", width: 15 }
     ];
@@ -100,12 +99,12 @@ export class OrderExportComponent implements OnInit, OnDestroy {
     const transformedData = this.exportData.map(obj => {
       const transformedObj = {
         ...obj,
-        orderDate: obj.orderDate ? moment(obj.orderDate).format('yyyy-MM-DD') : '---',
-        shippingDate: obj.shippingDate ? moment(obj.shippingDate).format('yyyy-MM-DD') : '---',
-        inHandsDate: obj.inHandsDate ? moment(obj.inHandsDate).format('yyyy-MM-DD') : '---',
+        orderDate: obj.orderDate || '---',
+        shippingDate: obj.shippingDate || '---',
+        inHandsDate: obj.inHandsDate || '---',
         Customer: `${obj.firstName} ${obj.lastName}`,
         Age: `${obj.Age} hrs`,
-        Paid: obj.paymentDate ? 'Yes' : 'No'
+        Paid: obj.paymentDate ? true : false
       };
       return transformedObj;
     });

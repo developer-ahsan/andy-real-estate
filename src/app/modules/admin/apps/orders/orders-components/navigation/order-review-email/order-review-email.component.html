@@ -50,7 +50,7 @@
                                 <mat-chip-list class="pt-1" #chipList1>
                                     <mat-chip [removable]="true" [selectable]="true" *ngFor="let email of emails"
                                         (removed)="remove(email)">
-                                        {{email.email}}
+                                        {{email}}
                                         <mat-icon class="icon-size-5" matChipRemove
                                             [svgIcon]="'heroicons_solid:minus-circle'"></mat-icon>
                                     </mat-chip>

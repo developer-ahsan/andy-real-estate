@@ -79,9 +79,7 @@ export class ReportSupportComponent implements OnInit, OnDestroy {
         const [roleName, pk_roleID] = element.split('::');
         this.allRoles.push({ roleName: roleName, pk_roleID: Number(pk_roleID) });
       });
-      console.log(this.allRoles)
-
-      this.selectedRoles = this.allRoles[0];
+      this.selectedRoles = 0;
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
