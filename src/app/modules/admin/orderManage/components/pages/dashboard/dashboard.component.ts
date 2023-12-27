@@ -110,12 +110,13 @@ export class OrderManageDashboardComponent implements OnInit, OnDestroy {
       sort_by: this.sort_by,
       sort_order: this.sort_order,
       bln_fulfillment: this.userData.blnFulfillment,
-      size: 50,
+      size: 30,
       page: page,
       view_dashboard: true
     }
     this._orderService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       res["data"].forEach(element => {
+        element.fileLoader = true;
         element.checked = false;
         element.prducts = [];
         if (element.productName) {
@@ -125,6 +126,7 @@ export class OrderManageDashboardComponent implements OnInit, OnDestroy {
         element.styles = this.getRowStyles(element);
       });
       this.dataSource = res["data"];
+      this.getFilesData();
       this.totalRecords = res["totalRecords"];
       if (this.isPaginatedLoader) {
         this.backtoTop();
@@ -147,6 +149,25 @@ export class OrderManageDashboardComponent implements OnInit, OnDestroy {
       this.page--;
     };
     this.getOrderManage(this.page);
+  }
+  getFilesData() {
+    const payload = this.dataSource.map(element => ({
+      ID: element.fk_orderLineID,
+      path: `/artwork/POProof/${element.fk_orderLineID}/`,
+    }));
+
+    this._orderService.getMultipleFilesData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      console.log(res);
+      res["data"].forEach(element => {
+        if (element.data.length) {
+          const foundItem = this.dataSource.find(item => item.fk_orderLineID === element.orderLineID);
+          if (foundItem) {
+            foundItem.fileProof = `https://assets.consolidus.com/artwork/POProof/${foundItem.fk_orderLineID}/${element.data?.[0]?.FILENAME || ''}`;
+            this._changeDetectorRef.markForCheck();
+          }
+        }
+      });
+    });
   }
   goToOrderDetails(item) {
     const queryParams: NavigationExtras = {

@@ -15,10 +15,8 @@ import { SmartArtService } from 'app/modules/admin/smartart/components/smartart.
 import { lowerCase } from 'lodash';
 import * as pdfMake from "pdfmake/build/pdfmake";
 import * as pdfFonts from "pdfmake/build/vfs_fonts";
-
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 declare var $: any;
-
-
 @Component({
   selector: 'app-order-details-manage',
   templateUrl: './order-details.component.html',
@@ -1263,10 +1261,99 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   }
   // PDF Make
   generatePDF() {
-    pdfMake.vfs = pdfFonts.pdfMake.vfs;
-
-    const documentDefinition = this.getDocumentDefinition();
-    pdfMake.createPdf(documentDefinition).download('generated.pdf');
+    // const documentDefinition: any = {
+    //   pageSize: 'A4',
+    //   pageOrientation: 'landscape',
+    //   pageMargins: [10, 10, 10, 10],
+    //   content: [],
+    //   styles: {
+    //     tableHeader: {
+    //       bold: true
+    //     }
+    //   }
+    // };
+    // let customerAccountNumber = this.orderData.customerAccountNumber ? `Customer Account ##: ${this.orderData.customerAccountNumber}` : ''
+    // documentDefinition.content.push(
+    //   { text: 'Please acknowledge that you have received this PO by clicking here', link: `https://admin.consolidus.com/dspPOAck3.cfm?OLID=${this.paramData.pk_orderLineID}&OID=${this.paramData.fk_orderID}&CID=${this.orderDataPO.fk_vendorID}&S=${this.orderDataPO.blnSample ? 1 : 0}`, color: 'red', margin: [0, 2, 0, 0], fontSize: 8 },
+    //   { text: `If the link above isn't working, please copy and paste this URL in to your browser`, margin: [0, 2, 0, 0], fontSize: 8 },
+    //   { text: `https://admin.consolidus.com/dspPOAck3.cfm?OLID=${this.paramData.pk_orderLineID}&OID=${this.paramData.fk_orderID}&CID=${this.orderDataPO.fk_vendorID}&S=${this.orderDataPO.blnSample ? 1 : 0}`, link: `https://admin.consolidus.com/dspPOAck3.cfm?OLID=${this.paramData.pk_orderLineID}&OID=${this.paramData.fk_orderID}&CID=${this.orderDataPO.fk_vendorID}&S=${this.orderDataPO.blnSample ? 1 : 0}`, margin: [0, 2, 0, 0], fontSize: 8 },
+    //   { text: '', margin: [0, 20, 0, 0] },
+    //   {
+    //     table: {
+    //       widths: ['*', '*'], // Adjust the width of columns as needed
+    //       body: [
+    //         [
+    //           {
+    //             text: [
+    //               { text: `${this.orderData.storeName} is a subsidiary of Consolidus, LLC.\n`, bold: true },
+    //               'Consolidus LLC\n',
+    //               '526 S.Main St.\n',
+    //               'Suite 804\n',
+    //               'Akron, OH 44311\n',
+    //               'P: 330-319-7203, F: 330-319-7213\n',
+    //               customerAccountNumber,
+    //             ], border: [false, false, false, false]
+    //           },
+    //           { text: ['PURCHASE ORDER\n', `#${this.orderDataPO.purchaseOrderNumber}\n`, `Sent on ${moment().format('MM/DD/yyyy hh:mm:ss')}`], alignment: 'right', border: [false, false, false, false], bold: true },
+    //         ]
+    //       ],
+    //     },
+    //     layout: {
+    //       defaultBorder: false, // Remove borders from the entire table
+    //     },
+    //     fontSize: 8
+    //   },
+    //   { text: '', margin: [0, 20, 0, 0] },
+    //   {
+    //     table: {
+    //       widths: ['auto', 'auto'], // Adjust the width of columns as needed
+    //       body: [
+    //         [
+    //           { text: 'PURCHASE ORDER #' },
+    //           { text: this.orderDataPO.purchaseOrderNumber }
+    //         ]
+    //       ],
+    //     },
+    //     layout: {
+    //       defaultBorder: false, // Remove borders from the entire table
+    //     },
+    //     fontSize: 8
+    //   }
+    // );
+    // if (this.orderDataPO.shipToPurchaseOrder) {
+    //   documentDefinition.content[6].table.body.push(
+    //     [{ text: 'CUSTOMER PURCHASE ORDER #' },
+    //     { text: this.orderDataPO.shipToPurchaseOrder }]
+    //   )
+    // }
+    // documentDefinition.content[6].table.body.push([{ text: 'VENDOR' },
+    // {
+    //   text: [
+    //     `${this.orderDataPO.vendorShippingName}\n`,
+    //     `${this.orderDataPO.vendorShippingAddress1}\n`,
+    //     `${this.orderDataPO.vendorShippingAddress2 || ''}\n`,
+    //     `${this.orderDataPO.vendorShippingCity} ${this.orderDataPO.vendorShippingState} ${this.orderDataPO.vendorShippingZip}\n`,
+    //     `${this.orderDataPO.vendorShippingPhone}\n`,
+    //     `\n`,
+    //     this.orderDataPO.vendorShippingEmail,
+    //   ], bold: true
+    // }]);
+    // if (customerAccountNumber) {
+    //   documentDefinition.content[6].table.body.push(
+    //     [{ text: 'ACCT #', bold: true },
+    //     {
+    //       text: `${this.orderDataPO.customerAccountNumber}\n`, bold: true
+    //     }]);
+    // }
+    // documentDefinition.content[6].table.body.push(
+    //   [{ text: 'SHIPPING', bold: true },
+    //   {
+    //     text: [
+    //       `${this.orderDataPO.shippingComment}\n`,
+    //       { text: `Please send tracking to orders@${this.orderData.storeName}`, bold: true }
+    //     ], bold: true
+    //   }]);
+    // pdfMake.createPdf(documentDefinition).download('generated.pdf');
   }
 
   getDocumentDefinition() {

@@ -9,7 +9,7 @@
             </p>
             <mat-form-field class="min-w-100 mr-2">
                 <mat-select [(ngModel)]="ngstatusID" matInput [disabled]="isExcelLoader">
-                    <mat-option *ngFor="let status of allStatus"
+                    <mat-option *ngFor="let status of exportStatusOptions"
                         [value]="status.pk_statusID">{{status.statusName}}</mat-option>
                 </mat-select>
             </mat-form-field>

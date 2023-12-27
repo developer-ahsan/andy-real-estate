@@ -160,4 +160,14 @@ export class OrderManageService {
         return this._httpClient.put(
             environment.products, payload, { headers });
     };
+    getMultipleFilesData(paths) {
+        // 
+        //     path: string;
+        // ID?: number;
+        let payload = {
+            paths: paths,
+            fetch_multiple_files: true
+        }
+        return this._httpClient.post<any[]>(environment.products, payload).pipe(retry(3));
+    }
 }
