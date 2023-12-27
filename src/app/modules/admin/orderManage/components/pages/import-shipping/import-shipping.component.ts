@@ -58,6 +58,8 @@ export class OrderImportShippingComponent implements OnInit, OnDestroy {
       this._orderService.snackBar(res?.message);
       this.fileInput.nativeElement.value = '';
       this.excelData = [];
+    }, err => {
+      this._orderService.snackBar('File is not according to the format.');
     });
   }
   /**

@@ -98,8 +98,6 @@ export class GraphicsSupportReportComponent implements OnInit, OnDestroy {
             this[`total${i === 0 ? 'Hours' : i === 1 ? 'Minutes' : 'Seconds'}`] += ttParts[i];
           }
 
-
-
           element.percent = ((Number(TotalRevenue) / grandTotalRevenue) * 100).toFixed(2);
           element.roundedPercent = Math.round((Number(TotalRevenue) / grandTotalRevenue) * 100);
           element.imprintPercent = Math.round((Number(UniqueImprints) / grandTotalUniqueImprints) * 100);

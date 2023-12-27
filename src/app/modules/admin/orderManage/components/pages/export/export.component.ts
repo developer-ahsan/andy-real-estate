@@ -56,7 +56,7 @@ export class OrderExportComponent implements OnInit, OnDestroy {
     this.isExcelLoader = true;
     let params = {
       user_id: this.userData.pk_userID,
-      status_id: 2,
+      status_id: this.ngstatusID,
       ordermanage_export_function: true
     }
     this._orderService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -87,7 +87,7 @@ export class OrderExportComponent implements OnInit, OnDestroy {
       { header: "Vendor", key: "vendorShippingName", width: 20 },
       { header: "Status", key: "statusName", width: 15 },
       { header: "Age", key: "age", width: 15 },
-      { header: "Store", key: "storeName", width: 20 },
+      { header: "Store", key: "storeCode", width: 20 },
       { header: "CustomerPONumber", key: "shipToPurchaseOrder", width: 15 },
       { header: "AccountChargeCode", key: "accountChargeCode", width: 15 },
       { header: "Paid", key: "Paid", width: 15 },

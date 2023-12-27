@@ -74,7 +74,8 @@
         </div>
 
         <div class="mt-2 table-responsive" *ngIf="!isLoading">
-            <table class="table table-striped" matSort (matSortChange)="customSort($event)">
+            <table class="table table-striped" *ngIf="dataSource.length > 0;else noDataFound" matSort
+                (matSortChange)="customSort($event)">
                 <thead>
                     <tr>
                         <th></th>
@@ -194,10 +195,16 @@
                     </ng-container>
                 </tbody>
             </table>
-            <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+            <mat-paginator #paginator *ngIf="dataSource.length > 0"
+                class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
                 [disabled]="isPaginatedLoader" [length]="totalRecords" [pageIndex]="0" [pageSize]="30"
                 (page)="getNextData($event)" [hidePageSize]="true">
             </mat-paginator>
+            <ng-template #noDataFound>
+                <div class="alert alert-warning">
+                    There are currently no orders, or your search did not return any results.
+                </div>
+            </ng-template>
         </div>
     </div>
 </div>
