@@ -50,8 +50,8 @@
             <div class="flex">
                 <mat-form-field class="min-w-100 mr-2">
                     <mat-select [(ngModel)]="ngstatusID" matInput>
-                        <mat-option *ngFor="let option of statusOptions" [value]="option.pk_statusID">
-                            {{ option.statusName }}
+                        <mat-option *ngFor="let option of statusOptions" [value]="option.value">
+                            {{ option.label }}
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
@@ -74,8 +74,7 @@
         </div>
 
         <div class="mt-2 table-responsive" *ngIf="!isLoading">
-            <table class="table table-striped" *ngIf="dataSource.length > 0;else noDataFound" matSort
-                (matSortChange)="customSort($event)">
+            <table class="table table-striped" matSort (matSortChange)="customSort($event)">
                 <thead>
                     <tr>
                         <th></th>
@@ -89,22 +88,22 @@
                         </th>
                         <th mat-sort-header="inHandsDate">In-Hands</th>
                         <th mat-sort-header="pk_orderID">Order</th>
-                        <th mat-sort-header="pk_orderLineID">PO Number</th>
-                        <th mat-sort-header="firstName">Customer</th>
+                        <th mat-sort-header="purchaseOrderNumber">PO Number</th>
+                        <th mat-sort-header="companyName">Customer</th>
                         <th mat-sort-header="productName">Product</th>
                         <th mat-sort-header="supplierName">Vendor</th>
                         <th mat-sort-header="statusName">Status</th>
                         <th mat-sort-header="POTotal">Total</th>
                         <th mat-sort-header="Age">Age</th>
                         <th mat-sort-header="storeCode">Store</th>
-                        <th mat-sort-header="orderDate">
+                        <th mat-sort-header="purchaseOrderNum">
                             <div class="flex">
                                 <span>CPO</span>
                                 <mat-icon class="icon-size-4 ml-1" matTooltip="Customer PO Number"
                                     [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
                             </div>
                         </th>
-                        <th mat-sort-header="orderDate">
+                        <th mat-sort-header="CC">
                             <div class="flex">
                                 <span>CC</span>
                                 <mat-icon class="icon-size-4 ml-1" matTooltip="Charge Code"
@@ -163,10 +162,10 @@
                                 {{item?.statusName}}
                             </td>
                             <td (click)="goToOrderDetails(item)">
-                                {{item?.statusName}}
+                                {{item?.POTotal | currency}}
                             </td>
                             <td (click)="goToOrderDetails(item)">
-                                <span>{{item?.POTotal | currency }}</span>
+                                <span>{{item?.age }}</span>
                             </td>
                             <td (click)="goToOrderDetails(item)">
                                 {{item?.storeCode}}
@@ -195,16 +194,10 @@
                     </ng-container>
                 </tbody>
             </table>
-            <mat-paginator #paginator *ngIf="dataSource.length > 0"
-                class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+            <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
                 [disabled]="isPaginatedLoader" [length]="totalRecords" [pageIndex]="0" [pageSize]="30"
                 (page)="getNextData($event)" [hidePageSize]="true">
             </mat-paginator>
-            <ng-template #noDataFound>
-                <div class="alert alert-warning">
-                    There are currently no orders, or your search did not return any results.
-                </div>
-            </ng-template>
         </div>
     </div>
 </div>
