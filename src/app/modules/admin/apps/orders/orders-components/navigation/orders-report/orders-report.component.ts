@@ -182,6 +182,7 @@ export class OrdersReportComponent implements OnInit {
       this._changeDetectorRef.markForCheck();
     });
   }
+  groupRunItem:any;
   getProductImprints(value, data) {
     let params = {
       imprint_report: true,
@@ -201,6 +202,8 @@ export class OrdersReportComponent implements OnInit {
       });
 
       this.orderProducts = data;
+      this.groupRunItem = this.orderProducts[0].products[0].productName
+
       this.getProductTotal();
       this.isLoading = false;
       this.isLoadingChange.emit(false);
