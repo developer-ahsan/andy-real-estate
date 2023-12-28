@@ -134,12 +134,13 @@ export class OrdersComponent {
             size: sizes,
             // keyword: this.keyword,
             page: pageNo,
-            store_id:this.storeId,
+            store_id: this.storeId,
             range_end,
             range_start,
             order_type: this.orderType,
             search_order_id
         }
+        this.isLoading = true;
         this._orderService.getOrders(params)
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((orders) => {
@@ -156,6 +157,8 @@ export class OrdersComponent {
                     size: this.size,
                     order_type: this.orderType
                 };
+                this.fullfillmentOrder = ''
+                this.isLoading = false;
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
@@ -230,6 +233,7 @@ export class OrdersComponent {
         this.searchOrderId = 0;
         this.endDate = '';
         this.startDate = '';
+        this.fullfillmentOrder = ''
         this.advancedSearchForm = {
             store_id: this.storeId,
             range_end: this.endDate,
@@ -243,7 +247,33 @@ export class OrdersComponent {
     }
 
     searchByFullfilmentOrder() {
-        
+        let params = {
+            list: true,
+            fulfillment_search: this.fullfillmentOrder,
+        }
+        this.isLoading = true;
+        this._orderService.getOrders(params)
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((orders) => {
+                this.orders = orders["data"];
+                this.ordersLength = orders["totalRecords"];
+                this.size = orders["size"]
+                this.isLoading = false;
+                this.isLoadingChange.emit(false);
+                this._orderService._searchKeyword = '';
+                this.advancedSearchForm = {
+                    store_id: this.storeId,
+                    range_end: this.endDate,
+                    range_start: this.startDate,
+                    search_order_id: this.searchOrderId,
+                    size: this.size,
+                    order_type: this.orderType
+                };
+                this.isLoading = false;
+
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            });
     }
 
     moment(date) {
