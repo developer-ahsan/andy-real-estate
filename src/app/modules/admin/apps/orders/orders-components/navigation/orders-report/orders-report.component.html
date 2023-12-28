@@ -71,7 +71,7 @@
                                                             </b>{{orderDetail?.storeName ||
                                                                 not_available}}</div>
                                                             <div><b class="text-secondary">Program manager:
-                                                            </b>{{orderDetail?.programManager ||
+                                                            </b>{{managerDetails[0]+ ' ' + managerDetails[1] ||
                                                                 not_available}}</div>
                                                         <div><b class="text-secondary">Shipping:
                                                             </b>{{orderDetail?.shippingCarrierName + ', '
@@ -96,7 +96,7 @@
                                                     class="justify-self-start font-medium tracking-tight text-secondary">
                                                     ORDER DATE
                                                 </div>
-                                                <div class="font-medium">{{(orderDetail?.orderDate | date:'medium') ||
+                                                <div class="font-medium">{{(orderDetail?.FormattedDate | date:'medium') ||
                                                     not_available}}</div>
                                                 <div
                                                     class="justify-self-start font-medium tracking-tight text-secondary">
