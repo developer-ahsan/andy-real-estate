@@ -104,7 +104,7 @@
                                                 [ngClass]="{'text-red-500': item.statusName != 'Artwork Approved','text-green-500': item.statusName == 'Artwork Approved'}">{{item.statusName}}</b></span>
                                         <br>
                                         <a *ngIf="item.proofCheck"
-                                            href="https://assets.consolidus.com/artwork/Proof/{{orderData.fk_storeUserID}}/{{orderLineData.fk_orderID}}/{{orderLineData.pk_orderLineID}}/{{item.fk_imprintID}}.jpg"
+                                            href="https://assets.consolidus.com/artwork/Proof/{{orderData.fk_storeUserID}}/{{paramData.fk_orderID}}/{{paramData.pk_orderLineID}}/{{item.fk_imprintID}}.jpg"
                                             target="_blank" class="text-blue-500">View Proof</a>
                                     </td>
                                 </tr>

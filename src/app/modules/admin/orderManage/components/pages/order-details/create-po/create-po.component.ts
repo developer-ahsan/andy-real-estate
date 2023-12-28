@@ -6,6 +6,7 @@ import { finalize, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { OrderManageService } from '../../../order-manage.service';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
+import { NavigationExtras, Router } from '@angular/router';
 
 @Component({
   selector: 'app-create-po',
@@ -22,11 +23,13 @@ export class CreatePoComponent implements OnInit {
 
   createPOForm: FormGroup;
   isCreateOrder: boolean = false;
+  selectedVendorID = 0;
   constructor(
     private _vendorService: VendorsService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _orderManage: OrderManageService,
-    private _commonService: DashboardsService
+    private _commonService: DashboardsService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -69,6 +72,7 @@ export class CreatePoComponent implements OnInit {
     })
   }
   getVendorsData(id) {
+    this.selectedVendorID = id;
     this._vendorService.getVendorsSupplierById(id).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       const vendor = res["data"][0];
       this.createPOForm.patchValue({
@@ -96,7 +100,7 @@ export class CreatePoComponent implements OnInit {
       return;
     }
     let payload: createPurchaseOrder = {
-      vendorPOID: pk_orderLinePOID,
+      vendorPOID: this.selectedVendorID,
       companyName: companyName,
       vendorShippingAddress1: vendorShippingAddress1,
       vendorShippingAddress2: vendorShippingAddress2,
@@ -131,12 +135,20 @@ export class CreatePoComponent implements OnInit {
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       this._orderManage.snackBar(res["message"]);
-      this.sendDataToParent();
+      this.sendDataToParent(res["newID"]);
     });
   }
-  sendDataToParent() {
+  sendDataToParent(newID) {
     const data = 'Po Created';
     const d = JSON.stringify(data)
     this.dataEvent.emit(d);
+    this.redirectToPO(newID);
   }
+  redirectToPO(newID) {
+    const queryParams: NavigationExtras = {
+      queryParams: { fk_orderID: this.orderData.pk_orderID, pk_orderLineID: 0, pk_orderLinePOID: newID }
+    };
+    this.router.navigate(['/ordermanage/order-details'], queryParams);
+  }
+
 }

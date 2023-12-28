@@ -242,7 +242,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
         if (this.orderDataPO.vendorInvoiceNetTerms) {
           vendorTerm = this.orderDataPO.vendorInvoiceNetTerms;
         } else {
-          vendorTerm = this.orderLineData?.netTerms;
+          vendorTerm = this.orderLineData?.netTerms ? this.orderLineData?.netTerms : 0;
         }
         this.vendorBillData = {
           vendorInvoiceNumber: this.orderDataPO.vendorInvoiceNumber ? this.orderDataPO.vendorInvoiceNumber : null,
@@ -299,14 +299,14 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
 
     if (
       !this.orderDataPO.billPayPaymentMethod &&
-      !this.orderLineData.paymentMethod
+      !this.orderLineData?.paymentMethod
     ) {
       selectedPaymentMethod = 0;
     } else {
       const paymentMethods = ['American Express', 'MasterCard', 'Credit card', 'Vendor Website', 'ACH', 'Check'];
 
       for (const method of paymentMethods) {
-        if (this.orderDataPO.billPayPaymentMethod === method || this.orderLineData.paymentMethod === method) {
+        if (this.orderDataPO.billPayPaymentMethod === method || this.orderLineData?.paymentMethod === method) {
           selectedPaymentMethod = method;
           break;
         }
@@ -322,7 +322,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
 
   checkImprintProofExists() {
     this.imprintInformation.forEach(imprint => {
-      const url = `https://assets.consolidus.com/artwork/Proof/${this.orderData.fk_storeUserID}/${this.orderLineData.fk_orderID}/${this.paramData.pk_orderLineID}/${imprint.fk_imprintID}.jpg`;
+      const url = `https://assets.consolidus.com/artwork/Proof/${this.orderData.fk_storeUserID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${imprint.fk_imprintID}.jpg`;
       this._commonService.checkImageExistData(url).then(image => {
         imprint.proofCheck = image;
         this._changeDetectorRef.markForCheck();
@@ -478,7 +478,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       orderLinePOID: this.orderDataPO.pk_orderLinePOID,
       orderLineID: this.orderDataPO.fk_orderLineID,
       orderID: this.orderDataPO.fk_orderID,
-      blnGroupRun: this.orderLineData.blnGroupRun,
+      blnGroupRun: this.orderLineData?.blnGroupRun ? this.orderLineData?.blnGroupRun : false,
       orderManageLoggedInName: this.ordermanageUserData.firstName + ' ' + this.ordermanageUserData.lastName,
       blnGroupOrder: this.orderData.fk_groupOrderID ? true : false,
       trackingNumber: this.orderDataPO.trackingNumber,
@@ -509,7 +509,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     }
     let payload: UpdateEstimatedShipping = {
       orderLinePOID: this.orderDataPO.pk_orderLinePOID,
-      orderLineID: this.orderLineData.pk_orderLineID,
+      orderLineID: this.paramData.pk_orderLineID,
       orderManageLoggedInName: this.ordermanageUserData.firstName + ' ' + this.ordermanageUserData.lastName,
       orderID: this.orderData.pk_orderID,
       blnGroupRun: this.orderData.blnGroupRun,
@@ -1180,10 +1180,10 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   receiveDataFromChild(data: any) {
     let d = JSON.parse(data);
     if (d == 'Po Created') {
-      this.isLoading = true;
+      // this.isLoading = true;
       this.isAddPOOder = false;
-      this.getVendorsData();
-      this.getOrderDetails();
+      // this.getVendorsData();
+      // this.getOrderDetails();
     }
   }
   checkFileExist(url) {
