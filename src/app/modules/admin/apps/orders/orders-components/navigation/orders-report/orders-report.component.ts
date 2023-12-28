@@ -46,6 +46,7 @@ export class OrdersReportComponent implements OnInit {
   grandTotalCost = 0;
   grandTotalPrice = 0;
   orderTotal: any;
+  managerDetails: any;
   constructor(
     private _orderService: OrdersService,
     private _changeDetectorRef: ChangeDetectorRef
@@ -93,6 +94,7 @@ export class OrdersReportComponent implements OnInit {
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["data"].length) {
         this.orderDetail = res["data"][0];
+        this.managerDetails = this.orderDetail.managerDetails.split('::');
         let params = {
           order_total: true,
           order_id: this.orderDetail.pk_orderID
