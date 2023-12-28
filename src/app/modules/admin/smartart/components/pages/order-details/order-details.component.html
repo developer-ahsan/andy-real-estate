@@ -2531,7 +2531,7 @@
                             </mat-expansion-panel-header>
                             <div class="my-3">
                                 <div class="row mb-2 border-b pb-2"
-                                    *ngFor="let item of orderData.qryGroupRun; let last=last;"
+                                    *ngFor="let item of orderData.qryGroupRun; let last=last;let i=index"
                                     [ngClass]="{'border-b': !last}">
                                     <div class="col-md-2 col-12">
                                         <img class="w-30"
@@ -2556,7 +2556,26 @@
                                             </tr>
                                             <tr>
                                                 <td><b>Quantity: </b></td>
-                                                <td> {{item.quantity}}</td>
+                                                <td>
+                                                    <div class="relative" [id]="'tooltip-group' + i +'imprint'"
+                                                        (mouseenter)="mouseEnterGroup($event)"
+                                                        (mouseleave)="activeTooltipGroup = ''">
+                                                        <div class="cursor-pointer">{{item.quantity}}</div>
+
+                                                        <div
+                                                            *ngIf="activeTooltipGroup === 'tooltip-group' + i +'imprint'">
+                                                            <div class="absolute bg-yellow-100  top-5 left-0 right-0 p-2 z-10 rounded-lg shadow-md"
+                                                                style="max-width: max-content; ">
+                                                                <div class="font-medium text-xs">
+                                                                    <p
+                                                                        *ngFor="let qtyData of item.qryOrderLineItemReportData">
+                                                                        ({{qtyData.quantity}}x) {{qtyData.name}} &
+                                                                        {{qtyData.size}}</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
                                             </tr>
                                             <tr>
                                                 <td><b>Item Dimensions: </b></td>

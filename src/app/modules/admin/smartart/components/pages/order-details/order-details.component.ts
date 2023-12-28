@@ -144,7 +144,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   randomString: any = new Date().getTime();
 
   activeTooltip = '';
-
+  activeTooltipGroup = '';
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _authService: AuthService,
@@ -173,6 +173,9 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
     }
     this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.orderData = res["data"][0];
+      res["qryGroupRun"].forEach(element => {
+        this.setGroupRunImprintQTYToast(element);
+      });
       this.orderData.qryGroupRun = res["qryGroupRun"];
       this.orderData.blnStoreImage = true;
       this.orderData.sessionProofEmails = [];
@@ -483,6 +486,17 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
         })
       });
     }
+  }
+  setGroupRunImprintQTYToast(imprint) {
+    if (imprint.qryOrderLineItemReport) {
+      let items = imprint.qryOrderLineItemReport.split(',,');
+      imprint.qryOrderLineItemReportData = [];
+      items.forEach(element => {
+        const [quantity, name, size] = element.split('::');
+        imprint.qryOrderLineItemReportData.push({ quantity, name, size });
+      });
+    }
+    this._changeDetectorRef.markForCheck();
   }
   setImprintQTYToast(imprint) {
     if (imprint.qryOrderLineItemReport) {
@@ -1301,6 +1315,9 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   }
   mouseEnter(ev: any) {
     this.activeTooltip = ev.target.id;
+  }
+  mouseEnterGroup(ev: any) {
+    this.activeTooltipGroup = ev.target.id;
   }
   // Update order Attention
   updateAttentionFlagOrder(item, check) {
