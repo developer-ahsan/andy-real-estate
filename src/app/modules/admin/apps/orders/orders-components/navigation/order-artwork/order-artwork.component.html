@@ -33,8 +33,8 @@
                                     <a class="text-blue-500"
                                         href="https://assets.consolidus.com/artwork/Proof/{{orderDetail.fk_storeUserID}}/{{orderDetail.pk_orderID}}/{{imprint.fk_orderLineID}}/{{artwork.FILENAME}}?{{randomString}}"
                                         target="_blank">View Proof</a>
-                                    <span *ngIf="imprint.artworkProofs.length == 0">---</span>
                                 </div>
+                                <span *ngIf="imprint.artworkProofs.length == 0">---</span>
                             </td>
                             <td width="40%">
                                 {{imprint?.status?.statusName || not_available}}

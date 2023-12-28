@@ -134,6 +134,7 @@ export class ReportsLocationSalesComponent implements OnInit, OnDestroy {
     this._reportService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.generateReportData = res;
       this.generateReportData["report_summary"].forEach(element => {
+        element.MARGIN = Number(element.MARGIN).toFixed(2)
         if (element.SALES > element.PY) {
           element.blnPercent = true;
           const diff = element.SALES - element.PY;
