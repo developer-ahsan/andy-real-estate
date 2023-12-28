@@ -52,24 +52,25 @@
                         Rush
                     </h2>
                     <div class="space-y-2">
-                        <div *ngIf="orderData.formattedInHandsDate" class="text-xl font-bold text-orange-600">
+                        <div *ngIf="orderData.inHandsDate" class="text-xl font-bold text-orange-600">
                             {{orderData.formattedInHandsDate |
                             date: 'MM/dd/YYYY'}}</div>
-                        <div class="font-bold">
+                        <div class="font-bold" *ngIf="orderData.inHandsDate">
                             <span>Rush Flexibilty: </span>
                             <span
                                 [ngClass]="{'text-red-500': !orderData.blnRushFlexibility, 'text-green-500': orderData.blnRushFlexibility}">
                                 {{ orderData.blnRushFlexibility ? 'Yes' : 'No' }}
                             </span>
                         </div>
+                        <div *ngIf="!orderData.inHandsDate">---</div>
                         <div>
                             <span><b>Comment:</b> {{orderData.rushFlexibilityComment || 'N/A'}}</span>
                         </div>
                         <mat-form-field class="w-full">
                             <mat-label>Add or Update In-Hands Date</mat-label>
                             <input matInput [matDatepicker]="picker" readonly
-                                [matDatepickerFilter]="weekendsDatesFilter"
-                                [(ngModel)]="orderData.formattedInHandsDate">
+                                [matDatepickerFilter]="weekendsDatesFilter" [(ngModel)]="orderData.formattedInHandsDate"
+                                (click)="picker.open()">
                             <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                             <mat-datepicker #picker></mat-datepicker>
                         </mat-form-field>
@@ -103,12 +104,11 @@
                                                 [ngClass]="{'text-red-500': item.statusName != 'Artwork Approved','text-green-500': item.statusName == 'Artwork Approved'}">{{item.statusName}}</b></span>
                                         <br>
                                         <a *ngIf="item.proofCheck"
-                                            href="https://assets.consolidus.com/artwork/Proof/{{orderData.fk_storeUserID}}/{{orderData.fk_orderID}}/{{orderData.pk_orderLineID}}/{{item.fk_imprintID}}.jpg"
+                                            href="https://assets.consolidus.com/artwork/Proof/{{orderData.fk_storeUserID}}/{{orderLineData.fk_orderID}}/{{orderLineData.pk_orderLineID}}/{{item.fk_imprintID}}.jpg"
                                             target="_blank" class="text-blue-500">View Proof</a>
                                     </td>
                                 </tr>
                             </table>
-
                         </div>
                     </div>
                 </div>
@@ -125,14 +125,14 @@
                         <div>
                             <mat-form-field class="w-full">
                                 <mat-label>Tracking:</mat-label>
-                                <input matInput maxlength="50" [(ngModel)]="orderData.trackingNumber">
+                                <input matInput maxlength="50" [(ngModel)]="orderDataPO.trackingNumber">
                             </mat-form-field>
                         </div>
                         <div>
                             <mat-form-field class="w-full">
                                 <mat-label>Ship Date:</mat-label>
                                 <input matInput [matDatepicker]="shipDate" readonly
-                                    [(ngModel)]="orderData.formattedShippingDate">
+                                    [(ngModel)]="orderData.formattedShippingDate" (click)="shipDate.open()">
                                 <mat-datepicker-toggle matIconSuffix [for]="shipDate"></mat-datepicker-toggle>
                                 <mat-datepicker #shipDate></mat-datepicker>
                             </mat-form-field>
@@ -140,7 +140,7 @@
                         <div>
                             <mat-form-field class="w-full">
                                 <mat-label>Carrier:</mat-label>
-                                <mat-select matInput [(ngModel)]="orderData.shippingCarrier">
+                                <mat-select matInput [(ngModel)]="orderLineData.shippingCarrier">
                                     <mat-option [value]="1">UPS</mat-option>
                                     <mat-option [value]="2">FedEx</mat-option>
                                     <mat-option [value]="3">Freight</mat-option>
@@ -386,8 +386,8 @@
                                 44311<br />P:
                                 330-319-7203, F: 330-319-7213
                                 <br />
-                                <span *ngIf="orderDataPO.shippingCustomerAccountNumber">Customer Account ##:
-                                    {{orderDataPO.shippingCustomerAccountNumber}}</span>
+                                <span *ngIf="orderData.shippingCustomerAccountNumber">Customer Account ##:
+                                    {{orderData.shippingCustomerAccountNumber}}</span>
                             </p>
                             <div>
                                 <mat-form-field class="min-w-80">
@@ -819,7 +819,8 @@
                                         <div class="col-12">
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label>Imprint Comment</mat-label>
-                                                <input matInput maxlength="3000" [(ngModel)]="orderData.imprintComment">
+                                                <input matInput maxlength="3000"
+                                                    [(ngModel)]="orderDataPO.imprintComment">
                                             </mat-form-field>
                                         </div>
                                     </div>

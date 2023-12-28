@@ -32,6 +32,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   isLoading: boolean = false;
   orderData: any;
   orderDataPO: any;
+  orderLineData: any;
   imprintdata: any = [];
 
   statusID = 1;
@@ -212,8 +213,8 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       order_id: this.paramData.fk_orderID
     }
     this._OrderManageService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.orderData = res["data"][0];
-
+      this.orderData = res["order"][0];
+      this.orderLineData = res["orderLineData"][0];
       this.setValues();
 
       this.imprintInformation = res["imprintInformation"];
@@ -236,7 +237,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
         if (this.orderDataPO.vendorInvoiceNetTerms) {
           vendorTerm = this.orderDataPO.vendorInvoiceNetTerms;
         } else {
-          vendorTerm = this.orderData.netTerms;
+          vendorTerm = this.orderLineData.netTerms;
         }
         this.vendorBillData = {
           vendorInvoiceNumber: this.orderDataPO.vendorInvoiceNumber ? this.orderDataPO.vendorInvoiceNumber : null,
@@ -278,8 +279,8 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     this.orderData.formattedShippingDate = this.orderData?.formattedShippingDate ? new Date(this.orderData.formattedShippingDate) : null;
     this.orderData.formattedEstimatedShippingDate = this.orderData.formattedEstimatedShippingDate ? new Date(this.orderData.formattedEstimatedShippingDate) : null;
 
-    if (!this.orderData.shippingCarrier) {
-      this.orderData.shippingCarrier = 1;
+    if (!this.orderLineData.shippingCarrier) {
+      this.orderLineData.shippingCarrier = 1;
     }
   }
   // Bill Pay
@@ -287,15 +288,15 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     let selectedPaymentMethod: any = 0;
 
     if (
-      !this.orderData.billPayPaymentMethod &&
-      !this.orderData.paymentMethod
+      !this.orderDataPO.billPayPaymentMethod &&
+      !this.orderLineData.paymentMethod
     ) {
       selectedPaymentMethod = 0;
     } else {
       const paymentMethods = ['American Express', 'MasterCard', 'Credit card', 'Vendor Website', 'ACH', 'Check'];
 
       for (const method of paymentMethods) {
-        if (this.orderData.billPayPaymentMethod === method || this.orderData.paymentMethod === method) {
+        if (this.orderDataPO.billPayPaymentMethod === method || this.orderLineData.paymentMethod === method) {
           selectedPaymentMethod = method;
           break;
         }
@@ -311,7 +312,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
 
   checkImprintProofExists() {
     this.imprintInformation.forEach(imprint => {
-      const url = `https://assets.consolidus.com/artwork/Proof/${this.orderData.fk_storeUserID}/${this.orderData.fk_orderID}/${this.orderData.pk_orderLineID}/${imprint.fk_imprintID}.jpg`;
+      const url = `https://assets.consolidus.com/artwork/Proof/${this.orderData.fk_storeUserID}/${this.orderLineData.fk_orderID}/${this.orderLineData.pk_orderLineID}/${imprint.fk_imprintID}.jpg`;
       this._commonService.checkImageExistData(url).then(image => {
         imprint.proofCheck = image;
         this._changeDetectorRef.markForCheck();
@@ -411,6 +412,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
         if (res["success"]) {
           this._OrderManageService.snackBar(res["message"]);
         }
+        this.orderData.inHandsDate = date;
         this.isHandsDateLoader = false;
         this._changeDetectorRef.markForCheck();
       }, err => {
@@ -466,12 +468,12 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       orderLinePOID: this.orderDataPO.pk_orderLinePOID,
       orderLineID: this.orderDataPO.fk_orderLineID,
       orderID: this.orderDataPO.fk_orderID,
-      blnGroupRun: this.orderData.blnGroupRun,
+      blnGroupRun: this.orderLineData.blnGroupRun,
       orderManageLoggedInName: this.ordermanageUserData.firstName + ' ' + this.ordermanageUserData.lastName,
       blnGroupOrder: this.orderData.fk_groupOrderID ? true : false,
-      trackingNumber: this.orderData.trackingNumber,
+      trackingNumber: this.orderDataPO.trackingNumber,
       shipDate: date,
-      carrier: this.orderData.shippingCarrier,
+      carrier: this.orderLineData.shippingCarrier,
       blnSendShippingEmail: this.blnblnSendShippingEmail,
       blnRevised: this.blnRevised,
       update_shipping_tracking: true

@@ -85,8 +85,8 @@ export class CreatePoComponent implements OnInit {
   }
   CreatePurchaseOrder() {
     const { vendorShippingAddress1, vendorShippingAddress2, vendorShippingCity, vendorShippingState, vendorShippingZip, vendorShippingPhone, shipToCompanyName, shipToCustomerName, shipToLocation, shipToPurchaseOrder, shipToAddress, shipToCity, shipToState, shipToZip, shipToCountry, shipToDeliverTo, vendorShippingEmail, vendorShippingComment, companyName, productName, quantity, blnSupplier, blnDecorator } = this.createPOForm.getRawValue();
-    const { pk_orderLinePOID } = this.poData;
-    const { fk_orderID } = this.orderData;
+    const { pk_orderLinePOID, fk_orderID } = this.poData;
+    // const { fk_orderID } = this.orderData;
     if (!vendorShippingEmail.trim() || !shipToCompanyName.trim() || !shipToAddress.trim() || !shipToCity.trim() || !shipToZip.trim() || !shipToCountry.trim() || !productName.trim()) {
       this._orderManage.snackBar('Please fill out the required fields');
       return;
