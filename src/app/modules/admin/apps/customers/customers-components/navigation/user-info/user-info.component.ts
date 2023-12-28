@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { takeUntil } from 'rxjs/operators';
+import { first, takeUntil } from 'rxjs/operators';
 import { merge, Observable, Subject } from 'rxjs';
 import { CustomersService } from '../../orders.service';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
@@ -133,6 +133,15 @@ export class UserInfoComponent implements OnInit {
     let rutgersWorkflowOverrides = rutgersWorkflowOverride;
     if (rutgersWorkflowOverride == 0) {
       rutgersWorkflowOverrides = null;
+    }
+
+    if (userName.trim() === '' || password.trim() === '' || firstName.trim() === '' || lastName.trim() === ''
+      || companyName.trim() === '' || email.trim() === '' || shippingFirstName.trim() === '' || shippingLastName.trim() === '' ||
+      shippingCompanyName.trim() === '' || shippingEmail.trim() === '' || shippingAddress1.trim() === '' || shippingCity.trim() === ''
+      ) {
+        this._customerService.snackBar("Please fill the required fields");
+
+      return
     }
     let payload = {
       update_user: true,
