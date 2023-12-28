@@ -93,11 +93,12 @@
                     <!-- Actions -->
                     <div class="mt-4 sm:mt-0">
                         <!-- Add section button -->
-                        <button class="min-w-40" mat-button (click)="openAdvancedSearch()">Filter</button>
+                        <button class="min-w-40" *ngIf="!isFulfillmentOrders" mat-button
+                            (click)="openAdvancedSearch()">Filter</button>
                     </div>
                 </div>
 
-                <div class="my-3 flex flex-row gap-x-2">
+                <div class="my-3 flex flex-row gap-x-2" *ngIf="!isFulfillmentOrders">
                     <button class="ml-4 min-w-30" mat-flat-button [color]="'primary'">
                         <span class="ml-2 mr-1">Bulk Order Payment</span>
                     </button>
@@ -117,19 +118,20 @@
                 <div class="flex flex-auto overflow-hidden">
                     <!-- Products list -->
                     <div class="flex flex-col flex-auto sm:mb-18 overflow-hidden">
-                       
+
 
 
                         <ng-container *ngIf="ordersLength > 0; else noOrders">
 
                             <div class="p-6 sm:p-8 lg:p-10 w-full my-3">
                                 <mat-form-field appearance="fill" class="mat-form-field w-full">
-                                    <mat-label>Search By Fullfillment order </mat-label>
-                                    <input matInput [(ngModel)]="fullfillmentOrder">
+                                    <mat-label>Search By Fullfillment Event </mat-label>
+                                    <input matInput [(ngModel)]="fullfillmentOrder" [disabled]="isLoading">
                                 </mat-form-field>
 
-                                <button class="mt-2 text-right" [color]="'primary'" [matTooltip]="'Search Order'"
-                                    (click)="searchByFullfilmentOrder()" mat-stroked-button>
+                                <button class="mt-2 text-right" [color]="'primary'" [disabled]="isLoading"
+                                    [matTooltip]="'Search Order'" (click)="searchByFullfilmentOrder()"
+                                    mat-stroked-button>
                                     <span>Search</span>
                                 </button>
                             </div>
@@ -197,8 +199,10 @@
                                                 (click)="orderDetails(order.pk_orderID)" style="cursor: pointer;">
                                                 <mat-icon class="text-gray-400 icon-size-5"
                                                     *ngIf="order.fk_groupOrderID"
-                                                    [svgIcon]="'heroicons_outline:user-group'"></mat-icon>
+                                                    [svgIcon]="'heroicons_outline:user-group'"
+                                                    matTooltip="This is a group order"></mat-icon>
                                                 <mat-icon class="text-gray-400 icon-size-5"
+                                                    matTooltip="This is not a group order"
                                                     *ngIf="!order.fk_groupOrderID" [svgIcon]="'heroicons_outline:user'">
                                                 </mat-icon>
                                             </td>
@@ -213,8 +217,10 @@
                                             <td class="pr-4" mat-cell *matCellDef="let order"
                                                 (click)="orderDetails(order.pk_orderID)" style="cursor: pointer;">
                                                 <mat-icon class="text-green-400 icon-size-5" *ngIf="!order.blnCancelled"
-                                                    [svgIcon]="'heroicons_solid:check'"></mat-icon>
-                                                <mat-icon class="text-red-400 icon-size-5" *ngIf="order.blnCancelled"
+                                                    [svgIcon]="'heroicons_solid:check'"
+                                                    matTooltip="Not Cancelled"></mat-icon>
+                                                <mat-icon class="text-red-400 icon-size-5" matTooltip="Cancelled"
+                                                    *ngIf="order.blnCancelled"
                                                     [svgIcon]="'heroicons_solid:x'"></mat-icon>
                                             </td>
                                         </ng-container>
@@ -229,14 +235,12 @@
                                                     [svgIcon]="'heroicons_solid:check'"></mat-icon>
                                                 <mat-icon class="text-red-400 icon-size-5" *ngIf="order.blnCancelled"
                                                     [svgIcon]="'heroicons_solid:x'"></mat-icon> -->
-                                                <span *ngIf="order.paymentDate"
-                                                    class="fa fa-dollar fa-2x fa-fw gray-icon clickable"
-                                                    style="color: #38931f;" data-toggle="tooltip"
-                                                    title="Order has not been paid"></span>
                                                 <span *ngIf="!order.paymentDate"
+                                                    class="fa fa-dollar fa-2x fa-fw gray-icon clickable"
+                                                    style="color: #4f514e;" matTooltip="Order has not been paid"></span>
+                                                <span *ngIf="order.paymentDate"
                                                     class="fa fa-dollar fa-2x fa-fw active clickable"
-                                                    style="color: #f1f5f0;" data-toggle="tooltip"
-                                                    title="Order has been paid"></span>
+                                                    style="color: #38931f;" matTooltip="Order has been paid"></span>
                                             </td>
                                         </ng-container>
                                         <tr class="shadow" mat-header-row

@@ -55,6 +55,7 @@ export class OrdersComponent {
     tempOrdersArray = [];
     tempTotalCount = 0;
     @ViewChild('drawer', { static: true }) sidenav: MatDrawer;
+    isFulfillmentOrders: boolean = false;
 
     /**
      * Constructor
@@ -247,33 +248,45 @@ export class OrdersComponent {
     }
 
     searchByFullfilmentOrder() {
-        let params = {
-            list: true,
-            fulfillment_search: this.fullfillmentOrder,
-        }
-        this.isLoading = true;
-        this._orderService.getOrders(params)
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((orders) => {
-                this.orders = orders["data"];
-                this.ordersLength = orders["totalRecords"];
-                this.size = orders["size"]
-                this.isLoading = false;
-                this.isLoadingChange.emit(false);
-                this._orderService._searchKeyword = '';
-                this.advancedSearchForm = {
-                    store_id: this.storeId,
-                    range_end: this.endDate,
-                    range_start: this.startDate,
-                    search_order_id: this.searchOrderId,
-                    size: this.size,
-                    order_type: this.orderType
-                };
-                this.isLoading = false;
+        if (!this.fullfillmentOrder.trim()) {
+            this.isFulfillmentOrders = false;
+            this.pageNo = 1;
+            this.pageIndex = 0;
+            this.isLoading = true;
+            this.pageSize = this.advancedSearchForm.size;
+            this.getOrders(this.size, 1);
+        } else {
+            this.isFulfillmentOrders = true;
 
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
+            let params = {
+                list: true,
+                fulfillment_search: this.fullfillmentOrder.trim(),
+            }
+            this.isLoading = true;
+            this._orderService.getOrders(params)
+                .pipe(takeUntil(this._unsubscribeAll))
+                .subscribe((orders) => {
+                    this.orders = orders["data"];
+                    this.ordersLength = orders["totalRecords"];
+                    this.size = orders["size"]
+                    this.isLoading = false;
+                    this.isLoadingChange.emit(false);
+                    this._orderService._searchKeyword = '';
+                    this.advancedSearchForm = {
+                        store_id: this.storeId,
+                        range_end: this.endDate,
+                        range_start: this.startDate,
+                        search_order_id: this.searchOrderId,
+                        size: this.size,
+                        order_type: this.orderType
+                    };
+                    this.isLoading = false;
+
+                    // Mark for check
+                    this._changeDetectorRef.markForCheck();
+                });
+        }
+
     }
 
     moment(date) {
