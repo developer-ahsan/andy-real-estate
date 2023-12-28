@@ -153,7 +153,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   attachmentName: string = '';
   @ViewChild('attachmentFile') attachmentFile: ElementRef;
   allStates = [];
-
+  adjustmentsListData = [];
   statusOptions = [
     { value: 1, label: 'New-Pending' },
     { value: 2, label: 'Artwork Approved' },
@@ -214,11 +214,16 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     }
     this._OrderManageService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.orderData = res["order"][0];
-      this.orderLineData = res["orderLineData"][0];
-      this.setValues();
-
-      this.imprintInformation = res["imprintInformation"];
-      this.checkImprintProofExists();
+      if (res["orderLineData"].length) {
+        this.orderLineData = res["orderLineData"][0];
+      }
+      if (res["adjustmentsList"].length) {
+        const data = res["adjustmentsList"][0].adjustmentsList.split(',,');
+        data.forEach(element => {
+          const [id, name] = element.split('::');
+          this.adjustmentsListData.push({ id, name });
+        });
+      }
       if (res["purchaseOrders"].length > 0) {
         this.orderDataPO = res["purchaseOrders"][0];
         const { shippingCarrierName, shippingServiceName, shippingCustomerAccountNumber, blnSupplier, blnDecorator, POinHandsDate } = this.orderDataPO;
@@ -237,7 +242,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
         if (this.orderDataPO.vendorInvoiceNetTerms) {
           vendorTerm = this.orderDataPO.vendorInvoiceNetTerms;
         } else {
-          vendorTerm = this.orderLineData.netTerms;
+          vendorTerm = this.orderLineData?.netTerms;
         }
         this.vendorBillData = {
           vendorInvoiceNumber: this.orderDataPO.vendorInvoiceNumber ? this.orderDataPO.vendorInvoiceNumber : null,
@@ -253,8 +258,13 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
         if (!this.orderDataPO.imprintDetail) {
           this.orderDataPO.imprintDetail = `Please send proof to artwork@${this.orderData?.storeName?.toLowerCase()}`
         }
+        this.orderDataPO.poProofFiles = [];
         this.getArtworkFiles();
       }
+      this.imprintInformation = res["imprintInformation"];
+      this.checkImprintProofExists();
+      this.setValues();
+
       const { storeName } = this.orderData;
       this.orderEmailRecipients.push(`orders@${storeName.toLowerCase()}`, `artwork@${storeName.toLowerCase()}`, `billing@consolidus.com`, `service@${storeName.toLowerCase()}`, `content@consolidus.com`);
       let recipients;
@@ -278,9 +288,9 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     this.orderData.formattedInHandsDate = this.orderData?.formattedInHandsDate ? new Date(this.orderData.formattedInHandsDate) : null;
     this.orderData.formattedShippingDate = this.orderData?.formattedShippingDate ? new Date(this.orderData.formattedShippingDate) : null;
     this.orderData.formattedEstimatedShippingDate = this.orderData.formattedEstimatedShippingDate ? new Date(this.orderData.formattedEstimatedShippingDate) : null;
-
-    if (!this.orderLineData.shippingCarrier) {
-      this.orderLineData.shippingCarrier = 1;
+    console.log(this.orderDataPO)
+    if (!this.orderDataPO.shippingCarrier) {
+      this.orderDataPO.shippingCarrier = 1;
     }
   }
   // Bill Pay
@@ -312,7 +322,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
 
   checkImprintProofExists() {
     this.imprintInformation.forEach(imprint => {
-      const url = `https://assets.consolidus.com/artwork/Proof/${this.orderData.fk_storeUserID}/${this.orderLineData.fk_orderID}/${this.orderLineData.pk_orderLineID}/${imprint.fk_imprintID}.jpg`;
+      const url = `https://assets.consolidus.com/artwork/Proof/${this.orderData.fk_storeUserID}/${this.orderLineData.fk_orderID}/${this.paramData.pk_orderLineID}/${imprint.fk_imprintID}.jpg`;
       this._commonService.checkImageExistData(url).then(image => {
         imprint.proofCheck = image;
         this._changeDetectorRef.markForCheck();
@@ -473,7 +483,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       blnGroupOrder: this.orderData.fk_groupOrderID ? true : false,
       trackingNumber: this.orderDataPO.trackingNumber,
       shipDate: date,
-      carrier: this.orderLineData.shippingCarrier,
+      carrier: this.orderDataPO.shippingCarrier,
       blnSendShippingEmail: this.blnblnSendShippingEmail,
       blnRevised: this.blnRevised,
       update_shipping_tracking: true
@@ -499,7 +509,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     }
     let payload: UpdateEstimatedShipping = {
       orderLinePOID: this.orderDataPO.pk_orderLinePOID,
-      orderLineID: this.orderData.pk_orderLineID,
+      orderLineID: this.orderLineData.pk_orderLineID,
       orderManageLoggedInName: this.ordermanageUserData.firstName + ' ' + this.ordermanageUserData.lastName,
       orderID: this.orderData.pk_orderID,
       blnGroupRun: this.orderData.blnGroupRun,
@@ -618,7 +628,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   }
   addAdjustment() {
     if (this.adjustmentForm.name?.trim() == '' || !Number(this.adjustmentForm.cost)) {
-      this._OrderManageService.snackBar('Imprint name and quantity is required');
+      this._OrderManageService.snackBar('Imprint name and cost is required');
       return;
     }
     if (Number(this.adjustmentForm.cost) < 0) {

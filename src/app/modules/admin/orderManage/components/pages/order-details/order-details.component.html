@@ -140,7 +140,7 @@
                         <div>
                             <mat-form-field class="w-full">
                                 <mat-label>Carrier:</mat-label>
-                                <mat-select matInput [(ngModel)]="orderLineData.shippingCarrier">
+                                <mat-select matInput [(ngModel)]="orderDataPO.shippingCarrier">
                                     <mat-option [value]="1">UPS</mat-option>
                                     <mat-option [value]="2">FedEx</mat-option>
                                     <mat-option [value]="3">Freight</mat-option>
@@ -954,7 +954,10 @@
                                     <div class="col-5">
                                         <mat-form-field class="w-full">
                                             <mat-label>New adjustment name/description:</mat-label>
-                                            <input matInput [(ngModel)]="adjustmentForm.name">
+                                            <mat-select matInput [(ngModel)]="adjustmentForm.name">
+                                                <mat-option *ngFor="let item of adjustmentsListData"
+                                                    [value]="item.name">{{item.name}}</mat-option>
+                                            </mat-select>
                                         </mat-form-field>
                                     </div>
                                     <div class="col-2">
@@ -1003,10 +1006,10 @@
                                 duplicate:</mat-checkbox>
                             <mat-checkbox [(ngModel)]="blnArtNeedsResent"> Resend artwork:</mat-checkbox>
                             <div class="my-2 w-full">
-                                <div *ngIf="!orderDataPO?.poProofFiles.length == 0" class="alert alert-warning">
+                                <div class="alert alert-warning" *ngIf="orderDataPO?.poProofFiles.length == 0">
                                     Artwork has not been uploaded for this PO
                                 </div>
-                                <div *ngIf="orderDataPO?.poProofFiles.length > 0">
+                                <div *ngIf="orderDataPO?.poProofFiles?.length > 0">
                                     <a href="https://assets.consolidus.com/artwork/POProof/{{orderDataPO.fk_orderLineID}}/{{orderDataPO.poProofFiles[0].FILENAME}}"
                                         target="_blank">
                                         <div class="alert alert-success add-padding-sm">
