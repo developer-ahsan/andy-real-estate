@@ -217,7 +217,7 @@ export class ReportsStoreSalesComponent implements OnInit, OnDestroy {
                   } else {
                     sattusData = this._reportService.getStatusValue(data[7]);
                   }
-                  element.storeDetails.push({ date: data[0], id: data[1], company: data[2], sale: data[3], tax: data[4], margin: Number(data[5]) ? data[5]?.toFixed(2) : 0.0, paid: paid, status: sattusData.statusValue, statusColor: sattusData.statusColor, cost: Number(data[10]) });
+                  element.storeDetails.push({ date: data[0], id: data[1], company: data[2], sale: data[3], tax: data[4], margin: Number(data[5]) ? Number(data[5])?.toFixed(2) : 0.0, paid: paid, status: sattusData.statusValue, statusColor: sattusData.statusColor, cost: Number(data[10]) });
                 });
               }
             }

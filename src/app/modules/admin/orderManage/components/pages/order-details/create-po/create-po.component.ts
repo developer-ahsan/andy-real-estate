@@ -90,7 +90,7 @@ export class CreatePoComponent implements OnInit {
   CreatePurchaseOrder() {
     const { vendorShippingAddress1, vendorShippingAddress2, vendorShippingCity, vendorShippingState, vendorShippingZip, vendorShippingPhone, shipToCompanyName, shipToCustomerName, shipToLocation, shipToPurchaseOrder, shipToAddress, shipToCity, shipToState, shipToZip, shipToCountry, shipToDeliverTo, vendorShippingEmail, vendorShippingComment, companyName, productName, quantity, blnSupplier, blnDecorator } = this.createPOForm.getRawValue();
     const { pk_orderLinePOID, fk_orderID } = this.poData;
-    // const { fk_orderID } = this.orderData;
+    const { pk_orderID } = this.orderData;
     if (!vendorShippingEmail.trim() || !shipToCompanyName.trim() || !shipToAddress.trim() || !shipToCity.trim() || !shipToZip.trim() || !shipToCountry.trim() || !productName.trim()) {
       this._orderManage.snackBar('Please fill out the required fields');
       return;
@@ -124,7 +124,7 @@ export class CreatePoComponent implements OnInit {
       quantity: quantity,
       blnSupplier: blnSupplier,
       blnDecorator: blnDecorator,
-      orderID: fk_orderID,
+      orderID: pk_orderID,
       create_purchase_order: true
     }
     payload = this._commonService.replaceNullSpaces(payload);

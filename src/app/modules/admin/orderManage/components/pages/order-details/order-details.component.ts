@@ -1161,9 +1161,15 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       this._OrderManageService.snackBar(res["message"]);
+      this.redirectToPO(res["newID"]);
     })
   }
-
+  redirectToPO(newID) {
+    const queryParams: NavigationExtras = {
+      queryParams: { fk_orderID: this.orderData.pk_orderID, pk_orderLineID: this.paramData.pk_orderLineID, pk_orderLinePOID: newID }
+    };
+    this.router.navigate(['/ordermanage/order-details'], queryParams);
+  }
   getVendorsDataByID(id) {
     this._vendorService.getVendorsSupplierById(id).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       const vendor = res["data"][0];
