@@ -117,11 +117,9 @@
                 <div class="flex flex-auto overflow-hidden">
                     <!-- Products list -->
                     <div class="flex flex-col flex-auto sm:mb-18 overflow-hidden">
-                        <ngx-skeleton-loader count="8" appearance="line" animation="pulse"
-                            *ngIf="isLoading && ordersLength == 0">
-                        </ngx-skeleton-loader>
-
                        
+
+
                         <ng-container *ngIf="ordersLength > 0; else noOrders">
 
                             <div class="p-6 sm:p-8 lg:p-10 w-full my-3">
@@ -129,125 +127,132 @@
                                     <mat-label>Search By Fullfillment order </mat-label>
                                     <input matInput [(ngModel)]="fullfillmentOrder">
                                 </mat-form-field>
-    
+
                                 <button class="mt-2 text-right" [color]="'primary'" [matTooltip]="'Search Order'"
                                     (click)="searchByFullfilmentOrder()" mat-stroked-button>
                                     <span>Search</span>
                                 </button>
                             </div>
 
-                            <!-- Table wrapper -->
-                            <div class="overflow-x-hidden sm:overflow-y-auto" cdkScrollable>
+                            <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+                            </ngx-skeleton-loader>
 
-                                <!-- Table -->
-                                <table class="w-full min-w-320 table-fixed bg-transparent"
-                                    [ngClass]="{'pointer-events-none': isLoading}" mat-table matSort
-                                    [matSortActive]="'name'" [matSortDisableClear]="true" [matSortDirection]="'asc'"
-                                    [multiTemplateDataRows]="true" [dataSource]="orders" [trackBy]="trackByFn">
+                            <div *ngIf="!isLoading">
+                                <!-- Table wrapper -->
+                                <div class="overflow-x-hidden sm:overflow-y-auto" cdkScrollable>
 
-                                    <!-- SKU -->
-                                    <ng-container matColumnDef="sku">
-                                        <th class="w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                            *matHeaderCellDef disableClear>
-                                            Date
-                                        </th>
-                                        <td class="px-8" mat-cell *matCellDef="let order"
-                                            (click)="orderDetails(order.pk_orderID)" style="cursor: pointer;">
-                                            <div class="flex items-center">
-                                                <span class="truncate">{{moment(order.orderDate)}}</span>
-                                            </div>
-                                        </td>
-                                    </ng-container>
+                                    <!-- Table -->
+                                    <table class="w-full min-w-320 table-fixed bg-transparent"
+                                        [ngClass]="{'pointer-events-none': isLoading}" mat-table matSort
+                                        [matSortActive]="'name'" [matSortDisableClear]="true" [matSortDirection]="'asc'"
+                                        [multiTemplateDataRows]="true" [dataSource]="orders" [trackBy]="trackByFn">
 
-                                    <!-- Name -->
-                                    <ng-container matColumnDef="name">
-                                        <th class="w-15 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                            *matHeaderCellDef disableClear>
-                                            Name
-                                        </th>
-                                        <td class="pr-8 truncate" mat-cell *matCellDef="let order"
-                                            (click)="orderDetails(order.pk_orderID)" style="cursor: pointer;">
-                                            <b>{{order.firstName}} {{order.lastName}}</b>
-                                            <p>{{order.companyName}}</p>
-                                            <span><b>{{order.pk_orderID}}</b> - {{order.storeName}}</span>
-                                        </td>
-                                    </ng-container>
+                                        <!-- SKU -->
+                                        <ng-container matColumnDef="sku">
+                                            <th class="w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                                *matHeaderCellDef disableClear>
+                                                Date
+                                            </th>
+                                            <td class="px-8" mat-cell *matCellDef="let order"
+                                                (click)="orderDetails(order.pk_orderID)" style="cursor: pointer;">
+                                                <div class="flex items-center">
+                                                    <span class="truncate">{{moment(order.orderDate)}}</span>
+                                                </div>
+                                            </td>
+                                        </ng-container>
 
-                                    <!-- Price -->
-                                    <ng-container matColumnDef="price">
-                                        <th class="w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                            *matHeaderCellDef disableClear>
-                                            Price
-                                        </th>
-                                        <td class="pr-4" mat-cell *matCellDef="let order"
-                                            (click)="orderDetails(order.pk_orderID)" style="cursor: pointer;">
-                                            {{order.total | currency}}
-                                        </td>
-                                    </ng-container>
+                                        <!-- Name -->
+                                        <ng-container matColumnDef="name">
+                                            <th class="w-15 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                                *matHeaderCellDef disableClear>
+                                                Name
+                                            </th>
+                                            <td class="pr-8 truncate" mat-cell *matCellDef="let order"
+                                                (click)="orderDetails(order.pk_orderID)" style="cursor: pointer;">
+                                                <b>{{order.firstName}} {{order.lastName}}</b>
+                                                <p>{{order.companyName}}</p>
+                                                <span><b>{{order.pk_orderID}}</b> - {{order.storeName}}</span>
+                                            </td>
+                                        </ng-container>
 
-                                    <!-- Stock -->
-                                    <ng-container matColumnDef="stock">
-                                        <th class="w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                            *matHeaderCellDef disableClear>
-                                            Type
-                                        </th>
-                                        <td class="pr-4" mat-cell *matCellDef="let order"
-                                            (click)="orderDetails(order.pk_orderID)" style="cursor: pointer;">
-                                            <mat-icon class="text-gray-400 icon-size-5" *ngIf="order.fk_groupOrderID"
-                                                [svgIcon]="'heroicons_outline:user-group'"></mat-icon>
-                                            <mat-icon class="text-gray-400 icon-size-5" *ngIf="!order.fk_groupOrderID"
-                                                [svgIcon]="'heroicons_outline:user'">
-                                            </mat-icon>
-                                        </td>
-                                    </ng-container>
+                                        <!-- Price -->
+                                        <ng-container matColumnDef="price">
+                                            <th class="w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                                *matHeaderCellDef disableClear>
+                                                Price
+                                            </th>
+                                            <td class="pr-4" mat-cell *matCellDef="let order"
+                                                (click)="orderDetails(order.pk_orderID)" style="cursor: pointer;">
+                                                {{order.total | currency}}
+                                            </td>
+                                        </ng-container>
 
-                                    <!-- Active -->
-                                    <ng-container matColumnDef="active">
-                                        <th class="w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                            *matHeaderCellDef disableClear>
-                                            Status
-                                        </th>
-                                        <td class="pr-4" mat-cell *matCellDef="let order"
-                                            (click)="orderDetails(order.pk_orderID)" style="cursor: pointer;">
-                                            <mat-icon class="text-green-400 icon-size-5" *ngIf="!order.blnCancelled"
-                                                [svgIcon]="'heroicons_solid:check'"></mat-icon>
-                                            <mat-icon class="text-red-400 icon-size-5" *ngIf="order.blnCancelled"
-                                                [svgIcon]="'heroicons_solid:x'"></mat-icon>
-                                        </td>
-                                    </ng-container>
-                                    <ng-container matColumnDef="order">
-                                        <th class="w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
-                                            *matHeaderCellDef disableClear>
-                                            Order
-                                        </th>
-                                        <td class="pr-4" mat-cell *matCellDef="let order"
-                                            (click)="orderDetails(order.pk_orderID)" style="cursor: pointer;">
-                                            <!-- <mat-icon class="text-green-400 icon-size-5" *ngIf="!order.blnCancelled"
-                                                [svgIcon]="'heroicons_solid:check'"></mat-icon>
-                                            <mat-icon class="text-red-400 icon-size-5" *ngIf="order.blnCancelled"
-                                                [svgIcon]="'heroicons_solid:x'"></mat-icon> -->
-                                            <span *ngIf="order.paymentDate"
-                                                class="fa fa-dollar fa-2x fa-fw gray-icon clickable"
-                                                style="color: #38931f;" data-toggle="tooltip"
-                                                title="Order has not been paid"></span>
-                                            <span *ngIf="!order.paymentDate"
-                                                class="fa fa-dollar fa-2x fa-fw active clickable"
-                                                style="color: #f1f5f0;" data-toggle="tooltip"
-                                                title="Order has been paid"></span>
-                                        </td>
-                                    </ng-container>
-                                    <tr class="shadow" mat-header-row
-                                        *matHeaderRowDef="ordersTableColumns; sticky: true"></tr>
-                                    <tr class="h-18 hover:bg-gray-100 dark:hover:bg-hover" mat-row
-                                        *matRowDef="let order; columns: ordersTableColumns;"></tr>
+                                        <!-- Stock -->
+                                        <ng-container matColumnDef="stock">
+                                            <th class="w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                                *matHeaderCellDef disableClear>
+                                                Type
+                                            </th>
+                                            <td class="pr-4" mat-cell *matCellDef="let order"
+                                                (click)="orderDetails(order.pk_orderID)" style="cursor: pointer;">
+                                                <mat-icon class="text-gray-400 icon-size-5"
+                                                    *ngIf="order.fk_groupOrderID"
+                                                    [svgIcon]="'heroicons_outline:user-group'"></mat-icon>
+                                                <mat-icon class="text-gray-400 icon-size-5"
+                                                    *ngIf="!order.fk_groupOrderID" [svgIcon]="'heroicons_outline:user'">
+                                                </mat-icon>
+                                            </td>
+                                        </ng-container>
 
-                                </table>
+                                        <!-- Active -->
+                                        <ng-container matColumnDef="active">
+                                            <th class="w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                                *matHeaderCellDef disableClear>
+                                                Status
+                                            </th>
+                                            <td class="pr-4" mat-cell *matCellDef="let order"
+                                                (click)="orderDetails(order.pk_orderID)" style="cursor: pointer;">
+                                                <mat-icon class="text-green-400 icon-size-5" *ngIf="!order.blnCancelled"
+                                                    [svgIcon]="'heroicons_solid:check'"></mat-icon>
+                                                <mat-icon class="text-red-400 icon-size-5" *ngIf="order.blnCancelled"
+                                                    [svgIcon]="'heroicons_solid:x'"></mat-icon>
+                                            </td>
+                                        </ng-container>
+                                        <ng-container matColumnDef="order">
+                                            <th class="w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                                *matHeaderCellDef disableClear>
+                                                Order
+                                            </th>
+                                            <td class="pr-4" mat-cell *matCellDef="let order"
+                                                (click)="orderDetails(order.pk_orderID)" style="cursor: pointer;">
+                                                <!-- <mat-icon class="text-green-400 icon-size-5" *ngIf="!order.blnCancelled"
+                                                    [svgIcon]="'heroicons_solid:check'"></mat-icon>
+                                                <mat-icon class="text-red-400 icon-size-5" *ngIf="order.blnCancelled"
+                                                    [svgIcon]="'heroicons_solid:x'"></mat-icon> -->
+                                                <span *ngIf="order.paymentDate"
+                                                    class="fa fa-dollar fa-2x fa-fw gray-icon clickable"
+                                                    style="color: #38931f;" data-toggle="tooltip"
+                                                    title="Order has not been paid"></span>
+                                                <span *ngIf="!order.paymentDate"
+                                                    class="fa fa-dollar fa-2x fa-fw active clickable"
+                                                    style="color: #f1f5f0;" data-toggle="tooltip"
+                                                    title="Order has been paid"></span>
+                                            </td>
+                                        </ng-container>
+                                        <tr class="shadow" mat-header-row
+                                            *matHeaderRowDef="ordersTableColumns; sticky: true"></tr>
+                                        <tr class="h-18 hover:bg-gray-100 dark:hover:bg-hover" mat-row
+                                            *matRowDef="let order; columns: ordersTableColumns;"></tr>
+
+                                    </table>
+                                </div>
+                                <mat-paginator
+                                    class="sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                                    [ngClass]="{'pointer-events-none': isLoading}" [length]="ordersLength"
+                                    [pageIndex]="0" [pageSize]="this.size" (page)="pageEvents($event)"
+                                    [hidePageSize]="true">
+                                </mat-paginator>
                             </div>
-                            <mat-paginator
-                                class="sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                                [ngClass]="{'pointer-events-none': isLoading}" [length]="ordersLength" [pageIndex]="0"
-                                [pageSize]="this.size" (page)="pageEvents($event)" [hidePageSize]="true">
-                            </mat-paginator>
 
                         </ng-container>
 

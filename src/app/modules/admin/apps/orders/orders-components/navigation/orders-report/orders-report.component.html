@@ -57,29 +57,37 @@
                                                         Ship To
                                                     </div>
                                                     <div class="pl-6 border-l text-md">
+                                                        <div><b class="text-secondary">Total:
+                                                            </b>{{ orderDetail?.currentTotal ?
+                                                            (orderDetail?.currentTotal | currency) : 'not_available' }}
+                                                        </div>
                                                         <div><b class="text-secondary">User:
                                                             </b>{{orderDetail?.userFirstName + '
                                                             ' +
-                                                            orderDetail?.userLastName}} (id: {{orderDetail?.fk_storeUserID}})</div>
-                                                            <div><b class="text-secondary">Payment Method:
+                                                            orderDetail?.userLastName}} (id:
+                                                            {{orderDetail?.fk_storeUserID}})</div>
+                                                        <div><b class="text-secondary">Payment Method:
                                                             </b>{{orderDetail?.paymentMethodName ||
-                                                                not_available}}</div>
+                                                            not_available}}</div>
                                                         <div><b class="text-secondary">Compnay:
                                                             </b>{{orderDetail?.billingCompanyName ||
-                                                                not_available}}</div>
+                                                            not_available}}</div>
                                                         <div><b class="text-secondary">Store:
                                                             </b>{{orderDetail?.storeName ||
-                                                                not_available}}</div>
-                                                            <div><b class="text-secondary">Program manager:
+                                                            not_available}}</div>
+                                                        <div><b class="text-secondary">Program manager:
                                                             </b>{{managerDetails[0]+ ' ' + managerDetails[1] ||
-                                                                not_available}}</div>
+                                                            not_available}}</div>
+                                                        <div><b class="text-secondary">Client:
+                                                            </b>{{orderDetail?.billingCompanyName ||
+                                                            not_available}}</div>
                                                         <div><b class="text-secondary">Shipping:
                                                             </b>{{orderDetail?.shippingCarrierName + ', '
                                                             +orderDetail?.shippingServiceName}}</div>
                                                         <div><b class="text-secondary">Account/Charge Code:
                                                             </b>{{orderDetail?.accountChargeCode ||
                                                             not_available}}</div>
-                                                            <div><b class="text-secondary">Instructions:
+                                                        <div><b class="text-secondary">Instructions:
                                                             </b>{{orderDetail?.instructions ||
                                                             not_available}}</div>
                                                     </div>
@@ -96,7 +104,8 @@
                                                     class="justify-self-start font-medium tracking-tight text-secondary">
                                                     ORDER DATE
                                                 </div>
-                                                <div class="font-medium">{{(orderDetail?.FormattedDate | date:'medium') ||
+                                                <div class="font-medium">{{(orderDetail?.FormattedDate | date:'medium')
+                                                    ||
                                                     not_available}}</div>
                                                 <div
                                                     class="justify-self-start font-medium tracking-tight text-secondary">
@@ -110,8 +119,12 @@
                                                 </div>
                                                 <div class="font-medium">
                                                     <p *ngIf="orderDetail.inHandsDate">
-                                                        {{(orderDetail?.inHandsDate.substr(0,10) | date:
-                                                        'medium')}}</p>
+                                                        {{ (orderDetail?.inHandsDate?.substr(0, 10) | date: 'medium')}}
+
+                                                    </p>
+                                                    <p *ngIf="orderDetail.inHandsDate">
+                                                        {{ orderDetail?.inHandsDate ? '*** RUSH ORDER ***': ''}}
+                                                    </p>
                                                     <p *ngIf="!orderDetail.inHandsDate">{{not_available}}</p>
                                                 </div>
                                                 <div
@@ -133,6 +146,14 @@
                                                 Promo Code: {{orderDetail?.discountCode || not_available}}
                                             </div>
                                             <div class="col-span-12 border-b" *ngFor="let item of orderProducts">
+                                                <div *ngIf="item.products[0]?.blnGroupRun; else elseBlock"
+                                                    class="text-green-500 my-2 col-12 text-center font-bold">GROUP RUN
+                                                    MASTER PRODUCT</div>
+                                                <ng-template #elseBlock>
+                                                    <div *ngIf="item.products[0]?.groupRunOrderLineID"
+                                                        class="text-green-500 my-2 col-12 text-center font-bold">GROUP
+                                                        RUN ITEM (from {{groupRunItem}})</div>
+                                                </ng-template>
                                                 <div class="row">
                                                     <div class="col-9">
                                                         <p class="font-bold text-medium">
@@ -251,7 +272,7 @@
                                                             <div
                                                                 class="mt-2 col-span-7 font-medium text-right text-md text-secondary">
                                                                 <p>Setup(s)</p>
-                                                                <p>Total Colors: {{imprint.processQuantity}}/Colors:
+                                                                <p *ngIf="imprint.imprintColors">Total Colors: {{imprint.processQuantity}}/Colors:
                                                                     {{imprint.imprintColors}}</p>
                                                             </div>
                                                             <div
@@ -386,7 +407,7 @@
                                                 -{{orderTotal.discount | currency: 'USD':
                                                 'symbol-narrow': '.3-3'}}
                                             </div>
-                                            <div
+                                            <!-- <div
                                                 class="col-span-7 my-2 self-center font-medium tracking-tight text-secondary">
                                                 TOTAL B T
                                             </div>
@@ -397,7 +418,7 @@
                                             <div class="col-span-2 my-2 text-right  font-small text-sm">
                                                 {{orderTotal.price | currency: 'USD':
                                                 'symbol-narrow': '.3-3'}}
-                                            </div>
+                                            </div> -->
                                             <div
                                                 class="col-span-7 my-2 self-center font-medium tracking-tight text-secondary">
                                                 TOTAL TAX
@@ -408,9 +429,11 @@
                                                 {{orderTotal.tax | currency: 'USD':
                                                 'symbol-narrow': '.3-3'}}
                                             </div>
-                                            <!-- <div class="col-span-7 self-center font-medium tracking-tight text-secondary">
+                                            <div class="col-span-7 self-center font-medium tracking-tight text-secondary">
                                                 ADJUSTMENTS
-                                            </div> -->
+                                            </div>
+                                            <div class="font-medium my-2 text-md  text-right text-secondary"></div>
+                                            <div class="col-span-2 my-2 text-right  font-small text-sm"></div>
                                             <!-- <div class="col-span-1  text-center  font-small text-sm">$0.00</div> -->
                                             <div
                                                 class="col-span-7 my-2 self-center font-medium tracking-tight text-secondary">
