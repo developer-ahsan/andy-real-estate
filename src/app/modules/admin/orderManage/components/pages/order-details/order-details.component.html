@@ -392,7 +392,7 @@
                             <div>
                                 <mat-form-field class="min-w-80">
                                     <mat-label>Purchase Order</mat-label>
-                                    <input matInput value="{{orderDataPO.purchaseOrderNumber}}">
+                                    <input maxlength="20" matInput value="{{orderDataPO.purchaseOrderNumber}}">
                                 </mat-form-field>
                             </div>
                         </div>
@@ -724,19 +724,21 @@
                                         <div class="col-2">
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label>Quantity</mat-label>
-                                                <input matInput maxlength="10" [(ngModel)]="item.quantity">
+                                                <input type="number" matInput maxlength="10"
+                                                    [(ngModel)]="item.quantity">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label>Run</mat-label>
-                                                <input matInput maxlength="20" [(ngModel)]="item.unitCost">
+                                                <input type="number" matInput maxlength="20"
+                                                    [(ngModel)]="item.unitCost">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label>Setup</mat-label>
-                                                <input matInput maxlength="10" [(ngModel)]="item.setup">
+                                                <input type="number" matInput maxlength="10" [(ngModel)]="item.setup">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-1 justify-between flex align-items-center">
@@ -774,19 +776,22 @@
                                         <div class="col-2">
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label>Quantity</mat-label>
-                                                <input maxlength="10" matInput [(ngModel)]="imprintForm.quantity">
+                                                <input maxlength="10" type="number" matInput
+                                                    [(ngModel)]="imprintForm.quantity">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label>Run</mat-label>
-                                                <input maxlength="10" matInput [(ngModel)]="imprintForm.run">
+                                                <input maxlength="10" type="number" matInput
+                                                    [(ngModel)]="imprintForm.run">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label>Setup</mat-label>
-                                                <input maxlength="10" matInput [(ngModel)]="imprintForm.setup">
+                                                <input maxlength="10" type="number" matInput
+                                                    [(ngModel)]="imprintForm.setup">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-1 mt-7 text-right">
@@ -800,7 +805,8 @@
                                         <div class="col-2">
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label># Colors</mat-label>
-                                                <input matInput maxlength="10" [(ngModel)]="imprintForm.n_color">
+                                                <input matInput maxlength="10" type="number"
+                                                    [(ngModel)]="imprintForm.n_color">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-4">
@@ -837,17 +843,20 @@
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full">
-                                                <input maxlength="10" matInput [(ngModel)]="item.quantity">
+                                                <input maxlength="10" type="number" matInput
+                                                    [(ngModel)]="item.quantity">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full">
-                                                <input maxlength="10" matInput [(ngModel)]="item.unitCost">
+                                                <input maxlength="10" type="number" matInput
+                                                    [(ngModel)]="item.unitCost">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full">
-                                                <input matInput maxlength="20" [(ngModel)]="item.setupCost">
+                                                <input matInput maxlength="20" type="number"
+                                                    [(ngModel)]="item.setupCost">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2 flex justify-between align-items-center">
@@ -872,19 +881,22 @@
                                         <div class="col-2">
                                             <mat-form-field class="w-full">
                                                 <mat-label>Quantity</mat-label>
-                                                <input maxlength="10" matInput [(ngModel)]="accessoryForm.quantity">
+                                                <input maxlength="10" type="number" matInput
+                                                    [(ngModel)]="accessoryForm.quantity">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full">
                                                 <mat-label>Unit cost</mat-label>
-                                                <input maxlength="10" matInput [(ngModel)]="accessoryForm.cost">
+                                                <input maxlength="10" type="number" matInput
+                                                    [(ngModel)]="accessoryForm.cost">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full">
                                                 <mat-label>Setup</mat-label>
-                                                <input matInput maxlength="10" [(ngModel)]="accessoryForm.setup">
+                                                <input matInput maxlength="10" type="number"
+                                                    [(ngModel)]="accessoryForm.setup">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2 mt-7 text-right">
@@ -952,7 +964,8 @@
                                         <div class="flex align-items-center justify-content-end">
                                             <mat-form-field class="mr-1">
                                                 <mat-label>Total cost</mat-label>
-                                                <input maxlength="10" matInput [(ngModel)]="adjustmentForm.cost">
+                                                <input maxlength="10" type="number" matInput
+                                                    [(ngModel)]="adjustmentForm.cost">
                                             </mat-form-field>
                                             <mat-icon (click)="addAdjustment()" svgIcon="mat_outline:add"
                                                 *ngIf="!isAdjustmentLoader" matTooltip="Add"

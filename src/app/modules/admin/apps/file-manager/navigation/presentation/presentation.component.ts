@@ -484,20 +484,20 @@ export class PresentationComponent implements OnInit, OnDestroy {
       .subscribe((res: any) => {
         this.siteColorsForm.patchValue(
           {
-            mainNav: `#${res.data[0].mainNav}`,
-            primaryHighlight: `#${res.data[0].primaryHighlight}`,
-            mainNavHover: `#${res.data[0].mainNavHover}`,
-            catMenuLink: `#${res.data[0].catMenuLink}`,
-            catMenuLinkHover: `#${res.data[0].catMenuLinkHover}`,
-            subCatMenuLink: `#${res.data[0].subCatMenuLink}`,
-            subCatMenuLinkHover: `#${res.data[0].subCatMenuLinkhover}`,
-            link: `#${res.data[0].link}`,
-            linkHover: `#${res.data[0].linkHover}`,
-            homeFeatureLink: `#${res.data[0].homeFeatureLink}`,
-            homeFeatureLinkHover: `#${res.data[0].homeFeatureLinkHover}`,
-            secondaryHighlight: `#${res.data[0].secondaryHighlight}`,
-            mainNavLinkColor: `#${res.data[0].mainNavLinkColor}`,
-            mainNavLinkColorHover: `#${res.data[0].mainNavLinkColorHover}`,
+            mainNav: `${res.data[0].mainNav}`,
+            primaryHighlight: `${res.data[0].primaryHighlight}`,
+            mainNavHover: `${res.data[0].mainNavHover}`,
+            catMenuLink: `${res.data[0].catMenuLink}`,
+            catMenuLinkHover: `${res.data[0].catMenuLinkHover}`,
+            subCatMenuLink: `${res.data[0].subCatMenuLink}`,
+            subCatMenuLinkHover: `${res.data[0].subCatMenuLinkhover}`,
+            link: `${res.data[0].link}`,
+            linkHover: `${res.data[0].linkHover}`,
+            homeFeatureLink: `${res.data[0].homeFeatureLink}`,
+            homeFeatureLinkHover: `${res.data[0].homeFeatureLinkHover}`,
+            secondaryHighlight: `${res.data[0].secondaryHighlight}`,
+            mainNavLinkColor: `${res.data[0].mainNavLinkColor}`,
+            mainNavLinkColorHover: `${res.data[0].mainNavLinkColorHover}`,
           }
         );
         this.isPageLoading = false;
@@ -629,23 +629,25 @@ export class PresentationComponent implements OnInit, OnDestroy {
       fk_storeID,
       site_colors_update } = this.siteColorsForm.getRawValue();
     let payload = {
-      secondaryHighlight: secondaryHighlight.replace('#', ''),
-      primaryHighlight: primaryHighlight.replace('#', ''),
-      mainNav: mainNav.replace('#', ''),
-      mainNavHover: mainNavHover.replace('#', ''),
-      mainNavLinkColor: mainNavLinkColor.replace('#', ''),
-      mainNavLinkColorHover: mainNavLinkColorHover.replace('#', ''),
-      catMenuLink: catMenuLink.replace('#', ''),
-      catMenuLinkHover: catMenuLinkHover.replace('#', ''),
-      subCatMenuLink: subCatMenuLink.replace('#', ''),
-      subCatMenuLinkHover: subCatMenuLinkHover.replace('#', ''),
-      link: link.replace('#', ''),
-      linkHover: linkHover.replace('#', ''),
-      homeFeatureLink: homeFeatureLink.replace('#', ''),
-      homeFeatureLinkHover: homeFeatureLinkHover.replace('#', ''),
+      secondaryHighlight: secondaryHighlight,
+      primaryHighlight: primaryHighlight,
+      mainNav: mainNav,
+      mainNavHover: mainNavHover,
+      mainNavLinkColor: mainNavLinkColor,
+      mainNavLinkColorHover: mainNavLinkColorHover,
+      catMenuLink: catMenuLink,
+      catMenuLinkHover: catMenuLinkHover,
+      subCatMenuLink: subCatMenuLink,
+      subCatMenuLinkHover: subCatMenuLinkHover,
+      link: link,
+      linkHover: linkHover,
+      homeFeatureLink: homeFeatureLink,
+      homeFeatureLinkHover: homeFeatureLinkHover,
       fk_storeID,
       site_colors_update
     }
+    payload = this._commonService.replaceNullSpaces(payload);
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
     this.siteColorLoader = true;
     this._storeManagerService.colorsUpdate(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.siteColorLoader = false;
@@ -682,7 +684,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
   }
   // Special Offers
   UpdateTypeKit() {
-    if(this.ngTypeKit.trim() === '') {
+    if (this.ngTypeKit.trim() === '') {
       this._snackBar.open("Please fill required fields", '', {
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
@@ -1094,12 +1096,12 @@ export class PresentationComponent implements OnInit, OnDestroy {
 
   replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
     for (const key in obj) {
-        if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
-            obj[key] = obj[key]?.replace(/'/g, "''");
-        }
+      if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+        obj[key] = obj[key]?.replace(/'/g, "''");
+      }
     }
     return obj;
-}
+  }
 
   updateLogoBankNotes() {
     if (!this.settings.logoBankNotes) {
@@ -1132,7 +1134,7 @@ export class PresentationComponent implements OnInit, OnDestroy {
     const { imageUpload, type } = this.logoBankImageValue;
     const base64 = imageUpload.split(",")[1];
     const { name, description, displayOrder, bank_type, color_list } = this.addLogoBankForm.getRawValue();
-    if(name.trim() === '' || description.trim() === '') {
+    if (name.trim() === '' || description.trim() === '') {
       this._storeManagerService.snackBar('Please fill the required fields');
 
       return;

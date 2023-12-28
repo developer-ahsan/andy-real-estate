@@ -274,8 +274,8 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   }
   // 
   setValues() {
-    this.orderData.formattedInHandsDate = this.orderData.formattedInHandsDate ? new Date(this.orderData.formattedInHandsDate) : null;
-    this.orderData.formattedShippingDate = this.orderData.formattedShippingDate ? new Date(this.orderData.formattedShippingDate) : null;
+    this.orderData.formattedInHandsDate = this.orderData?.formattedInHandsDate ? new Date(this.orderData.formattedInHandsDate) : null;
+    this.orderData.formattedShippingDate = this.orderData?.formattedShippingDate ? new Date(this.orderData.formattedShippingDate) : null;
     this.orderData.formattedEstimatedShippingDate = this.orderData.formattedEstimatedShippingDate ? new Date(this.orderData.formattedEstimatedShippingDate) : null;
 
     if (!this.orderData.shippingCarrier) {
@@ -582,15 +582,25 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       );
   }
   addAccessories() {
-    this.isAccessoriesLoader = true;
+    if (this.accessoryForm.name?.trim() == '' || !Number(this.accessoryForm.quantity)) {
+      this._OrderManageService.snackBar('Imprint name and quantity is required');
+      return;
+    }
+    if (Number(this.accessoryForm.quantity) < 0 || Number(this.accessoryForm.cost) < 0 || Number(this.accessoryForm.setup) < 0) {
+      this._OrderManageService.snackBar('Values should be positive');
+      return;
+    }
     let payload: addAccessory = {
       orderLinePOID: this.orderDataPO.pk_orderLinePOID,
-      accessoryName: this.accessoryForm.name,
+      accessoryName: this.accessoryForm.name?.trim(),
       accessoryQuantity: Number(this.accessoryForm.quantity),
       accessoryUnitCost: Number(this.accessoryForm.cost),
-      accessorySetup: Number(this.accessoryForm.cost),
+      accessorySetup: Number(this.accessoryForm.setup),
       add_accessory: true
     }
+    payload = this._commonService.replaceNullSpaces(payload);
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
+    this.isAccessoriesLoader = true;
     this._OrderManageService.PostAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this._OrderManageService.snackBar(res["message"]);
@@ -605,13 +615,23 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     });
   }
   addAdjustment() {
-    this.isAdjustmentLoader = true;
+    if (this.adjustmentForm.name?.trim() == '' || !Number(this.adjustmentForm.cost)) {
+      this._OrderManageService.snackBar('Imprint name and quantity is required');
+      return;
+    }
+    if (Number(this.adjustmentForm.cost) < 0) {
+      this._OrderManageService.snackBar('Cost should be positive');
+      return;
+    }
     let payload: AddAdjustment = {
       orderLinePOID: this.orderDataPO.pk_orderLinePOID,
       adjustmentTotalCost: Number(this.adjustmentForm.cost),
-      adjustmentName: this.adjustmentForm.name,
+      adjustmentName: this.adjustmentForm.name?.trim(),
       add_adjustment: true
     }
+    payload = this._commonService.replaceNullSpaces(payload);
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
+    this.isAdjustmentLoader = true;
     this._OrderManageService.PostAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this._OrderManageService.snackBar(res["message"]);
@@ -626,10 +646,17 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     });
   }
   addImprintPO() {
-    this.isAddImprintLoader = true;
+    if (this.imprintForm.name?.trim() == '' || !Number(this.imprintForm.quantity)) {
+      this._OrderManageService.snackBar('Imprint name and quantity is required');
+      return;
+    }
+    if (Number(this.imprintForm.quantity) < 0 || Number(this.imprintForm.run) < 0 || Number(this.imprintForm.setup) < 0 || Number(this.imprintForm.n_color) < 0) {
+      this._OrderManageService.snackBar('Values should be positive');
+      return;
+    }
     let payload: Add_PO_Imprint = {
       orderLinePOID: this.orderDataPO.pk_orderLinePOID,
-      imprintName: this.imprintForm.name,
+      imprintName: this.imprintForm.name?.trim(),
       imprintQuantity: Number(this.imprintForm.quantity),
       imprintRun: Number(this.imprintForm.run),
       imprintSetup: Number(this.imprintForm.setup),
@@ -637,6 +664,9 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       imprintColors: this.imprintForm.imprint_color,
       add_po_imprint: true
     }
+    payload = this._commonService.replaceNullSpaces(payload);
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
+    this.isAddImprintLoader = true;
     this._OrderManageService.PostAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this._OrderManageService.snackBar(res["message"]);
@@ -651,14 +681,19 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     });
   }
   addColorsPO() {
-    this.isAddColorLoader = true;
+    if (this.colorsForm.name.trim() == '' || Number(this.colorsForm.quantity) == 0 || !this.colorsForm.cost) {
+      this._OrderManageService.snackBar('Name Quantity and cost is required');
+      return;
+    }
     let payload: AddPOOption = {
       orderLinePOID: this.orderDataPO.pk_orderLinePOID,
-      optionName: this.colorsForm.name,
+      optionName: this.colorsForm.name.trim(),
       optionQuantity: Number(this.colorsForm.quantity),
       optionUnitCost: Number(this.colorsForm.cost),
       add_po_options: true
     }
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
+    this.isAddColorLoader = true;
     this._OrderManageService.PostAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this._OrderManageService.snackBar(res["message"]);
@@ -852,7 +887,6 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   savePoOrder() {
     const { fk_orderID, blnGroupRun, storeName, pk_companyID, currentTotal } = this.orderData;
     const { pk_orderLinePOID, shippingDate, estimatedShippingDate, trackingNumber, blnSample, fk_orderLineID, shippingCustomerAccountNumber, POinHandsDate, stockFrom, fk_vendorID, vendorShippingName, vendorShippingAddress1, vendorShippingAddress2, vendorShippingCity, vendorShippingState, vendorShippingZip, vendorShippingPhone, vendorShippingEmail, shippingComment, shipToCompanyName, shipToCustomerName, shipToLocation, shipToPurchaseOrder, shipToAddress, shipToCity, shipToState, shipToZip, shipToCountry, imprintComment, POTotal, shipToDeliverTo, productName, quantity, purchaseOrderNumber, purchaseOrderComments, blnDuplicate, blnDecorator, blnSupplier, coop, imprintDetail } = this.orderDataPO;
-    this.isSavePOLoader = true;
     // Colors
     let OrderLinePOOptions = [];
     this.colorsList.forEach(element => {
@@ -960,6 +994,9 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       blnArtNeedsResent: this.blnArtNeedsResent,
       save_purchase_order: true
     }
+    payload = this._commonService.replaceNullSpaces(payload);
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
+    this.isSavePOLoader = true;
     this._OrderManageService.PutAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this._OrderManageService.snackBar(res["message"]);

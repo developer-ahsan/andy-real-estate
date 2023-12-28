@@ -5,6 +5,7 @@ import { VendorsService } from 'app/modules/admin/apps/vendors/components/vendor
 import { finalize, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { OrderManageService } from '../../../order-manage.service';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-create-po',
@@ -25,6 +26,7 @@ export class CreatePoComponent implements OnInit {
     private _vendorService: VendorsService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _orderManage: OrderManageService,
+    private _commonService: DashboardsService
   ) { }
 
   ngOnInit(): void {
@@ -53,6 +55,18 @@ export class CreatePoComponent implements OnInit {
       blnSupplier: new FormControl(false, Validators.required),
       blnDecorator: new FormControl(false, Validators.required)
     })
+    this.createPOForm.patchValue({
+      shipToCompanyName: this.poData.shipToCompanyName,
+      shipToCustomerName: this.poData.shipToCustomerName,
+      shipToLocation: this.poData.shipToLocation,
+      shipToPurchaseOrder: this.poData.shipToPurchaseOrder,
+      shipToAddress: this.poData.shipToAddress,
+      shipToCity: this.poData.shipToCity,
+      shipToState: this.poData.shipToState,
+      shipToZip: this.poData.shipToZip,
+      shipToCountry: this.poData.shipToCountry,
+      shipToDeliverTo: this.poData.shipToDeliverTo,
+    })
   }
   getVendorsData(id) {
     this._vendorService.getVendorsSupplierById(id).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -63,7 +77,7 @@ export class CreatePoComponent implements OnInit {
         vendorShippingCity: vendor.city,
         vendorShippingState: vendor.state,
         vendorShippingZip: vendor.zipCode,
-        vendorShippingEmail: vendor.artworkEmail,
+        vendorShippingEmail: vendor.ordersEmail,
         vendorShippingPhone: vendor.phone,
         vendorShippingComment: vendor.shippingComment,
       })
@@ -73,6 +87,14 @@ export class CreatePoComponent implements OnInit {
     const { vendorShippingAddress1, vendorShippingAddress2, vendorShippingCity, vendorShippingState, vendorShippingZip, vendorShippingPhone, shipToCompanyName, shipToCustomerName, shipToLocation, shipToPurchaseOrder, shipToAddress, shipToCity, shipToState, shipToZip, shipToCountry, shipToDeliverTo, vendorShippingEmail, vendorShippingComment, companyName, productName, quantity, blnSupplier, blnDecorator } = this.createPOForm.getRawValue();
     const { pk_orderLinePOID } = this.poData;
     const { fk_orderID } = this.orderData;
+    if (!vendorShippingEmail.trim() || !shipToCompanyName.trim() || !shipToAddress.trim() || !shipToCity.trim() || !shipToZip.trim() || !shipToCountry.trim() || !productName.trim()) {
+      this._orderManage.snackBar('Please fill out the required fields');
+      return;
+    }
+    if (quantity < 0) {
+      this._orderManage.snackBar('Quantity should be greater than 0');
+      return;
+    }
     let payload: createPurchaseOrder = {
       vendorPOID: pk_orderLinePOID,
       companyName: companyName,
@@ -101,6 +123,8 @@ export class CreatePoComponent implements OnInit {
       orderID: fk_orderID,
       create_purchase_order: true
     }
+    payload = this._commonService.replaceNullSpaces(payload);
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
     this.isCreateOrder = true;
     this._orderManage.PostAPIData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       this.isCreateOrder = false;

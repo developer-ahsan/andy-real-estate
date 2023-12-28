@@ -50,13 +50,13 @@
             <div class="flex">
                 <mat-form-field class="min-w-100 mr-2">
                     <mat-select [(ngModel)]="ngstatusID" matInput>
-                        <mat-option *ngFor="let option of statusOptions" [value]="option.value">
-                            {{ option.label }}
+                        <mat-option *ngFor="let option of statusOptions" [value]="option.pk_statusID">
+                            {{ option.statusName }}
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
                 <mat-form-field class="min-w-100 mr-2">
-                    <input matInput placeholder="Back to date" [matDatepicker]="picker" readonly
+                    <input matInput placeholder="Backorder date" [matDatepicker]="picker" readonly
                         [(ngModel)]="ngBackDate" (click)="picker.open()">
                     <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                     <mat-datepicker #picker></mat-datepicker>
@@ -74,7 +74,7 @@
         </div>
 
         <div class="mt-2 table-responsive" *ngIf="!isLoading">
-            <table class="table table-striped" matSort (matSortChange)="customSort($event)">
+            <table *ngIf="dataSource.length>0" class="table table-striped" matSort (matSortChange)="customSort($event)">
                 <thead>
                     <tr>
                         <th></th>
@@ -194,10 +194,14 @@
                     </ng-container>
                 </tbody>
             </table>
-            <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+            <mat-paginator #paginator *ngIf="dataSource.length>0"
+                class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
                 [disabled]="isPaginatedLoader" [length]="totalRecords" [pageIndex]="0" [pageSize]="30"
                 (page)="getNextData($event)" [hidePageSize]="true">
             </mat-paginator>
+            <div *ngIf="dataSource.length == 0" class="alert alert-warning">
+                There are currently no orders, or your search did not return any results.
+            </div>
         </div>
     </div>
 </div>

@@ -57,122 +57,283 @@
           <form [formGroup]="siteColorsForm">
             <div class="row">
               <div class="col-lg-6 col-12">
-                <mat-form-field appearance="fill" class="w-full">
+                <div class="flex justify-between align-items-center">
                   <mat-label>
                     Primary Highlight ({{
                     color.primaryHighlight.value
-                    }})</mat-label>
-                  <input formControlName="primaryHighlight" type="color" matInput />
+                    }})
+                  </mat-label>
+                  <hr [ngStyle]="{'background': '#'+siteColorsForm.get('primaryHighlight').value}" class="h-4 m-0 w-40">
+                </div>
+                <mat-form-field appearance="fill" class="w-full">
+                  <input formControlName="primaryHighlight" maxlength="6" matInput />
                 </mat-form-field>
               </div>
               <div class="col-lg-6 col-12">
+                <div class="flex justify-between align-items-center">
+                  <mat-label>
+                    Secondary Highlight ({{
+                    color.secondaryHighlight.value
+                    }})
+                  </mat-label>
+                  <hr [ngStyle]="{'background': '#'+siteColorsForm.get('secondaryHighlight').value}"
+                    class="h-4 m-0 w-40">
+                </div>
                 <mat-form-field appearance="fill" class="w-full">
+                  <input formControlName="secondaryHighlight" maxlength="6" matInput />
+                </mat-form-field>
+                <!-- <mat-form-field appearance="fill" class="w-full">
                   <mat-label>
                     Secondary Highlight ({{
                     color.secondaryHighlight.value
                     }})</mat-label>
                   <input formControlName="secondaryHighlight" type="color" matInput />
-                </mat-form-field>
+                </mat-form-field> -->
               </div>
 
               <div class="col-lg-6 col-12">
+                <div class="flex justify-between align-items-center">
+                  <mat-label>
+                    Main Nav Background ({{
+                    color.mainNav.value
+                    }})
+                  </mat-label>
+                  <hr [ngStyle]="{'background': '#'+siteColorsForm.get('mainNav').value}" class="h-4 m-0 w-40">
+                </div>
                 <mat-form-field appearance="fill" class="w-full">
+                  <input formControlName="mainNav" maxlength="6" matInput />
+                </mat-form-field>
+                <!-- <mat-form-field appearance="fill" class="w-full">
                   <mat-label>
                     Main Nav Background ({{ color.mainNav.value }})</mat-label>
                   <input formControlName="mainNav" type="color" matInput />
-                </mat-form-field>
+                </mat-form-field> -->
               </div>
               <div class="col-lg-6 col-12">
+                <div class="flex justify-between align-items-center">
+                  <mat-label>
+                    Main Nav Background Hover({{
+                    color.mainNavHover.value
+                    }})
+                  </mat-label>
+                  <hr [ngStyle]="{'background': '#'+siteColorsForm.get('mainNavHover').value}" class="h-4 m-0 w-40">
+                </div>
                 <mat-form-field appearance="fill" class="w-full">
+                  <input formControlName="mainNavHover" maxlength="6" matInput />
+                </mat-form-field>
+
+                <!-- <mat-form-field appearance="fill" class="w-full">
                   <mat-label>
                     Main Nav Background Hover ({{
                     color.mainNavHover.value
                     }})</mat-label>
                   <input formControlName="mainNavHover" type="color" matInput />
-                </mat-form-field>
+                </mat-form-field> -->
               </div>
               <div class="col-lg-6 col-12">
+                <div class="flex justify-between align-items-center">
+                  <mat-label>
+                    Main Nav Link({{
+                    color.mainNavLinkColor.value
+                    }})
+                  </mat-label>
+                  <hr [ngStyle]="{'background': '#'+siteColorsForm.get('mainNavLinkColor').value}" class="h-4 m-0 w-40">
+                </div>
                 <mat-form-field appearance="fill" class="w-full">
+                  <input formControlName="mainNavLinkColor" maxlength="6" matInput />
+                </mat-form-field>
+
+                <!-- <mat-form-field appearance="fill" class="w-full">
                   <mat-label>
                     Main Nav Link ({{
                     color.mainNavLinkColor.value
                     }})</mat-label>
                   <input formControlName="mainNavLinkColor" type="color" matInput />
-                </mat-form-field>
+                </mat-form-field> -->
               </div>
               <div class="col-lg-6 col-12">
+                <div class="flex justify-between align-items-center">
+                  <mat-label>
+                    Main Nav Hover Link Hover({{
+                    color.mainNavLinkColorHover.value
+                    }})
+                  </mat-label>
+                  <hr [ngStyle]="{'background': '#'+siteColorsForm.get('mainNavLinkColorHover').value}"
+                    class="h-4 m-0 w-40">
+                </div>
                 <mat-form-field appearance="fill" class="w-full">
+                  <input formControlName="mainNavLinkColorHover" maxlength="6" matInput />
+                </mat-form-field>
+                <!-- <mat-form-field appearance="fill" class="w-full">
                   <mat-label>
                     Main Nav Hover Link Hover ({{
                     color.mainNavLinkColorHover.value
                     }})</mat-label>
                   <input formControlName="mainNavLinkColorHover" type="color" matInput />
-                </mat-form-field>
+                </mat-form-field> -->
               </div>
               <div class="col-lg-6 col-12">
+                <div class="flex justify-between align-items-center">
+                  <mat-label>
+                    Cat Menu Link({{
+                    color.catMenuLink.value
+                    }})
+                  </mat-label>
+                  <hr [ngStyle]="{'background': '#'+siteColorsForm.get('catMenuLink').value}" class="h-4 m-0 w-40">
+                </div>
                 <mat-form-field appearance="fill" class="w-full">
+                  <input formControlName="catMenuLink" maxlength="6" matInput />
+                </mat-form-field>
+
+                <!-- <mat-form-field appearance="fill" class="w-full">
                   <mat-label>
                     Cat Menu Link ({{ color.catMenuLink.value }})</mat-label>
                   <input formControlName="catMenuLink" type="color" matInput />
-                </mat-form-field>
+                </mat-form-field> -->
               </div>
               <div class="col-lg-6 col-12">
+                <div class="flex justify-between align-items-center">
+                  <mat-label>
+                    Cat Menu Link Hover({{
+                    color.catMenuLinkHover.value
+                    }})
+                  </mat-label>
+                  <hr [ngStyle]="{'background': '#'+siteColorsForm.get('catMenuLinkHover').value}" class="h-4 m-0 w-40">
+                </div>
                 <mat-form-field appearance="fill" class="w-full">
+                  <input formControlName="catMenuLinkHover" maxlength="6" matInput />
+                </mat-form-field>
+
+                <!-- <mat-form-field appearance="fill" class="w-full">
                   <mat-label>
                     Cat Menu Link Hover ({{
                     color.catMenuLinkHover.value
                     }})</mat-label>
                   <input formControlName="catMenuLinkHover" type="color" matInput />
-                </mat-form-field>
+                </mat-form-field> -->
               </div>
               <div class="col-lg-6 col-12">
+                <div class="flex justify-between align-items-center">
+                  <mat-label>
+                    SubCat Menu Link({{
+                    color.subCatMenuLink.value
+                    }})
+                  </mat-label>
+                  <hr [ngStyle]="{'background': '#'+siteColorsForm.get('subCatMenuLink').value}" class="h-4 m-0 w-40">
+                </div>
                 <mat-form-field appearance="fill" class="w-full">
+                  <input formControlName="subCatMenuLink" maxlength="6" matInput />
+                </mat-form-field>
+
+                <!-- <mat-form-field appearance="fill" class="w-full">
                   <mat-label>
                     SubCat Menu Link ({{
                     color.subCatMenuLink.value
                     }})</mat-label>
                   <input formControlName="subCatMenuLink" type="color" matInput />
-                </mat-form-field>
+                </mat-form-field> -->
               </div>
               <div class="col-lg-6 col-12">
+                <div class="flex justify-between align-items-center">
+                  <mat-label>
+                    SubCat Menu Link Hover({{
+                    color.subCatMenuLinkHover.value
+                    }})
+                  </mat-label>
+                  <hr [ngStyle]="{'background': '#'+siteColorsForm.get('subCatMenuLinkHover').value}"
+                    class="h-4 m-0 w-40">
+                </div>
                 <mat-form-field appearance="fill" class="w-full">
+                  <input formControlName="subCatMenuLinkHover" maxlength="6" matInput />
+                </mat-form-field>
+
+                <!-- <mat-form-field appearance="fill" class="w-full">
                   <mat-label>
                     SubCat Menu Link Hover ({{
                     color.subCatMenuLinkHover.value
                     }})</mat-label>
                   <input formControlName="subCatMenuLinkHover" type="color" matInput />
-                </mat-form-field>
+                </mat-form-field> -->
               </div>
               <div class="col-lg-6 col-12">
+                <div class="flex justify-between align-items-center">
+                  <mat-label>
+                    Link({{
+                    color.link.value
+                    }})
+                  </mat-label>
+                  <hr [ngStyle]="{'background': '#'+siteColorsForm.get('link').value}" class="h-4 m-0 w-40">
+                </div>
                 <mat-form-field appearance="fill" class="w-full">
+                  <input formControlName="link" maxlength="6" matInput />
+                </mat-form-field>
+
+                <!-- <mat-form-field appearance="fill" class="w-full">
                   <mat-label>Link ({{ color.link.value }})</mat-label>
                   <input formControlName="link" type="color" matInput />
-                </mat-form-field>
+                </mat-form-field> -->
               </div>
               <div class="col-lg-6 col-12">
+                <div class="flex justify-between align-items-center">
+                  <mat-label>
+                    Link Hover({{
+                    color.linkHover.value
+                    }})
+                  </mat-label>
+                  <hr [ngStyle]="{'background': '#'+siteColorsForm.get('linkHover').value}" class="h-4 m-0 w-40">
+                </div>
                 <mat-form-field appearance="fill" class="w-full">
+                  <input formControlName="linkHover" maxlength="6" matInput />
+                </mat-form-field>
+
+                <!-- <mat-form-field appearance="fill" class="w-full">
                   <mat-label>
                     Link Hover ({{ color.linkHover.value }})</mat-label>
                   <input formControlName="linkHover" type="color" matInput />
-                </mat-form-field>
+                </mat-form-field> -->
               </div>
               <div class="col-lg-6 col-12">
+                <div class="flex justify-between align-items-center">
+                  <mat-label>
+                    Home Feature Link({{
+                    color.homeFeatureLink.value
+                    }})
+                  </mat-label>
+                  <hr [ngStyle]="{'background': '#'+siteColorsForm.get('homeFeatureLink').value}" class="h-4 m-0 w-40">
+                </div>
                 <mat-form-field appearance="fill" class="w-full">
+                  <input formControlName="homeFeatureLink" maxlength="6" matInput />
+                </mat-form-field>
+
+                <!-- <mat-form-field appearance="fill" class="w-full">
                   <mat-label>
                     Home Feature Link ({{
                     color.homeFeatureLink.value
                     }})</mat-label>
                   <input formControlName="homeFeatureLink" type="color" matInput />
-                </mat-form-field>
+                </mat-form-field> -->
               </div>
               <div class="col-lg-6 col-12">
+                <div class="flex justify-between align-items-center">
+                  <mat-label>
+                    Home Feature Link Hover({{
+                    color.homeFeatureLinkHover.value
+                    }})
+                  </mat-label>
+                  <hr [ngStyle]="{'background': '#'+siteColorsForm.get('homeFeatureLinkHover').value}"
+                    class="h-4 m-0 w-40">
+                </div>
                 <mat-form-field appearance="fill" class="w-full">
+                  <input formControlName="homeFeatureLinkHover" maxlength="6" matInput />
+                </mat-form-field>
+
+                <!-- <mat-form-field appearance="fill" class="w-full">
                   <mat-label>
                     Home Feature Link Hover ({{
                     color.homeFeatureLinkHover.value
                     }})</mat-label>
                   <input formControlName="homeFeatureLinkHover" type="color" matInput />
-                </mat-form-field>
+                </mat-form-field> -->
               </div>
 
               <div class="col-12 flex justify-end mt-2">

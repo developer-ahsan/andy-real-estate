@@ -185,7 +185,7 @@ export class OrderArtWorkComponent implements OnInit, OnDestroy {
       files_fetch: true,
       path: `/artwork/${this.orderDetail.fk_storeID}/${this.orderDetail.fk_storeUserID}/${this.orderDetail.pk_orderID}/${pk_orderLineID}/`
     }
-    let i=1;
+    let i = 1;
     this._changeDetectorRef.markForCheck();
     this._orderService.getFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(files => {
       this.orderProducts[index].artworkFiles = files["data"];
