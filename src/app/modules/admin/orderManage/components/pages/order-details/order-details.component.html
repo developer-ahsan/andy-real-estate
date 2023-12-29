@@ -28,7 +28,7 @@
                     </h2>
                     <div class="space-y-2">
                         <mat-form-field class="w-full">
-                            <mat-select [(ngModel)]="orderDataPO.statusID">
+                            <mat-select [(ngModel)]="orderDataPO.fk_statusID">
                                 <mat-option [value]="item.value"
                                     *ngFor="let item of statusOptions">{{item.label}}</mat-option>
                             </mat-select>
@@ -396,7 +396,7 @@
                                 </mat-form-field>
                             </div>
                         </div>
-                        <div class="row border-b py-2">
+                        <div class="row py-2">
                             <div class="col-12">
                                 <p><b>Purchase Order #:</b> {{orderDataPO.purchaseOrderNumber}}</p>
                             </div>
@@ -479,7 +479,7 @@
                             </div>
                         </div>
                         <!-- Ship To -->
-                        <div class="row border-b py-2">
+                        <div class="row py-2">
                             <div class="col-12 mb-2">
                                 <p class="font-medium text-xl"><b>Ship To:</b></p>
                             </div>
@@ -554,168 +554,172 @@
                             </div>
                         </div>
                         <!-- Product Data -->
-                        <div class="row border-b py-2">
-                            <!-- <div class="col-12 col-md-9">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Product</mat-label>
-                                    <input matInput [(ngModel)]="orderDataPO.productName" >
-                                    <mat-hint *ngIf="orderDataPO.blnSample">This item is a sample</mat-hint>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-12 col-md-3">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Quantity</mat-label>
-                                    <input matInput  readonly disabled [(ngModel)]="orderDataPO.quantity">
-                                </mat-form-field>
-                            </div> -->
-                            <div class="col-12 mt-2 border-b">
-                                <p class="font-medium text-secondary py-1 border-b">Product Color/Size Breakdown</p>
-                                <div class="w-full" *ngIf="orderDataPO.blnSupplier; else notBlnSupplier">
-                                    <div class="row my-3 w-full" *ngIf="colorsList.length > 0">
-                                        <div class="col-md-3 font-bold">Product</div>
-                                        <div class="col-md-2 font-bold">Color/size:</div>
-                                        <div class="col-md-2 font-bold">Quantity</div>
-                                        <div class="col-md-2 font-bold">Unit</div>
-                                        <div class="col-md-1 font-bold">Total</div>
-                                        <div class="col-md-1 font-bold"></div>
-                                    </div>
-                                    <div class="row w-full" *ngFor="let item of colorsList">
-                                        <div class="col-md-3">
-                                            <mat-form-field class="w-full text-sm">
-                                                <input matInput maxlength="1000" [(ngModel)]="item.productName">
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <mat-form-field class="w-full text-sm">
-                                                <input matInput [(ngModel)]="item.optionName" maxlength="500">
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <mat-form-field class="w-full text-sm">
-                                                <input matInput [(ngModel)]="item.quantity" type="number"
-                                                    maxlength="10">
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <mat-form-field class="w-full text-sm">
-                                                <input matInput [(ngModel)]="item.unitCost" type="number"
-                                                    maxlength="10">
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <mat-form-field class="w-full text-sm">
-                                                <input matInput disabled [(ngModel)]="item.total" maxlength="10">
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="col-md-1 mt-2">
-                                            <mat-icon (click)="removePODetails(item,'colors')" *ngIf="!isDelColorLoader"
-                                                svgIcon="heroicons_outline:trash" matTooltip="Remove"
-                                                class="cursor-pointer"></mat-icon>
-                                            <mat-progress-spinner *ngIf="isDelColorLoader" [diameter]="24"
-                                                [mode]="'indeterminate'">
-                                            </mat-progress-spinner>
-                                        </div>
-                                    </div>
-                                    <div class="row w-full">
-                                        <div class="col-md-3">
-                                            <b>Total QTY:</b>
-                                        </div>
-                                        <div class="col-md-2 font-bold"></div>
-                                        <div class="col-md-2">
-                                            <mat-form-field class="w-full text-sm">
-                                                <input matInput disabled maxlength="10"
-                                                    [(ngModel)]="totalColorsListQuantity">
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="col-md-2 font-bold"></div>
-                                        <div class="col-md-1 font-bold"></div>
-                                        <div class="col-md-1 font-bold"></div>
-                                    </div>
-                                    <div class="row mt-2 w-full">
-                                        <div class="col-md-3">
-                                            <mat-form-field class="w-full text-sm">
-                                                <mat-label>New product name</mat-label>
-                                                <input maxlength="500" matInput [(ngModel)]="colorsForm.product">
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <mat-form-field class="w-full  text-sm">
-                                                <mat-label>New option name/description</mat-label>
-                                                <input maxlength="500" matInput [(ngModel)]="colorsForm.name">
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <mat-form-field class="w-full  text-sm">
-                                                <mat-label>Quantity</mat-label>
-                                                <input maxlength="10" matInput [(ngModel)]="colorsForm.quantity"
-                                                    type="number">
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <mat-form-field class="w-full text-sm">
-                                                <mat-label>Unit cost</mat-label>
-                                                <input maxlength="10" matInput [(ngModel)]="colorsForm.cost"
-                                                    type="number">
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="col-md-2">
-                                        </div>
-                                        <div class="col-md-1 mt-7">
-                                            <mat-icon (click)="addColorsPO()" svgIcon="mat_outline:add"
-                                                *ngIf="!isAddColorLoader" matTooltip="Add"
-                                                class="cursor-pointer"></mat-icon>
-                                            <mat-progress-spinner *ngIf="isAddColorLoader" [diameter]="24"
-                                                [mode]="'indeterminate'">
-                                            </mat-progress-spinner>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- Not BlnSupplier -->
-                                <ng-template #notBlnSupplier>
-                                    <div class="w-full" *ngIf="!orderData.blnSupplier">
-                                        <mat-form-field class="w-full text-sm">
-                                            <mat-label>Stock coming from</mat-label>
-                                            <input matInput maxlength="500" placeholder="Stock coming from"
-                                                [(ngModel)]="orderDataPO.stockFrom" maxlength="500">
-                                        </mat-form-field>
+                        <div class="row py-2">
+                            <div class="col-12 my-2">
+                                <div class="border p-3 my-2">
+                                    <p class="font-medium text-secondary py-1 border-b">Product Color/Size Breakdown</p>
+                                    <div class="w-full" *ngIf="orderDataPO.blnSupplier; else notBlnSupplier">
                                         <div class="row my-3 w-full" *ngIf="colorsList.length > 0">
-                                            <div class="col-md-4 col-12 font-bold">Product:</div>
-                                            <div class="col-md-4 col-12 font-bold">Color/size:</div>
-                                            <div class="col-md-4 col-12 font-bold">Quantity</div>
+                                            <div class="col-md-3 font-bold">Product</div>
+                                            <div class="col-md-2 font-bold">Color/size:</div>
+                                            <div class="col-md-2 font-bold">Quantity</div>
+                                            <div class="col-md-2 font-bold">Unit</div>
+                                            <div class="col-md-1 font-bold">Total</div>
+                                            <div class="col-md-1 font-bold"></div>
                                         </div>
                                         <div class="row w-full" *ngFor="let item of colorsList">
-                                            <div class="col-md-4 col-12">
+                                            <div class="col-md-3">
                                                 <mat-form-field class="w-full text-sm">
                                                     <input matInput maxlength="1000" [(ngModel)]="item.productName">
                                                 </mat-form-field>
                                             </div>
-                                            <div class="col-md-4 col-12">
+                                            <div class="col-md-2">
                                                 <mat-form-field class="w-full text-sm">
                                                     <input matInput [(ngModel)]="item.optionName" maxlength="500">
                                                 </mat-form-field>
                                             </div>
-                                            <div class="col-md-4 col-12">
+                                            <div class="col-md-2">
                                                 <mat-form-field class="w-full text-sm">
-                                                    <input matInput maxlength="10" [(ngModel)]="item.quantity"
+                                                    <input matInput [(ngModel)]="item.quantity"
+                                                        (input)="calculateTotalValues()" type="number" maxlength="10">
+                                                </mat-form-field>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <mat-form-field class="w-full text-sm">
+                                                    <input matInput [(ngModel)]="item.unitCost"
+                                                        (input)="calculateTotalValues()" type="number" maxlength="10">
+                                                </mat-form-field>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <mat-form-field class="w-full text-sm">
+                                                    <input matInput disabled [(ngModel)]="item.totalCost"
+                                                        maxlength="10">
+                                                </mat-form-field>
+                                            </div>
+                                            <div class="col-md-1 mt-2">
+                                                <mat-icon (click)="removePODetails(item,'colors')"
+                                                    *ngIf="!item.isDelColorLoader" svgIcon="heroicons_outline:trash"
+                                                    matTooltip="Remove" class="cursor-pointer"></mat-icon>
+                                                <mat-progress-spinner *ngIf="item.isDelColorLoader" [diameter]="24"
+                                                    [mode]="'indeterminate'">
+                                                </mat-progress-spinner>
+                                            </div>
+                                        </div>
+                                        <div class="row w-full">
+                                            <div class="col-md-3">
+                                                <b>Total QTY:</b>
+                                            </div>
+                                            <div class="col-md-2 font-bold"></div>
+                                            <div class="col-md-2">
+                                                <mat-form-field class="w-full text-sm">
+                                                    <input matInput disabled maxlength="10"
+                                                        [(ngModel)]="totalColorsListQuantity">
+                                                </mat-form-field>
+                                            </div>
+                                            <div class="col-md-2 font-bold"></div>
+                                            <div class="col-md-1 font-bold"></div>
+                                            <div class="col-md-1 font-bold"></div>
+                                        </div>
+                                        <div class="row mt-2 w-full">
+                                            <div class="col-md-3">
+                                                <mat-form-field class="w-full text-sm">
+                                                    <mat-label>New product name</mat-label>
+                                                    <input maxlength="500" matInput [(ngModel)]="colorsForm.product">
+                                                </mat-form-field>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <mat-form-field class="w-full  text-sm">
+                                                    <mat-label>New option name/description</mat-label>
+                                                    <input maxlength="500" matInput [(ngModel)]="colorsForm.name">
+                                                </mat-form-field>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <mat-form-field class="w-full  text-sm">
+                                                    <mat-label>Quantity</mat-label>
+                                                    <input maxlength="10" matInput [(ngModel)]="colorsForm.quantity"
                                                         type="number">
                                                 </mat-form-field>
                                             </div>
+                                            <div class="col-md-2">
+                                                <mat-form-field class="w-full text-sm">
+                                                    <mat-label>Unit cost</mat-label>
+                                                    <input maxlength="10" matInput [(ngModel)]="colorsForm.cost"
+                                                        type="number">
+                                                </mat-form-field>
+                                            </div>
+                                            <div class="col-md-2">
+                                            </div>
+                                            <div class="col-md-1 mt-7">
+                                                <mat-icon (click)="addColorsPO()" svgIcon="mat_outline:add"
+                                                    *ngIf="!isAddColorLoader" matTooltip="Add"
+                                                    class="cursor-pointer"></mat-icon>
+                                                <mat-progress-spinner *ngIf="isAddColorLoader" [diameter]="24"
+                                                    [mode]="'indeterminate'">
+                                                </mat-progress-spinner>
+                                            </div>
                                         </div>
                                     </div>
-                                </ng-template>
+                                    <!-- Not BlnSupplier -->
+                                    <ng-template #notBlnSupplier>
+                                        <div class="w-full" *ngIf="!orderDataPO.blnSupplier">
+                                            <mat-form-field class="w-full text-sm">
+                                                <mat-label>Stock coming from</mat-label>
+                                                <input matInput maxlength="500" placeholder="Stock coming from"
+                                                    [(ngModel)]="orderDataPO.stockFrom" maxlength="500">
+                                            </mat-form-field>
+                                            <ng-container *ngIf="colorsList.length > 0">
+                                                <div class="row my-3 w-full" *ngIf="colorsList.length > 0">
+                                                    <div class="col-4 font-bold">Product:</div>
+                                                    <div class="col-4 font-bold">Color/size:</div>
+                                                    <div class="col-4 font-bold">Quantity</div>
+                                                </div>
+                                                <div class="row w-full" *ngFor="let item of colorsList">
+                                                    <div class="col-4">
+                                                        <mat-form-field class="w-full text-sm">
+                                                            <input matInput maxlength="1000" disabled
+                                                                [(ngModel)]="item.productName">
+                                                        </mat-form-field>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <mat-form-field class="w-full text-sm">
+                                                            <input matInput [(ngModel)]="item.optionName" disabled
+                                                                maxlength="500">
+                                                        </mat-form-field>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <mat-form-field class="w-full text-sm">
+                                                            <input matInput maxlength="10" disabled
+                                                                [(ngModel)]="item.quantity" type="number">
+                                                        </mat-form-field>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-8 font-bold">TOTAL QTY:</div>
+                                                    <div class="col-4">
+                                                        <mat-form-field class="w-full text-sm">
+                                                            <input matInput maxlength="10"
+                                                                [(ngModel)]="totalColorsListQuantity" disabled
+                                                                type="number">
+                                                        </mat-form-field>
+                                                    </div>
+                                                </div>
+                                            </ng-container>
+                                        </div>
+                                    </ng-template>
+                                </div>
 
                                 <!-- Imprints -->
-                                <div *ngIf="orderDataPO.blnDecorator" class="w-full">
+                                <div *ngIf="orderDataPO.blnDecorator" class="w-full border p-3 my-2">
                                     <p class="font-medium text-secondary py-1 border-b text-uppercase">Imprints</p>
-                                    <div class="mt-3">
+                                    <div class="mt-2">
                                         <mat-form-field class="w-full text-sm">
-                                            <mat-label>Imprint comment</mat-label>
+                                            <mat-label>Imprint detail</mat-label>
                                             <textarea matInput maxlength="500"
                                                 [(ngModel)]="orderDataPO.imprintDetail"></textarea>
                                         </mat-form-field>
                                     </div>
-                                    <div class="mt-3 row" *ngFor="let item of imprintdata">
-                                        <div class="col-5">
+                                    <div class="mt-3 row border-b" *ngFor="let item of imprintdata">
+                                        <div class="col-4">
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label>Imprint</mat-label>
                                                 <input matInput maxlength="500" [(ngModel)]="item.imprintName">
@@ -724,36 +728,38 @@
                                         <div class="col-2">
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label>Quantity</mat-label>
-                                                <input type="number" matInput maxlength="10"
-                                                    [(ngModel)]="item.quantity">
+                                                <input type="number" matInput maxlength="10" [(ngModel)]="item.quantity"
+                                                    (input)="calculateTotalValues()">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label>Run</mat-label>
-                                                <input type="number" matInput maxlength="20"
-                                                    [(ngModel)]="item.unitCost">
+                                                <input type="number" matInput maxlength="20" [(ngModel)]="item.unitCost"
+                                                    (input)="calculateTotalValues()">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label>Setup</mat-label>
-                                                <input type="number" matInput maxlength="10" [(ngModel)]="item.setup">
+                                                <input type="number" matInput maxlength="10" [(ngModel)]="item.setup"
+                                                    (input)="calculateTotalValues()">
                                             </mat-form-field>
-                                        </div>
-                                        <div class="col-1 justify-between flex align-items-center">
-                                            <mat-form-field class="w-full text-sm">
-                                                <mat-label>Total</mat-label>
-                                                <input matInput disabled [(ngModel)]="item.total">
-                                            </mat-form-field>
-                                            <mat-icon (click)="removePODetails(item,'imprint')"
-                                                *ngIf="!isDelImprintLoader" svgIcon="heroicons_outline:trash"
-                                                matTooltip="Remove" class="cursor-pointer"></mat-icon>
-                                            <mat-progress-spinner *ngIf="isDelImprintLoader" [diameter]="24"
-                                                [mode]="'indeterminate'">
-                                            </mat-progress-spinner>
                                         </div>
                                         <div class="col-2">
+                                            <mat-form-field class="w-full text-sm">
+                                                <mat-label>Total</mat-label>
+                                                <input matInput disabled [(ngModel)]="item.totalCost">
+                                            </mat-form-field>
+                                        </div>
+                                        <div class="col-2" *ngIf="item.reorderNumber">
+                                            <mat-form-field class="w-full text-sm">
+                                                <mat-label>Reorder number</mat-label>
+                                                <input matInput maxlength="50" type="number"
+                                                    [(ngModel)]="item.reorderNumber">
+                                            </mat-form-field>
+                                        </div>
+                                        <div class="col-2" *ngIf="item.blnColorProcess">
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label># Colors</mat-label>
                                                 <input matInput [(ngModel)]="item.totalImprintColors">
@@ -761,13 +767,30 @@
                                         </div>
                                         <div class="col-4">
                                             <mat-form-field class="w-full text-sm">
-                                                <mat-label>Imprint colors</mat-label>
+                                                <mat-label>Imprint colors (comma-separated)</mat-label>
                                                 <input matInput [(ngModel)]="item.colors">
                                             </mat-form-field>
                                         </div>
+                                        <div class="col-12">
+                                            <mat-form-field class="w-full text-sm">
+                                                <mat-label>Imprint comment</mat-label>
+                                                <textarea matInput maxlength="500"
+                                                    [(ngModel)]="item.imprintComment"></textarea>
+                                            </mat-form-field>
+                                        </div>
+                                        <div class="col-12 text-right mb-2">
+                                            <button class="rounded-md" mat-button mat-flat-button color="warn"
+                                                (click)="removePODetails(item,'imprint')"
+                                                [disabled]="item.isDelImprintLoader">
+                                                <span *ngIf="!item.isDelImprintLoader">Remove</span>
+                                                <mat-progress-spinner *ngIf="item.isDelImprintLoader" [diameter]="24"
+                                                    [mode]="'indeterminate'">
+                                                </mat-progress-spinner>
+                                            </button>
+                                        </div>
                                     </div>
                                     <div class="mt-3 row">
-                                        <div class="col-5">
+                                        <div class="col-4">
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label>New imprint name/method/location:</mat-label>
                                                 <input maxlength="500" matInput [(ngModel)]="imprintForm.name">
@@ -794,14 +817,6 @@
                                                     [(ngModel)]="imprintForm.setup">
                                             </mat-form-field>
                                         </div>
-                                        <div class="col-1 mt-7 text-right">
-                                            <mat-icon (click)="addImprintPO()" svgIcon="mat_outline:add"
-                                                *ngIf="!isAddImprintLoader" matTooltip="Add"
-                                                class="cursor-pointer"></mat-icon>
-                                            <mat-progress-spinner *ngIf="isAddImprintLoader" [diameter]="24"
-                                                [mode]="'indeterminate'">
-                                            </mat-progress-spinner>
-                                        </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label># Colors</mat-label>
@@ -823,11 +838,20 @@
                                                     [(ngModel)]="orderDataPO.imprintComment">
                                             </mat-form-field>
                                         </div>
+                                        <div class="col-12 text-right">
+                                            <button mat-button mat-flat-button color="primary" class="rounded-md"
+                                                (click)="addImprintPO()" [disabled]="isAddImprintLoader">
+                                                <span *ngIf="!isAddImprintLoader">Add</span>
+                                                <mat-progress-spinner *ngIf="isAddImprintLoader" [diameter]="24"
+                                                    [mode]="'indeterminate'">
+                                                </mat-progress-spinner>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                                 <!-- Accessories -->
-                                <div class="w-full"
-                                    *ngIf="(orderDataPO.blnSupplier && orderDataPO.blnDecorator) || (orderDataPO.blnSupplier && !orderDataPO.blnDecorator)">
+                                <!-- *ngIf="(orderDataPO.blnSupplier && orderDataPO.blnDecorator) || (orderDataPO.blnSupplier && !orderDataPO.blnDecorator)" -->
+                                <div class="w-full border p-3 my-2">
                                     <p class="font-medium text-secondary py-1 border-b text-uppercase">Accessories</p>
                                     <div class="mt-3 row" *ngIf="accessoriesList.length > 0">
                                         <div class="col-4 font-bold">Name</div>
@@ -836,7 +860,7 @@
                                         <div class="col-2 font-bold">Setup</div>
                                         <div class="col-2 font-bold">Total</div>
                                     </div>
-                                    <div class="mt-3 row" *ngFor="let item of accessoriesList">
+                                    <div class="mt-3 row border-b" *ngFor="let item of accessoriesList">
                                         <div class="col-4">
                                             <mat-form-field class="w-full">
                                                 <input matInput maxlength="200" [(ngModel)]="item.accessoryName">
@@ -844,32 +868,36 @@
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full">
-                                                <input maxlength="10" type="number" matInput
-                                                    [(ngModel)]="item.quantity">
+                                                <input maxlength="10" type="number" matInput [(ngModel)]="item.quantity"
+                                                    (input)="calculateTotalValues()">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full">
-                                                <input maxlength="10" type="number" matInput
-                                                    [(ngModel)]="item.unitCost">
+                                                <input maxlength="10" type="number" matInput [(ngModel)]="item.unitCost"
+                                                    (input)="calculateTotalValues()">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full">
                                                 <input matInput maxlength="20" type="number"
-                                                    [(ngModel)]="item.setupCost">
+                                                    [(ngModel)]="item.setupCost" (input)="calculateTotalValues()">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2 flex justify-between align-items-center">
                                             <mat-form-field class="w-full">
                                                 <input matInput maxlength="20" disabled [(ngModel)]="item.totalCost">
                                             </mat-form-field>
-                                            <mat-icon (click)="removePODetails(item,'accessory')"
-                                                *ngIf="!isAccessoriesDelLoader" svgIcon="heroicons_outline:trash"
-                                                matTooltip="Remove" class="cursor-pointer"></mat-icon>
-                                            <mat-progress-spinner *ngIf="isAccessoriesDelLoader" [diameter]="24"
-                                                [mode]="'indeterminate'">
-                                            </mat-progress-spinner>
+                                        </div>
+                                        <div class="col-12 text-right mb-2">
+                                            <button class="rounded-md" mat-button mat-flat-button color="warn"
+                                                (click)="removePODetails(item,'accessory')"
+                                                [disabled]="item.isAccessoriesDelLoader">
+                                                <span *ngIf="!item.isAccessoriesDelLoader">Remove</span>
+                                                <mat-progress-spinner *ngIf="item.isAccessoriesDelLoader"
+                                                    [diameter]="24" [mode]="'indeterminate'">
+                                                </mat-progress-spinner>
+                                            </button>
                                         </div>
                                     </div>
                                     <div class="mt-3 row">
@@ -901,110 +929,114 @@
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2 mt-7 text-right">
-                                            <mat-icon (click)="addAccessories()" svgIcon="mat_outline:add"
-                                                *ngIf="!isAccessoriesLoader" matTooltip="Add"
-                                                class="cursor-pointer"></mat-icon>
-                                            <mat-progress-spinner *ngIf="isAccessoriesLoader" [diameter]="24"
-                                                [mode]="'indeterminate'">
-                                            </mat-progress-spinner>
+                                            <button class="rounded-md" mat-button mat-flat-button color="primary"
+                                                (click)="addAccessories()" [disabled]="isAccessoriesLoader">
+                                                <span *ngIf="!isAccessoriesLoader">Add</span>
+                                                <mat-progress-spinner *ngIf="isAccessoriesLoader" [diameter]="24"
+                                                    [mode]="'indeterminate'">
+                                                </mat-progress-spinner>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
                                 <!-- Adjustments -->
-                                <p class="font-medium text-secondary py-1 border-b text-uppercase">Adjustments</p>
-                                <div class="mt-3 row" *ngIf="adjustmentsList.length > 0">
-                                    <div class="col-5 font-bold">
-                                        Name
+                                <div class="border p-3 my-2">
+                                    <p class="font-medium text-secondary py-1 border-b text-uppercase">Adjustments</p>
+                                    <div class="mt-3 row" *ngIf="adjustmentsList.length > 0">
+                                        <div class="col-5 font-bold">
+                                            Name
+                                        </div>
+                                        <div class="col-2"></div>
+                                        <div class="col-2"></div>
+                                        <div class="col-2 font-bold">
+                                            Total
+                                        </div>
+                                        <div class="col-1 font-bold">
+                                            Action
+                                        </div>
                                     </div>
-                                    <div class="col-2"></div>
-                                    <div class="col-2"></div>
-                                    <div class="col-2 font-bold">
-                                        Total
-                                    </div>
-                                    <div class="col-1 font-bold">
-                                        Action
-                                    </div>
-                                </div>
-                                <div class="mt-3 row" *ngFor="let item of adjustmentsList">
-                                    <div class="col-5">
-                                        <mat-form-field class="w-full">
-                                            <input matInput maxlength="500" [(ngModel)]="item.adjustmentName">
-                                        </mat-form-field>
-                                    </div>
-                                    <div class="col-2">
-                                    </div>
-                                    <div class="col-2">
-                                    </div>
-                                    <div class="col-2 ">
-                                        <mat-form-field class="mr-1">
-                                            <input maxlengt="10" matInput [(ngModel)]="item.unitCost">
-                                        </mat-form-field>
-                                    </div>
-                                    <div class="col-1">
-                                        <mat-icon (click)="removePODetails(item,'adjustment')"
-                                            *ngIf="!isAdjustmentDelLoader" svgIcon="heroicons_outline:trash"
-                                            matTooltip="Remove" class="cursor-pointer"></mat-icon>
-                                        <mat-progress-spinner *ngIf="isAdjustmentDelLoader" [diameter]="24"
-                                            [mode]="'indeterminate'">
-                                        </mat-progress-spinner>
-                                    </div>
-                                </div>
-                                <!-- New Adjustment -->
-                                <div class="mt-2 row">
-                                    <div class="col-5">
-                                        <mat-form-field class="w-full">
-                                            <mat-label>New adjustment name/description:</mat-label>
-                                            <mat-select matInput [(ngModel)]="adjustmentForm.name">
-                                                <mat-option *ngFor="let item of adjustmentsListData"
-                                                    [value]="item.name">{{item.name}}</mat-option>
-                                            </mat-select>
-                                        </mat-form-field>
-                                    </div>
-                                    <div class="col-2">
-                                    </div>
-                                    <div class="col-2">
-                                    </div>
-                                    <div class="col-3 text-right">
-                                        <div class="flex align-items-center justify-content-end">
-                                            <mat-form-field class="mr-1">
-                                                <mat-label>Total cost</mat-label>
-                                                <input maxlength="10" type="number" matInput
-                                                    [(ngModel)]="adjustmentForm.cost">
+                                    <div class="mt-3 row" *ngFor="let item of adjustmentsList">
+                                        <div class="col-5">
+                                            <mat-form-field class="w-full">
+                                                <input matInput maxlength="500" [(ngModel)]="item.adjustmentName">
                                             </mat-form-field>
-                                            <mat-icon (click)="addAdjustment()" svgIcon="mat_outline:add"
-                                                *ngIf="!isAdjustmentLoader" matTooltip="Add"
-                                                class="cursor-pointer"></mat-icon>
-                                            <mat-progress-spinner *ngIf="isAdjustmentLoader" [diameter]="24"
+                                        </div>
+                                        <div class="col-2">
+                                        </div>
+                                        <div class="col-2">
+                                        </div>
+                                        <div class="col-2 ">
+                                            <mat-form-field class="mr-1">
+                                                <input maxlengt="10" matInput [(ngModel)]="item.unitCost">
+                                            </mat-form-field>
+                                        </div>
+                                        <div class="col-1">
+                                            <mat-icon (click)="removePODetails(item,'adjustment')"
+                                                *ngIf="!item.isAdjustmentDelLoader" svgIcon="heroicons_outline:trash"
+                                                matTooltip="Remove" class="cursor-pointer"></mat-icon>
+                                            <mat-progress-spinner *ngIf="item.isAdjustmentDelLoader" [diameter]="24"
                                                 [mode]="'indeterminate'">
                                             </mat-progress-spinner>
                                         </div>
                                     </div>
+                                    <!-- New Adjustment -->
+                                    <div class="mt-2 row">
+                                        <div class="col-5">
+                                            <mat-form-field class="w-full">
+                                                <mat-label>New adjustment name/description:</mat-label>
+                                                <mat-select matInput [(ngModel)]="adjustmentForm.name">
+                                                    <mat-option *ngFor="let item of adjustmentsListData"
+                                                        [value]="item.name">{{item.name}}</mat-option>
+                                                </mat-select>
+                                            </mat-form-field>
+                                        </div>
+                                        <div class="col-2">
+                                        </div>
+                                        <div class="col-2">
+                                        </div>
+                                        <div class="col-3 text-right">
+                                            <div class="flex align-items-center justify-content-end">
+                                                <mat-form-field class="mr-1">
+                                                    <mat-label>Total cost</mat-label>
+                                                    <input maxlength="10" type="number" matInput
+                                                        [(ngModel)]="adjustmentForm.cost">
+                                                </mat-form-field>
+                                                <mat-icon (click)="addAdjustment()" svgIcon="mat_outline:add"
+                                                    *ngIf="!isAdjustmentLoader" matTooltip="Add"
+                                                    class="cursor-pointer"></mat-icon>
+                                                <mat-progress-spinner *ngIf="isAdjustmentLoader" [diameter]="24"
+                                                    [mode]="'indeterminate'">
+                                                </mat-progress-spinner>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-12">
+                            <div class="col-12 my-2">
                                 <div class="row py-1">
                                     <div class="col-9">
                                         <p class="text-xl font-bold text-secondary">Total</p>
                                     </div>
                                     <div class="col-3 text-right">
-                                        <div class="flex align-items-center justify-content-end">
-                                            <mat-form-field class="mr-1">
-                                                <input matInput disabled [(ngModel)]="orderDataPO.POTotal">
-                                            </mat-form-field>
-                                            <mat-icon></mat-icon>
-                                        </div>
+                                        <span class="border rounded-md p-3">{{orderDataPO.POTotal }}</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12 mt-2">
+                        <div class="col-12 mt-2 border p-3">
                             <mat-form-field class="w-full">
                                 <mat-label>Purchase Order Comments</mat-label>
                                 <textarea matInput [(ngModel)]="orderDataPO.purchaseOrderComments"></textarea>
                             </mat-form-field>
                             <mat-checkbox class="mr-3" [(ngModel)]="orderDataPO.blnDuplicate">Do not
                                 duplicate:</mat-checkbox>
-                            <mat-checkbox [(ngModel)]="blnArtNeedsResent"> Resend artwork:</mat-checkbox>
+                            <mat-checkbox class="mr-3"
+                                matTooltip="If you are resending this Purchase Order, please indicate whether the supplier needs artwork sent to them. Checking YES adds the item to PO Sent status in SmartArt.  Checking NO leaves the status alone, and graphics will not resend art."
+                                [(ngModel)]="blnArtNeedsResent"> Resend artwork:</mat-checkbox>
+                            <mat-checkbox
+                                matTooltip="Indicates whether or not this purchase order has been exported via SmartCents for the vendor bill export."
+                                [(ngModel)]="blnExportedBox"> Exported: <span *ngIf="orderDataPO.blnExported">(on
+                                    {{orderDataPO.dateExported | date:'mm/dd/yyyy'}})</span></mat-checkbox>
                             <div class="my-2 w-full">
                                 <div class="alert alert-warning" *ngIf="orderDataPO?.poProofFiles.length == 0">
                                     Artwork has not been uploaded for this PO
@@ -1030,7 +1062,7 @@
                                     </button>
                                     <div>
                                         <div
-                                            *ngIf="orderDataPO.statusID ==1 && orderDataPO.statusID ==7 && orderDataPO.statusID ==10;else saveANDsend">
+                                            *ngIf="orderDataPO.fk_statusID == 1 || orderDataPO.fk_statusID == 7 || orderDataPO.fk_statusID == 10;else saveANDsend">
                                             <div class="col-xs-4 add-padding-sm">
                                                 <div class="alert alert-warning add-padding-sm no-bottom-margin">
                                                     <span class="fa fa-exclamation-circle"></span> The artwork for this

@@ -165,14 +165,30 @@
 
                                         <!-- Name -->
                                         <ng-container matColumnDef="name">
-                                            <th class="w-15 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
+                                            <th class="w-30 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell
                                                 *matHeaderCellDef disableClear>
                                                 Name
                                             </th>
                                             <td class="pr-8 truncate" mat-cell *matCellDef="let order"
                                                 (click)="orderDetails(order.pk_orderID)" style="cursor: pointer;">
                                                 <b>{{order.firstName}} {{order.lastName}}</b>
-                                                <p>{{order.companyName}}</p>
+                                                <br>
+                                                <b>
+                                                    <ng-container
+                                                        *ngIf="order.companyProfileName && order.companyProfileName.length > 0; else companyNameBlock">
+                                                        {{ order.companyProfileName }}
+                                                    </ng-container>
+                                                    <ng-template #companyNameBlock>
+                                                        {{ order.companyName }}
+                                                    </ng-template>
+
+                                                    <ng-container
+                                                        *ngIf="order.departmentName && order.departmentName.length > 0">
+                                                        - {{ order.locationName }} - {{ order.departmentName }}
+                                                    </ng-container>
+                                                </b>
+                                                <br>
+                                                <!-- <p>{{order.companyName}}</p> -->
                                                 <span><b>{{order.pk_orderID}}</b> - {{order.storeName}}</span>
                                             </td>
                                         </ng-container>

@@ -136,8 +136,8 @@ export class ReportsService {
                 }
             }
             this.reportType = 'Quarterly Sales';
-            this.lastStartDate = moment(s).startOf('month').subtract(1, 'year').format('yyyy-MM-DD');
-            this.lastEndDate = moment(this.endDate).endOf('month').subtract(1, 'year').format('yyyy-MM-DD');
+            this.lastStartDate = moment(this.startDate).subtract(1, 'year').format('yyyy-MM-DD');
+            this.lastEndDate = moment(this.endDate).subtract(1, 'year').format('yyyy-MM-DD');
         } else if (this.ngPlan == 'yearly') {
             let d = new Date(this.yearlyYear, 0, 1);
             this.startDate = moment(d).startOf('year').format('yyyy-MM-DD');

@@ -88,7 +88,6 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     blnInvoiced: false
   }
   // ColorsBreakdown
-  totalColorsListQuantity = 0;
   colorsList: any = [];
   accessoriesList: any = [];
   adjustmentsList: any = [];
@@ -132,6 +131,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   // Send Purchase Order
   isSentPOLoader: boolean = false;
   blnArtNeedsResent: boolean = false;
+  blnExportedBox: boolean = false;
   isSavePOLoader: boolean = false;
   isRemovePOLoader: boolean = false;
   ngImprint = '';
@@ -164,6 +164,14 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     { value: 8, label: 'Picked up' },
     { value: 10, label: 'Waiting For GroupBuy' },
   ];
+
+
+
+  totalColorsListQuantity = 0;
+  totalColorsListCost = 0;
+  totalImprintCost = 0
+  totalAccessoryCost = 0
+  totalAdjustmentCost = 0
 
 
   constructor(
@@ -333,7 +341,10 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     let params = {
       order_manage_imprint_details: true,
       orderLine_id: this.paramData.pk_orderLineID,
-      orderLine_POID: this.paramData.pk_orderLinePOID
+      orderLine_POID: this.paramData.pk_orderLinePOID,
+      blnSupplier: this.orderDataPO.blnSupplier,
+      blnDecorator: this.orderDataPO.blnDecorator,
+      blnDuplicated: this.orderDataPO.blnDuplicated
     }
     this._OrderManageService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.imprintdata = res["imprints"];
@@ -341,9 +352,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       this.adjustmentsList = res["adjustments"];
       this.accessoriesList = res["accessories"];
       this.attachmentsList = res["attachments"];
-      this.colorsList.forEach(color => {
-        this.totalColorsListQuantity += color.quantity;
-      });
+      this.calculateTotalValues();
       this.isAccessoriesLoader = false;
       this.isAdjustmentLoader = false;
       this.isAddImprintLoader = false;
@@ -393,6 +402,40 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     });
   }
+  calculateTotalValues() {
+    this.totalColorsListQuantity = 0;
+    this.totalColorsListCost = 0;
+    this.totalAccessoryCost = 0;
+    this.totalAdjustmentCost = 0;
+    // this.imprintdata = res["imprints"];
+    //   this.colorsList = res["color_sizes"];
+    //   this.adjustmentsList = res["adjustments"];
+    //   this.accessoriesList = res["accessories"];
+    //   this.attachmentsList = res["attachments"];
+
+    this.colorsList.forEach(color => {
+      color.unitCost = Number(color.unitCost).toFixed(4);
+      color.totalCost = Number(color.quantity * color.unitCost).toFixed(4);
+      this.totalColorsListCost += Number(color.totalCost);
+      this.totalColorsListQuantity += color.quantity;
+    });
+    this.imprintdata.forEach(imprint => {
+      imprint.unitCost = Number(imprint.unitCost).toFixed(4);
+      imprint.setup = Number(imprint.setup).toFixed(4);
+      imprint.totalCost = Number(Number(imprint.quantity * Number(imprint.unitCost)) + Number(imprint.setup)).toFixed(4);
+      this.totalImprintCost += Number(imprint.totalCost);
+    });
+    this.accessoriesList.forEach(accessory => {
+      accessory.unitCost = Number(accessory.unitCost).toFixed(4);
+      accessory.setupCost = Number(accessory.setupCost).toFixed(4);
+      accessory.totalCost = Number(Number(accessory.quantity * Number(accessory.unitCost)) + Number(accessory.setupCost)).toFixed(4);
+      this.totalAccessoryCost += Number(accessory.totalCost);
+    });
+    this.adjustmentsList.forEach(adjustment => {
+      this.totalImprintCost += Number(adjustment.unitCost);
+    });
+    this.orderDataPO.POTotal = Number(this.totalColorsListCost + this.totalImprintCost + this.totalAccessoryCost + this.totalAdjustmentCost).toFixed(4);
+  }
   backToList() {
     this.router.navigateByUrl('ordermanage/dashboard');
   }
@@ -415,7 +458,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       let payload: UpdateInHandsDate = {
         inHandsDate: String(date),
         orderLinePOID: this.orderDataPO.pk_orderLinePOID,
-        order_id: this.orderData.fk_orderID,
+        order_id: this.orderData.pk_orderID,
         update_inHands_date: true
       }
       this._OrderManageService.PutAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -441,7 +484,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       this.isCommentsLoader = true;
       let payload: AddComment = {
         comment: this.ngComment,
-        order_id: this.orderData.fk_orderID,
+        order_id: this.orderData.pk_orderID,
         orderManageLoggedInUserName: this.ordermanageUserData.firstName + ' ' + this.ordermanageUserData.lastName,
         recipients: this.selectedEmailRecipients,
         store_name: storeName,
@@ -729,21 +772,21 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
         remove_adjustment: true
       }
     } else if (check == 'colors') {
-      this.isDelColorLoader = false;
+      item.isDelColorLoader = true;
       params = {
         orderLinePOOptionID: item.pk_orderLinePOOptionID,
         orderLinePOID: this.orderDataPO.pk_orderLinePOID,
         remove_po_options: true
       }
     } else if (check == 'accessory') {
-      this.isAccessoriesDelLoader = false;
+      item.isAccessoriesDelLoader = true;
       params = {
         orderLinePOAccessoryID: item.pk_orderLinePOAccessoryID,
         orderLinePOID: this.orderDataPO.pk_orderLinePOID,
         remove_accessory: true
       }
     } else if (check == 'imprint') {
-      this.isDelImprintLoader = false;
+      item.isDelImprintLoader = true;
       params = {
         orderLinePOImprintID: item.pk_orderLinePOImprintID,
         orderLinePOID: this.orderDataPO.pk_orderLinePOID,
@@ -763,17 +806,17 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
           this._OrderManageService.snackBar(res["message"]);
         }, 500);
       } else {
-        this.isAccessoriesDelLoader = false;
-        this.isAdjustmentDelLoader = false;
-        this.isDelColorLoader = false;
-        this.isDelImprintLoader = false;
+        item.isAccessoriesDelLoader = false;
+        item.isAdjustmentDelLoader = false;
+        item.isDelColorLoader = false;
+        item.isDelImprintLoader = false;
         this._changeDetectorRef.markForCheck();
       }
     }, err => {
-      this.isAccessoriesDelLoader = false;
-      this.isAdjustmentDelLoader = false;
-      this.isDelColorLoader = false;
-      this.isDelImprintLoader = false;
+      item.isAccessoriesDelLoader = false;
+      item.isAdjustmentDelLoader = false;
+      item.isDelColorLoader = false;
+      item.isDelImprintLoader = false;
       this._changeDetectorRef.markForCheck();
     })
   }
@@ -790,7 +833,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     let poImprints = [];
     let poAccessories = [];
     let poAdjustments = [];
-    const { fk_orderID, blnGroupRun, storeName } = this.orderData;
+    const { pk_orderID, blnGroupRun, storeName } = this.orderData;
     const { pk_orderLinePOID, shippingDate, estimatedShippingDate, trackingNumber, blnSample, fk_orderLineID, shippingCustomerAccountNumber, POinHandsDate, stockFrom, fk_vendorID, vendorShippingName, vendorShippingAddress1, vendorShippingAddress2, vendorShippingCity, vendorShippingState, vendorShippingZip, vendorShippingPhone, vendorShippingEmail, shippingComment, shipToCompanyName, shipToCustomerName, shipToLocation, shipToPurchaseOrder, shipToAddress, shipToCity, shipToState, shipToZip, shipToCountry, imprintComment, POTotal, shipToDeliverTo, productName, quantity, purchaseOrderNumber, purchaseOrderComments, blnDuplicate, blnDecorator, blnSupplier } = this.orderDataPO;
 
     this.colorsList.forEach(element => {
@@ -847,7 +890,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       productName: productName.replace(/'/g, "''"),
       storeName: storeName.replace(/'/g, "''"),
       orderManageLoggedInUserName: this.ordermanageUserData.firstName + ' ' + this.ordermanageUserData.lastName,
-      orderId: fk_orderID,
+      orderId: pk_orderID,
       blnSample: blnSample,
       orderLineID: fk_orderLineID,
       fk_vendorID: fk_vendorID,
@@ -897,7 +940,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
 
 
   savePoOrder() {
-    const { fk_orderID, blnGroupRun, storeName, pk_companyID, currentTotal } = this.orderData;
+    const { pk_orderID, blnGroupRun, storeName, pk_companyID, currentTotal } = this.orderData;
     const { pk_orderLinePOID, shippingDate, estimatedShippingDate, trackingNumber, blnSample, fk_orderLineID, shippingCustomerAccountNumber, POinHandsDate, stockFrom, fk_vendorID, vendorShippingName, vendorShippingAddress1, vendorShippingAddress2, vendorShippingCity, vendorShippingState, vendorShippingZip, vendorShippingPhone, vendorShippingEmail, shippingComment, shipToCompanyName, shipToCustomerName, shipToLocation, shipToPurchaseOrder, shipToAddress, shipToCity, shipToState, shipToZip, shipToCountry, imprintComment, POTotal, shipToDeliverTo, productName, quantity, purchaseOrderNumber, purchaseOrderComments, blnDuplicate, blnDecorator, blnSupplier, coop, imprintDetail } = this.orderDataPO;
     // Colors
     let OrderLinePOOptions = [];
@@ -987,7 +1030,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       trackingNumber: trackingNumber,
       total: currentTotal,
       blnGroupRun: blnGroupRun,
-      orderId: fk_orderID,
+      orderId: pk_orderID,
       orderLineID: fk_orderLineID,
       storeName: storeName,
       blnDecorator: blnDecorator,
@@ -1029,7 +1072,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
 
   removePoOrder() {
     this.isRemovePOLoader = true;
-    let orderID = this.orderData.fk_orderID;
+    let orderID = this.orderData.pk_orderID;
     let orderLineID = this.orderDataPO.pk_orderLinePOID;
     let payload: DeletePurchaseOrder = {
       orderLinePOID: orderLineID,
@@ -1043,7 +1086,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
         this.isRemovePOLoader = false;
         this._changeDetectorRef.markForCheck();
         let parameters = {
-          orderID: this.orderData.fk_orderID,
+          orderID: this.orderData.pk_orderID,
           status: 0,
         };
         this.router.navigate(['/ordermanage/dashboard'], { queryParams: parameters });
@@ -1100,7 +1143,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       blnDuplicate: blnDuplicate
     }
     const { pk_orderLinePOID } = this.orderDataPO;
-    const { fk_orderID } = this.orderData;
+    const { pk_orderID } = this.orderData;
 
     this.colorsList.forEach(element => {
       orderLineOption.push({
@@ -1146,7 +1189,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     });
 
     let payload: DuplicatePO = {
-      order_id: fk_orderID,
+      order_id: pk_orderID,
       orderLinePOID: pk_orderLinePOID,
       orderLinePO: OrderLinePO,
       orderLineOptions: orderLineOption,
@@ -1177,7 +1220,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       this.orderDataPO.vendorShippingCity = vendor.city;
       this.orderDataPO.vendorShippingState = vendor.state;
       this.orderDataPO.vendorShippingZip = vendor.zipCode;
-      this.orderDataPO.vendorShippingEmail = vendor.artworkEmail;
+      this.orderDataPO.vendorShippingEmail = vendor.ordersEmail;
       this.orderDataPO.vendorShippingComment = vendor.shippingComment;
       this.orderDataPO.vendorShippingPhone = vendor.phone;
       this._changeDetectorRef.markForCheck();
@@ -1222,10 +1265,10 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   // Modify Status
   modifyStatus() {
     this.orderDataPO.isStatusLoader = true;
-    const { pk_orderLinePOID, statusID } = this.orderDataPO;
+    const { pk_orderLinePOID, fk_statusID } = this.orderDataPO;
     let payload: updatePurchaseOrderStatus = {
       orderLinePOID: pk_orderLinePOID,
-      statusID: statusID,
+      statusID: fk_statusID,
       update_purchase_order_status: true
     }
     this._OrderManageService.PutAPIData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {

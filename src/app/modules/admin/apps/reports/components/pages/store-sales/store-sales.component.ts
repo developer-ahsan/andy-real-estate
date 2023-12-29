@@ -105,7 +105,9 @@ export class ReportsStoreSalesComponent implements OnInit, OnDestroy {
     if (type == 'states') {
       dataArray.forEach(item => {
         const [id, state, name, index] = item.split("::");
-        result.push({ pk_stateID: parseInt(id), name });
+        if (index == 1) {
+          result.push({ pk_stateID: parseInt(id), name });
+        }
       });
     } else {
       dataArray.forEach(item => {
