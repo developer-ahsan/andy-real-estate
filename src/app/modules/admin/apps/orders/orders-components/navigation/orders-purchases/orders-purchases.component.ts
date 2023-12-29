@@ -58,7 +58,6 @@ export class OrdersPurchasesComponent implements OnInit {
     this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       let value = [];
       this.orderProducts = res["data"];
-      console.log(this.orderProducts);
       res["data"].forEach((element, index) => {
         value.push(element.pk_orderLineID);
         if (index == res["data"].length - 1) {
@@ -71,7 +70,6 @@ export class OrdersPurchasesComponent implements OnInit {
   getOrderDetail() {
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.orderDetail = res["data"][0];
-      // console.log(this.orderDetail)
     }, err => {
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
@@ -111,6 +109,7 @@ export class OrdersPurchasesComponent implements OnInit {
       this._changeDetectorRef.markForCheck();
     })
   }
+  imprints: any;
   getProductImprints(value, data) {
     let params = {
       imprint_report: true,
@@ -126,6 +125,22 @@ export class OrdersPurchasesComponent implements OnInit {
         });
       });
       this.orderProducts = tempArr;
+
+
+
+      // const processedIds = new Set();
+
+      // let tempImprints=[]
+      // data.forEach((element) => {
+      //   res["data"].forEach((item) => {
+      //     if (item.fk_orderLineID === element.fk_orderLineID && !processedIds.has(element.fk_orderLineID)) {
+      //       tempImprints.push({ product: element, imprints: item });
+      //       processedIds.add(element.fk_orderLineID);
+      //     }
+      //   });
+      // });
+
+      // this.imprints = tempImprints
       // this.getProductTotal();
       this.isDetailLoader = false;
       this.isLoadingChange.emit(false);
@@ -151,7 +166,6 @@ export class OrdersPurchasesComponent implements OnInit {
       this.grandTotalCost = this.grandTotalCost + ((element.product.cost * element.product.quantity) + (element.imprints.runCost * element.product.quantity) + (element.imprints.setupCost));
       this.grandTotalPrice = this.grandTotalPrice + ((element.product.price * element.product.quantity) + (element.imprints.runPrice * element.product.quantity) + (element.imprints.setupPrice))
     });
-    // console.log(suppliersArray)
   }
   getTotalCost() {
     return this.transactions.map(t => t.total).reduce((acc, value) => acc + value, 0);
@@ -170,13 +184,14 @@ export class OrdersPurchasesComponent implements OnInit {
     let params = {
       view_purchase_order: true,
       order_line_id: this.orderLineIDs,
-      vendor_id: this.isViewData.fk_vendorID
+      vendor_id: this.isViewData.fk_vendorID,
+      order_line_po_id: this.isViewData.pk_orderLinePOID
     }
     this._orderService.getOrderCommonCall(params)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((data) => {
         this.purchaseDetails = data["data"][0];
-        console.log(this.purchaseDetails)
+        this.imprints = data['imprints'];
         this.getLineProducts(this.orderLineIDs);
         // this.isDetailLoader = false;
         this._changeDetectorRef.markForCheck();
