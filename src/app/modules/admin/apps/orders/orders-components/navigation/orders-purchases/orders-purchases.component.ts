@@ -1,10 +1,11 @@
-import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
 import { OrdersService } from 'app/modules/admin/apps/orders/orders-components/orders.service';
 import { jsPDF } from "jspdf";
 import html2canvas from 'html2canvas';
 import { takeUntil } from 'rxjs/operators';
 import { OrdersList } from 'app/modules/admin/apps/orders/orders-components/orders.types';
 import { Subject } from 'rxjs';
+declare var $: any;
 
 interface OrdersPurchases {
   company: string;
@@ -23,6 +24,9 @@ export class OrdersPurchasesComponent implements OnInit {
   @Input() selectedOrder: any;
   @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
+  @ViewChild('acknowledge') acknowledge: ElementRef;
+
+  acknowledged: string = '';
 
   displayedColumns: string[] = ['company', 'supplies', 'decorates', 'digitizes', 'total'];
   displayedColumns1: string[] = ['companys', 'suppliess', 'decoratess', 'shippingtotal', 'totals'];
@@ -34,6 +38,8 @@ export class OrdersPurchasesComponent implements OnInit {
   orderProducts: any;
   grandTotalCost: number;
   grandTotalPrice: number;
+
+  currentDate: Date = new Date();
 
   totalShippingCost = 0;
   purchases: any;
@@ -52,6 +58,7 @@ export class OrdersPurchasesComponent implements OnInit {
     this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       let value = [];
       this.orderProducts = res["data"];
+      console.log(this.orderProducts);
       res["data"].forEach((element, index) => {
         value.push(element.pk_orderLineID);
         if (index == res["data"].length - 1) {
@@ -64,6 +71,7 @@ export class OrdersPurchasesComponent implements OnInit {
   getOrderDetail() {
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.orderDetail = res["data"][0];
+      // console.log(this.orderDetail)
     }, err => {
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
@@ -72,7 +80,8 @@ export class OrdersPurchasesComponent implements OnInit {
   getPurchaseOrders(orderLineIDs) {
     let params = {
       purchase_order: true,
-      order_line_id: orderLineIDs
+      // order_line_id: orderLineIDs
+      order_id: this.orderProducts[0].fk_orderID
     }
     this._orderService.getOrderCommonCall(params)
       .pipe(takeUntil(this._unsubscribeAll))
@@ -167,6 +176,7 @@ export class OrdersPurchasesComponent implements OnInit {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((data) => {
         this.purchaseDetails = data["data"][0];
+        console.log(this.purchaseDetails)
         this.getLineProducts(this.orderLineIDs);
         // this.isDetailLoader = false;
         this._changeDetectorRef.markForCheck();
@@ -192,6 +202,12 @@ export class OrdersPurchasesComponent implements OnInit {
       doc.save(file_name);
     });
   }
+
+  openAcknowldgeModal() {
+    $(this.acknowledge.nativeElement).modal('show');
+  }
+
+  acknowledgement() { }
 
 }
 
