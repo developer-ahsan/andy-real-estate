@@ -249,8 +249,8 @@
                                         <mat-progress-spinner *ngIf="item?.delLoader" [diameter]="24"
                                             [mode]="'indeterminate'">
                                         </mat-progress-spinner>
-                                        <mat-ic1on *ngIf="!item?.delLoader" (click)="deleteAttachment(item)"
-                                            svgIcon="mat_outline:delete"></mat-ic1on>
+                                        <mat-icon *ngIf="!item?.delLoader" (click)="deleteAttachment(item)"
+                                            svgIcon="mat_outline:delete"></mat-icon>
 
                                     </td>
                                 </tr>

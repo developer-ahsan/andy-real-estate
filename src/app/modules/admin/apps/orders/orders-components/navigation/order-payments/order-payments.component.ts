@@ -61,6 +61,26 @@ export class OrderPaymentComponent implements OnInit {
     }
   }
   initializePayment() {
+    const diff = Math.round(this.orderDetail?.orderTotal) - Math.round(this.orderDetail?.currentTotal);
+    console.log(this.orderDetail?.orderTotal)
+    console.log(this.orderDetail?.currentTotal)
+    console.log(diff);
+    if (!this.ngAmount) {
+      this._orderService.snackBar('Please enter a payment amount below.');
+      return;
+    }
+    if (diff == 0 && this.ngAmount > 0) {
+      this._orderService.snackBar('The payment amount entered exceeds the order total.');
+      return;
+    }
+    let payload = {
+
+    }
+    this.isPaymentLoader = true;
+    this.orderDetail.currentTotal = this.orderDetail?.currentTotal + this.ngAmount;
+    console.log(payload)
+    return;
+
     if (this.ngAmount > 0) {
       const paymentHandler = (<any>window).StripeCheckout.configure({
         key: 'pk_test_51MW7XpKftHck147B5Rokid6Csvq6fNf8Tee690E3KuRzLd9P85yrvvQHpDK22ZTedK5WwzXAc2aVIY21Wyx4ia6V002R7AbvoW',
@@ -72,6 +92,7 @@ export class OrderPaymentComponent implements OnInit {
             stripe_transaction: true,
             order_id: Number(this.orderDetail.pk_orderID)
           }
+
           if (stripeToken) {
             this.isPaymentLoader = true;
             this._changeDetectorRef.markForCheck();

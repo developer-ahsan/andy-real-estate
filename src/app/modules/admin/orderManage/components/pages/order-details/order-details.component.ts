@@ -407,6 +407,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     this.totalColorsListCost = 0;
     this.totalAccessoryCost = 0;
     this.totalAdjustmentCost = 0;
+    this.totalImprintCost = 0;
     // this.imprintdata = res["imprints"];
     //   this.colorsList = res["color_sizes"];
     //   this.adjustmentsList = res["adjustments"];
@@ -432,7 +433,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       this.totalAccessoryCost += Number(accessory.totalCost);
     });
     this.adjustmentsList.forEach(adjustment => {
-      this.totalImprintCost += Number(adjustment.unitCost);
+      this.totalAdjustmentCost += Number(adjustment.unitCost);
     });
     this.orderDataPO.POTotal = Number(this.totalColorsListCost + this.totalImprintCost + this.totalAccessoryCost + this.totalAdjustmentCost).toFixed(4);
   }
@@ -765,7 +766,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   removePODetails(item, check) {
     let params: any;
     if (check == 'adjustment') {
-      this.isAdjustmentDelLoader = true;
+      item.isAdjustmentDelLoader = true;
       params = {
         orderLinePOAdjustmentID: item.pk_orderLinePOAdjustmentID,
         orderLinePOID: this.orderDataPO.pk_orderLinePOID,
@@ -1298,7 +1299,11 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   };
   addAttachmentFile() {
     if (!this.imageAttachmentValue) {
-      this._OrderManageService.snackBar('Please choose any file');
+      this._OrderManageService.snackBar('Please choose any file.');
+      return;
+    }
+    if (!this.attachmentName.trim()) {
+      this._OrderManageService.snackBar('Attachment Name is required.');
       return;
     }
     const { imageUpload, type, mime } = this.imageAttachmentValue;
