@@ -40,10 +40,33 @@
                                 class="mt-5 inset-0 min-w-0 text-center print:overflow-visible">
                                 <!-- Main -->
                                 <div class="inline-block  text-left print:p-0 w-full" id="htmltable" #htmltable>
+                                    <td>
+                                        <span style="font-size: 16px; color: #FF0000; font-weight: bold;">
+                                            <ng-container>
+                                                <a>
+                                                    Please acknowledge that you have received this PO by clicking <span (click)="openAcknowldgeModal()" class="cursor-pointer hover:text-blue-500 hover:underline">here</span>
+                                                </a>
+                                            </ng-container>
+                                        </span>
+                                        <br />
+                                        <span style="font-size: 11px;">
+                                            If the link above isn't working, please copy and paste this URL into your
+                                            browser:
+                                            <br />
+                                            https://admin.consolidus.com/dspPOAck3.cfm?OLID=155519&OID=84806&CID=5&S=0
+                                        </span>
+                                    </td>
+
 
                                     <!-- Shipping Report -->
                                     <div
                                         class="print:w-auto print:p-0 print:rounded-none print:shadow-none print:bg-transparent ">
+                                        <img src="https://assets.consolidus.com/globalAssets/consolidus_logo.png"
+                                            style="width: 280px; height: auto;" />
+                                        <br />
+                                        <span>{{this.orderDetail.storeName}} is a subsidiary of Consolidus,
+                                            LLC.<br /></span>
+
 
                                         <!-- <div class="flex items-start "> -->
                                         <div class="grid grid-rows-1 mt-5">
@@ -53,7 +76,8 @@
                                                     <div>526 S.Main St.</div>
                                                     <div>Suite 804</div>
                                                     <div>Akron, OH 44311</div>
-                                                    <div>P: 1-866-776-6643, F: 330-319-7214</div>
+                                                    <div>P: 330-319-7200</div>
+                                                    <div> F: 330-319-7213</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -64,6 +88,15 @@
                                             </div>
                                             <div class="justify-self-start text-3xl font-semibold">
                                                 #{{purchaseDetails?.purchaseOrderNumber}}</div>
+
+                                            <div class="justify-self-start font-medium tracking-tight text-secondary">
+                                                Sent On
+                                            </div>
+                                            <div class="font-medium">
+                                                <p>{{ currentDate | date: 'MM/dd/yyyy' }} at {{ currentDate | date:
+                                                    'HH:mm:ss' }}</p>
+                                            </div>
+
                                             <div class="justify-self-start font-medium tracking-tight text-secondary">
                                                 CUSTOMER PURCHASE ORDER #
                                             </div>
@@ -83,7 +116,17 @@
                                             <div class="justify-self-start font-medium tracking-tight text-secondary">
                                                 SHIPPING
                                             </div>
-                                            <div class="font-medium">{{purchaseDetails?.shippingComment}}</div>
+                                            <div class="font-medium">
+                                                <div>{{purchaseDetails?.shippingComment}}</div>
+                                                <div><span style="color: #000000; font-weight: bold;">
+                                                        Please send tracking to
+                                                        <a [href]="'mailto:orders@' + this.orderDetail.storeName">{{
+                                                            'orders@'
+                                                            + this.orderDetail.storeName }}</a>.
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            
                                             <div class="justify-self-start font-medium tracking-tight text-secondary">
                                                 IN-HANDS DATE </div>
                                             <div class="font-medium">{{(purchaseDetails?.inHandsDate | date:
@@ -94,7 +137,7 @@
 
                                         <div class="grid grid-cols-12 gap-x-1 mt-16 w-full">
                                             <!-- Item -->
-                                            <div class="col-span-12 my-2 w-full">
+                                            <!-- <div class="col-span-12 my-2 w-full">
                                                 <div class="grid grid-cols-12 w-full">
                                                     <div class="col-span-8 text-lg font-medium">
                                                         <p class="">
@@ -102,11 +145,10 @@
                                                         </p>
                                                         <p>Quantity: {{purchaseDetails?.quantity}}</p>
                                                     </div>
-                                                    <!-- Spacer -->
                                                     <div class="col-span-12 mt-6"></div>
                                                 </div>
-                                            </div>
-                                            <div class="col-span-4">
+                                            </div> -->
+                                            <!-- <div class="col-span-4">
                                                 Standard Lead Time
                                             </div>
                                             <div class="col-span-8">
@@ -115,13 +157,13 @@
                                                 <p *ngIf="isViewData.fk_vendorID != 3 && isViewData.fk_vendorID != 60">
                                                     {{purchaseDetails?.prodTimeMin}}-{{purchaseDetails?.prodTimeMax}}
                                                     business days</p>
-                                            </div>
-                                            <div class="col-span-4">
+                                            </div> -->
+                                            <!-- <div class="col-span-4">
                                                 Vendor FOB
                                             </div>
                                             <div class="col-span-8">
                                                 {{purchaseDetails?.vendorShippingZip}}
-                                            </div>
+                                            </div> -->
                                             <div class="col-span-4">
                                                 Ship TO:
                                             </div>
@@ -141,9 +183,9 @@
                                                 <br>
                                                 {{purchaseDetails?.shipToCountry}}
                                                 <br>
-                                                P:{{purchaseDetails?.shippingPhoneShipTO}}
+                                                Please reference {{purchaseDetails?.purchaseOrderNumber}} on shipping label.
                                                 <br>
-                                                E:{{purchaseDetails?.shippingEmailShipTO}}
+                                                <!-- E:{{purchaseDetails?.shippingEmailShipTO}} -->
                                             </div>
                                             <!-- Colors -->
                                             <div class="col-span-7 font-medium text-md font-bold">
@@ -159,7 +201,10 @@
                                             </div>
                                             <div class="col-span-12 my-2" *ngFor="let colors of orderProducts">
                                                 <div class="grid grid-cols-12">
-                                                    <div class="col-span-7 font-medium text-md text-secondary">
+                                                    <div class="col-span-4 font-medium text-md text-secondary">
+                                                        <p>{{purchaseDetails?.productName}} </p>
+                                                    </div>
+                                                    <div class="col-span-3 font-medium text-md text-secondary">
                                                         <p>{{colors.product.colorName}} <span
                                                                 *ngIf="colors.product.sizeName"> &
                                                                 {{colors.product.sizeName}}</span></p>
@@ -184,8 +229,8 @@
                                             <!-- Imprints -->
                                             <div class="mt-2 col-span-12 font-medium font-bold text-md">
                                                 <p>IMPRINTS</p>
-                                                <p class="text-red-500">Only if proof is necessary, and is of no charge,
-                                                    please send proof to artwork@MiamiOHshop.com</p>
+                                                <p class="text-red-500">The artwork we send is sized for production; please do not change the size of the art without consulting us or sending a proof to confirm.
+                                                    please send proof to artwork@{{this.orderDetail.storeName}}</p>
                                             </div>
                                             <div class="col-span-12 my-2" *ngFor="let imprint of orderProducts">
                                                 <div class="grid grid-cols-12">
@@ -213,6 +258,48 @@
                                                     <div
                                                         class="mt-2 col-span-7 font-medium text-right text-md text-secondary">
                                                         <p>Setup(s)</p>
+                                                    </div>
+                                                    <div class="font-medium text-md  text-center text-secondary">
+                                                    </div>
+                                                    <div
+                                                        class="pl-3 flex justify-between mt-2 col-span-2 text-center font-small text-sm  text-secondary">
+                                                        <span></span>
+
+                                                    </div>
+                                                    <div
+                                                        class=" mt-2 col-span-2 text-center font-small text-sm  text-secondary">
+                                                        <span>{{(imprint?.imprints.setupCost) | currency: 'USD':
+                                                            'symbol-narrow': '.3-3'}}</span>
+                                                    </div>
+
+
+
+
+                                                    
+                                                    <div
+                                                        class="mt-2 col-span-7 font-medium text-right text-md text-secondary">
+                                                        <p>Total Imprint Colors</p>
+                                                    </div>
+                                                    <div class="font-medium text-md  text-center text-secondary">
+                                                    </div>
+                                                    <div
+                                                        class="pl-3 flex justify-between mt-2 col-span-2 text-center font-small text-sm  text-secondary">
+                                                        <span></span>
+
+                                                    </div>
+                                                    <div
+                                                        class=" mt-2 col-span-2 text-center font-small text-sm  text-secondary">
+                                                        <span>{{(imprint?.imprints.setupCost) | currency: 'USD':
+                                                            'symbol-narrow': '.3-3'}}</span>
+                                                    </div>
+
+
+
+
+
+                                                    <div
+                                                        class="mt-2 col-span-7 font-medium text-right text-md text-secondary">
+                                                        <p>Colors</p>
                                                     </div>
                                                     <div class="font-medium text-md  text-center text-secondary">
                                                     </div>
@@ -325,9 +412,9 @@
                             <ng-container matColumnDef="total">
                                 <th mat-header-cell *matHeaderCellDef class="bg-light"> Total Price
                                 </th>
-                                <td mat-cell *matCellDef="let element"> {{(element.total).toFixed(2) | currency}} </td>
+                                <td mat-cell *matCellDef="let element"> {{(element.total)?.toFixed(2) | currency}} </td>
                                 <td mat-footer-cell *matFooterCellDef class="bg-light font-semibold">
-                                    {{(purchases?.shippingPrice[0].shippingCost).toFixed(2) | currency }} </td>
+                                    {{(purchases?.shippingPrice[0].shippingCost)?.toFixed(2) | currency }} </td>
                             </ng-container>
                             <!-- Shipping Footer -->
                             <ng-container matColumnDef="companys">
@@ -344,7 +431,7 @@
                             </ng-container>
                             <ng-container matColumnDef="totals">
                                 <td mat-footer-cell *matFooterCellDef class="font-semibold">
-                                    {{totalShippingCost.toFixed(2)}}</td>
+                                    {{totalShippingCost?.toFixed(2)}}</td>
                             </ng-container>
 
 
@@ -364,3 +451,30 @@
 
     </div>
 </div>
+
+
+<div class="modal" tabindex="-1" role="dialog" #acknowledge>
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Acknowledgement</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Consolidus Purchase Order Acknowledgement for Purchase Order {{purchaseDetails?.purchaseOrderNumber}}</p>
+          <div class="my-2">
+            <mat-form-field class="w-full">
+                <mat-label>Please enter your name:</mat-label>
+                <input matInput [(ngModel)]="acknowledged" placeholder="Search Keyword">
+            </mat-form-field>
+
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="acknowledgement()">Acknowledge Purchase order</button>
+        </div>
+      </div>
+    </div>
+  </div>
