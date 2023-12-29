@@ -87,7 +87,7 @@ export class OrdersPurchasesComponent implements OnInit {
         this.purchases = purchases;
         this.totalShippingCost = purchases["shippingPrice"][0].shippingCost;
         purchases["data"].forEach(element => {
-          this.totalShippingCost = this.totalShippingCost + element.total;
+          this.totalShippingCost = this.totalShippingCost + element.Total;
         });
         this.isLoading = false;
         this._changeDetectorRef.markForCheck();

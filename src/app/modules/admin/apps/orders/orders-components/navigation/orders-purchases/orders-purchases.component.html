@@ -41,10 +41,16 @@
                                 <!-- Main -->
                                 <div class="inline-block  text-left print:p-0 w-full" id="htmltable" #htmltable>
                                     <td>
+                                        <span style="font-size: 16px; color: #FF0000; font-weight: bold;"
+                                            *ngIf="!purchaseDetails.blnDuplicate">***DO NOT DUPLICATE***</span>
+                                        <br />
                                         <span style="font-size: 16px; color: #FF0000; font-weight: bold;">
                                             <ng-container>
                                                 <a>
-                                                    Please acknowledge that you have received this PO by clicking <span (click)="openAcknowldgeModal()" class="cursor-pointer hover:text-blue-500 hover:underline">here</span>
+                                                    Please acknowledge that you have received this PO by clicking <span
+                                                        href="https://admin.consolidus.com/dspPOAck3.cfm?OLID=155519&OID=84806&CID=5&S=0"
+                                                        class="cursor-pointer hover:text-blue-500 hover:underline"
+                                                        target="_blank">here</span>
                                                 </a>
                                             </ng-container>
                                         </span>
@@ -126,7 +132,7 @@
                                                     </span>
                                                 </div>
                                             </div>
-                                            
+
                                             <div class="justify-self-start font-medium tracking-tight text-secondary">
                                                 IN-HANDS DATE </div>
                                             <div class="font-medium">{{(purchaseDetails?.inHandsDate | date:
@@ -183,7 +189,8 @@
                                                 <br>
                                                 {{purchaseDetails?.shipToCountry}}
                                                 <br>
-                                                Please reference {{purchaseDetails?.purchaseOrderNumber}} on shipping label.
+                                                Please reference {{purchaseDetails?.purchaseOrderNumber}} on shipping
+                                                label.
                                                 <br>
                                                 <!-- E:{{purchaseDetails?.shippingEmailShipTO}} -->
                                             </div>
@@ -229,7 +236,9 @@
                                             <!-- Imprints -->
                                             <div class="mt-2 col-span-12 font-medium font-bold text-md">
                                                 <p>IMPRINTS</p>
-                                                <p class="text-red-500">The artwork we send is sized for production; please do not change the size of the art without consulting us or sending a proof to confirm.
+                                                <p class="text-red-500">The artwork we send is sized for production;
+                                                    please do not change the size of the art without consulting us or
+                                                    sending a proof to confirm.
                                                     please send proof to artwork@{{this.orderDetail.storeName}}</p>
                                             </div>
                                             <div class="col-span-12 my-2" *ngFor="let imprint of imprints">
@@ -270,7 +279,7 @@
 
 
 
-                                                    
+
                                                     <div
                                                         class="mt-2 col-span-7 font-medium text-right text-md text-secondary">
                                                         <p>Total Imprint Colors</p>
@@ -405,7 +414,7 @@
                             <ng-container matColumnDef="total">
                                 <th mat-header-cell *matHeaderCellDef class="bg-light"> Total Price
                                 </th>
-                                <td mat-cell *matCellDef="let element"> {{(element.total)?.toFixed(2) | currency}} </td>
+                                <td mat-cell *matCellDef="let element"> {{(element.Total)?.toFixed(2) | currency}} </td>
                                 <td mat-footer-cell *matFooterCellDef class="bg-light font-semibold">
                                     {{(purchases?.shippingPrice[0].shippingCost)?.toFixed(2) | currency }} </td>
                             </ng-container>
@@ -424,7 +433,7 @@
                             </ng-container>
                             <ng-container matColumnDef="totals">
                                 <td mat-footer-cell *matFooterCellDef class="font-semibold">
-                                    {{totalShippingCost?.toFixed(2)}}</td>
+                                    {{totalShippingCost | currency}}</td>
                             </ng-container>
 
 
@@ -448,26 +457,28 @@
 
 <div class="modal" tabindex="-1" role="dialog" #acknowledge>
     <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Acknowledgement</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <p>Consolidus Purchase Order Acknowledgement for Purchase Order {{purchaseDetails?.purchaseOrderNumber}}</p>
-          <div class="my-2">
-            <mat-form-field class="w-full">
-                <mat-label>Please enter your name:</mat-label>
-                <input matInput [(ngModel)]="acknowledged" placeholder="Search Keyword">
-            </mat-form-field>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Acknowledgement</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Consolidus Purchase Order Acknowledgement for Purchase Order {{purchaseDetails?.purchaseOrderNumber}}
+                </p>
+                <div class="my-2">
+                    <mat-form-field class="w-full">
+                        <mat-label>Please enter your name:</mat-label>
+                        <input matInput [(ngModel)]="acknowledged" placeholder="Search Keyword">
+                    </mat-form-field>
 
-          </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="acknowledgement()">Acknowledge Purchase
+                    order</button>
+            </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" (click)="acknowledgement()">Acknowledge Purchase order</button>
-        </div>
-      </div>
     </div>
-  </div>
+</div>
