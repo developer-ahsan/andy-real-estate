@@ -6,7 +6,7 @@ import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { OrderManageService } from '../../order-manage.service';
-import { AddAdjustment, AddAttachment, AddComment, AddPOOption, Add_PO_Imprint, DeletePurchaseOrder, DuplicatePO, HideUnhideQuote, SaveAndSendPurchaseOrder, SavePurchaseOrder, SendPurchaseOrder, UpdateEstimatedShipping, UpdateInHandsDate, UpdateTracking, addAccessory, createPurchaseOrder, removePurchaseOrderItem, saveBillPay, saveVendorBill, updatePurchaseOrderStatus } from '../../order-manage.types';
+import { AddAdjustment, AddAttachment, AddComment, AddPOOption, Add_PO_Imprint, DeletePurchaseOrder, DuplicatePO, HideUnhideQuote, POPDFLink, SaveAndSendPurchaseOrder, SavePurchaseOrders, SendPurchaseOrder, UpdateEstimatedShipping, UpdateInHandsDate, UpdateTracking, addAccessory, createPurchaseOrder, removePurchaseOrderItem, saveBillPay, saveVendorBill, updatePurchaseOrderStatus } from '../../order-manage.types';
 import moment from 'moment';
 import { AuthService } from 'app/core/auth/auth.service';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
@@ -130,9 +130,10 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   }
   // Send Purchase Order
   isSentPOLoader: boolean = false;
-  blnArtNeedsResent: boolean = false;
+  blnArtNeedsResent: boolean = true;
   blnExportedBox: boolean = false;
   isSavePOLoader: boolean = false;
+  isPDFPOLoader: boolean = false;
   isRemovePOLoader: boolean = false;
   ngImprint = '';
 
@@ -822,159 +823,89 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     })
   }
   sendPOModal() {
-    $(this.sendPO.nativeElement).modal('show');
+    this._commonService.showConfirmation('Are you sure you want to send this purchase order?', (confirmed) => {
+      if (confirmed) {
+        this.sendPoOrder();
+      }
+    });
+    // $(this.sendPO.nativeElement).modal('show');
   }
   closeSendPOModal() {
     $(this.sendPO.nativeElement).modal('hide');
   }
   sendPoOrder() {
-    this.isSentPOLoader = true;
-    const { } = this.orderData;
-    let poOptions = [];
-    let poImprints = [];
-    let poAccessories = [];
-    let poAdjustments = [];
-    const { pk_orderID, blnGroupRun, storeName } = this.orderData;
-    const { pk_orderLinePOID, shippingDate, estimatedShippingDate, trackingNumber, blnSample, fk_orderLineID, shippingCustomerAccountNumber, POinHandsDate, stockFrom, fk_vendorID, vendorShippingName, vendorShippingAddress1, vendorShippingAddress2, vendorShippingCity, vendorShippingState, vendorShippingZip, vendorShippingPhone, vendorShippingEmail, shippingComment, shipToCompanyName, shipToCustomerName, shipToLocation, shipToPurchaseOrder, shipToAddress, shipToCity, shipToState, shipToZip, shipToCountry, imprintComment, POTotal, shipToDeliverTo, productName, quantity, purchaseOrderNumber, purchaseOrderComments, blnDuplicate, blnDecorator, blnSupplier } = this.orderDataPO;
-
-    this.colorsList.forEach(element => {
-      poOptions.push({
-        optionName: element.optionName.replace(/'/g, "''"),
-        quantity: element.quantity,
-        unit: element.unitCost,
-        total: element.total
-      })
-    });
-    this.imprintdata.forEach(element => {
-      poImprints.push({
-        imprintName: element.imprintName.replace(/'/g, "''"),
-        quantity: element.quantity,
-        unitCost: element.unitCost,
-        total: element.total,
-        reorderNumber: element.reorderNumber,
-        setup: element.setup,
-        processQuantity: element.processQuantity,
-        colors: element.colors,
-        imprintComment: imprintComment
-      })
-    });
-
-    this.accessoriesList.forEach(element => {
-      poAccessories.push({
-        accessoryName: element.accessoryName.replace(/'/g, "''"),
-        quantity: element.quantity,
-        unitCost: element.unitCost,
-        totalCost: element.totalCost,
-        setupCost: element.setupCost
-      })
-    });
-    this.adjustmentsList.forEach(element => {
-      poAdjustments.push({
-        adjustmentName: element.adjustmentName.replace(/'/g, "''"),
-        unitCost: element.unitCost
-      })
-    });
-
-    let payload: SaveAndSendPurchaseOrder = {
-      orderLinePOID: pk_orderLinePOID,
-      purchaseOrderNumber: purchaseOrderNumber,
-      purchaseOrderComments: purchaseOrderComments,
-      POTotal: POTotal,
-      vendorShippingName: vendorShippingName,
-      vendorShippingEmail: vendorShippingEmail,
-      shippingDate: shippingDate ? moment(shippingDate).format('L') : shippingDate,
-      estimatedShippingDate: estimatedShippingDate ? moment(estimatedShippingDate).format('L') : estimatedShippingDate,
-      trackingNumber: trackingNumber,
-      total: POTotal,
-      blnArtNeedsResent: this.blnArtNeedsResent,
-      blnGroupRun: blnGroupRun,
-      productName: productName.replace(/'/g, "''"),
-      storeName: storeName.replace(/'/g, "''"),
-      orderManageLoggedInUserName: this.ordermanageUserData.firstName + ' ' + this.ordermanageUserData.lastName,
-      orderId: pk_orderID,
-      blnSample: blnSample,
-      orderLineID: fk_orderLineID,
-      fk_vendorID: fk_vendorID,
-      customerAccountNumber: shippingCustomerAccountNumber,
-      shipToPurchaseOrder: shipToPurchaseOrder,
-      vendorShippingAddress1: vendorShippingAddress1,
-      vendorShippingAddress2: vendorShippingAddress2,
-      vendorShippingCity: vendorShippingCity,
-      quantity: quantity,
-      vendorShippingState: vendorShippingState,
-      vendorShippingZip: vendorShippingZip,
-      vendorShippingPhone: vendorShippingPhone,
-      shippingComment: shippingComment,
-      POinHandsDate: POinHandsDate ? moment(POinHandsDate).format('L') : POinHandsDate,
-      shipToCompanyName: shipToCompanyName,
-      shipToCustomerName: shipToCustomerName,
-      shipToLocation: shipToLocation,
-      shipToAddress: shipToAddress,
-      shipToDeliverTo: shipToDeliverTo,
-      shipToCity: shipToCity,
-      shipToState: shipToState,
-      shipToZip: shipToZip,
-      shipToCountry: shipToCountry,
-      stockFrom: stockFrom,
-      blnDecorator: blnDecorator,
-      blnSupplier: blnSupplier,
-      poOptions: poOptions,
-      poImprints: poImprints,
-      poAccessories: poAccessories,
-      poAdjustments: poAdjustments,
-      save_send_purchase_order: true
+    let isPOProofPath = false;
+    if (this.orderDataPO.poProofFiles.length) {
+      isPOProofPath = true;
     }
-    this._OrderManageService.PostAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      if (res["success"]) {
-        this._OrderManageService.snackBar(res["message"]);
-        this.orderDataPO.internalComments = this.orderDataPO.internalComments + '<br>' + res["newOrderComment"];
-        this.closeSendPOModal();
-      }
-      this.isSentPOLoader = false;
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this.isSentPOLoader = false;
-      this._changeDetectorRef.markForCheck();
-    });
 
-  }
-
-
-  savePoOrder() {
-    const { pk_orderID, blnGroupRun, storeName, pk_companyID, currentTotal } = this.orderData;
-    const { pk_orderLinePOID, shippingDate, estimatedShippingDate, trackingNumber, blnSample, fk_orderLineID, shippingCustomerAccountNumber, POinHandsDate, stockFrom, fk_vendorID, vendorShippingName, vendorShippingAddress1, vendorShippingAddress2, vendorShippingCity, vendorShippingState, vendorShippingZip, vendorShippingPhone, vendorShippingEmail, shippingComment, shipToCompanyName, shipToCustomerName, shipToLocation, shipToPurchaseOrder, shipToAddress, shipToCity, shipToState, shipToZip, shipToCountry, imprintComment, POTotal, shipToDeliverTo, productName, quantity, purchaseOrderNumber, purchaseOrderComments, blnDuplicate, blnDecorator, blnSupplier, coop, imprintDetail } = this.orderDataPO;
+    const { pk_orderID, storeName, fk_storeID, pk_companyID, currentTotal, fk_storeUserID, blnEProcurement, blnCashBack, qryStoreUserCashbackSettingsBlnCashBack } = this.orderData;
+    let { pk_orderLinePOID, shippingDate, estimatedShippingDate, trackingNumber, blnSample, fk_orderLineID, shippingCustomerAccountNumber, POinHandsDate, stockFrom, fk_vendorID, vendorShippingName, vendorShippingAddress1, vendorShippingAddress2, vendorShippingCity, vendorShippingState, vendorShippingZip, vendorShippingPhone, vendorShippingEmail, shippingComment, shipToCompanyName, shipToCustomerName, shipToLocation, shipToPurchaseOrder, shipToAddress, shipToCity, shipToState, shipToZip, shipToCountry, imprintComment, POTotal, shipToDeliverTo, productName, quantity, purchaseOrderNumber, purchaseOrderComments, blnDuplicate, blnDecorator, blnSupplier, coop, imprintDetail, blnExported } = this.orderDataPO;
+    if (POinHandsDate) {
+      POinHandsDate = moment(new Date(POinHandsDate)).format('MM/DD/yyyy');
+    }
+    if (shippingDate) {
+      shippingDate = moment(new Date(shippingDate)).format('MM/DD/yyyy');
+    }
+    if (estimatedShippingDate) {
+      estimatedShippingDate = moment(new Date(estimatedShippingDate)).format('MM/DD/yyyy');
+    }
+    const { blnGroupRun, groupRunOrderLineID, customerAccountNumber } = this.orderLineData;
     // Colors
     let OrderLinePOOptions = [];
-    this.colorsList.forEach(element => {
+    for (let i = 0; i < this.colorsList.length; i++) {
+      const element = this.colorsList[i];
+
+      if (element.productName.trim() == '' || element.quantity <= 0 || element.unitCost <= 0) {
+        this._OrderManageService.snackBar('Please fill out the fields in Color/Size Breakdown');
+        return;
+      }
+
       OrderLinePOOptions.push({
         optionName: element.optionName.replace(/'/g, "''"),
         quantity: element.quantity,
         unitCost: element.unitCost,
-        productName: productName,
-        total: element.total,
+        productName: element.productName.replace(/'/g, "''"),
+        total: element.totalCost,
         pk_orderLinePOOptionID: element.pk_orderLinePOOptionID
       });
-    });
+    }
+
     // Imprints
     let orderLineImprint = [];
-    this.imprintdata.forEach(element => {
+    for (let i = 0; i < this.imprintdata.length; i++) {
+      const element = this.imprintdata[i];
+
+      if (element.imprintName.trim() == '' || element.quantity <= 0 || element.unitCost <= 0) {
+        this._OrderManageService.snackBar('Please fill out the fields in imprints');
+        return;
+      }
+
       orderLineImprint.push({
-        imprintName: element.imprintName,
+        imprintName: element.imprintName.replace(/'/g, "''"),
         quantity: element.quantity,
         unitCost: element.unitCost,
-        total: element.total,
-        colors: element.colors,
+        total: element.totalCost,
+        colors: element.colors.replace(/'/g, "''"),
         setup: element.setup,
         totalImprintColors: element.totalImprintColors,
-        imprintComment: imprintComment,
+        imprintComment: element.imprintComment.replace(/'/g, "''"),
         processQuantity: element.processQuantity,
         reorderNumber: element.reorderNumber,
         pk_orderLinePOImprintID: element.pk_orderLinePOImprintID,
       });
-    });
+    }
+
     // Accessories
     let orderLineAccessory = [];
-    this.accessoriesList.forEach(element => {
+    for (let i = 0; i < this.accessoriesList.length; i++) {
+      const element = this.accessoriesList[i];
+
+      if (element.accessoryName.trim() == '' || element.quantity <= 0 || element.unitCost <= 0) {
+        this._OrderManageService.snackBar('Please fill out the fields in accessories');
+        return;
+      }
+
       orderLineAccessory.push({
         accessoryName: element.accessoryName.replace(/'/g, "''"),
         quantity: element.quantity,
@@ -983,16 +914,28 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
         setupCost: element.setupCost,
         pk_orderLinePOAccessoryID: element.pk_orderLinePOAccessoryID,
       });
-    });
+    }
+
     // Adjustments  
     let orderLineAdjustments = [];
-    this.adjustmentsList.forEach(element => {
+    for (let i = 0; i < this.adjustmentsList.length; i++) {
+      const element = this.adjustmentsList[i];
+
+      if (element.adjustmentName.trim() == '' || element.quantity <= 0 || element.unitCost <= 0) {
+        this._OrderManageService.snackBar('Please fill out the fields in adjustments');
+        return;
+      }
+
       orderLineAdjustments.push({
         adjustmentName: element.adjustmentName.replace(/'/g, "''"),
         unitCost: element.unitCost,
         pk_orderLinePOAdjustmentID: element.pk_orderLinePOAdjustmentID
-      })
-    });
+      });
+    }
+    if (!vendorShippingEmail.trim()) {
+      this._OrderManageService.snackBar('Emails is required');
+      return;
+    }
     // OrderLinePO
     let OrderLinePO = {
       fk_vendorID: fk_vendorID,
@@ -1014,13 +957,12 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       shipToState: shipToState,
       shipToZip: shipToZip,
       shipToCountry: shipToCountry,
-      imprintComment: imprintComment,
       POTotal: POTotal,
       shipToDeliverTo: shipToDeliverTo,
-      quantity: quantity,
+      quantity,
       purchaseOrderNumber: purchaseOrderNumber,
-      productName: productName,
       purchaseOrderComments: purchaseOrderComments,
+      productName: productName,
       blnDuplicate: blnDuplicate,
       POinHandsDate: POinHandsDate,
       stockFrom: stockFrom,
@@ -1030,16 +972,21 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       estimatedShippingDate: estimatedShippingDate,
       trackingNumber: trackingNumber,
       total: currentTotal,
-      blnGroupRun: blnGroupRun,
-      orderId: pk_orderID,
+      blnExported: blnExported,
+      blnGroupRun: blnGroupRun ? blnGroupRun : false,
+      isPOProofPath,
+      orderID: pk_orderID,
+      fk_storeUserID: fk_storeUserID,
+      storeID: fk_storeID,
       orderLineID: fk_orderLineID,
+      groupRunOrderLineID: groupRunOrderLineID ? groupRunOrderLineID : null,
       storeName: storeName,
       blnDecorator: blnDecorator,
       blnSupplier: blnSupplier,
       blnSample: blnSample,
-      customerAccountNumber: shippingCustomerAccountNumber
+      customerAccountNumber: customerAccountNumber ? customerAccountNumber : null
     }
-    let payload: SavePurchaseOrder = {
+    let payload: SavePurchaseOrders = {
       orderManageLoggedInUserName: this.ordermanageUserData.firstName + ' ' + this.ordermanageUserData.lastName,
       orderLinePOID: this.orderDataPO.pk_orderLinePOID,
       orderLinePO: OrderLinePO,
@@ -1048,6 +995,199 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       orderLineAccessories: orderLineAccessory,
       orderLineAdjustments: orderLineAdjustments,
       blnArtNeedsResent: this.blnArtNeedsResent,
+      blnSend: true,
+      blnCashBack: blnCashBack,
+      qryStoreUserCashbackSettingsBlnCashBack: qryStoreUserCashbackSettingsBlnCashBack,
+      blnEProcurement: blnEProcurement,
+      cashbackDiscount: this.orderData.cashbackDiscount ? this.orderData.cashbackDiscount[0] : null,
+      orderLineIDs: this.orderData.orderLineIDs?.split(','),
+      fk_groupOrderID: this.orderData.fk_groupOrderID,
+      save_purchase_order: true
+    }
+    payload = this._commonService.replaceNullSpaces(payload);
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
+    this.isSentPOLoader = true;
+    this._OrderManageService.PutAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this._OrderManageService.snackBar(res["message"]);
+        this.orderDataPO.internalComments = this.orderDataPO.internalComments + '<br>' + res["newOrderComment"];
+        this.closeSendPOModal();
+      }
+      this.isSentPOLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isSentPOLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+
+  }
+
+
+  savePoOrder() {
+    let isPOProofPath = false;
+    if (this.orderDataPO.poProofFiles.length) {
+      isPOProofPath = true;
+    }
+
+    const { pk_orderID, storeName, fk_storeID, pk_companyID, currentTotal, fk_storeUserID, blnEProcurement, blnCashBack, qryStoreUserCashbackSettingsBlnCashBack } = this.orderData;
+    let { pk_orderLinePOID, shippingDate, estimatedShippingDate, trackingNumber, blnSample, fk_orderLineID, shippingCustomerAccountNumber, POinHandsDate, stockFrom, fk_vendorID, vendorShippingName, vendorShippingAddress1, vendorShippingAddress2, vendorShippingCity, vendorShippingState, vendorShippingZip, vendorShippingPhone, vendorShippingEmail, shippingComment, shipToCompanyName, shipToCustomerName, shipToLocation, shipToPurchaseOrder, shipToAddress, shipToCity, shipToState, shipToZip, shipToCountry, imprintComment, POTotal, shipToDeliverTo, productName, quantity, purchaseOrderNumber, purchaseOrderComments, blnDuplicate, blnDecorator, blnSupplier, coop, imprintDetail, blnExported } = this.orderDataPO;
+    if (POinHandsDate) {
+      POinHandsDate = moment(new Date(POinHandsDate)).format('MM/DD/yyyy');
+    }
+    if (shippingDate) {
+      shippingDate = moment(new Date(shippingDate)).format('MM/DD/yyyy');
+    }
+    if (estimatedShippingDate) {
+      estimatedShippingDate = moment(new Date(estimatedShippingDate)).format('MM/DD/yyyy');
+    }
+    const { blnGroupRun, groupRunOrderLineID, customerAccountNumber } = this.orderLineData;
+    // Colors
+    let OrderLinePOOptions = [];
+    for (let i = 0; i < this.colorsList.length; i++) {
+      const element = this.colorsList[i];
+
+      if (element.productName.trim() == '' || element.quantity <= 0 || element.unitCost <= 0) {
+        this._OrderManageService.snackBar('Please fill out the fields in Color/Size Breakdown');
+        return;
+      }
+
+      OrderLinePOOptions.push({
+        optionName: element.optionName.replace(/'/g, "''"),
+        quantity: element.quantity,
+        unitCost: element.unitCost,
+        productName: element.productName.replace(/'/g, "''"),
+        total: element.totalCost,
+        pk_orderLinePOOptionID: element.pk_orderLinePOOptionID
+      });
+    }
+
+    // Imprints
+    let orderLineImprint = [];
+    for (let i = 0; i < this.imprintdata.length; i++) {
+      const element = this.imprintdata[i];
+
+      if (element.imprintName.trim() == '' || element.quantity <= 0 || element.unitCost <= 0) {
+        this._OrderManageService.snackBar('Please fill out the fields in imprints');
+        return;
+      }
+
+      orderLineImprint.push({
+        imprintName: element.imprintName.replace(/'/g, "''"),
+        quantity: element.quantity,
+        unitCost: element.unitCost,
+        total: element.totalCost,
+        colors: element.colors.replace(/'/g, "''"),
+        setup: element.setup,
+        totalImprintColors: element.totalImprintColors,
+        imprintComment: element.imprintComment.replace(/'/g, "''"),
+        processQuantity: element.processQuantity,
+        reorderNumber: element.reorderNumber,
+        pk_orderLinePOImprintID: element.pk_orderLinePOImprintID,
+      });
+    }
+
+    // Accessories
+    let orderLineAccessory = [];
+    for (let i = 0; i < this.accessoriesList.length; i++) {
+      const element = this.accessoriesList[i];
+
+      if (element.accessoryName.trim() == '' || element.quantity <= 0 || element.unitCost <= 0) {
+        this._OrderManageService.snackBar('Please fill out the fields in accessories');
+        return;
+      }
+
+      orderLineAccessory.push({
+        accessoryName: element.accessoryName.replace(/'/g, "''"),
+        quantity: element.quantity,
+        unitCost: element.unitCost,
+        totalCost: element.totalCost,
+        setupCost: element.setupCost,
+        pk_orderLinePOAccessoryID: element.pk_orderLinePOAccessoryID,
+      });
+    }
+
+    // Adjustments  
+    let orderLineAdjustments = [];
+    for (let i = 0; i < this.adjustmentsList.length; i++) {
+      const element = this.adjustmentsList[i];
+
+      if (element.adjustmentName.trim() == '' || element.quantity <= 0 || element.unitCost <= 0) {
+        this._OrderManageService.snackBar('Please fill out the fields in adjustments');
+        return;
+      }
+
+      orderLineAdjustments.push({
+        adjustmentName: element.adjustmentName.replace(/'/g, "''"),
+        unitCost: element.unitCost,
+        pk_orderLinePOAdjustmentID: element.pk_orderLinePOAdjustmentID
+      });
+    }
+    // OrderLinePO
+    let OrderLinePO = {
+      fk_vendorID: fk_vendorID,
+      vendorShippingName: vendorShippingName,
+      vendorShippingAddress1: vendorShippingAddress1,
+      vendorShippingAddress2: vendorShippingAddress2,
+      vendorShippingCity: vendorShippingCity,
+      vendorShippingState: vendorShippingState,
+      vendorShippingZip: vendorShippingZip,
+      vendorShippingPhone: vendorShippingPhone,
+      vendorShippingEmail: vendorShippingEmail,
+      shippingComment: shippingComment,
+      shipToCompanyName: shipToCompanyName,
+      shipToCustomerName: shipToCustomerName,
+      shipToLocation: shipToLocation,
+      shipToPurchaseOrder: shipToPurchaseOrder,
+      shipToAddress: shipToAddress,
+      shipToCity: shipToCity,
+      shipToState: shipToState,
+      shipToZip: shipToZip,
+      shipToCountry: shipToCountry,
+      POTotal: POTotal,
+      shipToDeliverTo: shipToDeliverTo,
+      quantity,
+      purchaseOrderNumber: purchaseOrderNumber,
+      purchaseOrderComments: purchaseOrderComments,
+      productName: productName,
+      blnDuplicate: blnDuplicate,
+      POinHandsDate: POinHandsDate,
+      stockFrom: stockFrom,
+      imprintDetail: imprintDetail,
+      coop: coop,
+      shippingDate: shippingDate,
+      estimatedShippingDate: estimatedShippingDate,
+      trackingNumber: trackingNumber,
+      total: currentTotal,
+      blnExported: blnExported,
+      blnGroupRun: blnGroupRun ? blnGroupRun : false,
+      isPOProofPath,
+      orderID: pk_orderID,
+      fk_storeUserID: fk_storeUserID,
+      storeID: fk_storeID,
+      orderLineID: fk_orderLineID,
+      groupRunOrderLineID: groupRunOrderLineID ? groupRunOrderLineID : null,
+      storeName: storeName,
+      blnDecorator: blnDecorator,
+      blnSupplier: blnSupplier,
+      blnSample: blnSample,
+      customerAccountNumber: customerAccountNumber ? customerAccountNumber : null
+    }
+    let payload: SavePurchaseOrders = {
+      orderManageLoggedInUserName: this.ordermanageUserData.firstName + ' ' + this.ordermanageUserData.lastName,
+      orderLinePOID: this.orderDataPO.pk_orderLinePOID,
+      orderLinePO: OrderLinePO,
+      orderLineOptions: OrderLinePOOptions,
+      orderLineImprints: orderLineImprint,
+      orderLineAccessories: orderLineAccessory,
+      orderLineAdjustments: orderLineAdjustments,
+      blnArtNeedsResent: false,
+      blnSend: false,
+      blnCashBack: blnCashBack,
+      qryStoreUserCashbackSettingsBlnCashBack: qryStoreUserCashbackSettingsBlnCashBack,
+      blnEProcurement: blnEProcurement,
+      cashbackDiscount: this.orderData.cashbackDiscount ? this.orderData.cashbackDiscount[0] : null,
+      fk_groupOrderID: this.orderData.fk_groupOrderID,
+      orderLineIDs: this.orderData.orderLineIDs?.split(','),
       save_purchase_order: true
     }
     payload = this._commonService.replaceNullSpaces(payload);
@@ -1065,7 +1205,12 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     });
   }
   removePOModal() {
-    $(this.removePO.nativeElement).modal('show');
+    this._commonService.showConfirmation('Are you sure you want to remove this purchase order? This cannot be undone.', (confirmed) => {
+      if (confirmed) {
+        this.removePoOrder();
+      }
+    });
+    // $(this.removePO.nativeElement).modal('show');
   }
   CloseremovePOModal() {
     $(this.removePO.nativeElement).modal('hide');
@@ -1266,10 +1411,10 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   // Modify Status
   modifyStatus() {
     this.orderDataPO.isStatusLoader = true;
-    const { pk_orderLinePOID, fk_statusID } = this.orderDataPO;
+    const { pk_orderLinePOID, statusID } = this.orderDataPO;
     let payload: updatePurchaseOrderStatus = {
       orderLinePOID: pk_orderLinePOID,
-      statusID: fk_statusID,
+      statusID: statusID,
       update_purchase_order_status: true
     }
     this._OrderManageService.PutAPIData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
@@ -1392,111 +1537,198 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   }
   // PDF Make
   generatePDF() {
-    // const documentDefinition: any = {
-    //   pageSize: 'A4',
-    //   pageOrientation: 'landscape',
-    //   pageMargins: [10, 10, 10, 10],
-    //   content: [],
-    //   styles: {
-    //     tableHeader: {
-    //       bold: true
-    //     }
-    //   }
-    // };
-    // let customerAccountNumber = this.orderData.customerAccountNumber ? `Customer Account ##: ${this.orderData.customerAccountNumber}` : ''
-    // documentDefinition.content.push(
-    //   { text: 'Please acknowledge that you have received this PO by clicking here', link: `https://admin.consolidus.com/dspPOAck3.cfm?OLID=${this.paramData.pk_orderLineID}&OID=${this.paramData.fk_orderID}&CID=${this.orderDataPO.fk_vendorID}&S=${this.orderDataPO.blnSample ? 1 : 0}`, color: 'red', margin: [0, 2, 0, 0], fontSize: 8 },
-    //   { text: `If the link above isn't working, please copy and paste this URL in to your browser`, margin: [0, 2, 0, 0], fontSize: 8 },
-    //   { text: `https://admin.consolidus.com/dspPOAck3.cfm?OLID=${this.paramData.pk_orderLineID}&OID=${this.paramData.fk_orderID}&CID=${this.orderDataPO.fk_vendorID}&S=${this.orderDataPO.blnSample ? 1 : 0}`, link: `https://admin.consolidus.com/dspPOAck3.cfm?OLID=${this.paramData.pk_orderLineID}&OID=${this.paramData.fk_orderID}&CID=${this.orderDataPO.fk_vendorID}&S=${this.orderDataPO.blnSample ? 1 : 0}`, margin: [0, 2, 0, 0], fontSize: 8 },
-    //   { text: '', margin: [0, 20, 0, 0] },
-    //   {
-    //     table: {
-    //       widths: ['*', '*'], // Adjust the width of columns as needed
-    //       body: [
-    //         [
-    //           {
-    //             text: [
-    //               { text: `${this.orderData.storeName} is a subsidiary of Consolidus, LLC.\n`, bold: true },
-    //               'Consolidus LLC\n',
-    //               '526 S.Main St.\n',
-    //               'Suite 804\n',
-    //               'Akron, OH 44311\n',
-    //               'P: 330-319-7203, F: 330-319-7213\n',
-    //               customerAccountNumber,
-    //             ], border: [false, false, false, false]
-    //           },
-    //           { text: ['PURCHASE ORDER\n', `#${this.orderDataPO.purchaseOrderNumber}\n`, `Sent on ${moment().format('MM/DD/yyyy hh:mm:ss')}`], alignment: 'right', border: [false, false, false, false], bold: true },
-    //         ]
-    //       ],
-    //     },
-    //     layout: {
-    //       defaultBorder: false, // Remove borders from the entire table
-    //     },
-    //     fontSize: 8
-    //   },
-    //   { text: '', margin: [0, 20, 0, 0] },
-    //   {
-    //     table: {
-    //       widths: ['auto', 'auto'], // Adjust the width of columns as needed
-    //       body: [
-    //         [
-    //           { text: 'PURCHASE ORDER #' },
-    //           { text: this.orderDataPO.purchaseOrderNumber }
-    //         ]
-    //       ],
-    //     },
-    //     layout: {
-    //       defaultBorder: false, // Remove borders from the entire table
-    //     },
-    //     fontSize: 8
-    //   }
-    // );
-    // if (this.orderDataPO.shipToPurchaseOrder) {
-    //   documentDefinition.content[6].table.body.push(
-    //     [{ text: 'CUSTOMER PURCHASE ORDER #' },
-    //     { text: this.orderDataPO.shipToPurchaseOrder }]
-    //   )
-    // }
-    // documentDefinition.content[6].table.body.push([{ text: 'VENDOR' },
-    // {
-    //   text: [
-    //     `${this.orderDataPO.vendorShippingName}\n`,
-    //     `${this.orderDataPO.vendorShippingAddress1}\n`,
-    //     `${this.orderDataPO.vendorShippingAddress2 || ''}\n`,
-    //     `${this.orderDataPO.vendorShippingCity} ${this.orderDataPO.vendorShippingState} ${this.orderDataPO.vendorShippingZip}\n`,
-    //     `${this.orderDataPO.vendorShippingPhone}\n`,
-    //     `\n`,
-    //     this.orderDataPO.vendorShippingEmail,
-    //   ], bold: true
-    // }]);
-    // if (customerAccountNumber) {
-    //   documentDefinition.content[6].table.body.push(
-    //     [{ text: 'ACCT #', bold: true },
-    //     {
-    //       text: `${this.orderDataPO.customerAccountNumber}\n`, bold: true
-    //     }]);
-    // }
-    // documentDefinition.content[6].table.body.push(
-    //   [{ text: 'SHIPPING', bold: true },
-    //   {
-    //     text: [
-    //       `${this.orderDataPO.shippingComment}\n`,
-    //       { text: `Please send tracking to orders@${this.orderData.storeName}`, bold: true }
-    //     ], bold: true
-    //   }]);
-    // pdfMake.createPdf(documentDefinition).download('generated.pdf');
+    let isPOProofPath = false;
+    if (this.orderDataPO.poProofFiles.length) {
+      isPOProofPath = true;
+    }
+
+    const { pk_orderID, storeName, fk_storeID, pk_companyID, currentTotal, fk_storeUserID, blnEProcurement, blnCashBack, qryStoreUserCashbackSettingsBlnCashBack } = this.orderData;
+    let { pk_orderLinePOID, shippingDate, estimatedShippingDate, trackingNumber, blnSample, fk_orderLineID, shippingCustomerAccountNumber, POinHandsDate, stockFrom, fk_vendorID, vendorShippingName, vendorShippingAddress1, vendorShippingAddress2, vendorShippingCity, vendorShippingState, vendorShippingZip, vendorShippingPhone, vendorShippingEmail, shippingComment, shipToCompanyName, shipToCustomerName, shipToLocation, shipToPurchaseOrder, shipToAddress, shipToCity, shipToState, shipToZip, shipToCountry, imprintComment, POTotal, shipToDeliverTo, productName, quantity, purchaseOrderNumber, purchaseOrderComments, blnDuplicate, blnDecorator, blnSupplier, coop, imprintDetail, blnExported } = this.orderDataPO;
+    if (POinHandsDate) {
+      POinHandsDate = moment(new Date(POinHandsDate)).format('MM/DD/yyyy');
+    }
+    if (shippingDate) {
+      shippingDate = moment(new Date(shippingDate)).format('MM/DD/yyyy');
+    }
+    if (estimatedShippingDate) {
+      estimatedShippingDate = moment(new Date(estimatedShippingDate)).format('MM/DD/yyyy');
+    }
+    const { blnGroupRun, groupRunOrderLineID, customerAccountNumber } = this.orderLineData;
+    // Colors
+    let OrderLinePOOptions = [];
+    for (let i = 0; i < this.colorsList.length; i++) {
+      const element = this.colorsList[i];
+
+      if (element.productName.trim() == '' || element.quantity <= 0 || element.unitCost <= 0) {
+        this._OrderManageService.snackBar('Please fill out the fields in Color/Size Breakdown');
+        return;
+      }
+
+      OrderLinePOOptions.push({
+        optionName: element.optionName.replace(/'/g, "''"),
+        quantity: element.quantity,
+        unitCost: element.unitCost,
+        productName: element.productName.replace(/'/g, "''"),
+        total: element.totalCost,
+        pk_orderLinePOOptionID: element.pk_orderLinePOOptionID
+      });
+    }
+
+    // Imprints
+    let orderLineImprint = [];
+    for (let i = 0; i < this.imprintdata.length; i++) {
+      const element = this.imprintdata[i];
+
+      if (element.imprintName.trim() == '' || element.quantity <= 0 || element.unitCost <= 0) {
+        this._OrderManageService.snackBar('Please fill out the fields in imprints');
+        return;
+      }
+
+      orderLineImprint.push({
+        imprintName: element.imprintName.replace(/'/g, "''"),
+        quantity: element.quantity,
+        unitCost: element.unitCost,
+        total: element.totalCost,
+        colors: element.colors.replace(/'/g, "''"),
+        setup: element.setup,
+        totalImprintColors: element.totalImprintColors,
+        imprintComment: element.imprintComment.replace(/'/g, "''"),
+        processQuantity: element.processQuantity,
+        reorderNumber: element.reorderNumber,
+        pk_orderLinePOImprintID: element.pk_orderLinePOImprintID,
+      });
+    }
+
+    // Accessories
+    let orderLineAccessory = [];
+    for (let i = 0; i < this.accessoriesList.length; i++) {
+      const element = this.accessoriesList[i];
+
+      if (element.accessoryName.trim() == '' || element.quantity <= 0 || element.unitCost <= 0) {
+        this._OrderManageService.snackBar('Please fill out the fields in accessories');
+        return;
+      }
+
+      orderLineAccessory.push({
+        accessoryName: element.accessoryName.replace(/'/g, "''"),
+        quantity: element.quantity,
+        unitCost: element.unitCost,
+        totalCost: element.totalCost,
+        setupCost: element.setupCost,
+        pk_orderLinePOAccessoryID: element.pk_orderLinePOAccessoryID,
+      });
+    }
+
+    // Adjustments  
+    let orderLineAdjustments = [];
+    for (let i = 0; i < this.adjustmentsList.length; i++) {
+      const element = this.adjustmentsList[i];
+
+      if (element.adjustmentName.trim() == '' || element.quantity <= 0 || element.unitCost <= 0) {
+        this._OrderManageService.snackBar('Please fill out the fields in adjustments');
+        return;
+      }
+
+      orderLineAdjustments.push({
+        adjustmentName: element.adjustmentName.replace(/'/g, "''"),
+        unitCost: element.unitCost,
+        pk_orderLinePOAdjustmentID: element.pk_orderLinePOAdjustmentID
+      });
+    }
+    // OrderLinePO
+    let OrderLinePO = {
+      fk_vendorID: fk_vendorID,
+      vendorShippingName: vendorShippingName,
+      vendorShippingAddress1: vendorShippingAddress1,
+      vendorShippingAddress2: vendorShippingAddress2,
+      vendorShippingCity: vendorShippingCity,
+      vendorShippingState: vendorShippingState,
+      vendorShippingZip: vendorShippingZip,
+      vendorShippingPhone: vendorShippingPhone,
+      vendorShippingEmail: vendorShippingEmail,
+      shippingComment: shippingComment,
+      shipToCompanyName: shipToCompanyName,
+      shipToCustomerName: shipToCustomerName,
+      shipToLocation: shipToLocation,
+      shipToPurchaseOrder: shipToPurchaseOrder,
+      shipToAddress: shipToAddress,
+      shipToCity: shipToCity,
+      shipToState: shipToState,
+      shipToZip: shipToZip,
+      shipToCountry: shipToCountry,
+      POTotal: POTotal,
+      shipToDeliverTo: shipToDeliverTo,
+      quantity,
+      purchaseOrderNumber: purchaseOrderNumber,
+      purchaseOrderComments: purchaseOrderComments,
+      productName: productName,
+      blnDuplicate: blnDuplicate,
+      POinHandsDate: POinHandsDate,
+      stockFrom: stockFrom,
+      imprintDetail: imprintDetail,
+      coop: coop,
+      shippingDate: shippingDate,
+      estimatedShippingDate: estimatedShippingDate,
+      trackingNumber: trackingNumber,
+      total: currentTotal,
+      blnExported: blnExported,
+      blnGroupRun: blnGroupRun ? blnGroupRun : false,
+      isPOProofPath,
+      orderID: pk_orderID,
+      fk_storeUserID: fk_storeUserID,
+      storeID: fk_storeID,
+      orderLineID: fk_orderLineID,
+      groupRunOrderLineID: groupRunOrderLineID ? groupRunOrderLineID : null,
+      storeName: storeName,
+      blnDecorator: blnDecorator,
+      blnSupplier: blnSupplier,
+      blnSample: blnSample,
+      customerAccountNumber: customerAccountNumber ? customerAccountNumber : null
+    }
+    let payload: POPDFLink = {
+      orderLinePO: OrderLinePO,
+      orderLineOptions: OrderLinePOOptions,
+      orderLineImprints: orderLineImprint,
+      orderLineAccessories: orderLineAccessory,
+      orderLineAdjustments: orderLineAdjustments,
+      generate_POPDFLink: true
+    }
+    payload = this._commonService.replaceNullSpaces(payload);
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
+    this.isPDFPOLoader = true;
+    this._OrderManageService.PostAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      const base64String = res["data"].base64Pdf;
+      const fileName = `Purchase-Order-${pk_orderID}-${fk_orderLineID}-${pk_orderLinePOID}.pdf`;
+
+      const byteCharacters = atob(base64String);
+      const byteNumbers = new Array(byteCharacters.length);
+
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: 'application/pdf' });
+
+      const downloadLink = document.createElement('a');
+      downloadLink.href = URL.createObjectURL(blob);
+      downloadLink.download = fileName;
+      downloadLink.click();
+      this.isPDFPOLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isPDFPOLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
   }
+  enforceMaxDigits(event: any, length): void {
+    const maxDigits = length;
+    const inputValue = event.target.value.toString();
 
-  getDocumentDefinition() {
-    const htmlContent = '<h1>Hello, this is HTML content!</h1><p>Thank you for <br>using pdfmake in Angular!</p>';
-
-    return {
-      content: [
-        // Convert HTML to pdfmake format
-        { text: 'PDF generated from HTML:', fontSize: 16, bold: true },
-        { text: htmlContent, margin: [0, 10] },
-      ],
-    };
+    if (inputValue.length > maxDigits) {
+      event.target.value = +inputValue.slice(0, maxDigits);
+      event.preventDefault();
+    }
   }
   /**
      * On destroy

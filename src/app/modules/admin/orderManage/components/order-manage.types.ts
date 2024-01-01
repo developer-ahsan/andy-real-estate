@@ -465,19 +465,131 @@ interface poOrders {
 
 
 // SAVE PO
-export interface SavePurchaseOrder {
+// export interface SavePurchaseOrder {
+//     orderManageLoggedInUserName: string;
+//     orderLinePOID: number;
+//     orderLinePO: OrderLinePOSave;
+//     orderLineOptions: orderLineOptionSave[];
+//     orderLineImprints: orderLineImprintSave[];
+//     orderLineAccessories: orderLineAccessorySave[];
+//     orderLineAdjustments: orderLineAdjustmentsSave[];
+//     blnArtNeedsResent: boolean;
+//     save_purchase_order: boolean;
+// };
+
+// interface orderLineOptionSave {
+//     optionName: string;
+//     quantity: number;
+//     unitCost: number;
+//     productName: string;
+//     total: number;
+//     pk_orderLinePOOptionID: number;
+// };
+
+// interface orderLineImprintSave {
+//     imprintName: string;
+//     quantity: number;
+//     unitCost: number;
+//     total: number;
+//     colors: string;
+//     setup: number;
+//     totalImprintColors: number;
+//     imprintComment: string;
+//     processQuantity: number;
+//     reorderNumber: string;
+//     pk_orderLinePOImprintID: number;
+// };
+// interface orderLineAccessorySave {
+//     accessoryName: string;
+//     quantity: number;
+//     unitCost: number;
+//     totalCost: number;
+//     setupCost: number;
+//     pk_orderLinePOAccessoryID: number;
+// };
+// interface orderLineAdjustmentsSave {
+//     adjustmentName: string;
+//     unitCost: number;
+//     pk_orderLinePOAdjustmentID: number;
+// };
+// interface OrderLinePOSave {
+//     fk_vendorID: number;
+//     vendorShippingName: string;
+//     vendorShippingAddress1: string;
+//     vendorShippingAddress2: string;
+//     vendorShippingCity: string;
+//     vendorShippingState: string;
+//     vendorShippingZip: string;
+//     vendorShippingPhone: string;
+//     vendorShippingEmail: string;
+//     shippingComment: string;
+//     shipToCompanyName: string;
+//     shipToCustomerName: string;
+//     shipToLocation: string;
+//     shipToPurchaseOrder: string;
+//     shipToAddress: string;
+//     shipToCity: string;
+//     shipToState: string;
+//     shipToZip: string;
+//     shipToCountry: string;
+//     imprintComment: string;
+//     POTotal: number;
+//     shipToDeliverTo: string;
+//     quantity: string;
+//     purchaseOrderNumber: string;
+//     productName: string;
+//     purchaseOrderComments: string;
+//     blnDuplicate: boolean;
+//     POinHandsDate: string;
+//     stockFrom: string;
+//     imprintDetail: string;
+//     coop: string;
+//     shippingDate: string;
+//     estimatedShippingDate: string;
+//     trackingNumber: string;
+//     total: number;
+//     blnGroupRun: boolean;
+//     orderId: number;
+//     orderLineID: number;
+//     storeName: string;
+//     blnDecorator: boolean;
+//     blnSupplier: boolean;
+//     blnSample: boolean;
+//     customerAccountNumber: string;
+// };
+
+export interface AddAttachment {
+    orderLinePOID: number;
+    extension: string;
+    name: string;
+    mimeType: string;
+    add_attachment: boolean;
+};
+
+
+
+
+
+export interface SavePurchaseOrders {
     orderManageLoggedInUserName: string;
     orderLinePOID: number;
-    orderLinePO: OrderLinePOSave;
-    orderLineOptions: orderLineOptionSave[];
-    orderLineImprints: orderLineImprintSave[];
-    orderLineAccessories: orderLineAccessorySave[];
-    orderLineAdjustments: orderLineAdjustmentsSave[];
+    orderLinePO: OrderLinePOs;
+    orderLineOptions: orderLineOptions[];
+    orderLineImprints: orderLineImprints[];
+    orderLineAccessories: orderLineAccessorys[];
+    orderLineAdjustments: orderLineAdjustments[];
     blnArtNeedsResent: boolean;
+    blnSend: boolean;
+    blnCashBack: boolean;
+    qryStoreUserCashbackSettingsBlnCashBack: boolean;
+    blnEProcurement: boolean;
+    cashbackDiscount: number;
+    fk_groupOrderID: number;
+    orderLineIDs: number[];
     save_purchase_order: boolean;
 };
 
-interface orderLineOptionSave {
+interface orderLineOptions {
     optionName: string;
     quantity: number;
     unitCost: number;
@@ -486,7 +598,7 @@ interface orderLineOptionSave {
     pk_orderLinePOOptionID: number;
 };
 
-interface orderLineImprintSave {
+interface orderLineImprints {
     imprintName: string;
     quantity: number;
     unitCost: number;
@@ -499,7 +611,8 @@ interface orderLineImprintSave {
     reorderNumber: string;
     pk_orderLinePOImprintID: number;
 };
-interface orderLineAccessorySave {
+
+interface orderLineAccessorys {
     accessoryName: string;
     quantity: number;
     unitCost: number;
@@ -507,12 +620,14 @@ interface orderLineAccessorySave {
     setupCost: number;
     pk_orderLinePOAccessoryID: number;
 };
-interface orderLineAdjustmentsSave {
+
+interface orderLineAdjustments {
     adjustmentName: string;
     unitCost: number;
     pk_orderLinePOAdjustmentID: number;
 };
-interface OrderLinePOSave {
+
+interface OrderLinePOs {
     fk_vendorID: number;
     vendorShippingName: string;
     vendorShippingAddress1: string;
@@ -532,12 +647,10 @@ interface OrderLinePOSave {
     shipToState: string;
     shipToZip: string;
     shipToCountry: string;
-    imprintComment: string;
     POTotal: number;
     shipToDeliverTo: string;
     quantity: string;
     purchaseOrderNumber: string;
-    productName: string;
     purchaseOrderComments: string;
     blnDuplicate: boolean;
     POinHandsDate: string;
@@ -548,20 +661,105 @@ interface OrderLinePOSave {
     estimatedShippingDate: string;
     trackingNumber: string;
     total: number;
+    blnExported: boolean;
     blnGroupRun: boolean;
-    orderId: number;
+    isPOProofPath: boolean;
+    orderID: number;
+    fk_storeUserID: number;
+    storeID: number;
     orderLineID: number;
+    groupRunOrderLineID: number;
     storeName: string;
+    productName: string;
     blnDecorator: boolean;
     blnSupplier: boolean;
     blnSample: boolean;
     customerAccountNumber: string;
 };
 
-export interface AddAttachment {
-    orderLinePOID: number;
-    extension: string;
-    name: string;
-    mimeType: string;
-    add_attachment: boolean;
+
+// PDF LINK
+export interface POPDFLink {
+    orderLinePO: OrderLinePOPDF;
+    orderLineOptions: orderLineOptionpdf[];
+    orderLineImprints: orderLineImprintPDF[];
+    orderLineAccessories: orderLineAccessoryPDF[];
+    orderLineAdjustments: orderLineAdjustmentsPDF[];
+    generate_POPDFLink: boolean;
+};
+
+interface orderLineOptionpdf {
+    optionName: string;
+    quantity: number;
+    unitCost: number;
+    productName: string;
+    total: number;
+    pk_orderLinePOOptionID: number;
+};
+
+interface orderLineImprintPDF {
+    imprintName: string;
+    quantity: number;
+    unitCost: number;
+    total: number;
+    colors: string;
+    setup: number;
+    totalImprintColors: number;
+    imprintComment: string;
+    processQuantity: number;
+    reorderNumber: string;
+    pk_orderLinePOImprintID: number;
+};
+
+interface orderLineAccessoryPDF {
+    accessoryName: string;
+    quantity: number;
+    unitCost: number;
+    totalCost: number;
+    setupCost: number;
+    pk_orderLinePOAccessoryID: number;
+};
+
+interface orderLineAdjustmentsPDF {
+    adjustmentName: string;
+    unitCost: number;
+    pk_orderLinePOAdjustmentID: number;
+};
+
+interface OrderLinePOPDF {
+    fk_vendorID: number;
+    vendorShippingName: string;
+    vendorShippingAddress1: string;
+    vendorShippingAddress2: string;
+    vendorShippingCity: string;
+    vendorShippingState: string;
+    vendorShippingZip: string;
+    vendorShippingPhone: string;
+    vendorShippingEmail: string;
+    shippingComment: string;
+    shipToCompanyName: string;
+    shipToCustomerName: string;
+    shipToLocation: string;
+    shipToPurchaseOrder: string;
+    shipToAddress: string;
+    shipToCity: string;
+    shipToState: string;
+    shipToZip: string;
+    shipToCountry: string;
+    POTotal: number;
+    shipToDeliverTo: string;
+    quantity: string;
+    purchaseOrderNumber: string;
+    purchaseOrderComments: string;
+    blnDuplicate: boolean;
+    POinHandsDate: string;
+    stockFrom: string;
+    orderID: number;
+    storeID: number;
+    orderLineID: number;
+    storeName: string;
+    blnDecorator: boolean;
+    blnSupplier: boolean;
+    blnSample: boolean;
+    customerAccountNumber: string;
 };

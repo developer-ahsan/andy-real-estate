@@ -10,7 +10,11 @@
                 </mat-progress-spinner>
 
             </button>
-            <a class="min-w-30 btn buttonComment hover:bg-gray-200" (click)="generatePDF()">View PDF</a>
+            <a class="min-w-30 btn buttonComment hover:bg-gray-200" [disabled]="isPDFPOLoader" (click)="generatePDF()">
+                <span *ngIf="!isPDFPOLoader">View PDF</span>
+                <mat-progress-spinner *ngIf="isPDFPOLoader" [diameter]="24" [mode]="'indeterminate'">
+                </mat-progress-spinner>
+            </a>
             <!-- <a target="_blank"
                 href="https://admin.consolidus.com/ssadm/controller/view/system/tempDocs/Purchase-Order-{{orderDataPO.purchaseOrderNumber}}-{{orderDataPO.pk_orderLinePOID}}.pdf"
                 class="min-w-30 btn buttonComment hover:bg-gray-200">View PDF</a> -->
@@ -28,7 +32,7 @@
                     </h2>
                     <div class="space-y-2">
                         <mat-form-field class="w-full">
-                            <mat-select [(ngModel)]="orderDataPO.fk_statusID">
+                            <mat-select [(ngModel)]="orderDataPO.statusID">
                                 <mat-option [value]="item.value"
                                     *ngFor="let item of statusOptions">{{item.label}}</mat-option>
                             </mat-select>
@@ -246,12 +250,13 @@
                                             target="_blank" rel="noopener noreferrer">{{item.name}}</a>
                                     </td>
                                     <td class="flex justify-end">
-                                        <mat-progress-spinner *ngIf="item?.delLoader" [diameter]="24"
-                                            [mode]="'indeterminate'">
-                                        </mat-progress-spinner>
-                                        <mat-icon *ngIf="!item?.delLoader" (click)="deleteAttachment(item)"
-                                            svgIcon="mat_outline:delete"></mat-icon>
-
+                                        <button mat-button color="warn" (click)="deleteAttachment(item)"
+                                            class="rounded-md" mat-flat-button [disabled]="item?.delLoader">
+                                            <span *ngIf="!item?.delLoader">Remove</span>
+                                            <mat-progress-spinner *ngIf="item?.delLoader" [diameter]="24"
+                                                [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
                                     </td>
                                 </tr>
                             </table>
@@ -375,7 +380,7 @@
                     <div *ngIf="orderDataPO.blnSent">
                         <div class="alert alert-success large add-padding-lg">
                             <span class="fa fa-check fa-lg"></span> This purchase order has already been sent. <a
-                                [routerLink]="['/apps/orders',orderData.fk_orderID,'sent-purchase-order']"
+                                [routerLink]="['/apps/orders',orderData.pk_orderID,'sent-purchase-order']"
                                 target="_blank">Click here to view sent purchase orders for this order.</a>
                         </div>
                     </div>
@@ -581,13 +586,17 @@
                                             <div class="col-md-2">
                                                 <mat-form-field class="w-full text-sm">
                                                     <input matInput [(ngModel)]="item.quantity"
-                                                        (input)="calculateTotalValues()" type="number" maxlength="10">
+                                                        (input)="calculateTotalValues()"
+                                                        (input)="enforceMaxDigits($event,10)" type="number"
+                                                        maxlength="10">
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-md-2">
                                                 <mat-form-field class="w-full text-sm">
                                                     <input matInput [(ngModel)]="item.unitCost"
-                                                        (input)="calculateTotalValues()" type="number" maxlength="10">
+                                                        (input)="calculateTotalValues()"
+                                                        (input)="enforceMaxDigits($event,10)" type="number"
+                                                        maxlength="10">
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-md-2">
@@ -605,7 +614,7 @@
                                                 </mat-progress-spinner>
                                             </div>
                                         </div>
-                                        <div class="row w-full">
+                                        <div class="row w-full" *ngIf="colorsList.length">
                                             <div class="col-md-3">
                                                 <b>Total QTY:</b>
                                             </div>
@@ -636,15 +645,15 @@
                                             <div class="col-md-2">
                                                 <mat-form-field class="w-full  text-sm">
                                                     <mat-label>Quantity</mat-label>
-                                                    <input maxlength="10" matInput [(ngModel)]="colorsForm.quantity"
-                                                        type="number">
+                                                    <input maxlength="10" (input)="enforceMaxDigits($event,10)" matInput
+                                                        [(ngModel)]="colorsForm.quantity" type="number">
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-md-2">
                                                 <mat-form-field class="w-full text-sm">
                                                     <mat-label>Unit cost</mat-label>
-                                                    <input maxlength="10" matInput [(ngModel)]="colorsForm.cost"
-                                                        type="number">
+                                                    <input maxlength="10" (input)="enforceMaxDigits($event,10)" matInput
+                                                        [(ngModel)]="colorsForm.cost" type="number">
                                                 </mat-form-field>
                                             </div>
                                             <div class="col-md-2">
@@ -729,21 +738,24 @@
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label>Quantity</mat-label>
                                                 <input type="number" matInput maxlength="10" [(ngModel)]="item.quantity"
-                                                    (input)="calculateTotalValues()">
+                                                    (input)="calculateTotalValues()"
+                                                    (input)="enforceMaxDigits($event,10)">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label>Run</mat-label>
                                                 <input type="number" matInput maxlength="20" [(ngModel)]="item.unitCost"
-                                                    (input)="calculateTotalValues()">
+                                                    (input)="calculateTotalValues()"
+                                                    (input)="enforceMaxDigits($event,20)">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label>Setup</mat-label>
                                                 <input type="number" matInput maxlength="10" [(ngModel)]="item.setup"
-                                                    (input)="calculateTotalValues()">
+                                                    (input)="calculateTotalValues()"
+                                                    (input)="enforceMaxDigits($event,10)">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2">
@@ -756,13 +768,15 @@
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label>Reorder number</mat-label>
                                                 <input matInput maxlength="50" type="number"
-                                                    [(ngModel)]="item.reorderNumber">
+                                                    [(ngModel)]="item.reorderNumber"
+                                                    (input)="enforceMaxDigits($event,50)">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2" *ngIf="item.blnColorProcess">
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label># Colors</mat-label>
-                                                <input matInput [(ngModel)]="item.totalImprintColors">
+                                                <input matInput [(ngModel)]="item.totalImprintColors"
+                                                    (input)="enforceMaxDigits($event,50)">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-4">
@@ -800,28 +814,31 @@
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label>Quantity</mat-label>
                                                 <input maxlength="10" type="number" matInput
-                                                    [(ngModel)]="imprintForm.quantity">
+                                                    [(ngModel)]="imprintForm.quantity"
+                                                    (input)="enforceMaxDigits($event,10)">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label>Run</mat-label>
                                                 <input maxlength="10" type="number" matInput
-                                                    [(ngModel)]="imprintForm.run">
+                                                    [(ngModel)]="imprintForm.run" (input)="enforceMaxDigits($event,10)">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label>Setup</mat-label>
                                                 <input maxlength="10" type="number" matInput
-                                                    [(ngModel)]="imprintForm.setup">
+                                                    [(ngModel)]="imprintForm.setup"
+                                                    (input)="enforceMaxDigits($event,10)">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label># Colors</mat-label>
                                                 <input matInput maxlength="10" type="number"
-                                                    [(ngModel)]="imprintForm.n_color">
+                                                    [(ngModel)]="imprintForm.n_color"
+                                                    (input)="enforceMaxDigits($event,10)">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-4">
@@ -868,20 +885,23 @@
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full">
-                                                <input maxlength="10" type="number" matInput [(ngModel)]="item.quantity"
+                                                <input maxlength="10" (input)="enforceMaxDigits($event,10)"
+                                                    type="number" matInput [(ngModel)]="item.quantity"
                                                     (input)="calculateTotalValues()">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full">
                                                 <input maxlength="10" type="number" matInput [(ngModel)]="item.unitCost"
-                                                    (input)="calculateTotalValues()">
+                                                    (input)="calculateTotalValues()"
+                                                    (input)="enforceMaxDigits($event,10)">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full">
                                                 <input matInput maxlength="20" type="number"
-                                                    [(ngModel)]="item.setupCost" (input)="calculateTotalValues()">
+                                                    [(ngModel)]="item.setupCost" (input)="calculateTotalValues()"
+                                                    (input)="enforceMaxDigits($event,20)">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2 flex justify-between align-items-center">
@@ -911,21 +931,24 @@
                                             <mat-form-field class="w-full">
                                                 <mat-label>Quantity</mat-label>
                                                 <input maxlength="10" type="number" matInput
-                                                    [(ngModel)]="accessoryForm.quantity">
+                                                    [(ngModel)]="accessoryForm.quantity"
+                                                    (input)="enforceMaxDigits($event,10)">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full">
                                                 <mat-label>Unit cost</mat-label>
                                                 <input maxlength="10" type="number" matInput
-                                                    [(ngModel)]="accessoryForm.cost">
+                                                    [(ngModel)]="accessoryForm.cost"
+                                                    (input)="enforceMaxDigits($event,10)">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2">
                                             <mat-form-field class="w-full">
                                                 <mat-label>Setup</mat-label>
                                                 <input matInput maxlength="10" type="number"
-                                                    [(ngModel)]="accessoryForm.setup">
+                                                    [(ngModel)]="accessoryForm.setup"
+                                                    (input)="enforceMaxDigits($event,10)">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-2 mt-7 text-right">
@@ -967,7 +990,8 @@
                                         </div>
                                         <div class="col-2 ">
                                             <mat-form-field class="mr-1">
-                                                <input maxlengt="10" matInput [(ngModel)]="item.unitCost">
+                                                <input maxlengt="10" matInput (input)="calculateTotalValues()"
+                                                    (input)="enforceMaxDigits($event,10)" [(ngModel)]="item.unitCost">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-1">
@@ -998,8 +1022,8 @@
                                             <div class="flex align-items-center justify-content-end">
                                                 <mat-form-field class="mr-1">
                                                     <mat-label>Total cost</mat-label>
-                                                    <input maxlength="10" type="number" matInput
-                                                        [(ngModel)]="adjustmentForm.cost">
+                                                    <input maxlength="10" (input)="enforceMaxDigits($event,10)"
+                                                        type="number" matInput [(ngModel)]="adjustmentForm.cost">
                                                 </mat-form-field>
                                                 <mat-icon (click)="addAdjustment()" svgIcon="mat_outline:add"
                                                     *ngIf="!isAdjustmentLoader" matTooltip="Add"
@@ -1053,7 +1077,7 @@
 
                             <div class="flex justify-between">
                                 <div class="space-x-2 flex">
-                                    <button class="min-w-40 btn buttonComment hover:bg-gray-200" style="height: 40px;"
+                                    <button mat-button mat-flat-button color="primary" class="rounded-md min-w-40"
                                         (click)="savePoOrder()" [disabled]="isSavePOLoader">
                                         <span *ngIf="!isSavePOLoader">Save</span>
                                         <mat-progress-spinner *ngIf="isSavePOLoader" [diameter]="24"
@@ -1062,7 +1086,7 @@
                                     </button>
                                     <div>
                                         <div
-                                            *ngIf="orderDataPO.fk_statusID == 1 || orderDataPO.fk_statusID == 7 || orderDataPO.fk_statusID == 10;else saveANDsend">
+                                            *ngIf="orderDataPO.statusID == 1 || orderDataPO.statusID == 7 || orderDataPO.statusID == 10;else saveANDsend">
                                             <div class="col-xs-4 add-padding-sm">
                                                 <div class="alert alert-warning add-padding-sm no-bottom-margin">
                                                     <span class="fa fa-exclamation-circle"></span> The artwork for this
@@ -1072,9 +1096,9 @@
                                             <div class="col-xs-1 add-padding-sm"></div>
                                         </div>
                                         <ng-template #saveANDsend>
-                                            <button class="min-w-40 btn buttonComment hover:bg-gray-200"
-                                                style="height: 40px;" (click)="sendPOModal()"
-                                                [disabled]="isSentPOLoader">
+                                            <button mat-button mat-flat-button
+                                                class="bg-green-500 text-white rounded-md min-w-40"
+                                                (click)="sendPOModal()" [disabled]="isSentPOLoader">
                                                 <span *ngIf="!isSentPOLoader">Save & Send</span>
                                                 <mat-progress-spinner *ngIf="isSentPOLoader" [diameter]="24"
                                                     [mode]="'indeterminate'">
@@ -1085,9 +1109,12 @@
 
                                 </div>
                                 <div>
-                                    <button class="min-w-40 btn buttonComment hover:bg-gray-200"
+                                    <button mat-button mat-flat-button color="warn" class="rounded-md min-w-40"
                                         (click)="removePOModal()" [disabled]="isRemovePOLoader">
-                                        Remove PO
+                                        <span *ngIf="!isRemovePOLoader">Remove PO</span>
+                                        <mat-progress-spinner *ngIf="isRemovePOLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
                                     </button>
                                 </div>
                             </div>

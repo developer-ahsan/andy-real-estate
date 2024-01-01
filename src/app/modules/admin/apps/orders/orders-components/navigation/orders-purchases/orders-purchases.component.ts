@@ -5,6 +5,9 @@ import html2canvas from 'html2canvas';
 import { takeUntil } from 'rxjs/operators';
 import { OrdersList } from 'app/modules/admin/apps/orders/orders-components/orders.types';
 import { Subject } from 'rxjs';
+import moment from 'moment';
+import { OrderManageService } from 'app/modules/admin/orderManage/components/order-manage.service';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 declare var $: any;
 
 interface OrdersPurchases {
@@ -28,7 +31,7 @@ export class OrdersPurchasesComponent implements OnInit {
 
   acknowledged: string = '';
 
-  displayedColumns: string[] = ['company', 'supplies', 'decorates', 'digitizes', 'total'];
+  displayedColumns: string[] = ['company', 'supplies', 'decorates', 'total'];
   displayedColumns1: string[] = ['companys', 'suppliess', 'decoratess', 'shippingtotal', 'totals'];
   transactions: OrdersPurchases[] = [
     { company: 'ARTWORK', supplies: true, decorates: false, digitizes: false, total: 255 }
@@ -39,17 +42,21 @@ export class OrdersPurchasesComponent implements OnInit {
   grandTotalCost: number;
   grandTotalPrice: number;
 
-  currentDate: Date = new Date();
+  currentDate = moment().format('MM/DD/yyyy');
+  currentTime = moment().format('hh:mm:ss');
 
   totalShippingCost = 0;
   purchases: any;
   isViewData: any;
   orderLineIDs: any;
   isDetailLoader: boolean = false;
+  imprints: any;
   purchaseDetails: any;
   constructor(
     private _orderService: OrdersService,
-    private _changeDetectorRef: ChangeDetectorRef
+    private _changeDetectorRef: ChangeDetectorRef,
+    private _orderManageService: OrderManageService,
+    private _commonService: DashboardsService
   ) { }
 
   ngOnInit(): void {
@@ -96,109 +103,73 @@ export class OrdersPurchasesComponent implements OnInit {
         this._changeDetectorRef.markForCheck();
       });
   }
-  getLineProducts(value) {
+  getLineProducts() {
     let params = {
-      order_line_item: true,
-      order_line_id: value
+      order_manage_imprint_details: true,
+      orderLine_id: this.isViewData.fk_orderLineID,
+      orderLine_POID: this.isViewData.pk_orderLinePOID,
+      blnSupplier: this.isViewData.blnSupplier,
+      blnDecorator: this.isViewData.blnDecorator,
+      blnDuplicated: this.isViewData.blnDuplicated,
     }
-    this._orderService.getOrderLineProducts(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.getProductImprints(value, res["data"]);
+    this._orderManageService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.getArtworkFiles();
+      this._changeDetectorRef.markForCheck();
+      console.log(res)
+      this.purchaseDetails = res;
+      if (res['imprints'].length) {
+        this.checkImprintProofExists();
+      }
     }, err => {
       this.isDetailLoader = false;
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
-    })
+    });
   }
-  imprints: any;
-  getProductImprints(value, data) {
-    let params = {
-      imprint_report: true,
-      order_line_id: value
+  getArtworkFiles() {
+    let payload = {
+      files_fetch: true,
+      path: `/artwork/POProof/${this.isViewData.fk_orderLineID}/`
     }
-    this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      let tempArr = [];
-      data.forEach(element => {
-        res["data"].forEach(item => {
-          if (item.fk_orderLineID == element.fk_orderLineID) {
-            tempArr.push({ product: element, imprints: item });
+    this._changeDetectorRef.markForCheck();
+    this._commonService.getFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(files => {
+      this.isDetailLoader = false;
+      this.purchaseDetails.poProofFiles = files["data"];
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isDetailLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  checkImprintProofExists() {
+    let payload = {
+      files_fetch: true,
+      path: `/artwork/finalArt/${this.orderDetail.fk_storeUserID}/${this.isViewData.fk_orderID}/${this.isViewData.fk_orderLineID}/`
+    }
+    this._commonService.getFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(files => {
+      console.log(files);
+      this.purchaseDetails.imprints.forEach(element => {
+        element.proofFiles = [];
+        files["data"].forEach((file, index) => {
+          if (file.ID.includes(element.id)) {
+            element.proofFiles.push(file);
           }
         });
       });
-      this.orderProducts = tempArr;
-
-
-
-      // const processedIds = new Set();
-
-      // let tempImprints=[]
-      // data.forEach((element) => {
-      //   res["data"].forEach((item) => {
-      //     if (item.fk_orderLineID === element.fk_orderLineID && !processedIds.has(element.fk_orderLineID)) {
-      //       tempImprints.push({ product: element, imprints: item });
-      //       processedIds.add(element.fk_orderLineID);
-      //     }
-      //   });
-      // });
-
-      // this.imprints = tempImprints
-      // this.getProductTotal();
-      this.isDetailLoader = false;
-      this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isDetailLoader = false;
-      this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
-    })
-  }
-  getProductTotal() {
-    let suppliersArray = [];
-    this.grandTotalCost = 0;
-    this.grandTotalPrice = 0;
-    this.orderProducts.forEach(element => {
-      this.totalShippingCost = Number(this.totalShippingCost) + Number(element.product.shippingCost);
-      const index = suppliersArray.findIndex(item => item.name == element.product.supplier_name);
-      if (index > -1) {
-        suppliersArray[index].count++;
-      } else {
-        suppliersArray.push({ name: element.product.supplier_name, link: element.product.supplierLink, count: 1 });
-      }
-      this.grandTotalCost = this.grandTotalCost + ((element.product.cost * element.product.quantity) + (element.imprints.runCost * element.product.quantity) + (element.imprints.setupCost));
-      this.grandTotalPrice = this.grandTotalPrice + ((element.product.price * element.product.quantity) + (element.imprints.runPrice * element.product.quantity) + (element.imprints.setupPrice))
     });
   }
-  getTotalCost() {
-    return this.transactions.map(t => t.total).reduce((acc, value) => acc + value, 0);
-  }
-
   viewPurchaseOrder(item): void {
     this.isView = !this.isView;
     if (this.isView) {
       this.isDetailLoader = true;
       this._changeDetectorRef.markForCheck();
       this.isViewData = item;
-      this.getPurchaseOrdersDetails();
+      this.getLineProducts();
     }
-  }
-  getPurchaseOrdersDetails() {
-    let params = {
-      view_purchase_order: true,
-      order_line_id: this.orderLineIDs,
-      vendor_id: this.isViewData.fk_vendorID,
-      order_line_po_id: this.isViewData.pk_orderLinePOID
-    }
-    this._orderService.getOrderCommonCall(params)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((data) => {
-        this.purchaseDetails = data["data"][0];
-        this.imprints = data['imprints'];
-        this.getLineProducts(this.orderLineIDs);
-        // this.isDetailLoader = false;
-        this._changeDetectorRef.markForCheck();
-      }, err => {
-        this.isDetailLoader = false;
-        this._changeDetectorRef.markForCheck();
-      });
   }
 
   public exportHtmlToPDF() {

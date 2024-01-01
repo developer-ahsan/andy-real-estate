@@ -19,7 +19,7 @@
 
                                 <!-- Title -->
                                 <div class="text-1xl font-semibold">View PURCHASE ORDER #
-                                    {{purchaseDetails?.purchaseOrderNumber}}</div>
+                                    {{isViewData?.purchaseOrderNumber}}</div>
                                 <!-- Actions -->
                                 <div class="flex flex-shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
                                     <!-- <button (click)="exportHtmlToPDF()" [matTooltip]="'Save report as PDF'"
@@ -42,15 +42,14 @@
                                 <div class="inline-block  text-left print:p-0 w-full" id="htmltable" #htmltable>
                                     <td>
                                         <span style="font-size: 16px; color: #FF0000; font-weight: bold;"
-                                            *ngIf="!purchaseDetails.blnDuplicate">***DO NOT DUPLICATE***</span>
+                                            *ngIf="!isViewData.blnDuplicate">***DO NOT DUPLICATE***</span>
                                         <br />
                                         <span style="font-size: 16px; color: #FF0000; font-weight: bold;">
                                             <ng-container>
-                                                <a>
-                                                    Please acknowledge that you have received this PO by clicking <span
-                                                        href="https://admin.consolidus.com/dspPOAck3.cfm?OLID=155519&OID=84806&CID=5&S=0"
-                                                        class="cursor-pointer hover:text-blue-500 hover:underline"
-                                                        target="_blank">here</span>
+                                                Please acknowledge that you have received this PO by clicking
+                                                <a href="https://admin.consolidus.com/dspPOAck3.cfm?OLID={{isViewData.fk_orderLineID}}&OID={{isViewData.fk_orderID}}&CID={{isViewData.fk_vendorID}}&S={{isViewData.blnSample}}"
+                                                    class="cursor-pointer text-blue-500 hover:underline"
+                                                    target="_blank">here
                                                 </a>
                                             </ng-container>
                                         </span>
@@ -59,392 +58,534 @@
                                             If the link above isn't working, please copy and paste this URL into your
                                             browser:
                                             <br />
-                                            https://admin.consolidus.com/dspPOAck3.cfm?OLID=155519&OID=84806&CID=5&S=0
+                                            https://admin.consolidus.com/dspPOAck3.cfm?OLID={{isViewData.fk_orderLineID}}&OID={{isViewData.fk_orderID}}&CID={{isViewData.fk_vendorID}}&S={{isViewData.blnSample}}
                                         </span>
                                     </td>
-
+                                    <hr class="m-0"
+                                        style="border: none; height: 1px; color: #cccccc; background-color: #cccccc;" />
 
                                     <!-- Shipping Report -->
-                                    <div
-                                        class="print:w-auto print:p-0 print:rounded-none print:shadow-none print:bg-transparent ">
-                                        <img src="https://assets.consolidus.com/globalAssets/consolidus_logo.png"
-                                            style="width: 280px; height: auto;" />
-                                        <br />
-                                        <span>{{this.orderDetail.storeName}} is a subsidiary of Consolidus,
-                                            LLC.<br /></span>
-
-
-                                        <!-- <div class="flex items-start "> -->
-                                        <div class="grid grid-rows-1 mt-5">
-                                            <div class="grid grid-flow-col mt-5">
-                                                <div class="text-md font-medium tracking-tight text-secondary">
-                                                    <div>Consolidus LLC</div>
-                                                    <div>526 S.Main St.</div>
-                                                    <div>Suite 804</div>
-                                                    <div>Akron, OH 44311</div>
-                                                    <div>P: 330-319-7200</div>
-                                                    <div> F: 330-319-7213</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="grid grid-cols-2 gap-x-4 gap-y-1 ml-auto">
-                                            <div
-                                                class="justify-self-start font-semibold text-3xl tracking-tight text-secondary">
-                                                PURCHASE ORDER #
-                                            </div>
-                                            <div class="justify-self-start text-3xl font-semibold">
-                                                #{{purchaseDetails?.purchaseOrderNumber}}</div>
-
-                                            <div class="justify-self-start font-medium tracking-tight text-secondary">
-                                                Sent On
-                                            </div>
-                                            <div class="font-medium">
-                                                <p>{{ currentDate | date: 'MM/dd/yyyy' }} at {{ currentDate | date:
-                                                    'HH:mm:ss' }}</p>
-                                            </div>
-
-                                            <div class="justify-self-start font-medium tracking-tight text-secondary">
-                                                CUSTOMER PURCHASE ORDER #
-                                            </div>
-                                            <div class="font-medium">{{purchaseDetails?.shipToPurchaseOrder}}</div>
-                                            <div class="justify-self-start font-medium tracking-tight text-secondary">
-                                                VENDOR
-                                            </div>
-                                            <div class="font-medium">
-                                                <p>{{purchaseDetails?.vendorShippingName}}</p>
-                                                <p>{{purchaseDetails?.vendorShippingAddress1}}</p>
-                                                <p>{{purchaseDetails?.vendorShippingCity + ' ' +
-                                                    purchaseDetails?.vendorShippingState + ' ' +
-                                                    purchaseDetails?.vendorShippingZip}}</p>
-                                                <p>{{purchaseDetails?.vendorShippingPhone}}</p>
-                                                <p>{{purchaseDetails?.vendorShippingFax}}</p>
-                                            </div>
-                                            <div class="justify-self-start font-medium tracking-tight text-secondary">
-                                                SHIPPING
-                                            </div>
-                                            <div class="font-medium">
-                                                <div>{{purchaseDetails?.shippingComment}}</div>
-                                                <div><span style="color: #000000; font-weight: bold;">
-                                                        Please send tracking to
-                                                        <a [href]="'mailto:orders@' + this.orderDetail.storeName">{{
-                                                            'orders@'
-                                                            + this.orderDetail.storeName }}</a>.
+                                    <table width="100%" align="center" class="my-2">
+                                        <tr>
+                                            <td valign="top">
+                                                <img src="https://assets.consolidus.com/globalAssets/consolidus_logo.png"
+                                                    style="width: 280px; height: auto;" /><br />
+                                                {{this.orderDetail.storeName}} is a subsidiary of Consolidus, LLC.<br />
+                                                Consolidus LLC<br />
+                                                526 S.Main St. <br />
+                                                Suite 804 <br />
+                                                Akron, OH 44311<br />
+                                                P: 330-319-7200<br />
+                                                F: 330-319-7213
+                                                <ng-containter *ngIf="isViewData.customerAccountNumber">
+                                                    <br />Customer Account #: {{isViewData.customerAccountNumber}}
+                                                </ng-containter>
+                                            </td>
+                                            <td valign="top" align="right">
+                                                <b>PURCHASE ORDER<br />
+                                                    #{{isViewData.purchaseOrderNumber}}<br />
+                                                    Sent on {{currentDate}} at {{currentTime}}</b>
+                                            </td>
+                                        </tr>
+                                        <tr class="my-2">
+                                            <td colspan="3">
+                                                <hr class="m-0"
+                                                    style="border: none; height: 1px; color: #cccccc; background-color: #cccccc;" />
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <table width="100%" align="center" class="my-2">
+                                        <tr>
+                                            <td valign="top">PURCHASE ORDER #</td>
+                                            <td>{{isViewData.purchaseOrderNumber}}</td>
+                                        </tr>
+                                        <ng-container
+                                            *ngIf="isViewData.shipToPurchaseOrder && isViewData.shipToPurchaseOrder != 'null'">
+                                            <tr>
+                                                <td valign="top">CUSTOMER PURCHASE ORDER #</td>
+                                                <td>{{isViewData.shipToPurchaseOrder}}</td>
+                                            </tr>
+                                        </ng-container>
+                                        <tr>
+                                            <td valign="top">VENDOR</td>
+                                            <td>
+                                                <b>
+                                                    {{isViewData.vendorShippingName}}<br />
+                                                    {{isViewData.vendorShippingAddress1}}<br />
+                                                    <ng-container
+                                                        *ngIf="isViewData.vendorShippingAddress2 && isViewData.vendorShippingAddress2 != 'null'">
+                                                        {{isViewData.vendorShippingAddress2}}<br />
+                                                    </ng-container>
+                                                    {{isViewData.vendorShippingCity}}
+                                                    {{isViewData.vendorShippingState}}
+                                                    {{isViewData.vendorShippingZip}}<br>
+                                                    {{isViewData.vendorShippingPhone}}<br />
+                                                    {{isViewData.vendorShippingEmail}}
+                                                </b>
+                                            </td>
+                                        </tr>
+                                        <ng-container *ngIf="isViewData.customerAccountNumber">
+                                            <tr>
+                                                <td valign="top">ACCT #</td>
+                                                <td valign="top">
+                                                    <b>{{isViewData.customerAccountNumber}}</b>
+                                                </td>
+                                            </tr>
+                                        </ng-container>
+                                        <tr>
+                                            <td valign="top">SHIPPING</td>
+                                            <td><b>{{isViewData.shippingComment}}</b></td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td colspan="3"><span style="color: #000000; font-weight: bold;">Please send
+                                                    tracking to <a
+                                                        href="mailto:orders@{{orderDetail?.storeName.toLowerCase()}}">orders@{{orderDetail?.storeName.toLowerCase()}}</a>.</span>
+                                            </td>
+                                        </tr>
+                                        <ng-container *ngIf="isViewData.POinHandsDate">
+                                            <tr>
+                                                <td valign="top"><span style="color:'#FF0000'">IN-HANDS DATE</span></td>
+                                                <td>
+                                                    <span style="color:'#FF0000'">
+                                                        {{isViewData.POinHandsDate ? isViewData.POinHandsDate:
+                                                        ''}}
                                                     </span>
-                                                </div>
-                                            </div>
+                                                </td>
+                                            </tr>
+                                        </ng-container>
 
-                                            <div class="justify-self-start font-medium tracking-tight text-secondary">
-                                                IN-HANDS DATE </div>
-                                            <div class="font-medium">{{(purchaseDetails?.inHandsDate | date:
-                                                'MM/DD/yyyy') || not_available}}
-                                            </div>
-                                        </div>
-                                        <!-- </div> -->
+                                        <ng-container *ngIf="isViewData.coop" len(local.strReturn.qryPOs.coop)>
+                                            <tr>
+                                                <td valign="top">Co-op:</td>
+                                                <td>{{isViewData.coop}}</td>
+                                            </tr>
+                                        </ng-container>
 
-                                        <div class="grid grid-cols-12 gap-x-1 mt-16 w-full">
-                                            <!-- Item -->
-                                            <!-- <div class="col-span-12 my-2 w-full">
-                                                <div class="grid grid-cols-12 w-full">
-                                                    <div class="col-span-8 text-lg font-medium">
-                                                        <p class="">
-                                                            {{purchaseDetails?.productName}}
-                                                        </p>
-                                                        <p>Quantity: {{purchaseDetails?.quantity}}</p>
-                                                    </div>
-                                                    <div class="col-span-12 mt-6"></div>
-                                                </div>
-                                            </div> -->
-                                            <!-- <div class="col-span-4">
-                                                Standard Lead Time
-                                            </div>
-                                            <div class="col-span-8">
-                                                <p *ngIf="isViewData.fk_vendorID == 3 || isViewData.fk_vendorID == 60">
-                                                    24 Hour Production Requested</p>
-                                                <p *ngIf="isViewData.fk_vendorID != 3 && isViewData.fk_vendorID != 60">
-                                                    {{purchaseDetails?.prodTimeMin}}-{{purchaseDetails?.prodTimeMax}}
-                                                    business days</p>
-                                            </div> -->
-                                            <!-- <div class="col-span-4">
-                                                Vendor FOB
-                                            </div>
-                                            <div class="col-span-8">
-                                                {{purchaseDetails?.vendorShippingZip}}
-                                            </div> -->
-                                            <div class="col-span-4">
-                                                Ship TO:
-                                            </div>
-                                            <div class="col-span-8">
-                                                {{purchaseDetails?.shipToCompanyName}}
-                                                <br>
-                                                {{purchaseDetails?.shipToCustomerName}}
-                                                <br>
-                                                PO:{{purchaseDetails?.shipToPurchaseOrder}}
-                                                <br>
-                                                {{purchaseDetails?.shipToAddress}}
-                                                <br>
-                                                {{purchaseDetails?.shipToDeliverTo}}
-                                                <br>
-                                                {{purchaseDetails?.shipToCity + ',' + purchaseDetails?.shipToState + ' '
-                                                + purchaseDetails?.shipToZip}}
-                                                <br>
-                                                {{purchaseDetails?.shipToCountry}}
-                                                <br>
-                                                Please reference {{purchaseDetails?.purchaseOrderNumber}} on shipping
+                                        <tr>
+                                            <td valign="top">Ship TO:</td>
+                                            <td valign="top">
+                                                <ng-container *ngIf="isViewData.shipToCompanyName">
+                                                    {{isViewData.shipToCompanyName}}<br />
+                                                </ng-container>
+                                                <ng-container *ngIf="isViewData.shipToCustomerName">
+                                                    {{isViewData.shipToCustomerName}} <br />
+                                                </ng-container>
+                                                <ng-container
+                                                    *ngIf="isViewData.shipToLocation && isViewData.shipToLocation != 'null'">
+                                                    {{isViewData.shipToLocation}}<br />
+                                                </ng-container>
+                                                <ng-container
+                                                    *ngIf="isViewData.shipToPurchaseOrder && isViewData.shipToPurchaseOrder != 'null'">
+                                                    Purchase order: {{isViewData.shipToPurchaseOrder}}<br />
+                                                </ng-container>
+                                                {{isViewData.shipToAddress}}<br />
+                                                <ng-container *ngIf="isViewData.shipToDeliverTo">
+                                                    {{isViewData.shipToDeliverTo}}<br />
+                                                </ng-container>
+                                                {{isViewData.shipToCity}}, {{isViewData.shipToState}}
+                                                {{isViewData.shipToZip}}<br />
+                                                <ng-container *ngIf="isViewData.shipToCountry">
+                                                    {{isViewData.shipToCountry}}<br />
+                                                </ng-container>
+                                                Please reference #{{isViewData.purchaseOrderNumber}} on shipping
                                                 label.
-                                                <br>
-                                                <!-- E:{{purchaseDetails?.shippingEmailShipTO}} -->
-                                            </div>
-                                            <!-- Colors -->
-                                            <div class="col-span-7 font-medium text-md font-bold">
-                                                <p>COLOR/SIZE BREAKDOWN</p>
-                                            </div>
-                                            <div class="col-span-1 font-medium text-md text-center text-secondary">QTY
-                                            </div>
-                                            <div class="col-span-2 font-medium text-md text-center text-secondary">
-                                                <span>unit</span>
-                                            </div>
-                                            <div class="col-span-2 font-medium text-md text-center text-secondary">
-                                                <span>total</span>
-                                            </div>
-                                            <div class="col-span-12 my-2" *ngFor="let colors of orderProducts">
-                                                <div class="grid grid-cols-12">
-                                                    <div class="col-span-4 font-medium text-md text-secondary">
-                                                        <p>{{purchaseDetails?.productName}} </p>
-                                                    </div>
-                                                    <div class="col-span-3 font-medium text-md text-secondary">
-                                                        <p>{{colors.product.colorName}} <span
-                                                                *ngIf="colors.product.sizeName"> &
-                                                                {{colors.product.sizeName}}</span></p>
-                                                    </div>
-                                                    <div
-                                                        class="col-span-1 font-medium text-md text-center text-secondary">
-                                                        {{colors.product.quantity}}</div>
-                                                    <div
-                                                        class="col-span-2 font-medium text-md text-center text-secondary">
-                                                        <span>{{colors.product.runCost | currency: 'USD':
-                                                            'symbol-narrow': '.3-3'}}</span>
-                                                    </div>
-                                                    <div
-                                                        class="col-span-2 font-medium text-md text-center text-secondary">
-                                                        <span>{{(colors.product.runCost *
-                                                            colors.product.quantity) | currency: 'USD':
-                                                            'symbol-narrow': '.3-3'
-                                                            }}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <!-- Imprints -->
-                                            <div class="mt-2 col-span-12 font-medium font-bold text-md">
-                                                <p>IMPRINTS</p>
-                                                <p class="text-red-500">The artwork we send is sized for production;
-                                                    please do not change the size of the art without consulting us or
-                                                    sending a proof to confirm.
-                                                    please send proof to artwork@{{this.orderDetail.storeName}}</p>
-                                            </div>
-                                            <div class="col-span-12 my-2" *ngFor="let imprint of imprints">
-                                                <div class="grid grid-cols-12">
-                                                    <div class="col-span-7 font-medium text-md text-secondary">
-                                                        <p>{{imprint?.imprintName}}
-                                                        </p>
-                                                    </div>
-                                                    <div
-                                                        class="font-small col-span-1 text-sm  text-center text-secondary">
-                                                        {{imprint?.quantity}}
-                                                    </div>
-                                                    <div
-                                                        class="col-span-2 text-center font-small text-sm  text-secondary">
-                                                        <span>{{imprint?.unitCost | currency}}</span>
-                                                    </div>
-                                                    <div
-                                                        class="col-span-2 text-center font-small text-sm  text-secondary">
-                                                        <span>{{(imprint?.total) | currency}}</span>
-                                                    </div>
-                                                    <!-- Setups -->
-                                                    <div
-                                                        class="mt-2 col-span-7 font-medium text-right text-md text-secondary">
-                                                        <p>Setup(s)</p>
-                                                    </div>
-                                                    <div class="font-medium text-md  text-center text-secondary">
-                                                    </div>
-                                                    <div
-                                                        class="pl-3 flex justify-between mt-2 col-span-2 text-center font-small text-sm  text-secondary">
-                                                        <span></span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <br /><br />
+                                    <!-- Start Color/Sizes -->
+                                    <table width="100%" align="center">
+                                        <ng-container *ngIf="isViewData.blnDecorator && !isViewData.blnSupplier">
+                                            <ng-container *ngIf="isViewData.fk_orderLineID">
+                                                <tr>
+                                                    <td width="40%"><b>COLOR/SIZE BREAKDOWN</b></td>
+                                                    <td width="30%"></td>
+                                                    <td width="10%" align="center"><b>Quantity</b></td>
+                                                    <td width="10%"></td>
+                                                    <td width="10%"></td>
+                                                </tr>
 
-                                                    </div>
-                                                    <div
-                                                        class=" mt-2 col-span-2 text-center font-small text-sm  text-secondary">
-                                                        <span>{{(imprint?.total) | currency}}</span>
-                                                    </div>
+                                                <tr>
+                                                    <td colspan="5">
+                                                        <b>Stock coming from:</b> {{isViewData.stockFrom}}
+                                                    </td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td colspan="5">
+                                                        <hr
+                                                            style="border: none; height: 1px; color: #cccccc; background-color: #cccccc;" />
+                                                    </td>
+                                                </tr>
+
+                                                <!--- ITEM & OPTIONS --->
+                                                <ng-container *ngIf="purchaseDetails.color_sizes.length">
+                                                    <tr *ngFor="let item of purchaseDetails.color_sizes">
+                                                        <td>
+                                                            {{item.productName}}
+                                                            <ng-container *ngIf="isViewData.blnSample">
+                                                                <div
+                                                                    style="padding: 7px; font-size: 12px; font-weight: bold; background-color: #fcf8e3; border: 1px solid #faebcc; color: #af6d3b; font-family: Arial, Helvetica, sans-serif;">
+                                                                    This item is a sample.
+                                                                </div>
+                                                            </ng-container>
+                                                        </td>
+                                                        <td>{{item.optionName}}</td>
+                                                        <td align="center">{{item.quantity}}</td>
+                                                        <td></td>
+                                                        <td></td>
+                                                    </tr>
+                                                </ng-container>
+
+                                                <tr>
+                                                    <td colspan="5"><br /></td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td style="font-weight: bold;"><b>TOTAL PIECES:</b></td>
+                                                    <td></td>
+                                                    <td style="font-weight: bold;" align="center">
+                                                        <b>{{isViewData.quantity}}</b>
+                                                    </td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+                                            </ng-container>
+                                        </ng-container>
+                                        <ng-container *ngIf="isViewData.blnSupplier">
+                                            <ng-container *ngIf="purchaseDetails.color_sizes.length">
+                                                <tr>
+                                                    <td width="40%"><b>COLOR/SIZE BREAKDOWN</b></td>
+                                                    <td width="30%"></td>
+                                                    <td width="10%" align="center"><b>Quantity</b></td>
+                                                    <td width="10%" align="center"><b>Unit</b></td>
+                                                    <td width="10%" align="center"><b>Total</b></td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td colspan="5">
+                                                        <hr
+                                                            style="border: none; height: 1px; color: #cccccc; background-color: #cccccc;" />
+                                                    </td>
+                                                </tr>
 
 
+                                                <!--- ITEM & OPTIONS --->
+                                                <ng-container *ngIf="purchaseDetails.color_sizes.length">
+                                                    <tr *ngFor="let item of purchaseDetails.color_sizes">
+                                                        <td>
+                                                            {{item.productName}}
+                                                            <ng-container *ngIf="isViewData.blnSample">
+                                                                <div
+                                                                    style="padding: 7px; font-size: 12px; font-weight: bold; background-color: #fcf8e3; border: 1px solid #faebcc; color: #af6d3b; font-family: Arial, Helvetica, sans-serif;">
+                                                                    This item is a sample.
+                                                                </div>
+                                                            </ng-container>
+                                                        </td>
+                                                        <td>{{item.optionName}}</td>
+                                                        <td align="center">{{item.quantity}}</td>
+                                                        <td align="center">{{item.unitCost | currency}}</td>
+                                                        <td align="center">{{item.total | currency}}</td>
+                                                    </tr>
+                                                </ng-container>
 
+                                                <ng-container
+                                                    *ngIf="isViewData.fk_orderLineID && isViewData.txtColorParts">
+                                                    <tr>
+                                                        <td colspan="5" valign="top"><span
+                                                                style="font-weight: bold; color: #ff0000;">({{isViewData.txtColorParts}})</span>
+                                                        </td>
+                                                    </tr>
+                                                </ng-container>
 
+                                                <tr>
+                                                    <td>&nbsp;</td>
+                                                </tr>
 
-                                                    <div
-                                                        class="mt-2 col-span-7 font-medium text-right text-md text-secondary">
-                                                        <p>Total Imprint Colors</p>
-                                                    </div>
-                                                    <div class="font-medium text-md  text-center text-secondary">
-                                                    </div>
-                                                    <div
-                                                        class="pl-3 flex justify-between mt-2 col-span-2 text-center font-small text-sm  text-secondary">
-                                                        <span></span>
+                                                <tr>
+                                                    <td style="font-weight: bold;"><b>TOTAL PIECES:</b></td>
+                                                    <td></td>
+                                                    <td style="font-weight: bold;" align="center">
+                                                        <b>{{isViewData.quantity}}</b>
+                                                    </td>
+                                                </tr>
+                                            </ng-container>
+                                        </ng-container>
+                                        <!-- END Color/Sizes -->
+                                    </table>
+                                    <!-- Start Imprints -->
+                                    <ng-container *ngIf="isViewData.blnDecorator && purchaseDetails.imprints.length">
+                                        <br /><br />
+                                        <table width="100%" style="width: 100%;">
+                                            <tr>
+                                                <td width="70%">
+                                                    <b>IMPRINTS</b>
+                                                    <ng-container
+                                                        *ngIf="purchaseDetails.poProofFiles.length && isViewData.fk_orderLineID">
+                                                        <a href="https://assets.consolidus.com/artwork/POPRoof/{{isViewData.fk_orderLineID}}/{{purchaseDetails.poProofFiles[0].FILENAME}}"
+                                                            target="_blank" style="text-decoration: none;">
+                                                            <div
+                                                                style="font-size: 12px; font-weight: bold; background-color: blue; padding: 7px; color: #ffffff; margin: 0 !important; display: inline-block;">
+                                                                Click here to download final art vector file.
+                                                            </div>
+                                                        </a>
+                                                        <br /><br />
+                                                    </ng-container>
+                                                </td>
+                                                <td width="10%" align="center"><b>Quantity</b></td>
+                                                <td width="10%" align="center"><b>Unit</b></td>
+                                                <td width="10%" align="center"><b>Total</b></td>
+                                            </tr>
 
-                                                    </div>
-                                                    <div
-                                                        class=" mt-2 col-span-2 text-center font-small text-sm  text-secondary">
-                                                        <span>{{imprint?.totalImprintColors}}</span>
-                                                    </div>
+                                            <tr>
+                                                <td colspan="4">
+                                                    <hr
+                                                        style="border: none; height: 1px; color: #cccccc; background-color: #cccccc;" />
+                                                </td>
+                                            </tr>
 
+                                            <tr>
+                                                <td colspan="4"><span style="color:#FF0000; font-weight: bold;">The
+                                                        artwork we send is sized for production; please do not change
+                                                        the size of the art without consulting us or sending a proof to
+                                                        confirm.</span><br /></td>
+                                            </tr>
 
+                                            <ng-container *ngFor="let item of purchaseDetails.imprints">
+                                                <tr>
+                                                    <td colspan="4">
+                                                        <ng-container
+                                                            *ngIf="isViewData.fk_vendorID == 237;else NoTVendor237">
+                                                            <span style="color:#000000;">(No Proof Needed)</span><br />
+                                                        </ng-container>
+                                                        <ng-template #NoTVendor237>
+                                                            <ng-container *ngIf="item.fk_imprintID">
+                                                                <ng-container *ngIf="imprint?.proofFiles.length">
+                                                                    <ng-container
+                                                                        *ngFor="let file of imprint.proofFiles">
+                                                                        <a href="https://assets.consolidus.com/artwork/finalArt/{{orderDetail.fk_storeUserID}}/{{isViewData.fk_orderID}}/{{isViewData.fk_orderLineID}}/{{file.FILENAME}}"
+                                                                            target="_blank">Link to print-ready artwork
+                                                                            here.</a><br />
+                                                                    </ng-container>
+                                                                </ng-container>
+                                                            </ng-container>
+                                                        </ng-template>
+                                                        <span
+                                                            style="color:#FF0000; font-weight: bold;">{{isViewData.imprintDetail}}</span>
+                                                    </td>
+                                                </tr>
+                                                <!--- show run charge if the vendor is doing the decoration --->
+                                                <tr>
+                                                    <td>{{item.imprintName}}</td>
+                                                    <td align="center">{{item.quantity}}</td>
+                                                    <td align="center">{{item.unitCost | currency}}</td>
+                                                    <td align="center">{{item.total | currency}}</td>
+                                                </tr>
+                                                <ng-container *ngIf="item.reorderNumber">
+                                                    <tr>
+                                                        <td>
+                                                            <span style="color:#FF0000; font-weight: bold;">Reorder
+                                                                #:</span> {{item.reorderNumber}}
+                                                        </td>
+                                                    </tr>
+                                                </ng-container>
+                                                <ng-container *ngIf="item.setup">
+                                                    <tr>
+                                                        <td align="right">Setup(s)</td>
+                                                        <td align="center"></td>
+                                                        <td align="center"></td>
+                                                        <td align="center">{{item.setup | currency}}</td>
+                                                    </tr>
+                                                </ng-container>
+                                                <tr>
+                                                    <ng-container *ngIf="item.processQuantity || item.colors">
+                                                        <td align="left">
+                                                            <span *ngIf="item.processQuantity">Total Imprint Colors:
+                                                                {{item.processQuantity}}<br /></span>
+                                                            <span *ngIf="item.colors">Colors:
+                                                                {{item.colors}}<br /><br /></span>
+                                                        </td>
+                                                    </ng-container>
+                                                    <td colspan="3"></td>
+                                                </tr>
+                                                <ng-container *ngIf="item.imprintComment">
+                                                    <tr>
+                                                        <td colspan="4">
+                                                            <b>Imprint comment:</b><br />
+                                                            {{item.imprintComment}}
+                                                        </td>
+                                                    </tr>
+                                                </ng-container>
+                                            </ng-container>
+                                        </table>
+                                    </ng-container>
+                                    <!-- End Imprints -->
+                                    <!-- Start Accessories -->
+                                    <ng-container *ngIf="purchaseDetails.accessories.length">
+                                        <table style="width: 100%;" width="100%">
+                                            <tr>
+                                                <td width="70%"></td>
+                                                <td width="10%"></td>
+                                                <td width="10%"></td>
+                                                <td width="10%"></td>
+                                            </tr>
 
+                                            <tr>
+                                                <td colspan="4"><br><span
+                                                        style="color: #000000;"><i><b>ACCESSORIES</b></i></span></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="4">
+                                                    <hr
+                                                        style="border: none; height: 1px; color: #cccccc; background-color: #cccccc;" />
+                                                </td>
+                                            </tr>
 
+                                            <ng-container *ngFor="let item of purchaseDetails.accessories">
+                                                <tr>
+                                                    <td>{{item.accessoryName}}</td>
+                                                    <td align="center">{{item.quantity}}</td>
+                                                    <td align="center">{{item.unitCost | currency}}</td>
+                                                    <td align="center">{{item.totalCost | currency}}</td>
+                                                </tr>
+                                                <ng-container *ngIf="item.setupCost">
+                                                    <tr>
+                                                        <td>Accessory Setup</td>
+                                                        <td align="center"></td>
+                                                        <td align="center"></td>
+                                                        <td align="center">{{item.setupCost | currecny}}</td>
+                                                    </tr>
+                                                </ng-container>
+                                            </ng-container>
+                                        </table>
+                                    </ng-container>
+                                    <!-- End Adjustments -->
+                                    <ng-container *ngIf="purchaseDetails.adjustments.length">
+                                        <table style="width: 100%;" width="100%">
+                                            <tr>
+                                                <td width="70%"></td>
+                                                <td width="10%"></td>
+                                                <td width="10%"></td>
+                                                <td width="10%"></td>
+                                            </tr>
 
-                                                    <div
-                                                        class="mt-2 col-span-7 font-medium text-right text-md text-secondary">
-                                                        <p>Colors</p>
-                                                    </div>
-                                                    <div class="font-medium text-md  text-center text-secondary">
-                                                    </div>
-                                                    <div
-                                                        class="pl-3 flex justify-between mt-2 col-span-2 text-center font-small text-sm  text-secondary">
-                                                        <span></span>
+                                            <tr>
+                                                <td colspan="4"><br /><i><b>ADJUSTMENTS</b></i></td>
+                                            </tr>
 
-                                                    </div>
-                                                    <div
-                                                        class=" mt-2 col-span-2 text-center font-small text-sm  text-secondary">
-                                                        <span>{{imprint?.colors}}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <!-- Total -->
-                                            <div
-                                                class="col-span-8 self-center text-lg font-medium tracking-tight text-secondary">
-                                                MERCHANDISE SUB-TOTAL
-                                            </div>
-                                            <div class="col-span-2 text-center font-medium">
-                                            </div>
-                                            <div class="col-span-2 text-center font-medium">{{purchaseDetails?.POTotal |
-                                                currency}}
-                                            </div>
-                                            <div class="col-span-12 border-b"></div>
-                                            <div
-                                                class="col-span-8 self-center text-2xl font-medium tracking-tight text-secondary">
-                                                TOTAL
-                                            </div>
-                                            <div class="col-span-2 text-center font-medium">
-                                            </div>
-                                            <div class="col-span-2 text-center font-medium">{{purchaseDetails?.POTotal |
-                                                currency}}
-                                            </div>
-                                        </div>
-
-                                        <div class="mt-10">
-                                            <div style="text-align: -webkit-center;">
-                                                <img class="w-40" src="assets/images/logo/consolidus-logo.jpeg">
-                                            </div>
-                                        </div>
-                                    </div>
-
+                                            <tr *ngFor="let item of purchaseDetails.adjustments">
+                                                <td>{{item.adjustmentName}}</td>
+                                                <td></td>
+                                                <td></td>
+                                                <td align="center">{{item.unitCost | currency}}</td>
+                                            </tr>
+                                        </table>
+                                    </ng-container>
+                                    <!-- End Adjustments -->
+                                    <!-- Start -->
+                                    <!-- Totals -->
+                                    <table width="100%" align="center">
+                                        <tr height="1">
+                                            <td width="70%"></td>
+                                            <td width="10%"></td>
+                                            <td width="10%"></td>
+                                            <td width="10%"></td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>TOTAL</b></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td align="center"><b>{{isViewData?.POTotal?.toFixed(2) | currency}}</b>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4">
+                                                <hr class="m-0"
+                                                    style="border: none; height: 1px; color: #cccccc; background-color: #cccccc;" />
+                                            </td>
+                                        </tr>
+                                        <!-- isViewData?.purchaseOrderComments -->
+                                        <ng-container *ngIf="isViewData?.purchaseOrderComments">
+                                            <br /><br />
+                                            <table width="100%" align="center">
+                                                <tr>
+                                                    <td><span class="text-red-500">ADDITIONAL PURCHASE ORDER
+                                                            COMMENTS/MODIFICATIONS</span></td>
+                                                <tr>
+                                                <tr>
+                                                    <td>
+                                                        <div
+                                                            style="background-color: #fcf8e1; border: 1px solid #f9ebc8; padding: 10px; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; color: #FF0000; font-size: 14px; font-weight: bold;">
+                                                            {{isViewData?.purchaseOrderComments}}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </ng-container>
+                                    </table>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <!-- Listing -->
-                    <div *ngIf="!isView" class=" pb-5">
+                    <div *ngIf="!isView" class="p-5">
                         <p class="font-bold text-center text-lg" *ngIf="purchases.data.length == 0">No data found.</p>
-                        <table *ngIf="purchases.data.length > 0" mat-table [dataSource]="purchases.data" class="w-full">
-                            <!-- Company Column -->
-                            <ng-container matColumnDef="company">
-                                <th mat-header-cell *matHeaderCellDef class="bg-light"> Company
-                                </th>
-                                <td mat-cell *matCellDef="let item" (click)="viewPurchaseOrder(item)"
-                                    style="color: #959595; text-decoration: underline; cursor: pointer;">
-                                    {{item.companyName}}
-                                </td>
-                                <td mat-footer-cell *matFooterCellDef class="bg-light font-semibold">
-                                    Shipping</td>
-                            </ng-container>
-
-                            <!-- Supplies Column -->
-                            <ng-container matColumnDef="supplies">
-                                <th mat-header-cell *matHeaderCellDef class="bg-light"> Supplies
-                                </th>
-                                <td mat-cell *matCellDef="let element">
-                                    <mat-icon class="text-green-400 icon-size-5" *ngIf="element.blnSupplier"
-                                        [svgIcon]="'heroicons_solid:check'">
-                                    </mat-icon>
-                                    <mat-icon class="text-red-400 icon-size-5" *ngIf="!element.blnSupplier"
-                                        [svgIcon]="'heroicons_solid:x'"></mat-icon>
-                                </td>
-                                <td mat-footer-cell *matFooterCellDef class="bg-light"></td>
-                            </ng-container>
-
-                            <!-- Decorates Column -->
-                            <ng-container matColumnDef="decorates">
-                                <th mat-header-cell *matHeaderCellDef class="bg-light"> Decorates
-                                </th>
-                                <td mat-cell *matCellDef="let element">
-                                    <mat-icon class="text-green-400 icon-size-5" *ngIf="element.blnDecorator"
-                                        [svgIcon]="'heroicons_solid:check'">
-                                    </mat-icon>
-                                    <mat-icon class="text-red-400 icon-size-5" *ngIf="!element.blnDecorator"
-                                        [svgIcon]="'heroicons_solid:x'">
-                                    </mat-icon>
-                                </td>
-                                <td mat-footer-cell *matFooterCellDef class="bg-light"></td>
-                            </ng-container>
-
-                            <!-- Digitizes Column -->
-                            <ng-container matColumnDef="digitizes">
-                                <th mat-header-cell *matHeaderCellDef class="bg-light"> Digitizes
-                                </th>
-                                <td mat-cell *matCellDef="let element">
-                                    <mat-icon class="text-green-400 icon-size-5" *ngIf="element.blnDigitizes"
-                                        [svgIcon]="'heroicons_solid:check'">
-                                    </mat-icon>
-                                    <mat-icon class="text-red-400 icon-size-5" *ngIf="!element.blnDigitizes"
-                                        [svgIcon]="'heroicons_solid:x'">
-                                    </mat-icon>
-                                </td>
-                                <td mat-footer-cell *matFooterCellDef class="bg-light"></td>
-                            </ng-container>
-
-                            <!-- Cost Column -->
-                            <ng-container matColumnDef="total">
-                                <th mat-header-cell *matHeaderCellDef class="bg-light"> Total Price
-                                </th>
-                                <td mat-cell *matCellDef="let element"> {{(element.Total)?.toFixed(2) | currency}} </td>
-                                <td mat-footer-cell *matFooterCellDef class="bg-light font-semibold">
-                                    {{(purchases?.shippingPrice[0].shippingCost)?.toFixed(2) | currency }} </td>
-                            </ng-container>
-                            <!-- Shipping Footer -->
-                            <ng-container matColumnDef="companys">
-                                <td mat-footer-cell *matFooterCellDef></td>
-                            </ng-container>
-                            <ng-container matColumnDef="suppliess">
-                                <td mat-footer-cell *matFooterCellDef></td>
-                            </ng-container>
-                            <ng-container matColumnDef="decoratess">
-                                <td mat-footer-cell *matFooterCellDef></td>
-                            </ng-container>
-                            <ng-container matColumnDef="shippingtotal">
-                                <td mat-footer-cell *matFooterCellDef class="font-semibold">Total</td>
-                            </ng-container>
-                            <ng-container matColumnDef="totals">
-                                <td mat-footer-cell *matFooterCellDef class="font-semibold">
-                                    {{totalShippingCost | currency}}</td>
-                            </ng-container>
-
-
-                            <tr mat-header-row *matHeaderRowDef="displayedColumns" class="h-18">
-                            </tr>
-                            <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-                                class="h-12 hover:bg-gray-100 dark:hover:bg-hover"></tr>
-                            <tr mat-footer-row *matFooterRowDef="displayedColumns" class="h-18">
-                            </tr>
-                            <tr mat-footer-row *matFooterRowDef="displayedColumns1" class="h-18">
-                            </tr>
+                        <table *ngIf="purchases.data.length > 0" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th class="bg-light">Vendor</th>
+                                    <th class="bg-light">Supplies</th>
+                                    <th class="bg-light">Decorators</th>
+                                    <th class="bg-light">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of purchases.data">
+                                    <td>
+                                        <span (click)="viewPurchaseOrder(item)"
+                                            class="underline cursor-pointer">{{item.companyName}}</span>
+                                    </td>
+                                    <td>
+                                        <mat-icon class="text-green-400 icon-size-5" *ngIf="item.blnSupplier"
+                                            [svgIcon]="'heroicons_solid:check'">
+                                        </mat-icon>
+                                        <mat-icon class="text-red-400 icon-size-5" *ngIf="!item.blnSupplier"
+                                            [svgIcon]="'heroicons_solid:x'"></mat-icon>
+                                    </td>
+                                    <td>
+                                        <mat-icon class="text-green-400 icon-size-5" *ngIf="item.blnDecorator"
+                                            [svgIcon]="'heroicons_solid:check'">
+                                        </mat-icon>
+                                        <mat-icon class="text-red-400 icon-size-5" *ngIf="!item.blnDecorator"
+                                            [svgIcon]="'heroicons_solid:x'">
+                                        </mat-icon>
+                                    </td>
+                                    <td>
+                                        {{(item.Total)?.toFixed(2) | currency}}
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td>
+                                        <a class="underline cursor-pointer"
+                                            [routerLink]="['/apps/orders',orderDetail.pk_orderID,'shipping-report']"
+                                            target="_blank">Shipping</a>
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>{{(purchases?.shippingPrice[0].shippingCost)?.toFixed(2) | currency }}</td>
+                                </tr>
+                                <tr class="table-active">
+                                    <td class="font-bold">
+                                        Total
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                    <td class="font-bold">{{totalShippingCost | currency}}</td>
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
                 </div>
@@ -465,7 +606,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <p>Consolidus Purchase Order Acknowledgement for Purchase Order {{purchaseDetails?.purchaseOrderNumber}}
+                <p>Consolidus Purchase Order Acknowledgement for Purchase Order {{isViewData?.purchaseOrderNumber}}
                 </p>
                 <div class="my-2">
                     <mat-form-field class="w-full">

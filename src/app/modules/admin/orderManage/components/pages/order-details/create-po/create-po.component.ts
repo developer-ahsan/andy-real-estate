@@ -24,6 +24,7 @@ export class CreatePoComponent implements OnInit {
   createPOForm: FormGroup;
   isCreateOrder: boolean = false;
   selectedVendorID = 0;
+  allStates = [];
   constructor(
     private _vendorService: VendorsService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -59,17 +60,36 @@ export class CreatePoComponent implements OnInit {
       blnDecorator: new FormControl(false, Validators.required)
     })
     this.createPOForm.patchValue({
-      shipToCompanyName: this.poData.shipToCompanyName,
-      shipToCustomerName: this.poData.shipToCustomerName,
-      shipToLocation: this.poData.shipToLocation,
-      shipToPurchaseOrder: this.poData.shipToPurchaseOrder,
-      shipToAddress: this.poData.shipToAddress,
-      shipToCity: this.poData.shipToCity,
-      shipToState: this.poData.shipToState,
-      shipToZip: this.poData.shipToZip,
-      shipToCountry: this.poData.shipToCountry,
-      shipToDeliverTo: this.poData.shipToDeliverTo,
-    })
+      shipToCompanyName: this.orderData.shippingCompanyName,
+      shipToCustomerName: this.orderData.shippingFirstName + ' ' + this.orderData.shippingLastName,
+      shipToLocation: this.orderData.shippingLocation,
+      shipToPurchaseOrder: this.orderData.purchaseOrderNum,
+      shipToAddress: this.orderData.shippingAddress,
+      shipToCity: this.orderData.shippingCity,
+      shipToState: this.orderData.shippingState,
+      shipToZip: this.orderData.shippingZip,
+      shipToCountry: this.orderData.shippingCountry,
+      shipToDeliverTo: this.orderData.shipToDeliverTo,
+    });
+    this.getVendorsDataLocal();
+  }
+  getVendorsDataLocal() {
+    this._commonService.suppliersData$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.allVendors = res["data"];
+    });
+    const storedValue = JSON.parse(sessionStorage.getItem('storeStateSupplierData'));
+    this.allStates = this.splitData(storedValue.data[2][0].states);
+  }
+  splitData(data) {
+    const dataArray = data.split(",,");
+    const result = [];
+
+    dataArray.forEach(item => {
+      const [id, state, name, index] = item.split("::");
+      result.push({ id: parseInt(id), state, name, index: parseInt(index) });
+    });
+
+    return result;
   }
   getVendorsData(id) {
     this.selectedVendorID = id;
@@ -150,5 +170,13 @@ export class CreatePoComponent implements OnInit {
     };
     this.router.navigate(['/ordermanage/order-details'], queryParams);
   }
+  enforceMaxDigits(event: any, length): void {
+    const maxDigits = length;
+    const inputValue = event.target.value.toString();
 
+    if (inputValue.length > maxDigits) {
+      event.target.value = +inputValue.slice(0, maxDigits);
+      event.preventDefault();
+    }
+  }
 }
