@@ -16,9 +16,149 @@
                                 <span class="ml-2 mr-1">PDF</span>
                             </button>
                         </div>
+                        <div class="col-12">
+                            <table class="p-1 w-full">
+                                <tr>
+                                    <td valign="top">
+                                        Consolidus LLC<br>
+                                        526 S.Main St. <br>
+                                        Suite 804 <br>
+                                        Akron, OH 44311<br>
+                                        P: 1-866-776-6643, F: 330-319-7214
+                                    </td>
+                                    <td valign="top" align="right">
+                                        <b>CONFIDENTIAL SHIPPING REPORT <br>#{{orderDetail.pk_orderID}}</b><br>
+                                    </td>
+                                </tr>
+                            </table>
+                            <hr>
+                            <table class="p-1 w-full">
+                                <tr>
+                                    <td>Carrier</td>
+                                    <td>{{orderDetail.shippingCarrierName}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Service</td>
+                                    <td>{{orderDetail.shippingServiceName}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Customer Acct#</td>
+                                    <td>
+                                        {{orderDetail?.shippingCustomerAccountNumber ?
+                                        orderDetail?.shippingCustomerAccountNumber : 'None'}}
+                                    </td>
+                                </tr>
+                                <ng-container *ngIf="orderDetail.shippingServiceName == 'UPS FREIGHT'">
+                                    <tr>
+                                        <td>Dock:</td>
+                                        <td>{{orderDetail.blnDock ? 'Yes' : 'No'}}</td>
+                                    </tr>
+                                </ng-container>
+                            </table>
+                            <hr>
+                            <!--- ORDER LINES --->
+                            <ng-container *ngFor="let item of orderProducts">
+                                <!-- <cfscript>
+			local.qryOrderLine = local.objOrder.getOrderLine(local.qryOrderLines.pk_orderLineID,arguments.DSN);
+			local.qryImprintsReport = getOrderLineImprintsReport(local.qryOrderLines.pk_orderLineID,arguments.DSN);		
+			local.qryProduct = getProduct(local.qryOrderLine.fk_productID,arguments.DSN);
+			local.totalOrderSHCost = local.totalOrderSHCost + local.qryOrderLine.shippingCost;
+			local.totalOrderSHPrice = local.totalOrderSHPrice + local.qryOrderLine.shippingPrice;
+			local.qryWeightData = getOrderLineWeightData(local.qryOrderLines.pk_orderLineID,arguments.DSN, arguments.COM);
+			local.qryOrderLineStatus = local.objOrder.getOrderLineStatus(local.qryOrderLines.pk_orderLineID);
+		</cfscript> -->
+
+                                <table class="p-1 w-full">
+                                    <tr height="1">
+                                        <td width="80%"></td>
+                                        <td width="10%"></td>
+                                        <td width="10%"></td>
+                                    </tr>
+                                    <tr>
+                                        <td valign="top">
+                                            <b>PO: {{orderDetail.pk_orderID}}-{{item?.order_line_id}}</b><br />
+                                            <b>({{item.products[0].pk_productID}}) {{item.products[0].productNumber}}:
+                                                <span [innerHTML]="item.products[0].productName"></span></b><br>
+                                            Quantity: {{item.products[0].quantity}} <span
+                                                *ngIf="item.products[0].blnSample"><b> * * * SAMPLE * * *</b></span>
+                                        </td>
+                                        <!-- <td colspan="2" valign="top" align="right">					
+					<cfset statusList = "1,2,3,4" />
+
+					<cfif local.qryOrderLineStatus.recordcount>
+						<cfif listFindNoCase(statusList,local.qryOrderLineStatus.pk_statusID)>
+							<div class="alert alert-warning add-padding-sm text-left" style="text-align: left !important;">
+								<span class="fa fa-clock-o disabled fa-lg"></span> Processing
+							</div>
+						<cfelseif local.qryOrderLineStatus.pk_statusID EQ 5>
+							<div class="alert alert-success add-padding-sm" style="text-align: left !important;">
+								<span class="fa fa-truck fa-lg active"></span> Shipped
+								<cfif len(local.qryOrderLines.trackingNumber)>
+									<br />
+									<b>Tracking number:</b> #local.qryOrderLines.trackingNumber#
+								</cfif>
+								<cfif len(local.qryOrderLines.shippingDate)>
+									<br />
+									<b>Shipping date:</b> #local.qryOrderLines.shippingDate#
+								</cfif>
+							</div>
+						<cfelseif local.qryOrderLineStatus.pk_statusID EQ 6>
+							<div class="alert alert-success add-padding-sm" style="text-align: left !important;">
+								<span class="fa fa-check fa-lg active"></span> Delivered
+								<cfif len(local.qryOrderLines.trackingNumber)>
+									<br />
+									<b>Tracking number:</b> #local.qryOrderLines.trackingNumber#
+								</cfif>
+								<cfif len(local.qryOrderLines.shippingDate)>
+									<br />
+									<b>Shipping date:</b> #local.qryOrderLines.shippingDate#
+								</cfif>
+							</div>
+						<cfelseif local.qryOrderLineStatus.pk_statusID EQ 8>
+							<div class="alert alert-success add-padding-sm" style="text-align: left !important;">
+								<span class="fa fa-car fa-lg active"></span> Picked up
+							</div>
+						<cfelseif local.qryOrderLineStatus.pk_statusID EQ 7>
+							<div class="alert alert-warning add-padding-sm" style="text-align: left !important;">
+								<span class="fa fa-file-text fa-lg" style="color: purple;"></span> <span class="bold" style="color: purple;">P.O. Needed</span>
+							</div>
+						<cfelseif local.qryOrderLineStatus.pk_statusID EQ 10>
+							<div class="alert alert-warning add-padding-sm" style="text-align: left !important;">
+								<span class="fa fa-users fa-lg caution"></span> Group order pending
+							</div>
+						</cfif>
+					<cfelse>
+						<div class="alert alert-warning add-padding-sm" style="text-align: left !important;">
+							No shipping information for this item.
+						</div>
+					</cfif>
+				</td> -->
+                                    </tr>
+                                    <!-- <tr>
+				<td colspan="3">
+				Supplier Zip: #numberFormat(local.qryOrderLine.supplierFOBzip,"00000")# 
+				<cfif local.qryImprintsReport.recordcount AND (local.qryImprintsReport.fk_decoratorID[1] NEQ local.qryProduct.fk_supplierID[1])>
+					&rarr; Decorator Zip: #numberFormat(local.qryImprintsReport.decoratorFOBzip[1],"00000")#
+				</cfif>				
+				&rarr; Customer Zip: #numberFormat(local.qryOrder.shippingZip,"00000")#
+				</td>
+			</tr>	
+			<tr>
+				<td></td>
+				<td align="center">COST</td>
+				<td align="center">PRICE</td>
+			</tr>	
+			<tr>
+				<td>Expected: #local.qryWeightData.packages# package<cfif local.qryWeightData.packages GT 1>s</cfif> X #numberFormat(local.qryWeightData.packageWeight,'9.00')#lbs/package = #numberFormat(local.qryWeightData.totalWeight,'9.00')#lbs</td>
+				<td align="center">#dollarFormat(local.qryOrderLine.shippingCost)#</td>
+				<td align="center">#dollarFormat(local.qryOrderLine.shippingPrice)#</td>
+			</tr>	 -->
+                                </table>
+                                <hr>
+                            </ng-container>
+                        </div>
                         <div class="col-12 text-center print:overflow-visible">
                             <div class="inline-block  text-left print:p-0 w-full px-6 py-5" id="htmltable" #htmltable>
-
                                 <!-- Shipping Report -->
                                 <div
                                     class="print:w-auto print:p-0 print:rounded-none print:shadow-none print:bg-transparent ">
@@ -105,7 +245,10 @@
                                                 </div>
                                                 <div class="col-span-12 text-md text-secondary">
                                                     Supplier Zip: {{orderDetail?.shippingZip}} → Customer Zip:
-                                                    <span *ngIf="orderDetail?.blnShipToOneLocation">{{orderDetail?.blnShipToOneLocation}}</span> <span *ngIf="!orderDetail?.blnShipToOneLocation">SHIPPING TO MULTIPLE LOCATIONS</span>
+                                                    <span
+                                                        *ngIf="orderDetail?.blnShipToOneLocation">{{orderDetail?.blnShipToOneLocation}}</span>
+                                                    <span *ngIf="!orderDetail?.blnShipToOneLocation">SHIPPING TO
+                                                        MULTIPLE LOCATIONS</span>
                                                 </div>
                                                 <div class="col-span-12 text-md text-secondary">
                                                     Expected: 1 package X 25.00lbs/package = 25.00lbs

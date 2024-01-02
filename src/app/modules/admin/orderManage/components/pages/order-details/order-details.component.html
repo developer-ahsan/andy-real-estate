@@ -380,6 +380,7 @@
                     <div *ngIf="orderDataPO.blnSent">
                         <div class="alert alert-success large add-padding-lg">
                             <span class="fa fa-check fa-lg"></span> This purchase order has already been sent. <a
+                                class="underline text-blue-500"
                                 [routerLink]="['/apps/orders',orderData.pk_orderID,'sent-purchase-order']"
                                 target="_blank">Click here to view sent purchase orders for this order.</a>
                         </div>
@@ -852,7 +853,7 @@
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label>Imprint Comment</mat-label>
                                                 <input matInput maxlength="3000"
-                                                    [(ngModel)]="orderDataPO.imprintComment">
+                                                    [(ngModel)]="imprintForm.imprintComment">
                                             </mat-form-field>
                                         </div>
                                         <div class="col-12 text-right">

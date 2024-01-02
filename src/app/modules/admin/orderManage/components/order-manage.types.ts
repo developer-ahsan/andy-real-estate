@@ -182,6 +182,7 @@ export interface Add_PO_Imprint {
     imprintSetup: number;
     imprintNumColors: number;
     imprintColors: string;
+    imprintComment: string;
     add_po_imprint: boolean;
 };
 export interface AddPOOption {

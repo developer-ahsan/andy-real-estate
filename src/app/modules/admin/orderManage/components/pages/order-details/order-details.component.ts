@@ -117,7 +117,8 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     run: '',
     setup: '',
     n_color: '',
-    imprint_color: ''
+    imprint_color: '',
+    imprintComment: ''
   }
   // Colors
   isAddColorLoader: boolean = false;
@@ -201,7 +202,8 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   }
   getVendorsData() {
     this._commonService.suppliersData$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.allVendors = res["data"];
+      const activeSuppliers = res["data"].filter(element => element.blnActiveVendor);
+      this.allVendors.push(...activeSuppliers);
     });
     const storedValue = JSON.parse(sessionStorage.getItem('storeStateSupplierData'));
     this.allStates = this.splitData(storedValue.data[2][0].states);
@@ -377,7 +379,8 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
         run: '',
         setup: '',
         n_color: '',
-        imprint_color: ''
+        imprint_color: '',
+        imprintComment: ''
       }
       this.colorsForm = {
         product: '',
@@ -485,7 +488,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   updateComments() {
     const { storeName } = this.orderData;
     const { shippingCompanyName } = this.orderDataPO
-    if (this.ngComment.trim() != '') {
+    if (this.ngComment?.trim() != '') {
       this.isCommentsLoader = true;
       let payload: AddComment = {
         comment: this.ngComment,
@@ -723,7 +726,8 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       imprintRun: Number(this.imprintForm.run),
       imprintSetup: Number(this.imprintForm.setup),
       imprintNumColors: Number(this.imprintForm.n_color),
-      imprintColors: this.imprintForm.imprint_color,
+      imprintColors: this.imprintForm.imprint_color?.replace(/'/g, "''"),
+      imprintComment: this.imprintForm.imprintComment?.replace(/'/g, "''"),
       add_po_imprint: true
     }
     payload = this._commonService.replaceNullSpaces(payload);
@@ -743,13 +747,13 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     });
   }
   addColorsPO() {
-    if (this.colorsForm.name.trim() == '' || Number(this.colorsForm.quantity) == 0 || !this.colorsForm.cost) {
+    if (this.colorsForm.name?.trim() == '' || Number(this.colorsForm.quantity) == 0 || !this.colorsForm.cost) {
       this._OrderManageService.snackBar('Name Quantity and cost is required');
       return;
     }
     let payload: AddPOOption = {
       orderLinePOID: this.orderDataPO.pk_orderLinePOID,
-      optionName: this.colorsForm.name.trim(),
+      optionName: this.colorsForm.name?.trim(),
       optionQuantity: Number(this.colorsForm.quantity),
       optionUnitCost: Number(this.colorsForm.cost),
       add_po_options: true
@@ -861,16 +865,16 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     for (let i = 0; i < this.colorsList.length; i++) {
       const element = this.colorsList[i];
 
-      if (element.productName.trim() == '' || element.quantity <= 0 || element.unitCost <= 0) {
+      if (element.productName?.trim() == '' || element.quantity <= 0 || element.unitCost <= 0) {
         this._OrderManageService.snackBar('Please fill out the fields in Color/Size Breakdown');
         return;
       }
 
       OrderLinePOOptions.push({
-        optionName: element.optionName.replace(/'/g, "''"),
+        optionName: element.optionName?.replace(/'/g, "''"),
         quantity: element.quantity,
         unitCost: element.unitCost,
-        productName: element.productName.replace(/'/g, "''"),
+        productName: element.productName?.replace(/'/g, "''"),
         total: element.totalCost,
         pk_orderLinePOOptionID: element.pk_orderLinePOOptionID
       });
@@ -881,20 +885,20 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     for (let i = 0; i < this.imprintdata.length; i++) {
       const element = this.imprintdata[i];
 
-      if (element.imprintName.trim() == '' || element.quantity <= 0 || element.unitCost <= 0) {
+      if (element.imprintName?.trim() == '' || element.quantity <= 0 || element.unitCost < 0) {
         this._OrderManageService.snackBar('Please fill out the fields in imprints');
         return;
       }
 
       orderLineImprint.push({
-        imprintName: element.imprintName.replace(/'/g, "''"),
+        imprintName: element.imprintName?.replace(/'/g, "''"),
         quantity: element.quantity,
         unitCost: element.unitCost,
         total: element.totalCost,
-        colors: element.colors.replace(/'/g, "''"),
+        colors: element.colors?.replace(/'/g, "''"),
         setup: element.setup,
         totalImprintColors: element.totalImprintColors,
-        imprintComment: element.imprintComment.replace(/'/g, "''"),
+        imprintComment: element.imprintComment?.replace(/'/g, "''"),
         processQuantity: element.processQuantity,
         reorderNumber: element.reorderNumber,
         pk_orderLinePOImprintID: element.pk_orderLinePOImprintID,
@@ -906,13 +910,13 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     for (let i = 0; i < this.accessoriesList.length; i++) {
       const element = this.accessoriesList[i];
 
-      if (element.accessoryName.trim() == '' || element.quantity <= 0 || element.unitCost <= 0) {
+      if (element.accessoryName?.trim() == '' || element.quantity <= 0 || element.unitCost <= 0) {
         this._OrderManageService.snackBar('Please fill out the fields in accessories');
         return;
       }
 
       orderLineAccessory.push({
-        accessoryName: element.accessoryName.replace(/'/g, "''"),
+        accessoryName: element.accessoryName?.replace(/'/g, "''"),
         quantity: element.quantity,
         unitCost: element.unitCost,
         totalCost: element.totalCost,
@@ -926,18 +930,18 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     for (let i = 0; i < this.adjustmentsList.length; i++) {
       const element = this.adjustmentsList[i];
 
-      if (element.adjustmentName.trim() == '' || element.quantity <= 0 || element.unitCost <= 0) {
+      if (element.adjustmentName?.trim() == '' || element.quantity <= 0 || element.unitCost <= 0) {
         this._OrderManageService.snackBar('Please fill out the fields in adjustments');
         return;
       }
 
       orderLineAdjustments.push({
-        adjustmentName: element.adjustmentName.replace(/'/g, "''"),
+        adjustmentName: element.adjustmentName?.replace(/'/g, "''"),
         unitCost: element.unitCost,
         pk_orderLinePOAdjustmentID: element.pk_orderLinePOAdjustmentID
       });
     }
-    if (!vendorShippingEmail.trim()) {
+    if (!vendorShippingEmail?.trim()) {
       this._OrderManageService.snackBar('Emails is required');
       return;
     }
@@ -1052,16 +1056,16 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     for (let i = 0; i < this.colorsList.length; i++) {
       const element = this.colorsList[i];
 
-      if (element.productName.trim() == '' || element.quantity <= 0 || element.unitCost <= 0) {
+      if (element.productName?.trim() == '' || element.quantity <= 0 || element.unitCost < 0) {
         this._OrderManageService.snackBar('Please fill out the fields in Color/Size Breakdown');
         return;
       }
 
       OrderLinePOOptions.push({
-        optionName: element.optionName.replace(/'/g, "''"),
+        optionName: element.optionName?.replace(/'/g, "''"),
         quantity: element.quantity,
         unitCost: element.unitCost,
-        productName: element.productName.replace(/'/g, "''"),
+        productName: element.productName?.replace(/'/g, "''"),
         total: element.totalCost,
         pk_orderLinePOOptionID: element.pk_orderLinePOOptionID
       });
@@ -1072,20 +1076,20 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     for (let i = 0; i < this.imprintdata.length; i++) {
       const element = this.imprintdata[i];
 
-      if (element.imprintName.trim() == '' || element.quantity <= 0 || element.unitCost <= 0) {
+      if (element.imprintName?.trim() == '' || element.quantity <= 0 || element.unitCost < 0) {
         this._OrderManageService.snackBar('Please fill out the fields in imprints');
         return;
       }
 
       orderLineImprint.push({
-        imprintName: element.imprintName.replace(/'/g, "''"),
+        imprintName: element.imprintName?.replace(/'/g, "''"),
         quantity: element.quantity,
         unitCost: element.unitCost,
         total: element.totalCost,
-        colors: element.colors.replace(/'/g, "''"),
+        colors: element.colors?.replace(/'/g, "''"),
         setup: element.setup,
         totalImprintColors: element.totalImprintColors,
-        imprintComment: element.imprintComment.replace(/'/g, "''"),
+        imprintComment: element.imprintComment?.replace(/'/g, "''"),
         processQuantity: element.processQuantity,
         reorderNumber: element.reorderNumber,
         pk_orderLinePOImprintID: element.pk_orderLinePOImprintID,
@@ -1097,13 +1101,13 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     for (let i = 0; i < this.accessoriesList.length; i++) {
       const element = this.accessoriesList[i];
 
-      if (element.accessoryName.trim() == '' || element.quantity <= 0 || element.unitCost <= 0) {
+      if (element.accessoryName?.trim() == '' || element.quantity <= 0 || element.unitCost < 0) {
         this._OrderManageService.snackBar('Please fill out the fields in accessories');
         return;
       }
 
       orderLineAccessory.push({
-        accessoryName: element.accessoryName.replace(/'/g, "''"),
+        accessoryName: element.accessoryName?.replace(/'/g, "''"),
         quantity: element.quantity,
         unitCost: element.unitCost,
         totalCost: element.totalCost,
@@ -1117,13 +1121,13 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     for (let i = 0; i < this.adjustmentsList.length; i++) {
       const element = this.adjustmentsList[i];
 
-      if (element.adjustmentName.trim() == '' || element.quantity <= 0 || element.unitCost <= 0) {
+      if (element.adjustmentName?.trim() == '' || element.quantity <= 0 || element.unitCost < 0) {
         this._OrderManageService.snackBar('Please fill out the fields in adjustments');
         return;
       }
 
       orderLineAdjustments.push({
-        adjustmentName: element.adjustmentName.replace(/'/g, "''"),
+        adjustmentName: element.adjustmentName?.replace(/'/g, "''"),
         unitCost: element.unitCost,
         pk_orderLinePOAdjustmentID: element.pk_orderLinePOAdjustmentID
       });
@@ -1165,18 +1169,18 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       trackingNumber: trackingNumber,
       total: currentTotal,
       blnExported: blnExported,
-      blnGroupRun: this.orderLineData.blnGroupRun ? this.orderLineData.blnGroupRun : false,
+      blnGroupRun: this.orderLineData?.blnGroupRun ? this.orderLineData.blnGroupRun : false,
       isPOProofPath,
       orderID: pk_orderID,
       fk_storeUserID: fk_storeUserID,
       storeID: fk_storeID,
       orderLineID: fk_orderLineID,
-      groupRunOrderLineID: this.orderLineData.groupRunOrderLineID ? this.orderLineData.groupRunOrderLineID : null,
+      groupRunOrderLineID: this.orderLineData?.groupRunOrderLineID ? this.orderLineData.groupRunOrderLineID : null,
       storeName: storeName,
       blnDecorator: blnDecorator,
       blnSupplier: blnSupplier,
       blnSample: blnSample,
-      customerAccountNumber: this.orderLineData.customerAccountNumber ? this.orderLineData.customerAccountNumber : null
+      customerAccountNumber: this.orderLineData?.customerAccountNumber ? this.orderLineData.customerAccountNumber : null
     }
     let payload: SavePurchaseOrders = {
       orderManageLoggedInUserName: this.ordermanageUserData.firstName + ' ' + this.ordermanageUserData.lastName,
@@ -1276,7 +1280,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       vendorShippingZip: vendorShippingZip,
       vendorShippingPhone: vendorShippingPhone,
       vendorShippingEmail: vendorShippingEmail,
-      shippingComment: shippingComment.replace(/'/g, "''"),
+      shippingComment: shippingComment?.replace(/'/g, "''"),
       shipToCompanyName: shipToCompanyName,
       shipToCustomerName: shipToCustomerName,
       shipToLocation: shipToLocation,
@@ -1300,8 +1304,8 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
 
     this.colorsList.forEach(element => {
       orderLineOption.push({
-        productName: element.productName.replace(/'/g, "''"),
-        optionName: element.optionName.replace(/'/g, "''"),
+        productName: element.productName?.replace(/'/g, "''"),
+        optionName: element.optionName?.replace(/'/g, "''"),
         quantity: element.quantity,
         unitCost: element.unitCost,
         total: element.total,
@@ -1310,7 +1314,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     });
     this.imprintdata.forEach(element => {
       orderLineImprint.push({
-        imprintName: element.imprintName.replace(/'/g, "''"),
+        imprintName: element.imprintName?.replace(/'/g, "''"),
         quantity: element.quantity,
         unitCost: element.unitCost,
         total: element.total,
@@ -1327,7 +1331,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
 
     this.accessoriesList.forEach(element => {
       orderLineAccessory.push({
-        accessoryName: element.accessoryName.replace(/'/g, "''"),
+        accessoryName: element.accessoryName?.replace(/'/g, "''"),
         quantity: element.quantity,
         unitCost: element.unitCost,
         totalCost: element.totalCost,
@@ -1336,7 +1340,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     });
     this.adjustmentsList.forEach(element => {
       orderLineAdjustments.push({
-        adjustmentName: element.adjustmentName.replace(/'/g, "''"),
+        adjustmentName: element.adjustmentName?.replace(/'/g, "''"),
         unitCost: element.unitCost
       })
     });
@@ -1456,7 +1460,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       this._OrderManageService.snackBar('Please choose any file.');
       return;
     }
-    if (!this.attachmentName.trim()) {
+    if (!this.attachmentName?.trim()) {
       this._OrderManageService.snackBar('Attachment Name is required.');
       return;
     }
@@ -1465,7 +1469,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     let payload: AddAttachment = {
       orderLinePOID: this.orderDataPO.pk_orderLinePOID,
       extension: type,
-      name: this.attachmentName.trim(),
+      name: this.attachmentName?.trim(),
       mimeType: mime,
       add_attachment: true
     }
@@ -1568,16 +1572,16 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     for (let i = 0; i < this.colorsList.length; i++) {
       const element = this.colorsList[i];
 
-      if (element.productName.trim() == '' || element.quantity <= 0 || element.unitCost <= 0) {
+      if (element.productName?.trim() == '' || element.quantity <= 0 || element.unitCost < 0) {
         this._OrderManageService.snackBar('Please fill out the fields in Color/Size Breakdown');
         return;
       }
 
       OrderLinePOOptions.push({
-        optionName: element.optionName.replace(/'/g, "''"),
+        optionName: element.optionName?.replace(/'/g, "''"),
         quantity: element.quantity,
         unitCost: element.unitCost,
-        productName: element.productName.replace(/'/g, "''"),
+        productName: element.productName?.replace(/'/g, "''"),
         total: element.totalCost,
         pk_orderLinePOOptionID: element.pk_orderLinePOOptionID
       });
@@ -1588,20 +1592,20 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     for (let i = 0; i < this.imprintdata.length; i++) {
       const element = this.imprintdata[i];
 
-      if (element.imprintName.trim() == '' || element.quantity <= 0 || element.unitCost <= 0) {
+      if (element.imprintName?.trim() == '' || element.quantity <= 0 || element.unitCost < 0) {
         this._OrderManageService.snackBar('Please fill out the fields in imprints');
         return;
       }
 
       orderLineImprint.push({
-        imprintName: element.imprintName.replace(/'/g, "''"),
+        imprintName: element.imprintName?.replace(/'/g, "''"),
         quantity: element.quantity,
         unitCost: element.unitCost,
         total: element.totalCost,
-        colors: element.colors.replace(/'/g, "''"),
+        colors: element.colors?.replace(/'/g, "''"),
         setup: element.setup,
         totalImprintColors: element.totalImprintColors,
-        imprintComment: element.imprintComment.replace(/'/g, "''"),
+        imprintComment: element.imprintComment?.replace(/'/g, "''"),
         processQuantity: element.processQuantity,
         reorderNumber: element.reorderNumber,
         pk_orderLinePOImprintID: element.pk_orderLinePOImprintID,
@@ -1613,13 +1617,13 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     for (let i = 0; i < this.accessoriesList.length; i++) {
       const element = this.accessoriesList[i];
 
-      if (element.accessoryName.trim() == '' || element.quantity <= 0 || element.unitCost <= 0) {
+      if (element.accessoryName?.trim() == '' || element.quantity <= 0 || element.unitCost < 0) {
         this._OrderManageService.snackBar('Please fill out the fields in accessories');
         return;
       }
 
       orderLineAccessory.push({
-        accessoryName: element.accessoryName.replace(/'/g, "''"),
+        accessoryName: element.accessoryName?.replace(/'/g, "''"),
         quantity: element.quantity,
         unitCost: element.unitCost,
         totalCost: element.totalCost,
@@ -1633,13 +1637,13 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     for (let i = 0; i < this.adjustmentsList.length; i++) {
       const element = this.adjustmentsList[i];
 
-      if (element.adjustmentName.trim() == '' || element.quantity <= 0 || element.unitCost <= 0) {
+      if (element.adjustmentName?.trim() == '' || element.quantity <= 0 || element.unitCost < 0) {
         this._OrderManageService.snackBar('Please fill out the fields in adjustments');
         return;
       }
 
       orderLineAdjustments.push({
-        adjustmentName: element.adjustmentName.replace(/'/g, "''"),
+        adjustmentName: element.adjustmentName?.replace(/'/g, "''"),
         unitCost: element.unitCost,
         pk_orderLinePOAdjustmentID: element.pk_orderLinePOAdjustmentID
       });

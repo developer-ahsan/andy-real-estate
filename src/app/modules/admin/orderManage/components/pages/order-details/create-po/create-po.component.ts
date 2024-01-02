@@ -75,7 +75,9 @@ export class CreatePoComponent implements OnInit {
   }
   getVendorsDataLocal() {
     this._commonService.suppliersData$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this.allVendors = res["data"];
+      // this.allVendors = res["data"];
+      const activeSuppliers = res["data"].filter(element => element.blnActiveVendor);
+      this.allVendors.push(...activeSuppliers);
     });
     const storedValue = JSON.parse(sessionStorage.getItem('storeStateSupplierData'));
     this.allStates = this.splitData(storedValue.data[2][0].states);
