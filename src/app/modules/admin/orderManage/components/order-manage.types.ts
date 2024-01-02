@@ -162,6 +162,7 @@ export interface UpdateEstimatedShipping {
 
 export interface addAccessory {
     orderLinePOID: number;
+    orderID: number;
     accessoryName: string;
     accessoryQuantity: number;
     accessoryUnitCost: number;
@@ -170,27 +171,50 @@ export interface addAccessory {
 };
 export interface AddAdjustment {
     orderLinePOID: number;
+    orderID: number;
     adjustmentTotalCost: number;
     adjustmentName: string;
     add_adjustment: boolean;
 };
 export interface Add_PO_Imprint {
     orderLinePOID: number;
+    orderID: number;
     imprintName: string;
     imprintQuantity: number;
     imprintRun: number;
     imprintSetup: number;
     imprintNumColors: number;
     imprintColors: string;
-    imprintComment: string;
     add_po_imprint: boolean;
 };
 export interface AddPOOption {
     orderLinePOID: number;
+    productName: string;
     optionName: string;
     optionQuantity: number;
     optionUnitCost: number;
+    POQuantity: number;
+    orderID: number;
+    orderLineID: number;
+    blnGroupRun: boolean;
+    groupRunOrderLineID: number;
+    blnDuplicate: boolean;
+    orderLineImprints: orderLineImprintS[];
     add_po_options: boolean;
+};
+
+interface orderLineImprintS {
+    imprintName: string;
+    quantity: number;
+    unitCost: number;
+    total: number;
+    colors: string;
+    setup: number;
+    totalImprintColors: number;
+    imprintComment: string;
+    processQuantity: number;
+    reorderNumber: string;
+    pk_orderLinePOImprintID: number;
 };
 
 export interface DeleteAdjustment {

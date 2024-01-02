@@ -657,7 +657,8 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     }
     let payload: addAccessory = {
       orderLinePOID: this.orderDataPO.pk_orderLinePOID,
-      accessoryName: this.accessoryForm.name?.trim(),
+      orderID: this.orderData.pk_orderID,
+      accessoryName: this.accessoryForm.name?.replace(/'/g, "''"),
       accessoryQuantity: Number(this.accessoryForm.quantity),
       accessoryUnitCost: Number(this.accessoryForm.cost),
       accessorySetup: Number(this.accessoryForm.setup),
@@ -690,8 +691,9 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     }
     let payload: AddAdjustment = {
       orderLinePOID: this.orderDataPO.pk_orderLinePOID,
+      orderID: this.orderData.pk_orderID,
       adjustmentTotalCost: Number(this.adjustmentForm.cost),
-      adjustmentName: this.adjustmentForm.name?.trim(),
+      adjustmentName: this.adjustmentForm.name?.replace(/'/g, "''"),
       add_adjustment: true
     }
     payload = this._commonService.replaceNullSpaces(payload);
@@ -721,13 +723,13 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     }
     let payload: Add_PO_Imprint = {
       orderLinePOID: this.orderDataPO.pk_orderLinePOID,
-      imprintName: this.imprintForm.name?.trim(),
+      orderID: this.orderData.pk_orderID,
+      imprintName: this.imprintForm.name?.replace(/'/g, "''"),
       imprintQuantity: Number(this.imprintForm.quantity),
       imprintRun: Number(this.imprintForm.run),
       imprintSetup: Number(this.imprintForm.setup),
       imprintNumColors: Number(this.imprintForm.n_color),
       imprintColors: this.imprintForm.imprint_color?.replace(/'/g, "''"),
-      imprintComment: this.imprintForm.imprintComment?.replace(/'/g, "''"),
       add_po_imprint: true
     }
     payload = this._commonService.replaceNullSpaces(payload);
@@ -747,15 +749,23 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     });
   }
   addColorsPO() {
-    if (this.colorsForm.name?.trim() == '' || Number(this.colorsForm.quantity) == 0 || !this.colorsForm.cost) {
+    if (this.colorsForm.product?.trim() == '' || this.colorsForm.name?.trim() == '' || Number(this.colorsForm.quantity) == 0 || !this.colorsForm.cost) {
       this._OrderManageService.snackBar('Name Quantity and cost is required');
       return;
     }
     let payload: AddPOOption = {
       orderLinePOID: this.orderDataPO.pk_orderLinePOID,
+      orderID: this.orderData.pk_orderID,
       optionName: this.colorsForm.name?.trim(),
+      productName: this.colorsForm.product?.trim(),
+      POQuantity: this.orderDataPO.quantity,
       optionQuantity: Number(this.colorsForm.quantity),
       optionUnitCost: Number(this.colorsForm.cost),
+      orderLineID: Number(this.paramData.pk_orderLineID),
+      blnGroupRun: this.orderLineData?.blnGroupRun ? this.orderLineData?.blnGroupRun : false,
+      groupRunOrderLineID: this.orderLineData?.groupRunOrderLineID ? this.orderLineData?.groupRunOrderLineID : false,
+      blnDuplicate: this.orderDataPO.blnDuplicate,
+      orderLineImprints: this.imprintdata,
       add_po_options: true
     }
     payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
@@ -780,6 +790,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       params = {
         orderLinePOAdjustmentID: item.pk_orderLinePOAdjustmentID,
         orderLinePOID: this.orderDataPO.pk_orderLinePOID,
+        orderID: this.orderData.pk_orderID,
         remove_adjustment: true
       }
     } else if (check == 'colors') {
@@ -787,6 +798,14 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       params = {
         orderLinePOOptionID: item.pk_orderLinePOOptionID,
         orderLinePOID: this.orderDataPO.pk_orderLinePOID,
+        orderID: this.orderData.pk_orderID,
+        POQuantity: this.orderDataPO.quantity,
+        optionQuantity: item.quantity,
+        orderLineID: Number(this.paramData.pk_orderLineID),
+        blnGroupRun: this.orderLineData?.blnGroupRun ? this.orderLineData?.blnGroupRun : false,
+        groupRunOrderLineID: this.orderLineData?.groupRunOrderLineID ? this.orderLineData?.groupRunOrderLineID : false,
+        blnDuplicate: this.orderDataPO.blnDuplicate,
+        orderLineImprints: this.imprintdata,
         remove_po_options: true
       }
     } else if (check == 'accessory') {
@@ -794,6 +813,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       params = {
         orderLinePOAccessoryID: item.pk_orderLinePOAccessoryID,
         orderLinePOID: this.orderDataPO.pk_orderLinePOID,
+        orderID: this.orderData.pk_orderID,
         remove_accessory: true
       }
     } else if (check == 'imprint') {
@@ -801,6 +821,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       params = {
         orderLinePOImprintID: item.pk_orderLinePOImprintID,
         orderLinePOID: this.orderDataPO.pk_orderLinePOID,
+        orderID: this.orderData.pk_orderID,
         remove_po_imprint: true
       }
     }
