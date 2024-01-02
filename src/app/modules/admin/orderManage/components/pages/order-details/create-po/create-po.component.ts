@@ -105,6 +105,12 @@ export class CreatePoComponent implements OnInit {
         vendorShippingPhone: vendor.phone,
         vendorShippingComment: vendor.shippingComment,
       })
+      this.createPOForm.patchValue({
+        vendorShippingEmail: vendor.additionalOrderEmails
+          ? `${this.createPOForm.get('vendorShippingEmail').value},${vendor.additionalOrderEmails}`
+          : this.createPOForm.get('vendorShippingEmail').value,
+      });
+
     })
   }
   CreatePurchaseOrder() {

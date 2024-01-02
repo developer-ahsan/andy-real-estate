@@ -164,6 +164,9 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     { value: 6, label: 'Delivered' },
     { value: 8, label: 'Picked up' },
     { value: 10, label: 'Waiting For GroupBuy' },
+    { value: 12, label: 'Paid' },
+    { value: 11, label: 'Billed' },
+    { value: 13, label: 'PO Cancelled' },
   ];
 
 
@@ -294,10 +297,10 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   }
   // 
   setValues() {
+    this.orderDataPO.blnNotDuplicate = this.orderDataPO.blnDuplicate ? false : true;
     this.orderData.formattedInHandsDate = this.orderData?.formattedInHandsDate ? new Date(this.orderData.formattedInHandsDate) : null;
-    this.orderData.formattedShippingDate = this.orderData?.formattedShippingDate ? new Date(this.orderData.formattedShippingDate) : null;
-    this.orderData.formattedEstimatedShippingDate = this.orderData.formattedEstimatedShippingDate ? new Date(this.orderData.formattedEstimatedShippingDate) : null;
-    console.log(this.orderDataPO)
+    this.orderDataPO.formattedShippingDate = this.orderDataPO?.formattedShippingDate ? new Date(this.orderDataPO.formattedShippingDate) : null;
+    this.orderDataPO.formattedEstimatedShippingDate = this.orderDataPO.formattedEstimatedShippingDate ? new Date(this.orderDataPO.formattedEstimatedShippingDate) : null;
     if (!this.orderDataPO.shippingCarrier) {
       this.orderDataPO.shippingCarrier = 1;
     }
@@ -516,8 +519,8 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   updateShippingTracking() {
     this.isTrackingLoader = true;
     let date = null;
-    if (this.orderData.formattedShippingDate) {
-      date = moment(this.orderData.formattedShippingDate).format('L');
+    if (this.orderDataPO.formattedShippingDate) {
+      date = moment(this.orderDataPO.formattedShippingDate).format('L');
     }
     let payload: UpdateTracking = {
       orderLinePOID: this.orderDataPO.pk_orderLinePOID,
@@ -549,8 +552,8 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   updateEstimatedShipping() {
     this.isEstimatedDateLoader = true;
     let date = null;
-    if (this.orderData.formattedEstimatedShippingDate) {
-      date = moment(this.orderData.formattedEstimatedShippingDate).format('L');
+    if (this.orderDataPO.formattedEstimatedShippingDate) {
+      date = moment(this.orderDataPO.formattedEstimatedShippingDate).format('L');
     }
     let payload: UpdateEstimatedShipping = {
       orderLinePOID: this.orderDataPO.pk_orderLinePOID,
@@ -593,6 +596,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       .subscribe(
         (res: any) => {
           if (res.success) {
+            this.orderDataPO.statusID = 12;
             this._OrderManageService.snackBar(res.message);
           }
           this.isBillLoader = false;
@@ -628,6 +632,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
         (res: any) => {
           if (res.success) {
             this._OrderManageService.snackBar(res.message);
+            this.orderDataPO.statusID = 11;
           }
           this.isVendorBillLoader = false;
           this._changeDetectorRef.markForCheck();
@@ -840,7 +845,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     }
 
     const { pk_orderID, storeName, fk_storeID, pk_companyID, currentTotal, fk_storeUserID, blnEProcurement, blnCashBack, qryStoreUserCashbackSettingsBlnCashBack } = this.orderData;
-    let { pk_orderLinePOID, shippingDate, estimatedShippingDate, trackingNumber, blnSample, fk_orderLineID, shippingCustomerAccountNumber, POinHandsDate, stockFrom, fk_vendorID, vendorShippingName, vendorShippingAddress1, vendorShippingAddress2, vendorShippingCity, vendorShippingState, vendorShippingZip, vendorShippingPhone, vendorShippingEmail, shippingComment, shipToCompanyName, shipToCustomerName, shipToLocation, shipToPurchaseOrder, shipToAddress, shipToCity, shipToState, shipToZip, shipToCountry, imprintComment, POTotal, shipToDeliverTo, productName, quantity, purchaseOrderNumber, purchaseOrderComments, blnDuplicate, blnDecorator, blnSupplier, coop, imprintDetail, blnExported } = this.orderDataPO;
+    let { pk_orderLinePOID, shippingDate, estimatedShippingDate, trackingNumber, blnSample, fk_orderLineID, shippingCustomerAccountNumber, POinHandsDate, stockFrom, fk_vendorID, vendorShippingName, vendorShippingAddress1, vendorShippingAddress2, vendorShippingCity, vendorShippingState, vendorShippingZip, vendorShippingPhone, vendorShippingEmail, shippingComment, shipToCompanyName, shipToCustomerName, shipToLocation, shipToPurchaseOrder, shipToAddress, shipToCity, shipToState, shipToZip, shipToCountry, imprintComment, POTotal, shipToDeliverTo, productName, quantity, purchaseOrderNumber, purchaseOrderComments, blnDuplicate, blnNotDuplicate, blnDecorator, blnSupplier, coop, imprintDetail, blnExported } = this.orderDataPO;
     if (POinHandsDate) {
       POinHandsDate = moment(new Date(POinHandsDate)).format('MM/DD/yyyy');
     }
@@ -850,7 +855,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     if (estimatedShippingDate) {
       estimatedShippingDate = moment(new Date(estimatedShippingDate)).format('MM/DD/yyyy');
     }
-    const { blnGroupRun, groupRunOrderLineID, customerAccountNumber } = this.orderLineData;
+    // const { blnGroupRun, groupRunOrderLineID, customerAccountNumber } = this.orderLineData;
     // Colors
     let OrderLinePOOptions = [];
     for (let i = 0; i < this.colorsList.length; i++) {
@@ -963,7 +968,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       purchaseOrderNumber: purchaseOrderNumber,
       purchaseOrderComments: purchaseOrderComments,
       productName: productName,
-      blnDuplicate: blnDuplicate,
+      blnDuplicate: blnNotDuplicate,
       POinHandsDate: POinHandsDate,
       stockFrom: stockFrom,
       imprintDetail: imprintDetail,
@@ -973,18 +978,18 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       trackingNumber: trackingNumber,
       total: currentTotal,
       blnExported: blnExported,
-      blnGroupRun: blnGroupRun ? blnGroupRun : false,
+      blnGroupRun: this.orderLineData?.blnGroupRun ? this.orderLineData?.blnGroupRun : false,
       isPOProofPath,
       orderID: pk_orderID,
       fk_storeUserID: fk_storeUserID,
       storeID: fk_storeID,
       orderLineID: fk_orderLineID,
-      groupRunOrderLineID: groupRunOrderLineID ? groupRunOrderLineID : null,
+      groupRunOrderLineID: this.orderLineData?.groupRunOrderLineID ? this.orderLineData?.groupRunOrderLineID : null,
       storeName: storeName,
       blnDecorator: blnDecorator,
       blnSupplier: blnSupplier,
       blnSample: blnSample,
-      customerAccountNumber: customerAccountNumber ? customerAccountNumber : null
+      customerAccountNumber: this.orderLineData?.customerAccountNumber ? this.orderLineData?.groupRunOrderLineID : null
     }
     let payload: SavePurchaseOrders = {
       orderManageLoggedInUserName: this.ordermanageUserData.firstName + ' ' + this.ordermanageUserData.lastName,
@@ -1002,6 +1007,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       cashbackDiscount: this.orderData.cashbackDiscount ? this.orderData.cashbackDiscount[0] : null,
       orderLineIDs: this.orderData.orderLineIDs?.split(','),
       fk_groupOrderID: this.orderData.fk_groupOrderID,
+      attachments: this.attachmentsList,
       save_purchase_order: true
     }
     payload = this._commonService.replaceNullSpaces(payload);
@@ -1030,7 +1036,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     }
 
     const { pk_orderID, storeName, fk_storeID, pk_companyID, currentTotal, fk_storeUserID, blnEProcurement, blnCashBack, qryStoreUserCashbackSettingsBlnCashBack } = this.orderData;
-    let { pk_orderLinePOID, shippingDate, estimatedShippingDate, trackingNumber, blnSample, fk_orderLineID, shippingCustomerAccountNumber, POinHandsDate, stockFrom, fk_vendorID, vendorShippingName, vendorShippingAddress1, vendorShippingAddress2, vendorShippingCity, vendorShippingState, vendorShippingZip, vendorShippingPhone, vendorShippingEmail, shippingComment, shipToCompanyName, shipToCustomerName, shipToLocation, shipToPurchaseOrder, shipToAddress, shipToCity, shipToState, shipToZip, shipToCountry, imprintComment, POTotal, shipToDeliverTo, productName, quantity, purchaseOrderNumber, purchaseOrderComments, blnDuplicate, blnDecorator, blnSupplier, coop, imprintDetail, blnExported } = this.orderDataPO;
+    let { pk_orderLinePOID, shippingDate, estimatedShippingDate, trackingNumber, blnSample, fk_orderLineID, shippingCustomerAccountNumber, POinHandsDate, stockFrom, fk_vendorID, vendorShippingName, vendorShippingAddress1, vendorShippingAddress2, vendorShippingCity, vendorShippingState, vendorShippingZip, vendorShippingPhone, vendorShippingEmail, shippingComment, shipToCompanyName, shipToCustomerName, shipToLocation, shipToPurchaseOrder, shipToAddress, shipToCity, shipToState, shipToZip, shipToCountry, imprintComment, POTotal, shipToDeliverTo, productName, quantity, purchaseOrderNumber, purchaseOrderComments, blnDuplicate, blnNotDuplicate, blnDecorator, blnSupplier, coop, imprintDetail, blnExported } = this.orderDataPO;
     if (POinHandsDate) {
       POinHandsDate = moment(new Date(POinHandsDate)).format('MM/DD/yyyy');
     }
@@ -1040,7 +1046,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     if (estimatedShippingDate) {
       estimatedShippingDate = moment(new Date(estimatedShippingDate)).format('MM/DD/yyyy');
     }
-    const { blnGroupRun, groupRunOrderLineID, customerAccountNumber } = this.orderLineData;
+    // const { blnGroupRun, groupRunOrderLineID, customerAccountNumber } = this.orderLineData;
     // Colors
     let OrderLinePOOptions = [];
     for (let i = 0; i < this.colorsList.length; i++) {
@@ -1149,7 +1155,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       purchaseOrderNumber: purchaseOrderNumber,
       purchaseOrderComments: purchaseOrderComments,
       productName: productName,
-      blnDuplicate: blnDuplicate,
+      blnDuplicate: blnNotDuplicate,
       POinHandsDate: POinHandsDate,
       stockFrom: stockFrom,
       imprintDetail: imprintDetail,
@@ -1159,18 +1165,18 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       trackingNumber: trackingNumber,
       total: currentTotal,
       blnExported: blnExported,
-      blnGroupRun: blnGroupRun ? blnGroupRun : false,
+      blnGroupRun: this.orderLineData.blnGroupRun ? this.orderLineData.blnGroupRun : false,
       isPOProofPath,
       orderID: pk_orderID,
       fk_storeUserID: fk_storeUserID,
       storeID: fk_storeID,
       orderLineID: fk_orderLineID,
-      groupRunOrderLineID: groupRunOrderLineID ? groupRunOrderLineID : null,
+      groupRunOrderLineID: this.orderLineData.groupRunOrderLineID ? this.orderLineData.groupRunOrderLineID : null,
       storeName: storeName,
       blnDecorator: blnDecorator,
       blnSupplier: blnSupplier,
       blnSample: blnSample,
-      customerAccountNumber: customerAccountNumber ? customerAccountNumber : null
+      customerAccountNumber: this.orderLineData.customerAccountNumber ? this.orderLineData.customerAccountNumber : null
     }
     let payload: SavePurchaseOrders = {
       orderManageLoggedInUserName: this.ordermanageUserData.firstName + ' ' + this.ordermanageUserData.lastName,
@@ -1188,6 +1194,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       cashbackDiscount: this.orderData.cashbackDiscount ? this.orderData.cashbackDiscount[0] : null,
       fk_groupOrderID: this.orderData.fk_groupOrderID,
       orderLineIDs: this.orderData.orderLineIDs?.split(','),
+      attachments: this.attachmentsList,
       save_purchase_order: true
     }
     payload = this._commonService.replaceNullSpaces(payload);
@@ -1369,6 +1376,9 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       this.orderDataPO.vendorShippingEmail = vendor.ordersEmail;
       this.orderDataPO.vendorShippingComment = vendor.shippingComment;
       this.orderDataPO.vendorShippingPhone = vendor.phone;
+      if (vendor.additionalOrderEmails) {
+        this.orderDataPO.vendorShippingEmail = this.orderDataPO.vendorShippingEmail + ',' + vendor.additionalOrderEmails;
+      }
       this._changeDetectorRef.markForCheck();
     });
   }
@@ -1439,7 +1449,6 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
         type: extension,
         mime: type
       };
-      console.log(this.imageAttachmentValue);
     }
   };
   addAttachmentFile() {

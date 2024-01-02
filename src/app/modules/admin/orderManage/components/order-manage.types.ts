@@ -586,7 +586,15 @@ export interface SavePurchaseOrders {
     cashbackDiscount: number;
     fk_groupOrderID: number;
     orderLineIDs: number[];
+    attachments: Attachments[];
     save_purchase_order: boolean;
+};
+
+interface Attachments {
+    pk_purchaseOrderAttachmentID: number;
+    extension: string;
+    name: string;
+    mimeType: string;
 };
 
 interface orderLineOptions {

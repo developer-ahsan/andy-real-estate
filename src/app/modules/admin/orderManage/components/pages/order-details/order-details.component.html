@@ -136,7 +136,7 @@
                             <mat-form-field class="w-full">
                                 <mat-label>Ship Date:</mat-label>
                                 <input matInput [matDatepicker]="shipDate" readonly
-                                    [(ngModel)]="orderData.formattedShippingDate" (click)="shipDate.open()">
+                                    [(ngModel)]="orderDataPO.formattedShippingDate" (click)="shipDate.open()">
                                 <mat-datepicker-toggle matIconSuffix [for]="shipDate"></mat-datepicker-toggle>
                                 <mat-datepicker #shipDate></mat-datepicker>
                             </mat-form-field>
@@ -178,7 +178,7 @@
                         <mat-form-field class="w-full">
                             <mat-label>Estimated Shipping Date</mat-label>
                             <input matInput [matDatepicker]="Estpicker" readonly
-                                [(ngModel)]="orderData.formattedEstimatedShippingDate" (click)="Estpicker.open()">
+                                [(ngModel)]="orderDataPO.formattedEstimatedShippingDate" (click)="Estpicker.open()">
                             <mat-datepicker-toggle matIconSuffix [for]="Estpicker"></mat-datepicker-toggle>
                             <mat-datepicker #Estpicker></mat-datepicker>
                         </mat-form-field>
@@ -1052,7 +1052,7 @@
                                 <mat-label>Purchase Order Comments</mat-label>
                                 <textarea matInput [(ngModel)]="orderDataPO.purchaseOrderComments"></textarea>
                             </mat-form-field>
-                            <mat-checkbox class="mr-3" [(ngModel)]="orderDataPO.blnDuplicate">Do not
+                            <mat-checkbox class="mr-3" [(ngModel)]="orderDataPO.blnNotDuplicate">Do not
                                 duplicate:</mat-checkbox>
                             <mat-checkbox class="mr-3"
                                 matTooltip="If you are resending this Purchase Order, please indicate whether the supplier needs artwork sent to them. Checking YES adds the item to PO Sent status in SmartArt.  Checking NO leaves the status alone, and graphics will not resend art."
