@@ -361,9 +361,8 @@
                                                         </ng-container>
                                                         <ng-template #NoTVendor237>
                                                             <ng-container *ngIf="item.fk_imprintID">
-                                                                <ng-container *ngIf="imprint?.proofFiles.length">
-                                                                    <ng-container
-                                                                        *ngFor="let file of imprint.proofFiles">
+                                                                <ng-container *ngIf="item?.proofFiles.length">
+                                                                    <ng-container *ngFor="let file of item.proofFiles">
                                                                         <a href="https://assets.consolidus.com/artwork/finalArt/{{orderDetail.fk_storeUserID}}/{{isViewData.fk_orderID}}/{{isViewData.fk_orderLineID}}/{{file.FILENAME}}"
                                                                             target="_blank">Link to print-ready artwork
                                                                             here.</a><br />
@@ -454,7 +453,7 @@
                                                         <td>Accessory Setup</td>
                                                         <td align="center"></td>
                                                         <td align="center"></td>
-                                                        <td align="center">{{item.setupCost | currecny}}</td>
+                                                        <td align="center">{{item?.setupCost | currency}}</td>
                                                     </tr>
                                                 </ng-container>
                                             </ng-container>

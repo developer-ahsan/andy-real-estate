@@ -120,15 +120,15 @@ export class OrdersComponent {
 
     getOrders(sizes, pageNo) {
         let { store_id, range_end, range_start, search_order_id, size, order_type } = this.advancedSearchForm;
-        if (!range_end) {
+        if (!this.endDate) {
             range_end = '';
         } else {
-            range_end = moment(range_end).format('MM/DD/YYYY');
+            range_end = moment(this.endDate).format('MM/DD/YYYY');
         }
-        if (!range_start) {
+        if (!this.startDate) {
             range_start = '';
         } else {
-            range_start = moment(range_start).format('MM/DD/YYYY');
+            range_start = moment(this.startDate).format('MM/DD/YYYY');
         }
         let params = {
             list: true,
@@ -139,7 +139,7 @@ export class OrdersComponent {
             range_end,
             range_start,
             order_type: this.orderType,
-            search_order_id
+            search_order_id: this.searchOrderId
         }
         this.isLoading = true;
         this._orderService.getOrders(params)

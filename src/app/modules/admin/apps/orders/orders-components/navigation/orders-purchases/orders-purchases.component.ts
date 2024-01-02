@@ -115,7 +115,6 @@ export class OrdersPurchasesComponent implements OnInit {
     this._orderManageService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.getArtworkFiles();
       this._changeDetectorRef.markForCheck();
-      console.log(res)
       this.purchaseDetails = res;
       if (res['imprints'].length) {
         this.checkImprintProofExists();
@@ -147,11 +146,10 @@ export class OrdersPurchasesComponent implements OnInit {
       path: `/artwork/finalArt/${this.orderDetail.fk_storeUserID}/${this.isViewData.fk_orderID}/${this.isViewData.fk_orderLineID}/`
     }
     this._commonService.getFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(files => {
-      console.log(files);
       this.purchaseDetails.imprints.forEach(element => {
         element.proofFiles = [];
         files["data"].forEach((file, index) => {
-          if (file.ID.includes(element.id)) {
+          if (file.ID.includes(element.fk_imprintID)) {
             element.proofFiles.push(file);
           }
         });
