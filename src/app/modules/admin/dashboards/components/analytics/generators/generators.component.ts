@@ -76,6 +76,7 @@ export class GeneratorsComponent implements OnInit {
   assetURL = environment.assetsURL;
 
   isOtherGeneratorLoader: boolean = false;
+  totalConversion: any;
   constructor(private _changeDetectorRef: ChangeDetectorRef,
     private _dashboardService: DashboardsService,
   ) { }
@@ -128,9 +129,16 @@ export class GeneratorsComponent implements OnInit {
 
       // Sample Orders
       if (res["sampleOrders"]) {
-        this.sampleStatus = res["sampleOrders"]?.sampleOrdersResponse;
-        this.tempSampleStatus = res["sampleOrders"]?.sampleOrdersResponse;
+        this.sampleStatus = res["sampleOrders"]?.sampleOrdersResponse.filter(item => item.blnSampleConverted == '0');
+        this.tempSampleStatus = res["sampleOrders"]?.sampleOrdersResponse.filter(item => item.blnSampleConverted == '0');
         this.sampleStores = res["sampleOrders"]?.sampleOrdersStores;
+        let count = 0;
+        res["sampleOrders"]?.sampleOrdersResponse.forEach(order => {
+          if (order.blnSampleConverted != '0') {
+            count++;
+          }
+        });
+        this.totalConversion = `Conversion rate:  <b>${count}/${res["qryQuarterSamplesCount"][0].qryQuarterSamplesCount} (${(count / res["qryQuarterSamplesCount"][0].qryQuarterSamplesCount) * 100}%)</b>`
       }
       this.keywordsData = res["keywords"];
       // Other Generators

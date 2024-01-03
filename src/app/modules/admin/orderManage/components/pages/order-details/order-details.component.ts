@@ -544,6 +544,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     this._OrderManageService.PutAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this._OrderManageService.snackBar(res["message"]);
+        this.orderDataPO.statusID = 5;
       }
       this.isTrackingLoader = false;
       this._changeDetectorRef.markForCheck();
@@ -570,6 +571,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     this._OrderManageService.PutAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this._OrderManageService.snackBar(res["message"]);
+        this.orderDataPO.statusID = 4;
       }
       this.isEstimatedDateLoader = false;
       this._changeDetectorRef.markForCheck();

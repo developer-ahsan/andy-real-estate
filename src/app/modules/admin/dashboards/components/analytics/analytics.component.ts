@@ -601,9 +601,9 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
                         anuualxaxis: { categories: [] },
                         annualColors: [],
                         quarter: [],
-                        quarterSeries: [{ name: '', data: [] }, { name: '', data: [] }, { name: '', data: [] }],
-                        quarterxaxis: { categories: [1, 2, 3, 4] },
                         quarterColors: [],
+                        quarterSeries: [{ name: '', data: [] }, { name: '', data: [] }, { name: '', data: [] }],
+                        quarterxaxis: { categories: [1, 2, 3, 4] }
                     });
                 } else {
                     existingStore.ytd.push(ytdValues);
@@ -627,7 +627,9 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
                         ytdSeries: [],
                         xaxis: { categories: [] },
                         colors: [],
-                        ytd: [], annual: [annualValues], quarter: []
+                        quarterColors: [],
+                        quarterSeries: [{ name: '', data: [] }, { name: '', data: [] }, { name: '', data: [] }],
+                        ytd: [], annual: [annualValues], quarter: [],
                     });
                 } else {
                     existingStore.annual.push(annualValues);
@@ -662,7 +664,6 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
                 } else {
                     existingStore.quarter[orderYear].push({ quarter: orderQuarter, data: quarterValues });
                 }
-
                 existingStore.quarterColors.push('#' + reportColor);
             });
             const year: any = moment().year();

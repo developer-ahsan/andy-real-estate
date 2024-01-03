@@ -105,7 +105,8 @@
                         [labels]="performanceChartOptions.labels" [colors]="performanceChartOptions.colors"
                         [title]="performanceChartOptions.title" [theme]="performanceChartOptions.theme"
                         [responsive]="performanceChartOptions.responsive"></apx-chart>
-                    <div class="text-center font-bold">Weekly Average: <span>{{yourPerformanceData.yearlyAverage |
+                    <div class="text-center font-bold" *ngIf="performanceChartOptions.series.length">Weekly Average:
+                        <span>{{yourPerformanceData.yearlyAverage |
                             currency}}</span></div>
                 </div>
             </div>
@@ -131,7 +132,8 @@
                                 [labels]="yourPerformanceData.q1SeriesLabel" [yaxis]="chartOptions.yaxis"
                                 [colors]="yourPerformanceData.q1Colors" [title]="chartOptions.title"
                                 [theme]="chartOptions.theme" [responsive]="chartOptions.responsive"></apx-chart>
-                            <div class="text-center font-bold">Weekly Average: <span>{{yourPerformanceData.q1Average |
+                            <div class="text-center font-bold" *ngIf="yourPerformanceData.q1SeriesData.length">Weekly
+                                Average: <span>{{yourPerformanceData.q1Average |
                                     currency}}</span></div>
                         </div>
                     </div>
@@ -155,7 +157,8 @@
                                 [labels]="yourPerformanceData.q2SeriesLabel" [yaxis]="chartOptions.yaxis"
                                 [colors]="yourPerformanceData.q2Colors" [title]="chartOptions.title"
                                 [theme]="chartOptions.theme" [responsive]="chartOptions.responsive"></apx-chart>
-                            <div class="text-center font-bold">Weekly Average: <span>{{yourPerformanceData.q2Average |
+                            <div class="text-center font-bold" *ngIf="yourPerformanceData.q2SeriesData.length">Weekly
+                                Average: <span>{{yourPerformanceData.q2Average |
                                     currency}}</span></div>
                         </div>
                     </div>
@@ -179,7 +182,8 @@
                                 [labels]="yourPerformanceData.q3SeriesLabel" [yaxis]="chartOptions.yaxis"
                                 [colors]="yourPerformanceData.q3Colors" [title]="chartOptions.title"
                                 [theme]="chartOptions.theme" [responsive]="chartOptions.responsive"></apx-chart>
-                            <div class="text-center font-bold">Weekly Average: <span>{{yourPerformanceData.q3Average |
+                            <div class="text-center font-bold" *ngIf="yourPerformanceData.q3SeriesData.length">Weekly
+                                Average: <span>{{yourPerformanceData.q3Average |
                                     currency}}</span></div>
                         </div>
                     </div>
@@ -203,7 +207,8 @@
                                 [labels]="yourPerformanceData.q4SeriesLabel" [yaxis]="chartOptions.yaxis"
                                 [colors]="yourPerformanceData.q4Colors" [title]="chartOptions.title"
                                 [theme]="chartOptions.theme" [responsive]="chartOptions.responsive"></apx-chart>
-                            <div class="text-center font-bold">Weekly Average: <span>{{yourPerformanceData.q4Average |
+                            <div class="text-center font-bold" *ngIf="yourPerformanceData.q4SeriesData.length">Weekly
+                                Average: <span>{{yourPerformanceData.q4Average |
                                     currency}}</span></div>
                         </div>
                     </div>

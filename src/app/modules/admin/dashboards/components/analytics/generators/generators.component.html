@@ -213,6 +213,8 @@
                             [value]="store.store">{{store.store}}</mat-option>
                     </mat-select>
                 </mat-form-field>
+                <br>
+                <p *ngIf="!sampleStatusLoader" [innerHtml]="totalConversion"></p>
                 <ngx-skeleton-loader *ngIf="sampleStatusLoader" count="8" appearance="line" animation="pulse" [theme]="{ 
                     'background-color': '#dedede'
                   }">

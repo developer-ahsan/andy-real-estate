@@ -110,7 +110,7 @@ export class ReportFiltersComponent implements OnInit, OnDestroy {
 
   initForm() {
 
-    for (let index = 0; index < 18; index++) {
+    for (let index = 0; index < this.currentYear - 2005; index++) {
       this.years.push(this.currentYear - index);
     }
     this.plans = [

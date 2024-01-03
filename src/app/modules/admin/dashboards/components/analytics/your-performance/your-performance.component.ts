@@ -322,36 +322,46 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
             const fourthQuarterPiChart = this.getRefactoredDataForPiCharts(monthlyData.slice(9, 12));
 
             completePiChart.data.forEach((store: any) => {
-                this.performanceChartOptions.series.push(store.totalSales);
-                this.performanceChartOptions.labels.push(store.storeName);
-                this.performanceChartOptions.colors.push('#' + store.reportColor);
+                if (store.totalSales > 0) {
+                    this.performanceChartOptions.series.push(store.totalSales);
+                    this.performanceChartOptions.labels.push(store.storeName);
+                    this.performanceChartOptions.colors.push('#' + store.reportColor);
+                }
             });
 
             firstQuarterPiChart.data.forEach((store: any) => {
-                this.yourPerformanceData.q1SeriesData.push(store.totalSales);
-                this.yourPerformanceData.q1SeriesLabel.push(store.storeName);
-                this.yourPerformanceData.q1Colors.push('#' + store.reportColor);
+                if (store.totalSales > 0) {
+                    this.yourPerformanceData.q1SeriesData.push(store.totalSales);
+                    this.yourPerformanceData.q1SeriesLabel.push(store.storeName);
+                    this.yourPerformanceData.q1Colors.push('#' + store.reportColor);
+                }
             });
             this.yourPerformanceData.q1Earnings = firstQuarterPiChart?.totalSales;
 
             secondQuarterPiChart.data.forEach((store: any) => {
-                this.yourPerformanceData.q2SeriesData.push(store.totalSales);
-                this.yourPerformanceData.q2SeriesLabel.push(store.storeName);
-                this.yourPerformanceData.q2Colors.push('#' + store.reportColor);
+                if (store.totalSales > 0) {
+                    this.yourPerformanceData.q2SeriesData.push(store.totalSales);
+                    this.yourPerformanceData.q2SeriesLabel.push(store.storeName);
+                    this.yourPerformanceData.q2Colors.push('#' + store.reportColor);
+                }
             });
             this.yourPerformanceData.q2Earnings = secondQuarterPiChart?.totalSales;
 
             thirdQuarterPiChart.data.forEach((store: any) => {
-                this.yourPerformanceData.q3SeriesData.push(store.totalSales);
-                this.yourPerformanceData.q3SeriesLabel.push(store.storeName);
-                this.yourPerformanceData.q3Colors.push('#' + store.reportColor);
+                if (store.totalSales > 0) {
+                    this.yourPerformanceData.q3SeriesData.push(store.totalSales);
+                    this.yourPerformanceData.q3SeriesLabel.push(store.storeName);
+                    this.yourPerformanceData.q3Colors.push('#' + store.reportColor);
+                }
             });
             this.yourPerformanceData.q3Earnings = thirdQuarterPiChart?.totalSales;
 
             fourthQuarterPiChart.data.forEach((store: any) => {
-                this.yourPerformanceData.q4SeriesData.push(store.totalSales);
-                this.yourPerformanceData.q4SeriesLabel.push(store.storeName);
-                this.yourPerformanceData.q4Colors.push('#' + store.reportColor);
+                if (store.totalSales > 0) {
+                    this.yourPerformanceData.q4SeriesData.push(store.totalSales);
+                    this.yourPerformanceData.q4SeriesLabel.push(store.storeName);
+                    this.yourPerformanceData.q4Colors.push('#' + store.reportColor);
+                }
             });
             this.yourPerformanceData.q4Earnings = fourthQuarterPiChart?.totalSales;
 
@@ -362,7 +372,6 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
                 this.calculateAverage(earning, quarter, valueAverage);
             }
             this.calculateAverage(this.ytDDataMain?.YTD, '', 'yearly');
-
             // Bar Chart Data
             this.barChartData();
 
@@ -491,16 +500,18 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
             this.ytdChart.xaxis.categories = ['Oct', 'Nov', 'Dec'];
         }
         barChartData.flpsUserStores.forEach((store: any) => {
-            this.ytdChart.series.push(
-                { name: `${store.storeName} - ${this.currentYear - 1}`, data: store.PY, color: this.hexToRgba(store.reportColor, 0.5) }
-            );
-            this.ytdChart.series.push(
-                { name: `${store.storeName} - ${this.currentYear}`, data: store.SALES, color: this.hexToRgba(store.reportColor, 1) }
-            );
-            this.yourPerformanceData.allColors.push(`#` + store.reportColor);
-            // this.ytdChart.colors.push(`#` + store.reportColor); // Adding the color again for the second series
-            // this.ytdChart.colors.push(`#` + store.reportColor);
-            this.ytdChart.labels.push(`${store.storeName}`);
+            if (store.SALES.every(element => element != 0)) {
+                this.ytdChart.series.push(
+                    { name: `${store.storeName} - ${this.currentYear - 1}`, data: store.PY, color: this.hexToRgba(store.reportColor, 0.5) }
+                );
+                this.ytdChart.series.push(
+                    { name: `${store.storeName} - ${this.currentYear}`, data: store.SALES, color: this.hexToRgba(store.reportColor, 1) }
+                );
+                this.yourPerformanceData.allColors.push(`#` + store.reportColor);
+                // this.ytdChart.colors.push(`#` + store.reportColor); // Adding the color again for the second series
+                // this.ytdChart.colors.push(`#` + store.reportColor);
+                this.ytdChart.labels.push(`${store.storeName}`);
+            }
         });
         this.yourPerformanceData.barChartTotal = barChartData.total;
         setTimeout(() => {

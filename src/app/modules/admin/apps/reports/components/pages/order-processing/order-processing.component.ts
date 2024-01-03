@@ -183,7 +183,7 @@ export class ReportsOrderProcessingComponent implements OnInit, OnDestroy {
     documentDefinition.content.push(
       {
         table: {
-          widths: ['20%', '20%', '10%', '10%', '10%', '10%', '10%', '10%'],
+          widths: ['20%', '20%', '10%', '10%', '10%', '10%', '5%', '5%', '10%'],
           body: [
             [
               { text: 'Employee', bold: true },
@@ -193,7 +193,8 @@ export class ReportsOrderProcessingComponent implements OnInit, OnDestroy {
               { text: '% of business', bold: true },
               { text: 'UPO', bold: true },
               { text: 'Num. Sales', bold: true },
-              { text: 'IR', bold: true }
+              { text: 'IR', bold: true },
+              { text: 'COI', bold: true }
             ],
           ]
         },
@@ -214,7 +215,7 @@ export class ReportsOrderProcessingComponent implements OnInit, OnDestroy {
             element.UPO,
             element.NUM_SALES,
             element.IR,
-            // { text: this.currencyPipe.transform(Number(element.COI), 'USD', 'symbol', '1.0-2', 'en-US') },
+            { text: this.currencyPipe.transform(Number(element.COI), 'USD', 'symbol', '1.0-2', 'en-US') },
           ]
         )
       });
@@ -228,7 +229,7 @@ export class ReportsOrderProcessingComponent implements OnInit, OnDestroy {
           { text: employee.UPO, bold: true },
           { text: employee.NUM_SALES, bold: true },
           { text: employee.IR, bold: true },
-          // { text: this.currencyPipe.transform(Number(employee.COI), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
+          { text: this.currencyPipe.transform(Number(employee.COI), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
         ]
       )
     });
@@ -242,7 +243,7 @@ export class ReportsOrderProcessingComponent implements OnInit, OnDestroy {
         { text: this.totalStoreSummary.GRAND_UPO, bold: true },
         { text: this.totalStoreSummary.GRAND_NUM_SALES, bold: true },
         { text: this.totalStoreSummary.GRAND_IR, bold: true },
-        // { text: this.currencyPipe.transform(Number(this.totalStoreSummary.GRAND_COI), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
+        { text: this.currencyPipe.transform(Number(this.totalStoreSummary.GRAND_COI), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
       ]
     )
     // // Employee Summary
