@@ -21,6 +21,7 @@ import { ReportVendorRelationsComponent } from './components/pages/vendor-relati
 import { ReportSupportComponent } from './components/pages/support-report/support-report.component';
 import { ReportsDetailsComponent } from './components/details/details-reports.component';
 import { PromoCodesResolver, CurrentDateResolver, StoresResolver } from './components/reports.resolvers';
+import { ReportsOrderProcessingComponent } from './components/pages/order-processing/order-processing.component';
 export const vendorsRoutes: Route[] = [
 
     {
@@ -187,6 +188,14 @@ export const vendorsRoutes: Route[] = [
                 data: {
                     title: 'Quote Graphics',
                     url: 'quoteGraphicsSupportReport'
+                }
+            },
+            {
+                path: 'orderprocessing',
+                component: ReportsOrderProcessingComponent,
+                data: {
+                    title: 'Order Processing',
+                    url: 'orderprocessing'
                 }
             }
         ]

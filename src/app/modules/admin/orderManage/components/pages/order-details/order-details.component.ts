@@ -1041,6 +1041,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     this._OrderManageService.PutAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this._OrderManageService.snackBar(res["message"]);
+        this.orderDataPO.blnSent = true;
         this.orderDataPO.internalComments = this.orderDataPO.internalComments + '<br>' + res["newOrderComment"];
         this.closeSendPOModal();
       }
@@ -1587,7 +1588,6 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     if (estimatedShippingDate) {
       estimatedShippingDate = moment(new Date(estimatedShippingDate)).format('MM/DD/yyyy');
     }
-    const { blnGroupRun, groupRunOrderLineID, customerAccountNumber } = this.orderLineData;
     // Colors
     let OrderLinePOOptions = [];
     for (let i = 0; i < this.colorsList.length; i++) {
@@ -1706,18 +1706,18 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       trackingNumber: trackingNumber,
       total: currentTotal,
       blnExported: blnExported,
-      blnGroupRun: blnGroupRun ? blnGroupRun : false,
+      blnGroupRun: this.orderLineData?.blnGroupRun ? this.orderLineData?.blnGroupRun : false,
       isPOProofPath,
       orderID: pk_orderID,
       fk_storeUserID: fk_storeUserID,
       storeID: fk_storeID,
       orderLineID: fk_orderLineID,
-      groupRunOrderLineID: groupRunOrderLineID ? groupRunOrderLineID : null,
+      groupRunOrderLineID: this.orderLineData?.groupRunOrderLineID ? this.orderLineData?.groupRunOrderLineID : null,
       storeName: storeName,
       blnDecorator: blnDecorator,
       blnSupplier: blnSupplier,
       blnSample: blnSample,
-      customerAccountNumber: customerAccountNumber ? customerAccountNumber : null
+      customerAccountNumber: this.orderLineData?.customerAccountNumber ? this.orderLineData?.customerAccountNumber : null
     }
     let payload: POPDFLink = {
       orderLinePO: OrderLinePO,

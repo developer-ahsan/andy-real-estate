@@ -62,10 +62,11 @@ import { ReportFiltersComponent } from './components/common/report-filters/repor
 import { ReportVendorRelationsComponent } from './components/pages/vendor-relations/vendor-relations.component';
 import { ReportSupportComponent } from './components/pages/support-report/support-report.component';
 import { CurrencyPipe } from '@angular/common';
+import { ReportsOrderProcessingComponent } from './components/pages/order-processing/order-processing.component';
 
 @NgModule({
     declarations: [
-        ReportFiltersComponent, ReportsComponent, ReportsDetailsComponent, ReportsStoreSalesComponent, ReportsSupplierSalesComponent, ReportsEmployeeSalesComponent, ReportsLocationSalesComponent, ReportTopCustomerComponent, ReportCustomerPurchaseComponent, ReportItemsComponent,
+        ReportFiltersComponent, ReportsComponent, ReportsDetailsComponent, ReportsStoreSalesComponent, ReportsSupplierSalesComponent, ReportsEmployeeSalesComponent, ReportsLocationSalesComponent, ReportTopCustomerComponent, ReportCustomerPurchaseComponent, ReportItemsComponent, ReportsOrderProcessingComponent,
         ReportAccountCodeComponent, RoyalitiesReportComponent, RoyalitySummaryReportComponent, ReportBestSellerComponent, ReportSampleSaleComponent, ReportStandardMarginComponent, ReportIncidentComponent, ReportVendorRelationsComponent, ReportInventorySummaryComponent, GraphicsSupportReportComponent, QuoteGraphicsReportComponent, ReportSupportComponent
     ],
     imports: [

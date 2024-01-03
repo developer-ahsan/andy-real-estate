@@ -110,6 +110,11 @@ export const navigations = [
                 icon: 'mat_outline:money',
                 route: 'quoteGraphicsSupportReport'
             },
+            {
+                title: 'Order Processing',
+                icon: 'mat_outline:money',
+                route: 'orderprocessing'
+            },
         ]
     }
 ];

@@ -1,0 +1,150 @@
+<div #topScrollAnchor></div>
+
+<div class="w-full">
+    <div class="px-8 pb-4">
+        <div class="row" *ngIf="!generateReportData">
+            <div class="col-12">
+                <app-report-filters></app-report-filters>
+            </div>
+            <div class="col-12 text-right">
+                <button mat-flat-button class="min-w-60" [color]="'primary'" [disabled]="isGenerateReportLoader"
+                    (click)="generateReport(1)">
+                    <span *ngIf="!isGenerateReportLoader">Generate Report</span>
+                    <mat-progress-spinner *ngIf="isGenerateReportLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                </button>
+            </div>
+        </div>
+        <div class="row" *ngIf="generateReportData">
+            <div class="col-12 mb-2">
+                <button (click)="generatePdf()" mat-flat-button color="primary" [disabled]="isPdfLoader"
+                    [matTooltip]="'Save report as PDF'">
+                    <mat-icon svgIcon="mat_outline:picture_as_pdf" *ngIf="!isPdfLoader"></mat-icon>
+                    <span class="ml-2 mr-1" *ngIf="!isPdfLoader">PDF</span>
+                    <mat-progress-spinner *ngIf="isPdfLoader" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                </button>
+            </div>
+            <div class="col-12" #htmltable id="htmltable">
+                <div class="flex justify-between">
+                    <div>
+                        <p class="text-lg text-capitalize"><strong>{{_reportService.ngPlan}}</strong></p>
+                        <p>Range: {{this._reportService.startDate | date: 'MM/dd/yyyy'}}-{{this._reportService.endDate |
+                            date: 'MM/dd/yyyy'}}</p>
+                    </div>
+                    <div>
+                        <button class="min-w-50" mat-button mat-stroked-button (click)="backToList()">Back To
+                            Search</button>
+                        <br>
+                        <button class="min-w-50 mt-2" mat-button mat-flat-button color="primary"
+                            (click)="goToSummary()">Go
+                            To Report Summary</button>
+                    </div>
+                </div>
+                <!-- Tables -->
+                <div>
+                    <div #storesSummary class="py-2">
+                        <div class="text-secondary pb-0 mb-2 ">
+                            <b class="text-lg">Report Summary</b>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="table table-striped w-full border-t mt-2">
+                            <thead>
+                                <tr>
+                                    <th>Employee</th>
+                                    <th>Store</th>
+                                    <th>Revenue</th>
+                                    <th>Annual Equiv.</th>
+                                    <th>% of business</th>
+                                    <th>
+                                        <div class="flex">
+                                            <span>UPO</span>
+                                            <mat-icon class="icon-size-4 ml-1" matTooltip="Unique PO"
+                                                [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                        </div>
+                                    </th>
+                                    <th>Num. Sales</th>
+                                    <th>
+                                        <div class="flex">
+                                            <span>IR</span>
+                                            <mat-icon class="icon-size-4 ml-1" matTooltip="Incident reports"
+                                                [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="flex">
+                                            <span>COI</span>
+                                            <mat-icon class="icon-size-4 ml-1" matTooltip="Cost of incident"
+                                                [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <ng-container *ngFor="let item of generateReportData">
+                                    <tr *ngFor="let employee of item.data">
+                                        <td>{{item.Name}}</td>
+                                        <td>{{employee.storeName}}</td>
+                                        <td>{{employee.TOTAL | currency}}</td>
+                                        <td>{{employee.ANNUAL_EQUIV | currency}}</td>
+                                        <td>{{employee.percentOfBussiness}} %</td>
+                                        <td>{{employee.UPO}}</td>
+                                        <td>{{employee.NUM_SALES}}</td>
+                                        <td>{{employee.IR}}</td>
+                                        <td>{{employee.COI | currency}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th colspan="2">TOTAL</th>
+                                        <th>{{item.Revenue | currency}}</th>
+                                        <th>{{item.Annual | currency}}</th>
+                                        <th>{{item.percent}} %</th>
+                                        <th>{{item.UPO}}</th>
+                                        <th>{{item.NUM_SALES}}</th>
+                                        <th>{{item.IR}}</th>
+                                        <th>{{item.COI | currency}}</th>
+                                    </tr>
+                                </ng-container>
+                                <tr class="columnHeader2" class="font-bold">
+                                    <th colspan="2">GRAND TOTAL</th>
+                                    <th>{{totalStoreSummary.GRAND_TOTAL | currency}}</th>
+                                    <th>{{totalStoreSummary.GRAND_ANNUAL | currency}}</th>
+                                    <th></th>
+                                    <th>{{totalStoreSummary.GRAND_UPO}}</th>
+                                    <th>{{totalStoreSummary.GRAND_NUM_SALES}}</th>
+                                    <th>{{totalStoreSummary.GRAND_IR}}</th>
+                                    <th>{{totalStoreSummary.GRAND_COI | currency}}</th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Employee Sales -->
+                    <div #employeeSummary class="text-lg pt-4 font-medium tracking-tight leading-6 truncate border-b">
+                        <div class="text-secondary pb-0 mb-2 ">
+                            <b class="text-lg">Summary</b>
+                            <p class="cursor-pointer hover:text-blue-500 mt-2" (click)="backtoTop()">Back to Top</p>
+                        </div>
+                    </div>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>% of Revenue </th>
+                                <th>NUM. PO</th>
+                                <th>% of PO</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of generateReportData">
+                                <td>{{item.Name }}</td>
+                                <td>{{item.percent}} %</td>
+                                <td>{{item.NUM_SALES}}</td>
+                                <td>{{item.percentPO}} %</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
