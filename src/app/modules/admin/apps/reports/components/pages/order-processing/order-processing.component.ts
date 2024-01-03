@@ -58,7 +58,6 @@ export class ReportsOrderProcessingComponent implements OnInit, OnDestroy {
 
   reportPage = 1;
   totalData = 0;
-  displayedColumns: string[] = ['store', 'sales', 'py', 'percent', 'difference', 'n_sales', 'pyns', 'avg', 'margin'];
 
   currentYear = moment().format('yyyy');
   currentDate = moment().subtract(1, 'year').format('MM/DD/YYYY');
@@ -84,14 +83,6 @@ export class ReportsOrderProcessingComponent implements OnInit, OnDestroy {
       GRAND_NUM_SALES: 0,
       GRAND_IR: 0,
       GRAND_COI: 0
-    }
-    this.lastYearTotal = {
-      SALES: 0,
-      PY: 0,
-      PERCENT: 0,
-      NS: 0,
-      PYNS: 0,
-      blnPercent: false
     }
     this._reportService.setFiltersReport();
     let annual_equ = 0;
@@ -138,7 +129,7 @@ export class ReportsOrderProcessingComponent implements OnInit, OnDestroy {
           this.totalStoreSummary.GRAND_TOTAL = element.GRAND_TOTAL;
         });
         reportData.forEach((element, index) => {
-          element.percentPO = ((Number(element.NUM_SALES) / this.totalStoreSummary.GRAND_NUM_SALES) * 100).toFixed(2);
+          element.percentPO = Math.round((Number(element.UPO) / this.totalStoreSummary.GRAND_UPO) * 100);
         });
         this.generateReportData = reportData;
       } else {
@@ -192,7 +183,7 @@ export class ReportsOrderProcessingComponent implements OnInit, OnDestroy {
     documentDefinition.content.push(
       {
         table: {
-          widths: ['*', '*', '*', '*', '*', '*', '*', '*', '*'],
+          widths: ['20%', '20%', '10%', '10%', '10%', '10%', '10%', '10%'],
           body: [
             [
               { text: 'Employee', bold: true },
@@ -202,8 +193,7 @@ export class ReportsOrderProcessingComponent implements OnInit, OnDestroy {
               { text: '% of business', bold: true },
               { text: 'UPO', bold: true },
               { text: 'Num. Sales', bold: true },
-              { text: 'IR', bold: true },
-              { text: 'COI', bold: true }
+              { text: 'IR', bold: true }
             ],
           ]
         },
@@ -224,7 +214,7 @@ export class ReportsOrderProcessingComponent implements OnInit, OnDestroy {
             element.UPO,
             element.NUM_SALES,
             element.IR,
-            { text: this.currencyPipe.transform(Number(element.COI), 'USD', 'symbol', '1.0-2', 'en-US') },
+            // { text: this.currencyPipe.transform(Number(element.COI), 'USD', 'symbol', '1.0-2', 'en-US') },
           ]
         )
       });
@@ -238,7 +228,7 @@ export class ReportsOrderProcessingComponent implements OnInit, OnDestroy {
           { text: employee.UPO, bold: true },
           { text: employee.NUM_SALES, bold: true },
           { text: employee.IR, bold: true },
-          { text: this.currencyPipe.transform(Number(employee.COI), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
+          // { text: this.currencyPipe.transform(Number(employee.COI), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
         ]
       )
     });
@@ -252,7 +242,7 @@ export class ReportsOrderProcessingComponent implements OnInit, OnDestroy {
         { text: this.totalStoreSummary.GRAND_UPO, bold: true },
         { text: this.totalStoreSummary.GRAND_NUM_SALES, bold: true },
         { text: this.totalStoreSummary.GRAND_IR, bold: true },
-        { text: this.currencyPipe.transform(Number(this.totalStoreSummary.GRAND_COI), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
+        // { text: this.currencyPipe.transform(Number(this.totalStoreSummary.GRAND_COI), 'USD', 'symbol', '1.0-2', 'en-US'), bold: true },
       ]
     )
     // // Employee Summary
@@ -280,7 +270,7 @@ export class ReportsOrderProcessingComponent implements OnInit, OnDestroy {
         [
           employee.Name,
           employee.percent + '%',
-          employee.NUM_SALES,
+          employee.UPO,
           employee.percentPO + '%'
         ]
       )
