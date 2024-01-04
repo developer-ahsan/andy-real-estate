@@ -54,6 +54,7 @@ export class ReportSupportComponent implements OnInit, OnDestroy {
   isAddNewImprint: boolean = false;
   imprintGroupData: any;
   isError: boolean = false;
+  isGenerateReportLoader: boolean;
 
   // ReportDropdowns
   roleID = 0;
@@ -86,6 +87,19 @@ export class ReportSupportComponent implements OnInit, OnDestroy {
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     });
+  }
+  generateReport() {
+    if (!this.selectedRoles) {
+      this._reportService.snackBar('Please select a support role.');
+      return;
+    }
+
+    this.isGenerateReportLoader = true;
+    setTimeout(() => {
+      this.isGenerateReportLoader = false;
+      this._reportService.snackBar('No orders have been found in the specified range that match your criteria.');
+      this._changeDetectorRef.markForCheck();
+    }, 1000);
   }
   /**
      * On destroy

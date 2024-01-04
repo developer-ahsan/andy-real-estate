@@ -162,7 +162,7 @@
                     <div class="col-12 col-md-6">
                         <mat-form-field class="w-full">
                             <mat-label>Password(15)* </mat-label>
-                            <input matInput type="password" maxlength="15" formControlName="password">
+                            <input matInput type="text" maxlength="15" formControlName="password">
                         </mat-form-field>
                     </div>
                     <div class="col-12 col-md-6">
@@ -349,7 +349,7 @@
                         <div class="col-12 col-md-6">
                             <mat-form-field class="w-full">
                                 <mat-label>Password(15)* </mat-label>
-                                <input matInput type="password" maxlength="15" formControlName="password">
+                                <input matInput type="text" maxlength="15" formControlName="password">
                             </mat-form-field>
                         </div>
                         <div class="col-12 col-md-6">
@@ -399,7 +399,7 @@
                         <div class="my-2">
                             <mat-form-field class="w-full">
                                 <mat-label>Enter Your Password:</mat-label>
-                                <input maxlength="50" matInput type="password" [(ngModel)]="userPassword">
+                                <input maxlength="50" matInput type="text" [(ngModel)]="userPassword">
                             </mat-form-field>
                             <button class="bg-red-500 text-white px-4 py-2 rounded"
                                 [disabled]="updateUserData.deleteLoader" (click)="removeAdminUser()">

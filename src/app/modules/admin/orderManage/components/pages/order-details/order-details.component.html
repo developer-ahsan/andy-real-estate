@@ -145,12 +145,12 @@
                             <mat-form-field class="w-full">
                                 <mat-label>Carrier:</mat-label>
                                 <mat-select matInput [(ngModel)]="orderDataPO.shippingCarrier">
-                                    <mat-option [value]="1">UPS</mat-option>
-                                    <mat-option [value]="2">FedEx</mat-option>
-                                    <mat-option [value]="3">Freight</mat-option>
-                                    <mat-option [value]="4">USPS</mat-option>
-                                    <mat-option [value]="5">Delivery</mat-option>
-                                    <mat-option [value]="6">DHL</mat-option>
+                                    <mat-option [value]="'1'">UPS</mat-option>
+                                    <mat-option [value]="'2'">FedEx</mat-option>
+                                    <mat-option [value]="'3'">Freight</mat-option>
+                                    <mat-option [value]="'4'">USPS</mat-option>
+                                    <mat-option [value]="'5'">Delivery</mat-option>
+                                    <mat-option [value]="'6'">DHL</mat-option>
                                 </mat-select>
                             </mat-form-field>
                         </div>
@@ -849,13 +849,13 @@
                                                     [(ngModel)]="imprintForm.imprint_color">
                                             </mat-form-field>
                                         </div>
-                                        <!-- <div class="col-12">
+                                        <div class="col-12">
                                             <mat-form-field class="w-full text-sm">
                                                 <mat-label>Imprint Comment</mat-label>
                                                 <input matInput maxlength="3000"
                                                     [(ngModel)]="imprintForm.imprintComment">
                                             </mat-form-field>
-                                        </div> -->
+                                        </div>
                                         <div class="col-12 text-right">
                                             <button mat-button mat-flat-button color="primary" class="rounded-md"
                                                 (click)="addImprintPO()" [disabled]="isAddImprintLoader">

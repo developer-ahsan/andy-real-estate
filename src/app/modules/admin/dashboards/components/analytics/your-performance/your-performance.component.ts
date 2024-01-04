@@ -500,7 +500,7 @@ export class YourPerformanceComponent implements OnInit, OnDestroy {
             this.ytdChart.xaxis.categories = ['Oct', 'Nov', 'Dec'];
         }
         barChartData.flpsUserStores.forEach((store: any) => {
-            if (store.SALES.every(element => element != 0)) {
+            if (store.SALES.some(element => element != 0)) {
                 this.ytdChart.series.push(
                     { name: `${store.storeName} - ${this.currentYear - 1}`, data: store.PY, color: this.hexToRgba(store.reportColor, 0.5) }
                 );

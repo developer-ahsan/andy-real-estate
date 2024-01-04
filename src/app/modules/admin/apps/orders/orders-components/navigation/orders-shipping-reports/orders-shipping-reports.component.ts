@@ -10,20 +10,13 @@ import { takeUntil } from 'rxjs/operators';
   templateUrl: './orders-shipping-reports.component.html'
 })
 export class OrdersShippingReportsComponent implements OnInit {
-  @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   isLoading: boolean = false;
-  selectedOrder: any;
-  orderParticipants = [];
+  // selectedOrder: OrdersList = null;
   orderDetail: any;
-  orderProducts = [];
-  not_available = 'N/A';
-
-  totalShippingCost = 0;
-  totalShippingPrice = 0;
-
-  orderLinesData: any;
+  managerDetails: any;
+  qryOrderLines: any;
   constructor(
     private _orderService: OrdersService,
     private _changeDetectorRef: ChangeDetectorRef
@@ -32,126 +25,98 @@ export class OrdersShippingReportsComponent implements OnInit {
   ngOnInit(): void {
     this.isLoading = true;
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      if (res) {
+      if (res["data"].length) {
         this.orderDetail = res["data"][0];
+        this.setOrderData();
         this.getOrderProducts();
       }
     })
   }
+  setOrderData() {
+    this.orderDetail.totalOrderSHCost = 0;
+    this.orderDetail.totalOrderSHPrice = 0;
+    this.managerDetails = this.orderDetail.managerDetails?.split('::');
+    if (this.orderDetail.qryUserLocations) {
+      this.orderDetail.locationName = this.orderDetail.qryUserLocations?.split('::')[1];
+      this.orderDetail.attributeName = this.orderDetail.qryUserLocations?.split('::')[3];
+    }
+    if (this.orderDetail.qryRoyalty) {
+      const [id, name, state, percentage] = this.orderDetail.qryRoyalty?.split('::')[1];
+      this.orderDetail.royaltyData = { name, state, percentage: Number(percentage) * 100 };
+    }
+    if (this.orderDetail.qryOrderAdjustments) {
+      this.orderDetail.adjustmentsData = [];
+      const adjustments = this.orderDetail.qryOrderAdjustments.split(',,');
+      adjustments.forEach(adjustment => {
+        const [pk_adjustmentID, cost, price, description, author, dateCreated] = adjustment.split('::');
+        this.orderDetail.adjustmentsData.push({ pk_adjustmentID, cost: Number(cost), price: Number(price), description, author, dateCreated });
+      });
+    }
+  }
   getOrderProducts() {
     this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      let value = [];
-      res["data"].forEach((element, index) => {
-        value.push(element.pk_orderLineID);
-        if (index == res["data"].length - 1) {
-          this.getLineProducts(value.toString());
-        }
+      res["data"].forEach((orderLine) => {
+        orderLine.stautes = [1, 2, 3, 4];
+        this.orderDetail.totalOrderSHCost += orderLine.shippingCost;
+        this.orderDetail.totalOrderSHPrice += orderLine.shippingPrice;
+        orderLine.imprintsData = [];
+        orderLine.colorSizesData = [];
+        orderLine.accessoriesData = [];
+        this.setImprintsToOrderline(orderLine, res["qryImprintsReport"]);
+        this.setColoSizesToOrderline(orderLine, res["qryItemReport"]);
+        this.setAccessoriesToOrderline(orderLine, res["qryAccessoriesReport"]);
       });
-      // this.orderProducts = res["data"];
-    })
-  }
-  getLineProducts(value) {
-    let params = {
-      order_line_item: true,
-      order_line_id: value
-    }
-    this._orderService.getOrderLineProducts(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      let products = [];
-
-      res["data"].forEach(element => {
-        let prod = [];
-        if (products.length == 0) {
-          let cost = (element.cost * element.quantity) + element.shippingCost;
-          let price = (element.price * element.quantity) + element.shippingPrice;
-          this.totalShippingCost = this.totalShippingCost + element.shippingCost;
-          this.totalShippingPrice = this.totalShippingPrice + element.shippingPrice;
-          prod.push(element);
-          products.push({ products: prod, order_line_id: element.fk_orderLineID, accessories: [], imprints: [], totalQuantity: element.quantity, totalMercandiseCost: cost, totalMerchendisePrice: price });
-        } else {
-          const index = products.findIndex(item => item.order_line_id == element.fk_orderLineID);
-          if (index < 0) {
-            let cost = (element.cost * element.quantity) + element.shippingCost;
-            let price = (element.price * element.quantity) + element.shippingPrice;
-            this.totalShippingCost = this.totalShippingCost + element.shippingCost;
-            this.totalShippingPrice = this.totalShippingPrice + element.shippingPrice;
-            prod.push(element);
-            products.push({ products: prod, order_line_id: element.fk_orderLineID, accessories: [], imprints: [], totalQuantity: element.quantity, totalMercandiseCost: cost, totalMerchendisePrice: price });
-          } else {
-            this.totalShippingCost = this.totalShippingCost + element.shippingCost;
-            this.totalShippingPrice = this.totalShippingPrice + element.shippingPrice;
-            let cost = (element.cost * element.quantity);
-            let price = (element.price * element.quantity);
-            prod = products[index].products;
-            prod.push(element);
-            products[index].products = prod;
-            products[index].totalQuantity = products[index].totalQuantity + element.quantity;
-            products[index].totalMercandiseCost = products[index].totalMercandiseCost + cost;
-            products[index].totalMerchendisePrice = products[index].totalMerchendisePrice + price;
-          }
-        }
-      });
-      if (res["accessories"].length > 0) {
-        res["accessories"].forEach(element => {
-          let cost = (element.runCost * element.quantity);
-          let price = (element.runPrice * element.quantity);
-          const index = products.findIndex(item => item.order_line_id == element.orderLineID);
-          products[index].accessories.push(element);
-          products[index].totalMercandiseCost = products[index].totalMercandiseCost + cost;
-          products[index].totalMerchendisePrice = products[index].totalMerchendisePrice + price;
-        });
-      }
-      this.getProductImprints(value, products);
-    }, err => {
+      this.qryOrderLines = res["data"];
       this.isLoading = false;
-      this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
     })
   }
-  getProductImprints(value, data) {
-    let params = {
-      imprint_report: true,
-      order_line_id: value
+  // Set Imprints
+  setImprintsToOrderline(orderLine, imprints) {
+    const matchingImprints = imprints.filter(imprint => imprint.fk_orderLineID === orderLine.pk_orderLineID);
+    orderLine.imprintsData.push(...matchingImprints);
+  }
+  // Set Color/Sizes
+  setColoSizesToOrderline(orderLine, items) {
+    if (items.length) {
+      orderLine.warehouseCode = items.warehouseCode;
     }
-    this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      let tempArr = [];
-      res["data"].forEach(element => {
-        let cost = (element.runCost * element.quantity) + element.setupCost;
-        let price = (element.runPrice * element.quantity) + element.setupPrice;
-        const index = data.findIndex(item => item.order_line_id == element.fk_orderLineID);
-        if (index > -1) {
-          data[index].imprints.push(element);
-          data[index].totalMercandiseCost = data[index].totalMercandiseCost + cost;
-          data[index].totalMerchendisePrice = data[index].totalMerchendisePrice + price;
-        }
-      });
-
-
-      this.orderProducts = data;
-      console.log(this.orderProducts)
-      this.isLoading = false;
-      this.isLoadingChange.emit(false);
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this.isLoading = false;
-      this.isLoadingChange.emit(false);
-      this._changeDetectorRef.markForCheck();
-    });
+    const matchingSizes = items.filter(item => item.fk_orderLineID === orderLine.pk_orderLineID);
+    orderLine.colorSizesData.push(...matchingSizes);
+  }
+  // Set Accessories Data
+  setAccessoriesToOrderline(orderLine, items) {
+    const matchingAccessories = items.filter(item => item.fk_orderLineID === orderLine.pk_orderLineID);
+    orderLine.accessoriesData.push(...matchingAccessories);
   }
 
   public exportHtmlToPDF() {
+    let element = document.getElementById('htmltable');
+    var positionInfo = element.getBoundingClientRect();
+    var height = positionInfo.height;
+    var width = positionInfo.width;
+    var top_left_margin = 15;
+    let PDF_Width = width + (top_left_margin * 2);
+    var PDF_Height = (PDF_Width * 1.5) + (top_left_margin * 2);
+    var canvas_image_width = width;
+    var canvas_image_height = height;
+
+    var totalPDFPages = Math.ceil(height / PDF_Height) - 1;
+    const { pk_orderID } = this.orderDetail;
     let data = document.getElementById('htmltable');
-    const file_name = `ShippinReport_56165.pdf`;
-    html2canvas(data).then(canvas => {
+    const file_name = `ShippingReport_${pk_orderID}.pdf`;
+    html2canvas(data, { useCORS: true }).then(canvas => {
+      canvas.getContext('2d');
+      var imgData = canvas.toDataURL("image/jpeg", 1.0);
+      var pdf = new jsPDF('p', 'pt', [PDF_Width, PDF_Height]);
+      pdf.addImage(imgData, 'jpeg', top_left_margin, top_left_margin, canvas_image_width, canvas_image_height);
 
-      let docWidth = 208;
-      let docHeight = canvas.height * docWidth / canvas.width;
 
-      const contentDataURL = canvas.toDataURL('image/png')
-      let doc = new jsPDF('p', 'mm', 'a4');
-      let position = 0;
-      doc.addImage(contentDataURL, 'PNG', 0, position, docWidth, docHeight)
-
-      doc.save(file_name);
+      for (var i = 1; i <= totalPDFPages; i++) {
+        pdf.addPage([PDF_Width, PDF_Height]);
+        pdf.addImage(imgData, 'jpeg', top_left_margin, -(PDF_Height * i) + (top_left_margin * 4), canvas_image_width, canvas_image_height);
+      }
+      pdf.save(file_name);
     });
   }
 

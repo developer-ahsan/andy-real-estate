@@ -180,6 +180,7 @@ export interface Add_PO_Imprint {
     orderLinePOID: number;
     orderID: number;
     imprintName: string;
+    imprintComment: string;
     imprintQuantity: number;
     imprintRun: number;
     imprintSetup: number;

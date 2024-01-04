@@ -45,7 +45,7 @@
                     </mat-form-field>
                   </div>
                   <div class="col-md-6 col-12">
-                    <mat-checkbox>Send receipt to customer?</mat-checkbox>
+                    <mat-checkbox [(ngModel)]="send_receipt">Send receipt to customer?</mat-checkbox>
                   </div>
                   <div class="col-md-6 col-12 text-right">
                     <button [matTooltip]="'Apply'" [disabled]="isPaymentLoader" (click)="initializePayment()"

@@ -3,7 +3,7 @@ import moment from 'moment';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { OrdersService } from '../../orders.service';
-import { StripePayment } from '../../orders.types';
+import { StripePayment, enter_payment } from '../../orders.types';
 
 interface Transaction {
   item: string;
@@ -26,6 +26,7 @@ export class OrderPaymentComponent implements OnInit {
   paymentHandler: any = null;
   ngAmount = null;
   referanceNumber: string = ''
+  send_receipt: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _orderService: OrdersService
@@ -61,10 +62,20 @@ export class OrderPaymentComponent implements OnInit {
     }
   }
   initializePayment() {
+    let payload: enter_payment = {
+      amount_paid: this.ngAmount,
+      current_total: this.orderDetail?.currentTotal,
+      order_total: this.orderDetail?.orderTotal, // qryOrderTotals.price+qryOrderTotals.tax+qryOrderTotals.royalties
+      reference_number: this.referanceNumber?.replace(/'/g, "''"),
+      order_id: this.orderDetail.pk_orderID,
+      blnWarehouse: this.orderDetail.blnWarehouse,
+      send_receipt: this.send_receipt,
+      formattedOrderDate: this.orderDetail.formattedOrderDate,
+      billingEmail: this.orderDetail.billingEmail,
+      storeName: this.orderDetail.storeName,
+      enter_payment: true
+    }
     const diff = Math.round(this.orderDetail?.orderTotal) - Math.round(this.orderDetail?.currentTotal);
-    console.log(this.orderDetail?.orderTotal)
-    console.log(this.orderDetail?.currentTotal)
-    console.log(diff);
     if (!this.ngAmount) {
       this._orderService.snackBar('Please enter a payment amount below.');
       return;
@@ -73,57 +84,13 @@ export class OrderPaymentComponent implements OnInit {
       this._orderService.snackBar('The payment amount entered exceeds the order total.');
       return;
     }
-    let payload = {
-
-    }
     this.isPaymentLoader = true;
     this.orderDetail.currentTotal = this.orderDetail?.currentTotal + this.ngAmount;
-    console.log(payload)
-    return;
-
-    if (this.ngAmount > 0) {
-      const paymentHandler = (<any>window).StripeCheckout.configure({
-        key: 'pk_test_51MW7XpKftHck147B5Rokid6Csvq6fNf8Tee690E3KuRzLd9P85yrvvQHpDK22ZTedK5WwzXAc2aVIY21Wyx4ia6V002R7AbvoW',
-        locale: 'auto',
-        token: (stripeToken: any) => {
-          let payload: StripePayment = {
-            stripe_token: stripeToken.id,
-            stripe_price: Number(this.ngAmount),
-            stripe_transaction: true,
-            order_id: Number(this.orderDetail.pk_orderID)
-          }
-
-          if (stripeToken) {
-            this.isPaymentLoader = true;
-            this._changeDetectorRef.markForCheck();
-            this._orderService.orderPostCalls(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe((res: any) => {
-              this.isPaymentLoader = false;
-              if (res.paid) {
-                this.ngAmount = null;
-                // this.orderDetail.paymentDate = new Date(res?.created);
-                // console.log(new Date(res?.created))
-                this._orderService.snackBar(`Payment Succeeded txID:${res?.balance_transaction}`);
-              }
-              this._changeDetectorRef.markForCheck();
-            }, err => {
-              this._orderService.snackBar('Something went wrong');
-              this.isPaymentLoader = false;
-              this._changeDetectorRef.markForCheck();
-            });
-          }
-
-        }
-      });
-
-      paymentHandler.open({
-        name: this.orderDetail.pk_orderID,
-        description: this.orderDetail.userFirstName + ' ' + this.orderDetail.userLastName,
-        amount: Number(this.ngAmount * 100)
-      });
-    } else {
-      this._orderService.snackBar('Amount should be greater than 0');
-    }
-
+    this._orderService.orderPostCalls(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.isPaymentLoader = false;
+      this.ngAmount = '';
+      this._changeDetectorRef.markForCheck();
+    });
   }
 
 }

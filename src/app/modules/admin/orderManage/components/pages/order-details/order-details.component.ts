@@ -304,7 +304,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     this.orderDataPO.formattedShippingDate = this.orderDataPO?.formattedShippingDate ? new Date(this.orderDataPO.formattedShippingDate) : null;
     this.orderDataPO.formattedEstimatedShippingDate = this.orderDataPO.formattedEstimatedShippingDate ? new Date(this.orderDataPO.formattedEstimatedShippingDate) : null;
     if (!this.orderDataPO.shippingCarrier) {
-      this.orderDataPO.shippingCarrier = 1;
+      this.orderDataPO.shippingCarrier = '1';
     }
   }
   // Bill Pay
@@ -534,7 +534,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       blnGroupOrder: this.orderData.fk_groupOrderID ? true : false,
       trackingNumber: this.orderDataPO.trackingNumber,
       shipDate: date,
-      carrier: this.orderDataPO.shippingCarrier,
+      carrier: Number(this.orderDataPO.shippingCarrier),
       blnSendShippingEmail: this.blnblnSendShippingEmail,
       blnRevised: this.blnRevised,
       update_shipping_tracking: true
@@ -731,6 +731,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       imprintRun: Number(this.imprintForm.run),
       imprintSetup: Number(this.imprintForm.setup),
       imprintNumColors: Number(this.imprintForm.n_color),
+      imprintComment: this.imprintForm.imprintComment?.replace(/'/g, "''"),
       imprintColors: this.imprintForm.imprint_color?.replace(/'/g, "''"),
       add_po_imprint: true
     }
@@ -1045,6 +1046,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
         this._OrderManageService.snackBar(res["message"]);
         this.orderDataPO.blnSent = true;
         this.orderDataPO.internalComments = this.orderDataPO.internalComments + '<br>' + res["newOrderComment"];
+        this.orderDataPO.statusID = 3;
         this.closeSendPOModal();
       }
       this.isSentPOLoader = false;
@@ -1230,6 +1232,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     this.isSavePOLoader = true;
     this._OrderManageService.PutAPIData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
+        this.orderDataPO.statusID = 3;
         this._OrderManageService.snackBar(res["message"]);
       }
       this.isSavePOLoader = false;

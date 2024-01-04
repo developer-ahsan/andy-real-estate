@@ -1,7 +1,7 @@
 <div class="w-full">
     <ngx-skeleton-loader count="15" appearance="line" animation="pulse" *ngIf="isLoading">
     </ngx-skeleton-loader>
-    <div class="row" *ngIf="!isLoading" cdkScrollable>
+    <div class="row" *ngIf="!isLoading && orderDetail" cdkScrollable>
         <div class="col-12 my-2">
             <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
                 <div class="p-6 sm:p-8 lg:p-10 w-full">
@@ -16,7 +16,7 @@
                                 <span class="ml-2 mr-1">PDF</span>
                             </button>
                         </div>
-                        <div class="col-12">
+                        <div class="col-12" id="htmltable">
                             <table class="p-1 w-full">
                                 <tr>
                                     <td valign="top">
@@ -35,11 +35,11 @@
                             <table class="p-1 w-full">
                                 <tr>
                                     <td>Carrier</td>
-                                    <td>{{orderDetail.shippingCarrierName}}</td>
+                                    <td>{{orderDetail?.shippingCarrierName}}</td>
                                 </tr>
                                 <tr>
                                     <td>Service</td>
-                                    <td>{{orderDetail.shippingServiceName}}</td>
+                                    <td>{{orderDetail?.shippingServiceName}}</td>
                                 </tr>
                                 <tr>
                                     <td>Customer Acct#</td>
@@ -57,17 +57,7 @@
                             </table>
                             <hr>
                             <!--- ORDER LINES --->
-                            <ng-container *ngFor="let item of orderProducts">
-                                <!-- <cfscript>
-			local.qryOrderLine = local.objOrder.getOrderLine(local.qryOrderLines.pk_orderLineID,arguments.DSN);
-			local.qryImprintsReport = getOrderLineImprintsReport(local.qryOrderLines.pk_orderLineID,arguments.DSN);		
-			local.qryProduct = getProduct(local.qryOrderLine.fk_productID,arguments.DSN);
-			local.totalOrderSHCost = local.totalOrderSHCost + local.qryOrderLine.shippingCost;
-			local.totalOrderSHPrice = local.totalOrderSHPrice + local.qryOrderLine.shippingPrice;
-			local.qryWeightData = getOrderLineWeightData(local.qryOrderLines.pk_orderLineID,arguments.DSN, arguments.COM);
-			local.qryOrderLineStatus = local.objOrder.getOrderLineStatus(local.qryOrderLines.pk_orderLineID);
-		</cfscript> -->
-
+                            <ng-container *ngFor="let qryOrderLine of qryOrderLines">
                                 <table class="p-1 w-full">
                                     <tr height="1">
                                         <td width="80%"></td>
@@ -76,207 +66,109 @@
                                     </tr>
                                     <tr>
                                         <td valign="top">
-                                            <b>PO: {{orderDetail.pk_orderID}}-{{item?.order_line_id}}</b><br />
-                                            <b>({{item.products[0].pk_productID}}) {{item.products[0].productNumber}}:
-                                                <span [innerHTML]="item.products[0].productName"></span></b><br>
-                                            Quantity: {{item.products[0].quantity}} <span
-                                                *ngIf="item.products[0].blnSample"><b> * * * SAMPLE * * *</b></span>
+                                            <b>PO: {{orderDetail.pk_orderID}}-{{qryOrderLine?.pk_orderLineID}}</b><br />
+                                            <b>({{qryOrderLine.fk_productID}}) {{qryOrderLine.productNumber}}:
+                                                <span [innerHTML]="qryOrderLine.productName"></span></b><br>
+                                            Quantity: {{qryOrderLine.quantity}} <span *ngIf="qryOrderLine.blnSample"><b>
+                                                    * * * SAMPLE * * *</b></span>
                                         </td>
-                                        <!-- <td colspan="2" valign="top" align="right">					
-					<cfset statusList = "1,2,3,4" />
+                                        <td colspan="2" valign="top" align="right">
 
-					<cfif local.qryOrderLineStatus.recordcount>
-						<cfif listFindNoCase(statusList,local.qryOrderLineStatus.pk_statusID)>
-							<div class="alert alert-warning add-padding-sm text-left" style="text-align: left !important;">
-								<span class="fa fa-clock-o disabled fa-lg"></span> Processing
-							</div>
-						<cfelseif local.qryOrderLineStatus.pk_statusID EQ 5>
-							<div class="alert alert-success add-padding-sm" style="text-align: left !important;">
-								<span class="fa fa-truck fa-lg active"></span> Shipped
-								<cfif len(local.qryOrderLines.trackingNumber)>
-									<br />
-									<b>Tracking number:</b> #local.qryOrderLines.trackingNumber#
-								</cfif>
-								<cfif len(local.qryOrderLines.shippingDate)>
-									<br />
-									<b>Shipping date:</b> #local.qryOrderLines.shippingDate#
-								</cfif>
-							</div>
-						<cfelseif local.qryOrderLineStatus.pk_statusID EQ 6>
-							<div class="alert alert-success add-padding-sm" style="text-align: left !important;">
-								<span class="fa fa-check fa-lg active"></span> Delivered
-								<cfif len(local.qryOrderLines.trackingNumber)>
-									<br />
-									<b>Tracking number:</b> #local.qryOrderLines.trackingNumber#
-								</cfif>
-								<cfif len(local.qryOrderLines.shippingDate)>
-									<br />
-									<b>Shipping date:</b> #local.qryOrderLines.shippingDate#
-								</cfif>
-							</div>
-						<cfelseif local.qryOrderLineStatus.pk_statusID EQ 8>
-							<div class="alert alert-success add-padding-sm" style="text-align: left !important;">
-								<span class="fa fa-car fa-lg active"></span> Picked up
-							</div>
-						<cfelseif local.qryOrderLineStatus.pk_statusID EQ 7>
-							<div class="alert alert-warning add-padding-sm" style="text-align: left !important;">
-								<span class="fa fa-file-text fa-lg" style="color: purple;"></span> <span class="bold" style="color: purple;">P.O. Needed</span>
-							</div>
-						<cfelseif local.qryOrderLineStatus.pk_statusID EQ 10>
-							<div class="alert alert-warning add-padding-sm" style="text-align: left !important;">
-								<span class="fa fa-users fa-lg caution"></span> Group order pending
-							</div>
-						</cfif>
-					<cfelse>
-						<div class="alert alert-warning add-padding-sm" style="text-align: left !important;">
-							No shipping information for this item.
-						</div>
-					</cfif>
-				</td> -->
+                                            <div *ngIf="orderLine?.fk_statusID">
+                                                <div *ngIf="orderLine.stautes.includes(orderLine?.fk_statusID)"
+                                                    class="alert alert-warning p-2 text-left"
+                                                    style="text-align: left !important;">
+                                                    <span class="fa fa-clock-o disabled fa-lg"></span> Processing
+                                                </div>
+                                                <div *ngIf="orderLine?.fk_statusID == 5" class="alert alert-success p-2"
+                                                    style="text-align: left !important;">
+                                                    <span class="fa fa-truck fa-lg active"></span> Shipped
+                                                    <span *ngIf="qryOrderLine.trackingNumber"
+                                                        len(local.qryOrderLines.trackingNumber)>
+                                                        <br />
+                                                        <b>Tracking number:</b> {{qryOrderLine.trackingNumber}}
+                                                    </span>
+                                                    <span *ngIf="qryOrderLine.shippingDate">
+                                                        <br />
+                                                        <b>Shipping date:</b> {{qryOrderLine.shippingDate}}
+                                                    </span>
+                                                </div>
+                                                <div *ngIf="orderLine?.fk_statusID == 6" class="alert alert-success p-2"
+                                                    style="text-align: left !important;">
+                                                    <span class="fa fa-check fa-lg active"></span> Delivered
+                                                    <span *ngIf="qryOrderLine.trackingNumber"
+                                                        len(local.qryOrderLines.trackingNumber)>
+                                                        <br />
+                                                        <b>Tracking number:</b> {{qryOrderLine.trackingNumber}}
+                                                    </span>
+                                                    <span *ngIf="qryOrderLine.shippingDate">
+                                                        <br />
+                                                        <b>Shipping date:</b> {{qryOrderLine.shippingDate}}
+                                                    </span>
+                                                </div>
+                                                <div *ngIf="orderLine?.fk_statusID == 8" class="alert alert-success p-2"
+                                                    style="text-align: left !important;">
+                                                    <span class="fa fa-car fa-lg active"></span> Picked up
+                                                </div>
+                                                <div *ngIf="orderLine?.fk_statusID == 7" class="alert alert-warning p-2"
+                                                    style="text-align: left !important;">
+                                                    <span class="fa fa-file-text fa-lg" style="color: purple;"></span>
+                                                    <span class="bold" style="color: purple;">P.O. Needed</span>
+                                                </div>
+                                                <div *ngIf="orderLine?.fk_statusID == 10"
+                                                    class="alert alert-warning p-2"
+                                                    style="text-align: left !important;">
+                                                    <span class="fa fa-users fa-lg caution"></span> Group order pending
+                                                </div>
+                                            </div>
+                                            <div *ngIf="!orderLine?.fk_statusID" class="alert alert-warning p-2"
+                                                style="text-align: left !important;">
+                                                No shipping information for this item.
+                                            </div>
+                                        </td>
                                     </tr>
-                                    <!-- <tr>
-				<td colspan="3">
-				Supplier Zip: #numberFormat(local.qryOrderLine.supplierFOBzip,"00000")# 
-				<cfif local.qryImprintsReport.recordcount AND (local.qryImprintsReport.fk_decoratorID[1] NEQ local.qryProduct.fk_supplierID[1])>
-					&rarr; Decorator Zip: #numberFormat(local.qryImprintsReport.decoratorFOBzip[1],"00000")#
-				</cfif>				
-				&rarr; Customer Zip: #numberFormat(local.qryOrder.shippingZip,"00000")#
-				</td>
-			</tr>	
-			<tr>
-				<td></td>
-				<td align="center">COST</td>
-				<td align="center">PRICE</td>
-			</tr>	
-			<tr>
-				<td>Expected: #local.qryWeightData.packages# package<cfif local.qryWeightData.packages GT 1>s</cfif> X #numberFormat(local.qryWeightData.packageWeight,'9.00')#lbs/package = #numberFormat(local.qryWeightData.totalWeight,'9.00')#lbs</td>
-				<td align="center">#dollarFormat(local.qryOrderLine.shippingCost)#</td>
-				<td align="center">#dollarFormat(local.qryOrderLine.shippingPrice)#</td>
-			</tr>	 -->
+                                    <tr>
+                                        <td colspan="3">
+                                            Supplier Zip: {{qryOrderLine.supplierFOBzip }}
+                                            <span
+                                                *ngIf="qryOrderLine.fk_decoratorID != qryOrderLine.fk_supplierID && qryOrderLine.imprintsData.length">
+                                                &rarr; Decorator Zip: {{qryOrderLine.decoratorFOBzip}}
+                                            </span>
+                                            &rarr; Customer Zip: {{qryOrderLine.shippingZip}}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td align="center">COST</td>
+                                        <td align="center">PRICE</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Expected: {{qryOrderLine?.packages}} package<span
+                                                *ngIf="qryOrderLine?.packages > 1">s</span> X
+                                            {{qryOrderLine?.packageWeight}} lbs/package =
+                                            {{qryOrderLine?.totalWeight}}lbs</td>
+                                        <td align="center">{{qryOrderLine.shippingCost | currency: 'USD':
+                                            'symbol':'1.3-3'}}</td>
+                                        <td align="center">{{qryOrderLine.shippingPrice | currency: 'USD':
+                                            'symbol':'1.3-3'}}</td>
+                                    </tr>
                                 </table>
                                 <hr>
                             </ng-container>
-                        </div>
-                        <div class="col-12 text-center print:overflow-visible">
-                            <div class="inline-block  text-left print:p-0 w-full px-6 py-5" id="htmltable" #htmltable>
-                                <!-- Shipping Report -->
-                                <div
-                                    class="print:w-auto print:p-0 print:rounded-none print:shadow-none print:bg-transparent ">
-
-                                    <div class="flex items-start ">
-                                        <div class="grid grid-rows-1 mt-5">
-                                            <div class="grid grid-flow-col mt-5">
-                                                <div
-                                                    class="place-self-center w-24 text-center text-2xl text-secondary font-semibold">
-                                                    Ship To
-                                                </div>
-                                                <div
-                                                    class="pl-6 border-l text-md font-medium tracking-tight text-secondary">
-                                                    <div>Consolidus LLC</div>
-                                                    <div>526 S.Main St.</div>
-                                                    <div>Suite 804</div>
-                                                    <div>Akron, OH 44311</div>
-                                                    <div>P: 1-866-776-6643, F: 330-319-7214</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="grid grid-cols-2 gap-x-4 gap-y-1 ml-auto pr-16">
-                                            <div
-                                                class="justify-self-start font-semibold text-3xl tracking-tight text-secondary">
-                                                Order
-                                            </div>
-                                            <div class="justify-self-start text-3xl font-semibold">
-                                                #{{orderDetail.pk_orderID}}</div>
-                                            <div class="justify-self-start font-medium tracking-tight text-secondary">
-                                                ORDER DATE
-                                            </div>
-                                            <div class="font-medium">{{(orderDetail?.orderDate | date:'medium') ||
-                                                not_available}}</div>
-                                            <div class="justify-self-start font-medium tracking-tight text-secondary">
-                                                Carrier
-                                            </div>
-                                            <div class="font-medium">{{(orderDetail?.shippingCarrierName) ||
-                                                not_available}}
-                                            </div>
-                                            <div class="justify-self-start font-medium tracking-tight text-secondary">
-                                                Service
-                                            </div>
-                                            <div class="font-medium">{{orderDetail?.shippingServiceName ||
-                                                not_available}}</div>
-                                            <div class="justify-self-start font-medium tracking-tight text-secondary">
-                                                Customer Acct#</div>
-                                            <div class="font-medium">{{(orderDetail?.shippingCustomerAccountNumber) ||
-                                                not_available}}
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="grid grid-cols-12 gap-x-1 mt-16 w-full">
-                                        <!-- Columns -->
-                                        <div class="col-span-8 font-medium text-md text-secondary">Detail</div>
-                                        <div class="col-span-2 font-medium text-md text-center text-secondary">RATE
-                                        </div>
-                                        <div class="col-span-2 font-medium text-md text-center text-secondary">PRICE
-                                        </div>
-
-                                        <!-- Divider -->
-                                        <div class="col-span-12 my-4 border-b"></div>
-
-                                        <!-- Item -->
-                                        <div class="col-span-12 my-2 w-full" *ngFor="let item of orderProducts">
-                                            <div class="grid grid-cols-12 border-b w-full">
-                                                <div class="col-span-8 text-lg font-medium">
-                                                    <p class="">
-                                                        ({{item.products[0]?.pk_productID}})
-                                                        {{item.products[0]?.productNumber}}:
-                                                        {{item.products[0]?.productName}}
-                                                    </p>
-                                                    <p>Quantity: {{item.products[0]?.quantity}}</p>
-                                                </div>
-                                                <div class="col-span-2 font-medium text-center">
-                                                    <p>
-                                                        {{item.products[0]?.shippingCost | currency}}
-                                                    </p>
-                                                </div>
-                                                <div class="col-span-2 font-medium text-center">
-                                                    <p>
-                                                        {{item.products[0]?.shippingPrice | currency}}
-                                                    </p>
-                                                </div>
-                                                <div class="col-span-12 text-md text-secondary">
-                                                    Supplier Zip: {{orderDetail?.shippingZip}} → Customer Zip:
-                                                    <span
-                                                        *ngIf="orderDetail?.blnShipToOneLocation">{{orderDetail?.blnShipToOneLocation}}</span>
-                                                    <span *ngIf="!orderDetail?.blnShipToOneLocation">SHIPPING TO
-                                                        MULTIPLE LOCATIONS</span>
-                                                </div>
-                                                <div class="col-span-12 text-md text-secondary">
-                                                    Expected: 1 package X 25.00lbs/package = 25.00lbs
-                                                </div>
-                                                <!-- Spacer -->
-                                                <div class="col-span-12 mt-6"></div>
-                                            </div>
-                                        </div>
-                                        <!-- Total -->
-                                        <div
-                                            class="col-span-8 self-center text-2xl font-medium tracking-tight text-secondary">
-                                            TOTAL SHIPPING & HANDLING
-                                        </div>
-                                        <div class="col-span-2 text-center font-medium">{{totalShippingCost | currency}}
-                                        </div>
-                                        <div class="col-span-2 text-center font-medium">{{totalShippingPrice |
-                                            currency}}
-                                        </div>
-                                    </div>
-
-                                    <div class="mt-10">
-                                        <div style="text-align: -webkit-center;">
-                                            <img class="w-40" src="assets/images/logo/consolidus-logo.jpeg">
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
+                            <table class="p-1 w-full">
+                                <tr height="1">
+                                    <td width="80%"></td>
+                                    <td width="10%"></td>
+                                    <td width="10%"></td>
+                                </tr>
+                                <tr>
+                                    <td><b>TOTAL SHIPPING &amp; HANDLING</b></td>
+                                    <td><b>{{orderDetail?.totalOrderSHCost | currency: 'USD': 'symbol':'1.3-3'}}</b>
+                                    </td>
+                                    <td><b>{{orderDetail.totalOrderSHPrice | currency: 'USD': 'symbol':'1.3-3'}}</b>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
                     </div>
                 </div>

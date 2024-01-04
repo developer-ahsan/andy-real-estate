@@ -11,31 +11,13 @@ import { Subject } from 'rxjs';
   templateUrl: './invoices.component.html'
 })
 export class InvoicesComponent implements OnInit {
-  @Input() selectedOrder: any;
-  @Output() isLoadingChange = new EventEmitter<boolean>();
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   isLoading: boolean = false;
   // selectedOrder: OrdersList = null;
-  selectedOrderDetails = [];
-  selectedOrderTotals: Object = null;
-  htmlComment: string = '';
-  not_available = 'N/A';
-  showReport = false;
-  orders: string[] = [
-    'COMBINED ORDER REPORT',
-    'The CHC Store - Initiator'
-  ];
-  displayedColumns: string[] = ['item', 'cost'];
-  showForm: boolean = false;
-
-  orderParticipants = [];
   orderDetail: any;
-  orderProducts = [];
-
-  grandTotalCost = 0;
-  grandTotalPrice = 0;
-  orderTotal: any;
+  managerDetails: any;
+  qryOrderLines: any;
   constructor(
     private _orderService: OrdersService,
     private _changeDetectorRef: ChangeDetectorRef
@@ -43,225 +25,66 @@ export class InvoicesComponent implements OnInit {
 
   ngOnInit(): void {
     this.isLoading = true;
-    // this._orderService.orders$
-    //   .pipe(takeUntil(this._unsubscribeAll))
-    //   .subscribe((orders: OrdersList[]) => {
-    //     this.orderDetail = orders["data"].find(x => x.pk_orderID == location.pathname.split('/')[3]);
-    //     this.htmlComment = this.orderDetail["internalComments"];
-
-    //     if (this.orderDetail["fk_groupOrderID"]) {
-    //       this.showReport = true;
-    //       this._orderService.getOrderParticipants(this.orderDetail.pk_orderID)
-    //         .pipe(takeUntil(this._unsubscribeAll))
-    //         .subscribe((orderParticipants) => {
-    //           const firstOption = {
-    //             billingFirstName: "COMBINED ORDER REPORT",
-    //             billingLastName: "",
-    //             billingEmail: ""
-    //           };
-    //           const combinedParticipants = [firstOption].concat(orderParticipants["data"]);
-    //           this.orderParticipants = combinedParticipants;
-
-    //           this._changeDetectorRef.markForCheck();
-    //         });
-    //     }
-
-    //     this._orderService.getOrderDetails(this.orderDetail.pk_orderID)
-    //       .pipe(takeUntil(this._unsubscribeAll))
-    //       .subscribe((orderDetails) => {
-    //         this.orderDetailDetails = orderDetails["data"];
-    //         this._changeDetectorRef.markForCheck();
-    //       });
-    //   });
-
-    // this._orderService.getOrderTotals(this.orderDetail.pk_orderID)
-    //   .pipe(takeUntil(this._unsubscribeAll))
-    //   .subscribe((orderTotals) => {
-    //     this.orderDetailTotals = orderTotals["data"][0];
-    //     this._changeDetectorRef.markForCheck();
-    //   });
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["data"].length) {
         this.orderDetail = res["data"][0];
-        let params = {
-          order_total: true,
-          order_id: this.orderDetail.pk_orderID
-        }
-        this._orderService.getOrder(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-          this.orderTotal = res["data"][0];
-        })
+        this.setOrderData();
+        this.getOrderProducts();
       }
     })
-    // this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-    //   let value = [];
-    //   res["data"].forEach((element, index) => {
-    //     value.push(element.pk_orderLineID);
-    //     if (index == res["data"].length - 1) {
-    //       this.getLineProducts(value.toString());
-    //     }
-    //   });
-    //   this.orderProducts = res["data"];
-    // })
-    this.getOrderProducts();
+  }
+  setOrderData() {
+    this.managerDetails = this.orderDetail.managerDetails?.split('::');
+    if (this.orderDetail.qryUserLocations) {
+      this.orderDetail.locationName = this.orderDetail.qryUserLocations?.split('::')[1];
+      this.orderDetail.attributeName = this.orderDetail.qryUserLocations?.split('::')[3];
+    }
+    if (this.orderDetail.qryRoyalty) {
+      const [id, name, state, percentage] = this.orderDetail.qryRoyalty?.split('::')[1];
+      this.orderDetail.royaltyData = { name, state, percentage: Number(percentage) * 100 };
+    }
+    if (this.orderDetail.qryOrderAdjustments) {
+      this.orderDetail.adjustmentsData = [];
+      const adjustments = this.orderDetail.qryOrderAdjustments.split(',,');
+      adjustments.forEach(adjustment => {
+        const [pk_adjustmentID, cost, price, description, author, dateCreated] = adjustment.split('::');
+        this.orderDetail.adjustmentsData.push({ pk_adjustmentID, cost: Number(cost), price: Number(price), description, author, dateCreated });
+      });
+    }
   }
   getOrderProducts() {
     this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      let value = [];
-      res["data"].forEach((element, index) => {
-        value.push(element.pk_orderLineID);
-        if (index == res["data"].length - 1) {
-          this.getLineProducts(value.toString());
-        }
+      res["data"].forEach((orderLine) => {
+        orderLine.imprintsData = [];
+        orderLine.colorSizesData = [];
+        orderLine.accessoriesData = [];
+        this.setImprintsToOrderline(orderLine, res["qryImprintsReport"]);
+        this.setColoSizesToOrderline(orderLine, res["qryItemReport"]);
+        this.setAccessoriesToOrderline(orderLine, res["qryAccessoriesReport"]);
       });
+      this.qryOrderLines = res["data"];
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
     })
   }
-  getLineProducts(value) {
-    let params = {
-      order_line_item: true,
-      order_line_id: value
+  // Set Imprints
+  setImprintsToOrderline(orderLine, imprints) {
+    const matchingImprints = imprints.filter(imprint => imprint.fk_orderLineID === orderLine.pk_orderLineID);
+    orderLine.imprintsData.push(...matchingImprints);
+  }
+  // Set Color/Sizes
+  setColoSizesToOrderline(orderLine, items) {
+    if (items.length) {
+      orderLine.warehouseCode = items.warehouseCode;
     }
-    this._orderService.getOrderLineProducts(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      let products = [];
-      res["data"].forEach(element => {
-        let royaltyPrice = 0;
-        let royaltyBln = false;
-
-        let prod = [];
-        if (products.length == 0) {
-          if (this.orderDetail.blnRoyaltyStore && element.blnRoyalty) {
-            royaltyPrice = element.royaltyPrice;
-            royaltyBln = element.blnRoyalty;
-          }
-          let cost = (element.runCost * element.quantity) + element.shippingCost;
-          let price = (element.runPrice * element.quantity) + element.shippingPrice + royaltyPrice;
-          prod.push(element);
-          products.push({ products: prod, order_line_id: element.fk_orderLineID, accessories: [], imprints: [], totalQuantity: element.quantity, totalMercandiseCost: cost, totalMerchendisePrice: price, royaltyPrice: royaltyPrice, royaltyBln });
-        } else {
-          if (this.orderDetail.blnRoyaltyStore && element.blnRoyalty) {
-            royaltyPrice = element.royaltyPrice;
-            royaltyBln = element.blnRoyalty;
-          }
-          const index = products.findIndex(item => item.order_line_id == element.fk_orderLineID);
-          if (index < 0) {
-            let cost = (element.runCost * element.quantity) + element.shippingCost;
-            let price = (element.runPrice * element.quantity) + element.shippingPrice + royaltyPrice;
-            prod.push(element);
-            products.push({ products: prod, order_line_id: element.fk_orderLineID, accessories: [], imprints: [], totalQuantity: element.quantity, totalMercandiseCost: cost, totalMerchendisePrice: price, royaltyPrice: royaltyPrice, royaltyBln });
-          } else {
-            let cost = (element.runCost * element.quantity);
-            let price = (element.runPrice * element.quantity);
-
-            prod = products[index].products;
-            prod.push(element);
-            products[index].products = prod;
-            products[index].royaltyPrice = products[index].royaltyPrice + royaltyPrice;
-            products[index].totalQuantity = products[index].totalQuantity + element.quantity;
-            products[index].totalMercandiseCost = products[index].totalMercandiseCost + cost;
-            products[index].totalMerchendisePrice = products[index].totalMerchendisePrice + price;
-          }
-        }
-      });
-      if (res["accessories"].length > 0) {
-        res["accessories"].forEach(element => {
-          let cost = (element.runCost * element.quantity) + element.setupCost;
-          let price = (element.runPrice * element.quantity) + element.setupPrice;
-          const index = products.findIndex(item => item.order_line_id == element.orderLineID);
-          products[index].accessories.push(element);
-          products[index].totalMercandiseCost = products[index].totalMercandiseCost + cost;
-          products[index].totalMerchendisePrice = products[index].totalMerchendisePrice + price;
-        });
-      }
-      this.getProductImprints(value, products);
-    }, err => {
-      this.isLoading = false;
-      this.isLoadingChange.emit(false);
-      this._changeDetectorRef.markForCheck();
-    });
+    const matchingSizes = items.filter(item => item.fk_orderLineID === orderLine.pk_orderLineID);
+    orderLine.colorSizesData.push(...matchingSizes);
   }
-  getProductImprints(value, data) {
-    let params = {
-      imprint_report: true,
-      order_line_id: value
-    }
-    this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      let tempArr = [];
-      res["data"].forEach(element => {
-        let cost = (element.runCost * element.quantity) + element.setupCost;
-        let price = (element.runPrice * element.quantity) + element.setupPrice;
-        const index = data.findIndex(item => item.order_line_id == element.fk_orderLineID);
-        if (index > -1) {
-          data[index].imprints.push(element);
-          data[index].totalMercandiseCost = data[index].totalMercandiseCost + cost;
-          data[index].totalMerchendisePrice = data[index].totalMerchendisePrice + price;
-        }
-      });
-
-      this.orderProducts = data;
-      // console.log(this.orderProducts)
-      this.getProductTotal();
-      this.isLoading = false;
-      this.isLoadingChange.emit(false);
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this.isLoading = false;
-      this.isLoadingChange.emit(false);
-      this._changeDetectorRef.markForCheck();
-    });
+  // Set Accessories Data
+  setAccessoriesToOrderline(orderLine, items) {
+    const matchingAccessories = items.filter(item => item.fk_orderLineID === orderLine.pk_orderLineID);
+    orderLine.accessoriesData.push(...matchingAccessories);
   }
-  // getLineProducts(value) {
-  //   let params = {
-  //     order_line_item: true,
-  //     order_line_id: value
-  //   }
-  //   this._orderService.getOrderLineProducts(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-  //     this.getProductImprints(value, res["data"]);
-  //   }, err => {
-  //     this.isLoading = false;
-  //     this.isLoadingChange.emit(false);
-  //     this._changeDetectorRef.markForCheck();
-  //   })
-  // }
-  // getProductImprints(value, data) {
-  //   let params = {
-  //     imprint_report: true,
-  //     order_line_id: value
-  //   }
-  //   this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-  //     let tempArr = [];
-  //     data.forEach(element => {
-  //       res["data"].forEach(item => {
-  //         if (item.fk_orderLineID == element.fk_orderLineID) {
-  //           tempArr.push({ product: element, imprints: item });
-  //         }
-  //       });
-  //     });
-  //     this.orderProducts = tempArr;
-  //     this.getProductTotal();
-  //     this.isLoading = false;
-  //     this.isLoadingChange.emit(false);
-  //     this._changeDetectorRef.markForCheck();
-  //   }, err => {
-  //     this.isLoading = false;
-  //     this.isLoadingChange.emit(false);
-  //     this._changeDetectorRef.markForCheck();
-  //   })
-  // }
-  getProductTotal() {
-    // this.grandTotalCost = 0;
-    // this.grandTotalPrice = 0;
-    // this.orderProducts.forEach(element => {
-    //   this.grandTotalCost = this.grandTotalCost + ((element.product.cost * element.product.quantity) + (element.imprints.runCost * element.product.quantity) + (element.imprints.setupCost));
-    //   this.grandTotalPrice = this.grandTotalPrice + ((element.product.price * element.product.quantity) + (element.imprints.runPrice * element.product.quantity) + (element.imprints.setupPrice))
-    // });
-  }
-  orderSelection(order) {
-    this.showForm = true;
-  }
-
-  getTotalCost() {
-    // return this.transactions.map(t => t.cost).reduce((acc, value) => acc + value * 2000, 0);
-  }
-
   public exportHtmlToPDF() {
     let element = document.getElementById('htmltable');
     var positionInfo = element.getBoundingClientRect();

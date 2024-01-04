@@ -537,4 +537,16 @@ export interface UpdateIncidentReport {
     update_incident_report: boolean;
 };
 
-
+export interface enter_payment {
+    amount_paid: number;
+    current_total: number;
+    order_total: number; // qryOrderTotals.price+qryOrderTotals.tax+qryOrderTotals.royalties
+    reference_number: string;
+    order_id: number;
+    blnWarehouse: boolean;
+    send_receipt: boolean;
+    formattedOrderDate: string;
+    billingEmail: string;
+    storeName: string;
+    enter_payment: boolean;
+}

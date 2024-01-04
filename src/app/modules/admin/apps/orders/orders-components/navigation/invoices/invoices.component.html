@@ -2,7 +2,7 @@
     <ngx-skeleton-loader count="15" appearance="line" animation="pulse" *ngIf="isLoading">
     </ngx-skeleton-loader>
 
-    <div class="row" *ngIf="!isLoading">
+    <div class="row" *ngIf="!isLoading && orderDetail">
         <div class="col-12 my-2">
             <div class="text-right">
                 <button (click)="exportHtmlToPDF()" mat-stroked-button [matTooltip]="'Save report as PDF'">
@@ -10,697 +10,497 @@
                     <span class="ml-2 mr-1">PDF</span>
                 </button>
             </div>
-            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-                <div class="p-6 sm:p-8 lg:p-10 w-full">
-                    <div class="text-2xl font-bold ">
-                        Invoice
-                    </div>
-                    <div class="row w-full">
-                        <div class="col-12  mt-5 mb-2" *ngIf="showReport;else other_content">
-                            Select a group order participant:
-                            <mat-form-field class="w-full">
-                                <mat-select name="order">
-                                    <mat-option (click)="orderSelection(order)" *ngFor="let order of orderParticipants;"
-                                        [value]="order">
-                                        *INITIATOR - {{order?.billingFirstName}} {{order?.billingLastName}}
-                                        ({{order?.billingEmail}})
-                                    </mat-option>
-                                </mat-select>
-                            </mat-form-field>
+            <div #htmltable id="htmltable">
+                <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                    <div class="p-6 sm:p-8 lg:p-10 w-full">
+                        <div class="text-2xl font-bold ">
+                            Invoice
                         </div>
-                        <ng-template #other_content>
-                            <div class="col-12">
-                                <!-- Main -->
-                                <div class="inline-block  text-left print:p-0 w-full" id="htmltable" #htmltable>
+                        <div class="row w-full">
+                            <div class="col-12 my-5">
+                                <table class="p-1 w-full" width="100%">
+                                    <tr>
+                                        <td valign="top">
+                                            Log onto your account and view your order status at any time.<br />
+                                            Simply <a href="{{orderDetail?.protocol + orderDetail?.storeURL}}/account"
+                                                target="_blank">click here</a> and/or log into your account at <a
+                                                href="{{orderDetail?.protocol + orderDetail?.storeURL}}">www.{{orderDetail?.storeName}}</a>,<br />
 
-                                    <!-- Invoice -->
-                                    <div
-                                        class="print:w-auto print:p-0 print:rounded-none print:shadow-none print:bg-transparent">
+                                            click Manage My Account and view your Order Status for updates.
+                                        </td>
+                                        <td valign="top" align="right">
+                                            <b>INVOICE #{{orderDetail?.pk_orderID}}</b><br />
+                                        </td>
+                                    </tr>
+                                </table>
+                                <hr class="my-2">
+                                <table class="p-1 w-full" width="100%">
+                                    <tr>
+                                        <td>Order ID#</td>
+                                        <td>{{orderDetail?.pk_orderID}}</td>
+                                    </tr>
+                                    <ng-container *ngIf="orderDetail.purchaseOrderNum">
+                                        <tr>
+                                            <td>Purchase Order</td>
+                                            <td>{{orderDetail.purchaseOrderNum}}</td>
+                                        </tr>
+                                    </ng-container>
 
-                                        <div class="flex items-start">
-                                            <div class="grid place-items-start  mt-5">
-
-                                                <div class="grid auto-cols-max grid-flow-col gap-x-2 mb-2">
-                                                    <div
-                                                        class="place-self-center w-24 text-center text-2xl text-secondary">
-                                                        Order Placed By
-                                                    </div>
-                                                    <div class="pl-6 border-l text-md">
-                                                        <p>{{orderDetail?.billingCompanyName}}</p>
-                                                        <p>{{orderDetail?.billingFirstName + ' ' +
-                                                            orderDetail?.billingLastName}}</p>
-                                                        <p>{{orderDetail?.billingAddress}}</p>
-                                                        <p>{{ orderDetail?.billingCity + ' ' +
-                                                            orderDetail?.billingCountry + ',' +
-                                                            orderDetail?.billingState + ' ' +orderDetail?.billingZip}}
-                                                        </p>
-                                                        <p>{{orderDetail?.billingPhone}}</p>
-                                                        <a href="mailto:{{orderDetail?.billingEmail}}">{{orderDetail?.billingEmail}}</a>
-                                                    </div>
+                                    <ng-container *ngIf="orderDetail.CNumber">
+                                        <tr>
+                                            <td>C# Number</td>
+                                            <td>{{orderDetail.CNumber}}</td>
+                                        </tr>
+                                    </ng-container>
+                                    <tr>
+                                        <td>Order Date</td>
+                                        <td>{{orderDetail.formattedCompleteOrderDate | date: 'medium'}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Store</td>
+                                        <td>{{orderDetail.storeName}}</td>
+                                    </tr>
+                                    <ng-container *ngIf="orderDetail.costCenterCode">
+                                        <tr>
+                                            <td>Cost Center Code</td>
+                                            <td>{{orderDetail.costCenterCode}}</td>
+                                        </tr>
+                                    </ng-container>
+                                </table>
+                                <hr class="my-2">
+                                <table class="p-1 w-full" width="100%">
+                                    <tr>
+                                        <td>ORDER PLACED BY:</td>
+                                        <td>BILL TO:</td>
+                                        <td>SHIP TO:</td>
+                                    </tr>
+                                    <tr>
+                                        <td valign="top">
+                                            {{orderDetail?.storeUserCompanyName}}<br />
+                                            {{orderDetail?.userFirstName}} {{orderDetail?.userLastName}},
+                                            {{orderDetail?.title}}<br />
+                                            {{orderDetail?.address1}} {{orderDetail?.address2}}<br />
+                                            {{orderDetail?.city}} {{orderDetail?.state}}, {{orderDetail?.zipCode}}<br />
+                                            {{orderDetail?.dayPhone}}<br />
+                                            <a
+                                                href="mailto:{{orderDetail.userEmail}}?subject=Order {{orderDetail.pk_orderID}} on {{orderDetail?.storeName}}">{{orderDetail?.userEmail}}</a>
+                                            <span *ngIf="orderDetail?.dayFax"><br />F: {{orderDetail?.dayFax}}</span>
+                                        </td>
+                                        <td valign="top">
+                                            {{orderDetail?.billingCompanyName}}<br />
+                                            {{orderDetail?.billingFirstName}} {{orderDetail?.billingLastName}}<br />
+                                            <span *ngIf="orderDetail?.billingLocation">
+                                                {{orderDetail?.billingLocation}}<br />
+                                            </span>
+                                            {{orderDetail?.billingAddress}}<br />
+                                            <span *ngIf="orderDetail?.billToDeliverTo">
+                                                {{orderDetail?.billToDeliverTo}}<br />
+                                            </span>
+                                            {{orderDetail?.billingCity}}, {{orderDetail?.billingState}}
+                                            {{orderDetail?.billingZip}}<br />
+                                            {{orderDetail?.billingCountry}}<br />
+                                            {{orderDetail?.billingPhone}}<br />
+                                            {{orderDetail?.billingEmail}}<br />
+                                        </td>
+                                        <td valign="top">
+                                            {{orderDetail?.shippingCompanyName}}<br />
+                                            {{orderDetail?.shippingFirstName}} {{orderDetail?.shippingLastName}}<br />
+                                            <span *ngIf="orderDetail?.shippingLocation">
+                                                {{orderDetail?.shippingLocation}}<br />
+                                            </span>
+                                            <span *ngIf="orderDetail?.purchaseOrderNum">
+                                                Purchase Order: {{orderDetail?.purchaseOrderNum}}<br />
+                                            </span>
+                                            {{orderDetail?.shippingAddress}}<br />
+                                            <span *ngIf="orderDetail?.shipToDeliverTo">
+                                                {{orderDetail?.shipToDeliverTo}}<br />
+                                            </span>
+                                            {{orderDetail?.shippingCity}}, {{orderDetail?.shippingState}}
+                                            {{orderDetail?.shippingZip}}
+                                            <span
+                                                *ngIf="orderDetail?.shippingZipExt">-{{orderDetail?.shippingZipExt}}</span><br />
+                                            {{orderDetail?.shippingCountry}}<br />
+                                            {{orderDetail?.shippingPhone}}<br />
+                                            {{orderDetail?.shippingEmail}}<br />
+                                        </td>
+                                    </tr>
+                                </table>
+                                <hr class="my-2">
+                                <table class="p-1 w-full" width="100%">
+                                    <tr>
+                                        <td valign="top">Delivery Date (expected, in business days)</td>
+                                        <td>
+                                            <ng-container *ngIf="orderDetail?.inHandsDate;else notInhandsDate">
+                                                {{orderDetail.formattedInHandsDate}} at the latest
+                                            </ng-container>
+                                            <ng-template #notInhandsDate>
+                                                <div *ngIf="orderDetail?.paymentDate">
+                                                    <!-- <cfset
+                                                    local.strTimeline=local.objOrder.getOrderTimeLine(arguments.orderID,
+                                                    local.qryOrder.paymentDate, arguments.DSN, arguments.COM)>
+                                                    #dateFormat(local.strTimeline.deliveryDate.low, 'dddd, mmmm dd')#
+                                                    <cfif local.strTimeline.deliveryDate.low NEQ
+                                                        local.strTimeline.deliveryDate.high> -
+                                                        #dateFormat(local.strTimeline.deliveryDate.high, 'dddd, mmmm dd,
+                                                        yyyy')# -->
                                                 </div>
-
-                                                <div class="grid auto-cols-max grid-flow-col gap-x-2">
-                                                    <div
-                                                        class="place-self-center w-24 text-center text-2xl text-secondary">
-                                                        Bill To
-                                                    </div>
-                                                    <div class="pl-6 border-l text-md">
-                                                        <p>{{orderDetail?.billingCompanyName}}</p>
-                                                        <p>{{orderDetail?.billingFirstName + ' ' +
-                                                            orderDetail?.billingLastName}}</p>
-                                                        <p>{{orderDetail?.billingAddress}}</p>
-                                                        <p>{{ orderDetail?.billingCity + ' ' +
-                                                            orderDetail?.billingCountry + ',' +
-                                                            orderDetail?.billingState + ' ' +orderDetail?.billingZip}}
-                                                        </p>
-                                                        <p>{{orderDetail?.billingPhone}}</p>
-                                                        <p>{{orderDetail?.billingEmail}}</p>
-                                                    </div>
+                                                <div *ngIf="!orderDetail?.paymentDate">
+                                                    <!-- <cfset
+                                                local.strTimeline=local.objOrder.getOrderTimeLine(arguments.orderID,
+                                                now(), arguments.DSN, arguments.COM)>
+                                                #local.strTimeline.totalBusiness.low#<cfif
+                                                    local.strTimeline.totalBusiness.low NEQ
+                                                    local.strTimeline.totalBusiness.high>
+                                                    -#local.strTimeline.totalBusiness.high#</cfif> business
+                                                days after approval -->
                                                 </div>
-                                                <br>
-                                                <div class="grid auto-cols-max grid-flow-col gap-x-2">
-                                                    <div
-                                                        class="place-self-center w-24 text-center text-2xl text-secondary">
-                                                        Ship To
-                                                    </div>
-                                                    <div class="pl-6 border-l text-md">
-                                                        <p>{{orderDetail?.shippingCompanyName}}</p>
-                                                        <p>{{orderDetail?.shippingFirstName + ' ' +
-                                                            orderDetail?.shippingLastName}}</p>
-                                                        <p>{{orderDetail?.shippingAddress}}</p>
-                                                        <p>{{ orderDetail?.shippingCity + ' ' +
-                                                            orderDetail?.shippingCountry + ',' +
-                                                            orderDetail?.shippingState + ' ' +orderDetail?.shippingZip}}
-                                                        </p>
-                                                        <p>{{orderDetail?.shippingPhone}}</p>
-                                                        <p>{{orderDetail?.shippingEmail}}</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="grid grid-cols-2 gap-x-4 gap-y-1 ml-auto pr-16">
-                                                <div
-                                                    class="justify-self-start font-semibold text-3xl tracking-tight text-secondary">
-                                                    Order
-                                                </div>
-                                                <div class="justify-self-start text-3xl font-semibold">
-                                                    #{{orderDetail.pk_orderID}}</div>
-                                                <div
-                                                    class="justify-self-start font-medium tracking-tight text-secondary">
-                                                    ORDER DATE
-                                                </div>
-                                                <div class="font-medium">{{(orderDetail?.orderDate | date:'medium') ||
-                                                    not_available}}</div>
-                                                <div
-                                                    class="justify-self-start font-medium tracking-tight text-secondary">
-                                                    Payment Date</div>
-                                                <div class="font-medium">{{(orderDetail?.paymentDate | date:'medium') ||
-                                                    not_available}}
-                                                </div>
-                                                <div
-                                                    class="justify-self-start font-medium tracking-tight text-secondary">
-                                                    In-Hands Date
-                                                </div>
-                                                <div class="font-medium">
-                                                    <p *ngIf="orderDetail.inHandsDate">
-                                                        {{(orderDetail?.inHandsDate.substr(0,10) | date:
-                                                        'medium')}}</p>
-                                                    <p *ngIf="!orderDetail.inHandsDate">{{not_available}}</p>
-                                                </div>
-                                                <div
-                                                    class="justify-self-start font-medium tracking-tight text-secondary">
-                                                    Purchase Order
-                                                </div>
-                                                <div class="font-medium">{{orderDetail?.purchaseOrderNum ||
-                                                    not_available}}</div>
-                                                <div
-                                                    class="justify-self-start font-medium tracking-tight text-secondary">
-                                                    Account Charge Code
-                                                </div>
-                                                <div class="font-medium">{{orderDetail?.accountChargeCode ||
-                                                    not_available}}</div>
-                                            </div>
+                                            </ng-template>
+                                        </td>
+                                    </tr>
+                                    <ng-container *ngIf="orderDetail?.invoiceDueDate">
+                                        <tr>
+                                            <td valign="top">Due Date:</td>
+                                            <td>{{orderDetail?.invoiceDueDate | date: 'MM/DD/YYYY'}}</td>
+                                        </tr>
+                                    </ng-container>
+                                    <tr>
+                                        <td>Shipping Method</td>
+                                        <td>{{orderDetail?.shippingCarrierName}}, {{orderDetail?.shippingServiceName}}
+                                            <span *ngIf="orderDetail?.shippingCustomerAccountNumber"> Acct#:
+                                                {{orderDetail?.shippingCustomerAccountNumber}}</span>
+                                        </td>
+                                    </tr>
+                                    <span *ngIf="orderDetail?.blnWarehouse && orderDetail?.warehouseDeliveryOption">
+                                        <tr style="color:#FF0000;">
+                                            <td>Fulfillment Shipping Option</td>
+                                            <td>{{orderDetail?.warehouseDeliveryOption}}</td>
+                                        </tr>
+                                    </span>
+                                </table>
+                                <hr class="my-2">
+                                <table class="p-1 w-full" width="100%">
+                                    <ng-container *ngIf="orderDetail.paymentDate;else notpaymentDate">
+                                        <tr>
+                                            <td>Payment Status</td>
+                                            <td>
+                                                ACTIVE : Approved on {{orderDetail?.formattedPaymentDate}}
+                                            </td>
+                                        </tr>
+                                    </ng-container>
+                                    <ng-template #notpaymentDate>
+                                        <tr>
+                                            <td>Payment Status</td>
+                                            <td>
+                                                ON HOLD: Pending payment method approval
+                                            </td>
+                                        </tr>
+                                    </ng-template>
+                                    <tr>
+                                        <td valign="top">Payment Method</td>
+                                        <td>
+                                            {{orderDetail?.paymentMethodName}}
+                                            <span *ngIf="orderDetail?.fk_creditTermID">
+                                                {{orderDetail?.creditTermName}}
+                                            </span>
+                                            <span *ngIf="orderDetail?.gatewayTrxID">
+                                                , Transaction ID : {{orderDetail?.gatewayTrxID}}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td>
+                                            <span style="font-weight:bold;">If paying by check please address payment
+                                                to:
+                                                <br />
+                                                Consolidus <span *ngIf="orderDetail.fk_storeID != 178">(our parent
+                                                    company)</span> <br />
+                                                526 S. Main Street, Suite #804 <br />
+                                                Akron, Ohio 44311-4401</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td valign="top">Account/Charge Code</td>
+                                        <td>
+                                            <span *ngIf="orderDetail?.billingStudentOrgCode">{{'SABO: '+
+                                                orderDetail?.billingStudentOrgCode +','
+                                                +orderDetail?.billingStudentOrgName}}</span>
+                                            <span
+                                                *ngIf="!orderDetail?.billingStudentOrgCode && orderDetail?.accountChargeCode">{{orderDetail?.accountChargeCode}}</span>
+                                            <span
+                                                *ngIf="!orderDetail?.billingStudentOrgCode && !orderDetail?.accountChargeCode">NONE</span>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <!--- ORDER LINES --->
+                                <ng-container *ngFor="let qryOrderLine of qryOrderLines">
+                                    <br /><br />
+                                    <h1>(ID: {{qryOrderLine.pk_storeProductID}}) <span
+                                            [innerHTML]="qryOrderLine.productName"></span></h1>
+                                    <h2>Quantity: {{qryOrderLine?.quantity}} <span *ngIf="qryOrderLine.blnSample"><b> *
+                                                * * SAMPLE * * *</b></span>
+                                        <span *ngIf="!qryOrderLine.blnSample && qryOrderLine.blnWarehouse"><b>
+                                                * * * FULFILLMENT ITEM * * *</b></span>
+                                    </h2>
+                                    <br />
+                                    <ng-container *ngIf="qryOrderLine.blnWarehouse">
+                                        <div style="color:#FF0000; font-weight: bold;">
+                                            <span *ngIf="qryOrderLine.event">Event:
+                                                {{qryOrderLine.event}}<br /></span>
+                                            <span *ngIf="qryOrderLine.eventDate">
+                                                Event Date: {{qryOrderLine.formattedEventDate}}<br />
+                                            </span>
+                                            <span *ngIf="qryOrderLine.warehouseCode">
+                                                Warehouse Code: {{qryOrderLine?.warehouseCode}}<br />
+                                            </span>
                                         </div>
-                                        <div class="grid grid-cols-12 gap-x-1 mt-8" *ngIf="orderProducts?.length > 0">
-                                            <div class="col-span-12 text-medium my-2">
-                                                <span class="font-bold"> Promo Code:</span> {{orderDetail?.discountCode
-                                                || not_available}}
-                                            </div>
-                                            <div class="col-span-12 text-medium my-2 flex flex-row gap-x-2">
-                                                <div class="font-bold">Delivery Date (expected, in business
-                                                    days):</div>
-                                                <!-- {{orderDetail?.shippingCarrierName+ ', '+ orderDetail?.shippingServiceName || not_available}} -->
-                                                <div *ngIf="orderDetail?.inHandsDate">
-                                                    {{ orderDetail?.inHandsDate | date: 'MMM dd, yyyy' }} at the
-                                                    latest
-                                                </div>
-                                                <div *ngIf="!orderDetail?.inHandsDate">
-                                                    {{ not_available }}
-                                                </div>
-
-                                                <!-- <div *ngIf="orderDetail.paymentDate && !orderDetail.inHandsDate">
-                                                    No in-hands, customer has made approved payment arrangements
-                                                        <ng-container
-                                                            *ngIf="local.strTimeline = local.objOrder.getOrderTimeLine(arguments.orderID, local.qryOrder.paymentDate, arguments.DSN, arguments.COM)">
-                                                            {{ local.strTimeline.deliveryDate.low | date: 'EEEE, MMMM
-                                                            dd' }}
-                                                            <ng-container
-                                                                *ngIf="local.strTimeline.deliveryDate.low !== local.strTimeline.deliveryDate.high">
-                                                                - {{ local.strTimeline.deliveryDate.high | date: 'EEEE,
-                                                                MMMM dd, yyyy' }}
-                                                            </ng-container>
-                                                        </ng-container>
-                                                </div> -->
-
-                                                <!-- <div
-                                                    *ngIf="!isDate(local.qryOrder.inHandsDate) && !isDate(local.qryOrder.paymentDate)">
-                                                    No in-hands, customer has not made approved payment arrangements
-                                                    <ng-container *ngIf="local.objOrder">
-                                                        <ng-container
-                                                            *ngIf="local.strTimeline = local.objOrder.getOrderTimeLine(arguments.orderID, getCurrentDate(), arguments.DSN, arguments.COM)">
-                                                            {{ local.strTimeline.totalBusiness.low }}
-                                                            <ng-container
-                                                                *ngIf="local.strTimeline.totalBusiness.low !== local.strTimeline.totalBusiness.high">
-                                                                - {{ local.strTimeline.totalBusiness.high }} business
-                                                                days after approval
-                                                            </ng-container>
-                                                        </ng-container>
-                                                    </ng-container>
-                                                </div> -->
-
-
-
-                                            </div>
-                                            <div class="col-span-12 border-b  text-medium my-2">
-                                                <span class="font-bold">Shipping Method:</span>
-                                                {{orderDetail?.shippingCarrierName+ ', '+
-                                                orderDetail?.shippingServiceName || not_available}}
-                                            </div>
-
-
-                                            <div class="col-span-12 text-medium my-2">
-                                                <span class="font-bold">Payment Method:</span>
-                                                {{orderDetail?.paymentMethodName || not_available}}
-
-                                                <div>
-                                                <span [ngStyle]="{ 'font-weight': 'bold' }">If paying by check please
-                                                    address payment to:</span>
-
-                                                <span>
-                                                    Consolidus
-                                                    <span *ngIf="orderDetail.fk_storeID !== 178">(our parent
-                                                        company)</span>
-
-                                                    526 S. Main Street, Suite ##804
-                                                    Akron, Ohio 44311-4401
-                                                    </span>
-                                                </div>
-                                            </div>
-
-
-                                            <div class="col-span-12 border-b  text-medium my-2">
-                                                <span class="font-bold">Account/Charge Code:</span>
-                                                <span *ngIf="orderDetail.billingStudentOrgCode">
-                                                    
-                                                    SABO: {{ orderDetail.billingStudentOrgCode }}, {{ orderDetail.billingStudentOrgName }}
-                                                  </span>
-                                                  <span *ngIf="orderDetail.accountChargeCode && orderDetail.billingStudentOrgCode">
-                                                    {{ orderDetail.accountChargeCode }}
-                                                  </span>
-                                                  <span *ngIf="!(orderDetail.billingStudentOrgCode) && !(orderDetail.accountChargeCode)">
-                                                    NONE
-                                                  </span>
-                                            </div>
-
-
-
-
-
-
-                                            <div class="col-span-12 border-b" *ngFor="let item of orderProducts">
-                                                <div class="row">
-                                                    <div class="col-9">
-                                                        <p class="font-bold text-medium">
-                                                            (ID:
-                                                            {{item.products[0]?.pk_storeProductID}})
-                                                            <!-- {{item.products[0]?.productNumber}}: -->
-                                                            {{item.products[0]?.productName}}
-                                                        </p>
-                                                        <p class="font-bold text-medium">PO:
-                                                            {{orderDetail?.pk_orderID +
-                                                            '-' + item.products[0]?.fk_orderLineID}}</p>
-                                                        <!-- <p class="text-secondary">Supplier:
-                                                            {{item.products[0]?.supplier_name}}
-                                                        </p> -->
-                                                        <p class="text-secondary">Quantity:
-                                                            {{item.totalQuantity}}
-                                                        </p>
-                                                    </div>
-                                                    <div class="col-3 text-right w-full">
-                                                        <img style="display: inline;width:50%"
-                                                            src="https://assets.consolidus.com/globalAssets/products/thumbnails/{{item.products[0]?.pk_storeProductID}}.jpg"
-                                                            onError="this.src='https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'">
-                                                    </div>
-                                                </div>
-                                                <div class="grid grid-cols-12 gap-x-1 mt-1">
-                                                    <div class="col-span-7 font-medium text-md text-secondary">DETAILS
-                                                    </div>
-                                                    <div
-                                                        class="font-medium col-span-2 text-md text-center text-secondary">
-                                                        QTY
-                                                    </div>
-                                                    <div
-                                                        class="font-medium col-span-3 text-md text-center text-secondary">
-                                                        <p>PRICE</p>
-                                                        <p>price*qty</p>
-                                                    </div>
-                                                    <!-- Divider -->
-                                                    <div class="col-span-12 my-4 border-b"></div>
-                                                    <!-- Colors -->
-                                                    <div class="col-span-7 font-medium text-md font-bold">
-                                                        <p>COLOR/SIZE BREAKDOWN</p>
-                                                    </div>
-                                                    <div
-                                                        class="font-medium col-span-2 text-md text-center text-secondary">
-                                                    </div>
-                                                    <div
-                                                        class="pl-3 font-medium col-span-3 flex justify-between text-md  text-secondary">
-                                                        <span>unit</span>
-                                                        <span>total</span>
-                                                    </div>
-                                                    <div class="col-span-12 my-2" *ngFor="let colors of item.products">
-                                                        <div class="grid grid-cols-12">
-                                                            <div class="col-span-7 font-medium text-md text-secondary">
-                                                                <p>{{colors.colorName}} <span *ngIf="colors.sizeName"> &
-                                                                        {{colors.sizeName}}</span></p>
-                                                            </div>
-                                                            <div
-                                                                class="font-small text-sm col-span-2  text-center text-secondary">
-                                                                {{colors.quantity}}</div>
-                                                            <div
-                                                                class=" col-span-3 pl-3 flex justify-between  text-center font-small text-sm  text-secondary">
-                                                                <span>{{colors.runPrice | currency: 'USD':
-                                                                    'symbol-narrow': '.2-2'}}</span>
-                                                                <span>{{(colors.runPrice *
-                                                                    colors.quantity) | currency: 'USD':
-                                                                    'symbol-narrow': '.2-2'
-                                                                    }}</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <!-- Imprints -->
-                                                    <div class="mt-2 col-span-12 font-medium font-bold text-md">
-                                                        <p>IMPRINTS</p>
-                                                    </div>
-                                                    <div class="col-span-12 my-2" *ngFor="let imprint of item.imprints">
-                                                        <div class="grid grid-cols-12">
-                                                            <div class="col-span-7 font-medium text-md text-secondary">
-                                                                <p>{{imprint?.locationName}} ({{imprint?.methodName}})
-                                                                </p>
-                                                            </div>
-                                                            <div
-                                                                class="font-small col-span-2 text-sm  text-center text-secondary">
-                                                                {{imprint?.quantity}}
-                                                            </div>
-                                                            <div
-                                                                class="pl-3 flex justify-between col-span-3 text-center font-small text-sm  text-secondary">
-                                                                <span>{{imprint?.runPrice | currency: 'USD':
-                                                                    'symbol-narrow': '.2-2'}}</span>
-                                                                <span>{{(imprint?.runPrice *
-                                                                    imprint?.quantity) | currency: 'USD':
-                                                                    'symbol-narrow': '.2-2'}}</span>
-                                                            </div>
-                                                            <!-- Setups -->
-                                                            <div
-                                                                class="mt-2 col-span-7 font-medium text-right text-md text-secondary">
-                                                                <p>Setup(s)</p>
-                                                                <p>Total Colors: {{imprint.processQuantity}}/Colors:
-                                                                    {{imprint.imprintColors}}</p>
-                                                            </div>
-                                                            <div
-                                                                class="font-medium col-span-2 text-md  text-center text-secondary">
-                                                            </div>
-                                                            <div
-                                                                class="pl-3 flex justify-content-end mt-2 col-span-3 text-right font-small text-sm  text-secondary">
-                                                                <span>{{(imprint?.setupPrice) | currency: 'USD':
-                                                                    'symbol-narrow': '.2-2'}}</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <!-- ACCESSORIES -->
-                                                    <div class="mt-2 col-span-12 font-medium font-bold text-md "
-                                                        *ngIf="item.accessories.length > 0">
-                                                        <p>ACCESSORIES</p>
-                                                    </div>
-                                                    <div class="col-span-12 my-2"
-                                                        *ngFor="let access of item.accessories">
-                                                        <div class="grid grid-cols-12">
-                                                            <div class=" col-span-7 font-medium text-md text-secondary">
-                                                                <p>{{access.packagingName}}</p>
-                                                            </div>
-                                                            <div
-                                                                class=" font-small col-span-2 text-sm  text-center text-secondary">
-                                                                {{access.quantity}}</div>
-                                                            <div
-                                                                class="pl-3 flex justify-between font-small text-sm text-secondary col-span-3 text-center">
-                                                                <span>{{access?.runPrice | currency: 'USD':
-                                                                    'symbol-narrow': '.2-2'}}</span>
-                                                                <span>{{(access?.runPrice *
-                                                                    access.quantity) | currency: 'USD':
-                                                                    'symbol-narrow': '.2-2'}}</span>
-                                                            </div>
-                                                            <!-- Accesories Setups -->
-                                                            <div
-                                                                class="mt-2 col-span-7 font-medium text-right text-md text-secondary">
-                                                                <p>Accessory Setup(s)</p>
-                                                            </div>
-                                                            <div
-                                                                class="font-medium text-md col-span-2 text-center text-secondary">
-                                                            </div>
-                                                            <div
-                                                                class="pl-3 flex justify-content-end mt-2 col-span-3 text-right font-small text-sm  text-secondary">
-                                                                <span>{{(access?.setupPrice) | currency: 'USD':
-                                                                    'symbol-narrow': '.2-2'}}</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <!-- SHIPPING & HANDLING	 -->
-                                                    <div class="mt-2 col-span-7 font-medium font-bold text-md mb-4">
-                                                        <p>SHIPPING & HANDLING</p>
-                                                    </div>
-                                                    <div
-                                                        class="font-small text-sm col-span-2 text-center text-secondary">
-                                                    </div>
-
-                                                    <div
-                                                        class="pl-3 flex justify-between mt-2 col-span-3 text-secondary text-center font-small text-sm">
-                                                        <span></span>
-                                                        <span>{{item.products[0]?.shippingPrice | currency: 'USD':
-                                                            'symbol-narrow': '.2-2'}}</span>
-                                                    </div>
-                                                    <!-- Royalities	 -->
-                                                    <ng-container
-                                                        *ngIf="orderDetail.blnRoyaltyStore && item.royaltyBln">
-                                                        <div class="mt-2 col-span-7 font-medium font-bold text-md mb-4">
-                                                            <p>{{orderDetail.royaltyName}}</p>
-                                                        </div>
-                                                        <div
-                                                            class="font-small text-sm col-span-2 text-center text-secondary">
-
-                                                        </div>
-
-                                                        <div
-                                                            class="pl-3 flex justify-between mt-2 col-span-3 text-secondary text-center font-small text-sm">
-                                                            <span></span>
-                                                            <span>{{item.products[0]?.royaltyPrice | currency: 'USD':
-                                                                'symbol-narrow': '.2-2'}}</span>
-                                                        </div>
-                                                    </ng-container>
-                                                    <!-- Mechandise Subtotal -->
-                                                    <div class="mt-2 col-span-7 font-bold font-medium text-md  mb-4">
-                                                        <p>Merchandise SubTotal</p>
-                                                    </div>
-                                                    <div
-                                                        class="font-medium text-md col-span-2  text-center text-secondary">
-                                                    </div>
-
-                                                    <div
-                                                        class="pl-3 flex justify-between mt-2 text-center font-small text-sm col-span-3 font-bold">
-                                                        <span></span>
-                                                        <span>{{item.totalMerchendisePrice | currency: 'USD':
-                                                            'symbol-narrow': '.2-2'}}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div
-                                                class="col-span-7 my-2 self-center font-medium tracking-tight text-secondary">
-                                                TOTAL MERCHANDISE
-                                            </div>
-                                            <div class=" my-2 col-span-2 font-small text-sm  text-right text-secondary">
-                                            </div>
-                                            <div class="col-span-3 my-2 text-right  font-small text-sm font-bold">
-                                                <span *ngIf="orderDetail.blnRoyaltyStore">{{(orderTotal.price +
-                                                    orderTotal.royalties) |
-                                                    currency: 'USD':
-                                                    'symbol-narrow': '.2-2'}}</span>
-                                                <span *ngIf="!orderDetail.blnRoyaltyStore">{{orderTotal.price |
-                                                    currency: 'USD':
-                                                    'symbol-narrow': '.2-2'}}</span>
-                                            </div>
-                                            <div
-                                                class="col-span-7 my-2 self-center font-medium tracking-tight text-secondary">
-                                                TOTAL DISCOUNT
-                                            </div>
-                                            <div class=" my-2 col-span-2 font-small text-sm  text-right text-secondary">
-                                            </div>
-                                            <div class="col-span-3 my-2 text-right  font-small text-sm">
-                                                <span *ngIf="orderTotal.discount > 0">-</span>{{orderTotal.discount |
-                                                currency: 'USD':
-                                                'symbol-narrow': '.2-2'}}
-                                            </div>
-                                            <div
-                                                class="col-span-7 my-2 self-center font-medium tracking-tight text-secondary">
-                                                TOTAL TAX
-                                            </div>
-                                            <div class="font-medium my-2 col-span-2 text-md  text-right text-secondary">
-                                            </div>
-                                            <div class="col-span-3 my-2 text-right  font-small text-sm">
-                                                {{orderTotal.tax | currency: 'USD':
-                                                'symbol-narrow': '.2-2'}}
-                                            </div>
-                                            <!-- <div class="col-span-7 self-center font-medium tracking-tight text-secondary">
-                                                ADJUSTMENTS
-                                            </div> -->
-                                            <!-- <div class="col-span-1  text-center  font-small text-sm">$0.00</div> -->
-                                            <div
-                                                class="col-span-7 my-2 self-center font-medium tracking-tight text-secondary">
-                                                GRAND TOTAL
-                                            </div>
-                                            <div class="font-small col-span-2 text-sm my-2 text-right text-secondary">
-                                            </div>
-                                            <div class="col-span-3 text-right my-2 font-small text-sm font-bold">
-                                                {{orderTotal.total | currency: 'USD':
-                                                'symbol-narrow': '.2-2'}}
-                                            </div>
-                                            <div
-                                                class="col-span-7 my-2 self-center font-medium tracking-tight text-red-500">
-                                                Balance Due
-                                            </div>
-                                            <div class="font-small col-span-2 text-sm my-2 text-right text-secondary">
-                                            </div>
-                                            <div
-                                                class="col-span-3 text-red-500 text-right my-2 font-small text-sm font-bold">
-                                                {{(orderTotal?.BalanceDue) | currency: 'USD':
-                                                'symbol-narrow': '.2-2'}}
-                                            </div>
-                                        </div>
-
-                                        <div class="mt-10">
-                                            <div style="text-align: -webkit-center;">
-                                                <img class="w-40" src="assets/images/logo/consolidus-logo.jpeg">
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </ng-template>
-                        <div class="col-12 mt-2" *ngIf="showForm">
-                            <button (click)="exportHtmlToPDF()" class="float-right mr-3" mat-stroked-button
-                                [matTooltip]="'Save report as PDF'">
-                                <mat-icon svgIcon="mat_outline:picture_as_pdf"></mat-icon>
-                                <span class="ml-2 mr-1">PDF</span>
-                            </button>
-
-                            <!-- Main -->
-                            <div class="inline-block text-left print:p-0" id="htmltable" #htmltable>
-
-                                <!-- Invoice -->
-                                <div
-                                    class="min-w-240 p-5 print:w-auto print:p-0 print:rounded-none print:shadow-none print:bg-transparent">
-
-                                    <div class="flex items-start">
-                                        <div class="grid grid-rows-2 place-items-start gap-y-12 mt-10">
-                                            <div class="grid auto-cols-max grid-flow-col gap-x-2">
-                                                <div class="place-self-center w-24 text-center text-2xl text-secondary">
-                                                    Bill To
-                                                </div>
-                                                <div class="pl-6 border-l text-md">
-                                                    <div class="font-medium">TheCHCStore RAKSHANI</div>
-                                                    <div>526 South Main Street, Akron, OH, USA</div>
-                                                    <div>Akron US, OH 44311</div>
-                                                    <div>3305104384</div>
-                                                    <div>service@thechcstore.com</div>
-                                                </div>
-                                            </div>
-                                            <div class="grid auto-cols-max grid-flow-col gap-x-2">
-                                                <div class="place-self-center w-24 text-center text-2xl text-secondary">
-                                                    Ship To
-                                                </div>
-                                                <div class="pl-6 border-l text-md">
-                                                    <div class="font-medium">HAMAD</div>
-                                                    <div>526 South Main Street, Akron, OH, USA</div>
-                                                    <div>Akron US, OH 44311</div>
-                                                    <div>3305104384</div>
-                                                    <div>service@thechcstore.com</div>
-                                                </div>
-                                            </div>
-                                            <div class="grid auto-cols-max grid-flow-col gap-x-2">
-                                                <div class="place-self-center w-24 text-center text-2xl text-secondary">
-                                                    Order By
-                                                </div>
-                                                <div class="pl-6 border-l text-md">
-                                                    <div class="font-medium">TheCHCStore</div>
-                                                    <div>52 Calle de Ercilla</div>
-                                                    <div>Madrid MD , 28005</div>
-                                                    <div>3305104384</div>
-                                                    <div>service@thechcstore.com</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="grid grid-cols-2 gap-x-4 gap-y-1 ml-auto pr-16">
-                                            <div class="justify-self-start font-semibold text-3xl tracking-tight">Order
-                                            </div>
-                                            <div class="justify-self-start text-3xl font-semibold">#56165</div>
-                                            <div class="justify-self-start font-medium tracking-tight text-secondary">
-                                                ORDER
-                                                DATE</div>
-                                            <div class="font-medium">Feb 19, 2022</div>
-                                            <div class="justify-self-start font-medium tracking-tight text-secondary">
-                                                DUE
-                                                DATE</div>
-                                            <div class="font-medium">Aug 19, 2022</div>
-                                            <div class="justify-self-start font-medium tracking-tight text-secondary">
-                                                TOTAL
-                                                DUE</div>
-                                            <div class="font-medium">$49,000.00</div>
-                                        </div>
-                                    </div>
-
-                                    <div class="grid grid-cols-12 gap-x-1 mt-16">
-                                        <!-- Columns -->
-                                        <div class="col-span-8 font-medium text-md text-secondary">SERVICE</div>
-                                        <div class="font-medium text-md text-right text-secondary">RATE</div>
-                                        <div class="font-medium text-md text-right text-secondary">QTY</div>
-                                        <div class="col-span-2 font-medium text-md text-right text-secondary">TOTAL
-                                        </div>
-
-                                        <!-- Divider -->
-                                        <div class="col-span-12 my-4 border-b"></div>
-
-                                        <!-- Item -->
-                                        <div class="col-span-8">
-                                            <div class="text-lg font-medium">Prototype & Design</div>
-                                            <div class="mt-2 text-md text-secondary">
-                                                Prototyping of the application's general workflow and the detailed
-                                                design of
-                                                its 72
-                                                screens as a
-                                                working prototype.
-                                            </div>
-                                        </div>
-                                        <div class="self-center text-right">$75.00</div>
-                                        <div class="self-center text-right">240</div>
-                                        <div class="col-span-2 self-center text-right">$18,000.00</div>
-
-                                        <!-- Divider -->
-                                        <div class="col-span-12 my-4 border-b"></div>
-
-                                        <!-- Item -->
-                                        <div class="col-span-8">
-                                            <div class="text-lg font-medium">Development</div>
-                                            <div class="mt-2 text-md text-secondary">
-                                                The web and mobile development of the application using appropriate
-                                                tools
-                                                and
-                                                registering it to
-                                                major application stores.
-                                            </div>
-                                        </div>
-                                        <div class="self-center text-right">$60.50</div>
-                                        <div class="self-center text-right">350</div>
-                                        <div class="col-span-2 self-center text-right">$21,175.00</div>
-
-                                        <!-- Divider -->
-                                        <div class="col-span-12 my-4 border-b"></div>
-
-                                        <!-- Item -->
-                                        <div class="col-span-8">
-                                            <div class="text-lg font-medium">Testing</div>
-                                            <div class="mt-2 text-md text-secondary">
-                                                Extensive testing of the application using various mobile and desktop
-                                                devices with
-                                                different
-                                                operating systems.
-                                            </div>
-                                        </div>
-                                        <div class="self-center text-right">$25.00</div>
-                                        <div class="self-center text-right">50</div>
-                                        <div class="col-span-2 self-center text-right">$1,250.00</div>
-
-                                        <!-- Divider -->
-                                        <div class="col-span-12 my-4 border-b"></div>
-
-                                        <!-- Item -->
-                                        <div class="col-span-8">
-                                            <div class="text-lg font-medium">Documentation & Training</div>
-                                            <div class="mt-2 text-md text-secondary">
-                                                Development of the detailed documentation, preparing guides and
-                                                instructional videos and
-                                                extensive training of 2 people.
-                                            </div>
-                                        </div>
-                                        <div class="self-center text-right">$26.50</div>
-                                        <div class="self-center text-right">260</div>
-                                        <div class="col-span-2 self-center text-right">$6,890.00</div>
-
-                                        <!-- Spacer -->
-                                        <div class="col-span-12 mt-16"></div>
-
-                                        <!-- Subtotal -->
-                                        <div class="col-span-10 self-center font-medium tracking-tight text-secondary">
-                                            SUBTOTAL</div>
-                                        <div class="col-span-2 text-right text-lg">$47,315.00</div>
-
-                                        <!-- Divider -->
-                                        <div class="col-span-12 my-3 border-b"></div>
-
-                                        <!-- Tax -->
-                                        <div class="col-span-10 self-center font-medium tracking-tight text-secondary">
-                                            TAX
-                                        </div>
-                                        <div class="col-span-2 text-right text-lg">$2,365.75</div>
-
-                                        <!-- Divider -->
-                                        <div class="col-span-12 my-3 border-b"></div>
-
-                                        <!-- Discount -->
-                                        <div class="col-span-10 self-center font-medium tracking-tight text-secondary">
-                                            DISCOUNT</div>
-                                        <div class="col-span-2 text-right text-lg">$180.75</div>
-
-                                        <!-- Divider -->
-                                        <div class="col-span-12 my-3 border-b"></div>
-
-                                        <!-- Total -->
-                                        <div
-                                            class="col-span-10 self-center text-2xl font-medium tracking-tight text-secondary">
-                                            TOTAL
-                                        </div>
-                                        <div class="col-span-2 text-right text-2xl font-medium">$49,000.00</div>
-                                    </div>
-
-                                    <div class="mt-10">
-                                        <div style="text-align: -webkit-center;">
-                                            <img class="w-40" src="assets/images/logo/consolidus-logo.jpeg">
-                                        </div>
-                                    </div>
-                                </div>
-
+                                        <br />
+                                    </ng-container>
+                                    <hr />
+                                    <table class="p-1 w-full" width="100%">
+                                        <tr height="1">
+                                            <td width="70%"></td>
+                                            <td width="10%"></td>
+                                            <td width="10%"></td>
+                                            <td width="10%"></td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td align="center">QTY</td>
+                                            <td colspan="2" align="center">PRICE</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2"></td>
+                                            <td align="center">unit</td>
+                                            <td align="center">total</td>
+                                        </tr>
+                                        <!--- ITEM & OPTIONS --->
+                                        <tr>
+                                            <td colspan="6"><i>COLOR/SIZE BREAKDOWN</i></td>
+                                        </tr>
+                                        <ng-container *ngFor="let item of qryOrderLine.colorSizesData">
+                                            <tr>
+                                                <td>{{item.colorName}} <span *ngIf="item.sizeName">&amp;
+                                                        {{item.sizeName}}</span></td>
+                                                <td align="center">{{item.quantity}}</td>
+                                                <td align="center">{{item.runPrice | currency: 'USD': 'symbol':'1.3-3'}}
+                                                </td>
+                                                <td align="center">{{item.runPrice * item.quantity | currency: 'USD':
+                                                    'symbol':'1.3-3'}}</td>
+                                            </tr>
+                                            <ng-container *ngIf="item.setupCost || item.setupPrice">
+                                                <tr>
+                                                    <td align="right">Color/Size Setup</td>
+                                                    <td align="center"></td>
+                                                    <td align="center"></td>
+                                                    <td align="center">{{item.setupPrice | currency: 'USD':
+                                                        'symbol':'1.3-3'}}</td>
+                                                </tr>
+                                            </ng-container>
+                                        </ng-container>
+                                        <!--- IMPRINTS --->
+                                        <ng-container *ngIf="qryOrderLine.imprintsData.length">
+                                            <!--- IMPRINTS --->
+                                            <tr>
+                                                <td colspan="4"><br /><i>IMPRINTS</i></td>
+                                            </tr>
+                                            <ng-container *ngFor="let item of qryOrderLine.imprintsData">
+                                                <tr>
+                                                    <td>{{item.locationName}} ({{item.methodName}})
+                                                        <span *ngIf="item.reorderNumber"><br /><span
+                                                                color="#FF0000"><b>Reorder
+                                                                    #:&nbsp; {{item.reorderNumber}}</b></span></span>
+                                                    </td>
+                                                    <td align="center">{{item.quantity}}</td>
+                                                    <td align="center">{{item.runPrice | currency: 'USD':
+                                                        'symbol':'1.3-3'}}
+                                                    </td>
+                                                    <td align="center">{{item.runPrice*item.quantity | currency: 'USD':
+                                                        'symbol':'1.3-3'}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td align="right"><span>{{item.blnStitchProcess ? 'Digitization(s)'
+                                                            :
+                                                            'Setup(s)'}}</span></td>
+                                                    <td align="center"></td>
+                                                    <td align="center"></td>
+                                                    <td align="center">{{item.setupPrice | currency: 'USD':
+                                                        'symbol':'1.3-3'}}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td align="right">
+                                                        <span *ngIf="item.blnColorProcess">{{item.blnColorProcess ?
+                                                            'Total
+                                                            Colors: ' + item.processQuantity : 'Stitch Count: ' +
+                                                            item.processQuantity}}</span>
+                                                        <span *ngIf="item.imprintColors">/ Colors:
+                                                            {{item.imprintColors}}</span>
+                                                    </td>
+                                                    <td colspan="3"></td>
+                                                </tr>
+                                            </ng-container>
+                                        </ng-container>
+                                        <ng-container *ngIf="qryOrderLine.accessoriesData.length">
+                                            <!--- ACCESSORIES --->
+                                            <tr>
+                                                <td colspan="6"><br /><i>ACCESSORIES</i></td>
+                                            </tr>
+                                            <ng-container *ngFor="let item of qryOrderLine.accessoriesData">
+                                                <tr>
+                                                    <td>{{item.packagingName}}</td>
+                                                    <td align="center">{{item.quantity}}</td>
+                                                    <td align="center">{{item.runPrice | currency: 'USD':
+                                                        'symbol':'1.3-3'}}
+                                                    </td>
+                                                    <td align="center">{{item.runPrice * item.quantity | currency:
+                                                        'USD':
+                                                        'symbol':'1.3-3'}}</td>
+                                                </tr>
+                                                <ng-container *ngIf="item.setupCost || item.setupPrice">
+                                                    <tr>
+                                                        <td align="right">Accessory Setup</td>
+                                                        <td align="center"></td>
+                                                        <td align="center"></td>
+                                                        <td align="center">{{item.setupPrice | currency: 'USD':
+                                                            'symbol':'1.3-3'}}</td>
+                                                    </tr>
+                                                </ng-container>
+                                            </ng-container>
+                                        </ng-container>
+                                        <!--- SHIPPING --->
+                                        <tr height="10">
+                                            <td colspan="4"></td>
+                                        </tr>
+                                        <tr>
+                                            <td><i>SHIPPING &amp; HANDLING</i></td>
+                                            <td align="center"></td>
+                                            <td align="center"></td>
+                                            <td align="center">{{qryOrderLine.shippingPrice | currency: 'USD':
+                                                'symbol':'1.3-3'}}</td>
+                                        </tr>
+                                        <ng-container *ngIf="orderDetail.blnRoyaltyStore">
+                                            <tr height="10">
+                                                <td colspan="6"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <i>
+                                                        {{orderDetail.royaltyName}}
+                                                    </i>
+                                                </td>
+                                                <td align="center"></td>
+                                                <td align="center"></td>
+                                                <td align="center">{{qryOrderLine.royaltyPrice | currency: 'USD':
+                                                    'symbol':'1.3-3'}}</td>
+                                            </tr>
+                                        </ng-container>
+                                        <!--- SUB-TOTAL --->
+                                        <tr>
+                                            <td><i>MERCHANDISE SUB-TOTAL</i></td>
+                                            <td align="center"></td>
+                                            <td align="center"></td>
+                                            <td align="center"><b>{{qryOrderLine?.getOrderLineTotalsPrice | currency:
+                                                    'USD':
+                                                    'symbol':'1.3-3'}}</b></td>
+                                        </tr>
+                                    </table>
+                                </ng-container>
+                                <!--- ORDER TOTALS --->
+                                <hr class="my-2">
+                                <table class="p-1 w-full" width="100%">
+                                    <tr height="1">
+                                        <td width="70%"></td>
+                                        <td width="10%"></td>
+                                        <td width="10%"></td>
+                                        <td width="10%"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>TOTAL MERCHANDISE</td>
+                                        <td align="center"></td>
+                                        <td align="center"></td>
+                                        <td align="center">
+                                            <b>{{(orderDetail?.blnRoyaltyStore ? orderDetail?.orderPrice +
+                                                orderDetail?.royalties: orderDetail?.orderPrice) | currency: 'USD':
+                                                'symbol':'1.3-3'}}</b>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>TOTAL <span>{{orderDetail.discount < 0 ? 'ADJUSTMENT' : 'DISCOUNT' }}</span>
+                                        </td>
+                                        <td align="center"></td>
+                                        <td align="center"></td>
+                                        <td align="center"><b>{{orderDetail.discount | currency: 'USD':
+                                                'symbol':'1.3-3'}}</b></td>
+                                    </tr>
+                                    <ng-container *ngIf="orderDetail.cashbackDiscount">
+                                        <tr>
+                                            <td>CASH BACK DISCOUNT</td>
+                                            <td align="center"></td>
+                                            <td align="center"></td>
+                                            <td align="center"><b>{{orderDetail.cashbackDiscount | currency: 'USD':
+                                                    'symbol':'1.3-3'}}</b></td>
+                                        </tr>
+                                    </ng-container>
+                                    <tr>
+                                        <td>TOTAL TAX</td>
+                                        <td align="center"></td>
+                                        <td align="center"></td>
+                                        <td align="center"><b>{{orderDetail.orderTax | currency: 'USD':
+                                                'symbol':'1.3-3'}}</b></td>
+                                    </tr>
+                                    <ng-container *ngIf="orderDetail.qryOrderAdjustments">
+                                        <tr>
+                                            <td>ADJUSTMENTS</td>
+                                            <td align="center"></td>
+                                            <td align="center"></td>
+                                            <td align="center"></td>
+                                        </tr>
+                                        <ng-container *ngIf="orderDetail.qryOrderAdjustments">
+                                            <tr *ngFor="let item of orderDetail.adjustmentsData">
+                                                <td align="right">{{item.description}}</td>
+                                                <td align="center"></td>
+                                                <td align="center"></td>
+                                                <td align="center"><b>{{item.price | currency}}</b></td>
+                                            </tr>
+                                        </ng-container>
+                                    </ng-container>
+                                </table>
+                                <hr class="my-2">
+                                <table class="p-1" width="100%">
+                                    <tr height="1">
+                                        <td width="70%"></td>
+                                        <td width="10%"></td>
+                                        <td width="10%"></td>
+                                        <td width="10%"></td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>GRAND TOTAL</b></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td align="center">
+                                            <b>{{(orderDetail?.blnRoyaltyStore ? orderDetail?.orderTotal :
+                                                orderDetail?.orderPrice + orderDetail?.orderTax) | currency: 'USD':
+                                                'symbol':'1.3-3'}}</b>
+                                        </td>
+                                    </tr>
+                                    <!-- <ng-container *ngIf="orderDetail?.currentTotal"> -->
+                                    <tr style="color:#FF0000;">
+                                        <td><b>BALANCE DUE</b></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td align="center">
+                                            <b>{{(orderDetail.orderTotal - orderDetail?.currentTotal) | currency: 'USD':
+                                                'symbol':'1.3-3'}}</b>
+                                        </td>
+                                    </tr>
+                                    <!-- </ng-container> -->
+                                </table>
                             </div>
                         </div>
                     </div>
-                </div>
-            </fuse-card>
+                </fuse-card>
+            </div>
         </div>
     </div>
 </div>

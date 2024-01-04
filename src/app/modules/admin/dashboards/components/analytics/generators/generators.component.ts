@@ -77,6 +77,8 @@ export class GeneratorsComponent implements OnInit {
 
   isOtherGeneratorLoader: boolean = false;
   totalConversion: any;
+  conversionCount = 1;
+  sampleCount = 0;
   constructor(private _changeDetectorRef: ChangeDetectorRef,
     private _dashboardService: DashboardsService,
   ) { }
@@ -132,18 +134,20 @@ export class GeneratorsComponent implements OnInit {
         this.sampleStatus = res["sampleOrders"]?.sampleOrdersResponse.filter(item => item.blnSampleConverted == '0');
         this.tempSampleStatus = res["sampleOrders"]?.sampleOrdersResponse.filter(item => item.blnSampleConverted == '0');
         this.sampleStores = res["sampleOrders"]?.sampleOrdersStores;
-        let count = 0;
+        this.sampleCount = 0;
+        this.conversionCount = res["qryQuarterSamplesCount"][0].qryQuarterSamplesCount;
         res["sampleOrders"]?.sampleOrdersResponse.forEach(order => {
           if (order.blnSampleConverted != '0') {
-            count++;
+            this.sampleCount++;
           }
         });
-        this.totalConversion = `Conversion rate:  <b>${count}/${res["qryQuarterSamplesCount"][0].qryQuarterSamplesCount} (${(count / res["qryQuarterSamplesCount"][0].qryQuarterSamplesCount) * 100}%)</b>`
+        this.totalConversion = `Conversion rate:  <b>${this.sampleCount}/${this.conversionCount} (${((this.sampleCount / this.conversionCount) * 100).toFixed(2)}%)</b>`
       }
       this.keywordsData = res["keywords"];
       // Other Generators
       this.getOtherOrderStatus();
       this._changeDetectorRef.markForCheck();
+
     })
   }
   getOtherOrderStatus() {
@@ -165,7 +169,6 @@ export class GeneratorsComponent implements OnInit {
       this.isOtherGeneratorLoader = false;
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
-      console.log("Report Data", res)
       this.ordersThisYear = res["data"][0];
       this.ordersThisYear.forEach(element => {
         if (element.customerLastYearPriority > 0) {
@@ -329,9 +332,11 @@ export class GeneratorsComponent implements OnInit {
       this.sampleStatus = null;
       if (event.value == 'All') {
         this.sampleStatus = this.tempSampleStatus;
+        this.totalConversion = `Conversion rate:  <b>${this.sampleCount}/${this.conversionCount} (${((this.sampleCount / this.conversionCount) * 100).toFixed(2)}%)</b>`
       } else {
         const index = this.sampleStores.findIndex(store => store.store == event.value);
         this.sampleStatus = this.sampleStores[index].data;
+        this.totalConversion = `Conversion rate:  <b>${this.sampleStores[index].count}/${this.conversionCount} (${((this.sampleStores[index].count / this.conversionCount) * 100).toFixed(2)}%)</b>`
       }
       setTimeout(() => {
         this.sampleStatusLoader = false;
@@ -463,6 +468,9 @@ export class GeneratorsComponent implements OnInit {
 
     this.getEmailModalData(type);
     $(this.quoteEmailModal.nativeElement).modal('show');
+
+
+
   }
   getEmailModalData(type) {
     let payload;
@@ -1053,7 +1061,6 @@ export class GeneratorsComponent implements OnInit {
   }
   openSampleCommentModal(item) {
     this.sampleCommentModalData = item;
-    console.log(item);
     $(this.sampleCommentModal.nativeElement).modal('show');
   }
 
