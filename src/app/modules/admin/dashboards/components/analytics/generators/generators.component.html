@@ -89,11 +89,8 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let item of pendingQuotes; trackBy: trackByCartId" [ngClass]="{
-                        'background-color-e0f0d5': item?.priority > 0,
-                        'background-color-ffcaca': item.inHandsDate != 'N/A',
-                        'background-color-feee84': item.blnReorder
-                      }">
+                        <tr *ngFor="let item of pendingQuotes; trackBy: trackByCartId"
+                            [ngClass]="item?.backgroundColorClass">
                             <td>
                                 <a target="_blank" class="text-blue-700 cursor-pointer"
                                     [routerLink]="['/apps/stores',item.storeID]">{{item.storeCode}}</a>
@@ -374,11 +371,8 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let item of ordersThisYear; trackBy: trackByCartId" [ngClass]="{
-                        'background-color-e0f0d5': item?.customerLastYearPriority > 0,
-                        'background-color-ffcaca': item.inHandsDate != 'N/A',
-                        'background-color-feee84': item.blnReorder
-                      }">
+                        <tr *ngFor="let item of ordersThisYear; trackBy: trackByCartId"
+                            [ngClass]="item?.backgroundColorClass">
                             <td>
                                 <a target="_blank" class="text-blue-700 cursor-pointer"
                                     [routerLink]="['/apps/stores',item.storeID]">{{item.storeCode}}</a>
@@ -392,7 +386,7 @@
                                     [routerLink]="['/apps/orders',item.pk_orderID]">{{item.total | currency}}</a>
                             </td>
                             <td>
-                                <ng-container *ngIf="item.orderDate != 'N/A'; else na">
+                                <ng-container *ngIf="item.orderDate != 'N/A' && item.orderDate; else na">
                                     <a target="_blank" class="text-blue-700 cursor-pointer"
                                         [routerLink]="['/apps/orders',item.orderID]">{{ item.orderDate | date:
                                         'MM/dd/yyyy' }}</a>
@@ -408,8 +402,9 @@
                                 <p *ngFor="let prod of item.products.split(',')">{{prod}}</p>
                             </td>
                             <td>
-                                <ng-container *ngIf="item.inHandsDate != 'N/A'; else na">
-                                    {{ item.inHandsDate | date: 'MM/dd/yyyy' }}
+                                <ng-container
+                                    *ngIf="item.mostRecentPurchase != 'N/A' && item.mostRecentPurchase; else na">
+                                    {{ item.mostRecentPurchase | date: 'MM/dd/yyyy' }}
                                 </ng-container>
                                 <ng-template #na>---</ng-template>
                             </td>
@@ -578,11 +573,8 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let item of activityData; trackBy: trackByCartId" [ngClass]="{
-                        'background-color-e0f0d5': item?.followUpPriority > 0,
-                        'background-color-ffcaca': item.inHandsDate != 'N/A',
-                        'background-color-feee84': item.blnReorder
-                      }">
+                        <tr *ngFor="let item of activityData; trackBy: trackByCartId"
+                            [ngClass]="item?.backgroundColorClass">
                             <td>
                                 <a target="_blank" class="text-blue-700 cursor-pointer"
                                     [routerLink]="['/apps/stores',item.storeID]">{{item.storeCode}}</a>
@@ -838,32 +830,32 @@
                                                 <div class="col-span-12">
                                                     <div class="grid grid-cols-12"
                                                         *ngFor="let decoration of quote.DecorationData">
-                                                        <div class="col-span-6 text-sm">
+                                                        <div class="col-span-6 text-sm font-bold">
                                                             {{decoration.locationName}} / {{decoration.methodName}}
                                                         </div>
                                                         <div class="col-span-3 font-bold text-sm ">
                                                         </div>
-                                                        <div class="text-sm col-span-3 font-bold ">{{decoration.price |
+                                                        <div class="text-sm col-span-3 font-bold ">
+                                                            {{decoration.runningPrice |
                                                             currency}}
                                                         </div>
-                                                        <div class="col-span-6 text-sm"> Setup: {{decoration.setupPrice
-                                                            |
-                                                            currency}}</div>
                                                         <div class="col-span-3 font-bold text-sm "></div>
                                                         <div class="text-sm col-span-3 font-bold ">
                                                         </div>
-                                                        <div class="col-span-6 text-sm" *ngIf="runningPrice > 0"> Add
+                                                        <div class="col-span-6 text-sm" *ngIf="decoration.runPrice > 0">
+                                                            Add
                                                             Running:
-                                                            {{decoration.runningPrice |
+                                                            {{decoration.runPrice |
                                                             currency}}</div>
                                                         <div class="col-span-3 font-bold text-sm "
-                                                            *ngIf="runningPrice > 0">
+                                                            *ngIf="decoration.runPrice > 0">
                                                         </div>
                                                         <div class="text-sm col-span-3 font-bold "
-                                                            *ngIf="runningPrice > 0">
+                                                            *ngIf="decoration.runPrice > 0">
 
                                                         </div>
-                                                        <div class="col-span-6 text-sm">Colors: {{decoration.colors}}
+                                                        <div *ngIf="decoration.colors" class="col-span-6 text-sm">
+                                                            Colors: {{decoration.colors}}
                                                         </div>
                                                         <div class="col-span-3 font-bold text-sm "></div>
                                                         <div class="text-sm col-span-3 font-bold ">
@@ -907,6 +899,10 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <div class="col-span-12 my-2">
+                                                    <!-- <p>Per unit average: </p> -->
+                                                    <p>Setup: {{quote.setupsTotal | currency}}</p>
+                                                </div>
                                                 <!-- <div class="col-span-12 my-2">
                                                     <div class="grid grid-cols-12">
                                                         <div class="col-span-6 font-medium text-secondary">
@@ -920,7 +916,12 @@
                                                 </div> -->
                                                 <div class="col-span-12 my-2 border-b pb-2">
                                                     <div *ngFor="let file of quote.artworkFiles;let i=index">
-                                                        <a href="{{assetURL}}artwork/temp/{{quote.pk_cartID}}/{{quote.pk_cartLineID}}/{{file.imprintID}}/{{file.FILENAME}}"
+                                                        <a *ngIf="file.logoBankID"
+                                                            href="https://assets.consolidus.com/globalAssets/Stores/logoBank2/{{quote.storeID}}/Thumbs/{{file.logoBankID}}.jpg"
+                                                            target="_blank">View
+                                                            Artwork File #{{i+1}}</a>
+                                                        <a *ngIf="!file.logoBankID"
+                                                            href="{{assetURL}}artwork/temp/{{quote.pk_cartID}}/{{quote.pk_cartLineID}}/{{file.imprintID}}/{{file.FILENAME}}"
                                                             target="_blank">View
                                                             Artwork File #{{i+1}}</a>
                                                         <br />

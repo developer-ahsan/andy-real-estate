@@ -171,6 +171,18 @@ export class GeneratorsComponent implements OnInit {
     })).subscribe(res => {
       this.ordersThisYear = res["data"][0];
       this.ordersThisYear.forEach(element => {
+        // Around
+        if (element?.priority > 0) {
+          element.backgroundColorClass = 'background-color-e0f0d5';
+        } else if (element.fk_groupOrderID) {
+          element.backgroundColorClass = 'background-color-fca769';
+        } else if (element.inHandsDate !== 'N/A' && element.inHandsDate) {
+          element.backgroundColorClass = 'background-color-ffcaca';
+        } else if (element.blnReorder) {
+          element.backgroundColorClass = 'background-color-feee84';
+        } else {
+          element.backgroundColorClass = ''; // Default or fallback class if none of the conditions are met
+        }
         if (element.customerLastYearPriority > 0) {
           element.priorityChecked = true;
         } else {
@@ -192,6 +204,17 @@ export class GeneratorsComponent implements OnInit {
       this.tempOrdersThisYear = this.ordersThisYear;
       this.activityData = res["data"][1];
       this.activityData.forEach(element => {
+        if (element?.priority > 0) {
+          element.backgroundColorClass = 'background-color-e0f0d5';
+        } else if (element.fk_groupOrderID) {
+          element.backgroundColorClass = 'background-color-fca769';
+        } else if (element.inHandsDate !== 'N/A' && element.inHandsDate) {
+          element.backgroundColorClass = 'background-color-ffcaca';
+        } else if (element.blnReorder) {
+          element.backgroundColorClass = 'background-color-feee84';
+        } else {
+          element.backgroundColorClass = ''; // Default or fallback class if none of the conditions are met
+        }
         if (element.followUpPriority > 0) {
           element.priorityChecked = true;
         } else {
@@ -676,8 +699,10 @@ export class GeneratorsComponent implements OnInit {
       } else if (type == 'quotes') {
         this.emailModalContent.totalPrice = 0;
         res["cartData"].forEach(carts => {
+          carts.setupsTotal = 0;
           carts.artworkFiles = [];
           carts.subTotal = Number(carts.royaltyPrice) + Number(carts.shippingGroundPrice);
+          this.emailModalContent.totalPrice -= Number(carts.shippingGroundPrice);
           // Colors Data
           carts.ColorsData = (carts.Colors || '').split('#_').map(color => {
             const [colorName, unitPrice, totalPrice, sizeName] = color.split('||');
@@ -686,15 +711,18 @@ export class GeneratorsComponent implements OnInit {
           });
           // Decorations Data
           carts.DecorationData = (carts.Decoration || '').split('#_').map(decoration => {
-            const [id, locationName, methodName, price, setupPrice, colors, logoID, runningPrice] = decoration.split('||');
-            carts.subTotal += Number(price);
-            this.getArworkFiles(carts, id);
-            return { locationName, methodName, price: Number(price), setupPrice: Number(setupPrice), colors, runningPrice: Number(runningPrice) };
+            const [id, locationName, methodName, setupPrice, price, colors, logoID, runningPrice] = decoration.split('||');
+            carts.subTotal += Number(runningPrice);
+            carts.setupsTotal += Number(setupPrice);
+            this.getArworkFiles(carts, id, logoID);
+            return { locationName, methodName, runPrice: Number(price), setupPrice: Number(setupPrice), logoBankID: logoID, colors, runningPrice: Number(runningPrice) };
           });
+          console.log(carts);
           this.emailModalContent.totalPrice += carts.subTotal;
           this.emailModalContent.body = `${greeting} ${message}`;
           this.emailModalContent.footer = footer;
         });
+
         this.emailModalContent.cartData = res["cartData"];
       } else if (type == 'survey') {
         this.emailModalContent.surveyID = 0;
@@ -759,7 +787,7 @@ export class GeneratorsComponent implements OnInit {
       }
     });
   }
-  getArworkFiles(data, imprintID) {
+  getArworkFiles(data, imprintID, logoID) {
     let payload = {
       files_fetch: true,
       path: `/artwork/temp/${data.pk_cartID}/${data.pk_cartLineID}/${imprintID}/`
@@ -768,6 +796,7 @@ export class GeneratorsComponent implements OnInit {
     this._dashboardService.getFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(files => {
       files["data"].forEach(file => {
         file.imprintID = imprintID;
+        file.logoBankID = logoID;
         data.artworkFiles.push(file);
       });
       this._changeDetectorRef.markForCheck();

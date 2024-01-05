@@ -141,7 +141,9 @@ export class OrdersComponent {
             order_type: this.orderType,
             search_order_id: this.searchOrderId
         }
-        this.isLoading = true;
+        if (this.pageNo == 1) {
+            this.isLoading = true;
+        }
         this._orderService.getOrders(params)
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((orders) => {
@@ -173,7 +175,7 @@ export class OrdersComponent {
         } else {
             this.pageNo--;
         };
-        this.getOrders(20, this.pageNo);
+        this.getOrders(this.size, this.pageNo);
     }
 
 

@@ -74,13 +74,14 @@
                                         </td>
                                         <td colspan="2" valign="top" align="right">
 
-                                            <div *ngIf="orderLine?.fk_statusID">
-                                                <div *ngIf="orderLine.stautes.includes(orderLine?.fk_statusID)"
+                                            <div *ngIf="qryOrderLine?.fk_statusID">
+                                                <div *ngIf="qryOrderLine.stautes.includes(qryOrderLine?.fk_statusID)"
                                                     class="alert alert-warning p-2 text-left"
                                                     style="text-align: left !important;">
                                                     <span class="fa fa-clock-o disabled fa-lg"></span> Processing
                                                 </div>
-                                                <div *ngIf="orderLine?.fk_statusID == 5" class="alert alert-success p-2"
+                                                <div *ngIf="qryOrderLine?.fk_statusID == 5"
+                                                    class="alert alert-success p-2"
                                                     style="text-align: left !important;">
                                                     <span class="fa fa-truck fa-lg active"></span> Shipped
                                                     <span *ngIf="qryOrderLine.trackingNumber"
@@ -93,7 +94,8 @@
                                                         <b>Shipping date:</b> {{qryOrderLine.shippingDate}}
                                                     </span>
                                                 </div>
-                                                <div *ngIf="orderLine?.fk_statusID == 6" class="alert alert-success p-2"
+                                                <div *ngIf="qryOrderLine?.fk_statusID == 6"
+                                                    class="alert alert-success p-2"
                                                     style="text-align: left !important;">
                                                     <span class="fa fa-check fa-lg active"></span> Delivered
                                                     <span *ngIf="qryOrderLine.trackingNumber"
@@ -106,22 +108,24 @@
                                                         <b>Shipping date:</b> {{qryOrderLine.shippingDate}}
                                                     </span>
                                                 </div>
-                                                <div *ngIf="orderLine?.fk_statusID == 8" class="alert alert-success p-2"
+                                                <div *ngIf="qryOrderLine?.fk_statusID == 8"
+                                                    class="alert alert-success p-2"
                                                     style="text-align: left !important;">
                                                     <span class="fa fa-car fa-lg active"></span> Picked up
                                                 </div>
-                                                <div *ngIf="orderLine?.fk_statusID == 7" class="alert alert-warning p-2"
+                                                <div *ngIf="qryOrderLine?.fk_statusID == 7"
+                                                    class="alert alert-warning p-2"
                                                     style="text-align: left !important;">
                                                     <span class="fa fa-file-text fa-lg" style="color: purple;"></span>
                                                     <span class="bold" style="color: purple;">P.O. Needed</span>
                                                 </div>
-                                                <div *ngIf="orderLine?.fk_statusID == 10"
+                                                <div *ngIf="qryOrderLine?.fk_statusID == 10"
                                                     class="alert alert-warning p-2"
                                                     style="text-align: left !important;">
                                                     <span class="fa fa-users fa-lg caution"></span> Group order pending
                                                 </div>
                                             </div>
-                                            <div *ngIf="!orderLine?.fk_statusID" class="alert alert-warning p-2"
+                                            <div *ngIf="!qryOrderLine?.fk_statusID" class="alert alert-warning p-2"
                                                 style="text-align: left !important;">
                                                 No shipping information for this item.
                                             </div>
@@ -163,10 +167,15 @@
                                 </tr>
                                 <tr>
                                     <td><b>TOTAL SHIPPING &amp; HANDLING</b></td>
-                                    <td><b>{{orderDetail?.totalOrderSHCost | currency: 'USD': 'symbol':'1.3-3'}}</b>
+                                    <td align="center"><b>{{orderDetail?.totalOrderSHCost | currency: 'USD':
+                                            'symbol':'1.3-3'}}</b>
                                     </td>
-                                    <td><b>{{orderDetail.totalOrderSHPrice | currency: 'USD': 'symbol':'1.3-3'}}</b>
+                                    <td align="center"><b>{{orderDetail.totalOrderSHPrice | currency: 'USD':
+                                            'symbol':'1.3-3'}}</b>
                                     </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4"></td>
                                 </tr>
                             </table>
                         </div>

@@ -894,12 +894,16 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
         return;
       }
 
+
+
+
+
       OrderLinePOOptions.push({
         optionName: element.optionName?.replace(/'/g, "''"),
         quantity: element.quantity,
-        unitCost: element.unitCost,
+        unitCost: Number(element.unitCost)?.toFixed(2),
         productName: element.productName?.replace(/'/g, "''"),
-        total: element.totalCost,
+        total: Number(element.totalCost)?.toFixed(2),
         pk_orderLinePOOptionID: element.pk_orderLinePOOptionID
       });
     }
@@ -917,8 +921,8 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       orderLineImprint.push({
         imprintName: element.imprintName?.replace(/'/g, "''"),
         quantity: element.quantity,
-        unitCost: element.unitCost,
-        total: element.totalCost,
+        unitCost: Number(element.unitCost)?.toFixed(2),
+        total: Number(element.totalCost)?.toFixed(2),
         colors: element.colors?.replace(/'/g, "''"),
         setup: element.setup,
         totalImprintColors: element.totalImprintColors,
@@ -942,9 +946,9 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       orderLineAccessory.push({
         accessoryName: element.accessoryName?.replace(/'/g, "''"),
         quantity: element.quantity,
-        unitCost: element.unitCost,
-        totalCost: element.totalCost,
-        setupCost: element.setupCost,
+        unitCost: Number(element.unitCost)?.toFixed(2),
+        totalCost: Number(element.totalCost)?.toFixed(2),
+        setupCost: Number(element.setupCost)?.toFixed(2),
         pk_orderLinePOAccessoryID: element.pk_orderLinePOAccessoryID,
       });
     }
@@ -961,7 +965,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
 
       orderLineAdjustments.push({
         adjustmentName: element.adjustmentName?.replace(/'/g, "''"),
-        unitCost: element.unitCost,
+        unitCost: Number(element.unitCost)?.toFixed(2),
         pk_orderLinePOAdjustmentID: element.pk_orderLinePOAdjustmentID
       });
     }
@@ -990,7 +994,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       shipToState: shipToState,
       shipToZip: shipToZip,
       shipToCountry: shipToCountry,
-      POTotal: POTotal,
+      POTotal: Number(Number(POTotal)?.toFixed(2)),
       shipToDeliverTo: shipToDeliverTo,
       quantity,
       purchaseOrderNumber: purchaseOrderNumber,
@@ -1090,9 +1094,9 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       OrderLinePOOptions.push({
         optionName: element.optionName?.replace(/'/g, "''"),
         quantity: element.quantity,
-        unitCost: element.unitCost,
+        unitCost: Number(element.unitCost)?.toFixed(2),
         productName: element.productName?.replace(/'/g, "''"),
-        total: element.totalCost,
+        total: Number(element.totalCost)?.toFixed(2),
         pk_orderLinePOOptionID: element.pk_orderLinePOOptionID
       });
     }
@@ -1106,12 +1110,11 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
         this._OrderManageService.snackBar('Please fill out the fields in imprints');
         return;
       }
-
       orderLineImprint.push({
         imprintName: element.imprintName?.replace(/'/g, "''"),
         quantity: element.quantity,
-        unitCost: element.unitCost,
-        total: element.totalCost,
+        unitCost: Number(element.unitCost)?.toFixed(2),
+        total: Number(element.totalCost)?.toFixed(2),
         colors: element.colors?.replace(/'/g, "''"),
         setup: element.setup,
         totalImprintColors: element.totalImprintColors,
@@ -1135,9 +1138,9 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       orderLineAccessory.push({
         accessoryName: element.accessoryName?.replace(/'/g, "''"),
         quantity: element.quantity,
-        unitCost: element.unitCost,
-        totalCost: element.totalCost,
-        setupCost: element.setupCost,
+        unitCost: Number(element.unitCost)?.toFixed(2),
+        totalCost: Number(element.totalCost)?.toFixed(2),
+        setupCost: Number(element.setupCost)?.toFixed(2),
         pk_orderLinePOAccessoryID: element.pk_orderLinePOAccessoryID,
       });
     }
@@ -1179,7 +1182,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       shipToState: shipToState,
       shipToZip: shipToZip,
       shipToCountry: shipToCountry,
-      POTotal: POTotal,
+      POTotal: Number(Number(POTotal)?.toFixed(2)),
       shipToDeliverTo: shipToDeliverTo,
       quantity,
       purchaseOrderNumber: purchaseOrderNumber,
@@ -1606,9 +1609,9 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       OrderLinePOOptions.push({
         optionName: element.optionName?.replace(/'/g, "''"),
         quantity: element.quantity,
-        unitCost: element.unitCost,
+        unitCost: Number(element.unitCost)?.toFixed(2),
         productName: element.productName?.replace(/'/g, "''"),
-        total: element.totalCost,
+        total: Number(element.totalCost)?.toFixed(2),
         pk_orderLinePOOptionID: element.pk_orderLinePOOptionID
       });
     }
@@ -1626,8 +1629,8 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       orderLineImprint.push({
         imprintName: element.imprintName?.replace(/'/g, "''"),
         quantity: element.quantity,
-        unitCost: element.unitCost,
-        total: element.totalCost,
+        unitCost: Number(element.unitCost)?.toFixed(2),
+        total: Number(element.totalCost)?.toFixed(2),
         colors: element.colors?.replace(/'/g, "''"),
         setup: element.setup,
         totalImprintColors: element.totalImprintColors,
@@ -1651,9 +1654,9 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       orderLineAccessory.push({
         accessoryName: element.accessoryName?.replace(/'/g, "''"),
         quantity: element.quantity,
-        unitCost: element.unitCost,
-        totalCost: element.totalCost,
-        setupCost: element.setupCost,
+        unitCost: Number(element.unitCost)?.toFixed(2),
+        totalCost: Number(element.totalCost)?.toFixed(2),
+        setupCost: Number(element.setupCost)?.toFixed(2),
         pk_orderLinePOAccessoryID: element.pk_orderLinePOAccessoryID,
       });
     }
@@ -1670,7 +1673,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
 
       orderLineAdjustments.push({
         adjustmentName: element.adjustmentName?.replace(/'/g, "''"),
-        unitCost: element.unitCost,
+        unitCost: Number(element.unitCost)?.toFixed(2),
         pk_orderLinePOAdjustmentID: element.pk_orderLinePOAdjustmentID
       });
     }
@@ -1695,7 +1698,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       shipToState: shipToState,
       shipToZip: shipToZip,
       shipToCountry: shipToCountry,
-      POTotal: POTotal,
+      POTotal: Number(Number(POTotal)?.toFixed(2)),
       shipToDeliverTo: shipToDeliverTo,
       quantity,
       purchaseOrderNumber: purchaseOrderNumber,
