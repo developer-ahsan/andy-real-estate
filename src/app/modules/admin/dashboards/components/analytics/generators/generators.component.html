@@ -609,13 +609,15 @@
                                             (click)="openEmailDetailsModal(item,'survey')"
                                             matTooltip="Send a survey to customer"></mat-icon>
                                     </mat-button-toggle>
-                                    <mat-button-toggle>
-                                        <a [routerLink]="['/apps/orders',item.pk_orderID,'incident-reports']"
-                                            target="_blank">
+                                    <a [routerLink]="['/apps/orders',item.pk_orderID,'incident-reports']"
+                                        target="_blank">
+                                        <mat-button-toggle>
+
                                             <mat-icon svgIcon="mat_outline:info"
                                                 matTooltip="Create an incident report"></mat-icon>
-                                        </a>
-                                    </mat-button-toggle>
+                                        </mat-button-toggle>
+                                    </a>
+
                                     <mat-button-toggle (click)="openEmailDetailsModal(item,'follow')">
                                         <mat-icon svgIcon="mat_outline:email"
                                             matTooltip="Send an email to customer"></mat-icon>
