@@ -254,10 +254,29 @@ export class GeneratorsComponent implements OnInit {
         delete_quote_mark_priority: true
       }
     }
-    this._dashboardService.updateDashboardData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => { });
+    this.pendingQuotes.forEach(item => {
+      if (item.cartID == cartID) {
+        item.priorityChecked = priorityChecked;
+        if (priorityChecked) {
+          item.backgroundColorClass = 'background-color-e0f0d5';
+        } else {
+          item.backgroundColorClass = '';
+        }
+      }
+    })
+    this._changeDetectorRef.markForCheck();
+    this._dashboardService.updateDashboardData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+
+    });
   }
   updatePriority(order, type) {
-    const { orderID, priorityChecked } = order;
+    let orderID;
+    const { priorityChecked } = order;
+    if (type == 'blnSample') {
+      orderID = order.orderID;
+    } else {
+      orderID = order.pk_orderID;
+    }
     let payload: any;
     if (priorityChecked) {
       payload = {
@@ -272,6 +291,42 @@ export class GeneratorsComponent implements OnInit {
         delete_mark_priority: true
       }
     }
+    if (type == 'blnSample') {
+      this.sampleStatus.forEach(item => {
+        if (item.orderID == orderID) {
+          item.priorityChecked = priorityChecked;
+          if (priorityChecked) {
+            item.priority = 1;
+          } else {
+            item.priority = 0;
+          }
+        }
+      })
+    } else if (type == 'blnCustomerLastYear') {
+      this.ordersThisYear.forEach(item => {
+        if (item.pk_orderID == orderID) {
+          item.priorityChecked = priorityChecked;
+          if (priorityChecked) {
+            item.backgroundColorClass = 'background-color-e0f0d5';
+          } else {
+            item.backgroundColorClass = '';
+          }
+        }
+      })
+    } else if (type == 'blnFollowUp') {
+      this.activityData.forEach(item => {
+        if (item.pk_orderID == orderID) {
+          item.priorityChecked = priorityChecked;
+          if (priorityChecked) {
+            item.backgroundColorClass = 'background-color-e0f0d5';
+          } else {
+            item.backgroundColorClass = '';
+          }
+        }
+      })
+    }
+
+    this._changeDetectorRef.markForCheck();
     this._dashboardService.updateDashboardData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => { });
   }
   // Remove Quotes
@@ -284,6 +339,13 @@ export class GeneratorsComponent implements OnInit {
     quote.delLoader = true;
     this._dashboardService.updateDashboardData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
       quote.delLoader = false;
+      this.pendingQuotesLoader = true;
+      let pendingQuotes = this.pendingQuotes.filter(item => item.cartID != cartID);
+      setTimeout(() => {
+        this.pendingQuotesLoader = false;
+        this.pendingQuotes = pendingQuotes;
+        this._changeDetectorRef.markForCheck();
+      }, 200);
       this._changeDetectorRef.markForCheck();
     })).subscribe(res => {
       if (res["message"]) {
@@ -294,7 +356,18 @@ export class GeneratorsComponent implements OnInit {
   }
   // Remove Orders
   removeOrders(order, type) {
-    const { orderID, storeUserID } = order;
+    let orderID;
+    let storeUserID;
+    if (type == 'blnSample') {
+      orderID = order.orderID;
+      storeUserID = order.storeUserID;
+    } else if (type == 'blnCustomerLastYear') {
+      orderID = order.pk_orderID;
+      storeUserID = order.fk_storeUserID;
+    } else if (type == 'blnFollowUp') {
+      orderID = order.pk_orderID;
+      storeUserID = order.fk_storeUserID;
+    }
     let payload = {
       orderID: orderID,
       pk_userID: storeUserID,
@@ -309,11 +382,23 @@ export class GeneratorsComponent implements OnInit {
       if (res["message"]) {
         this._dashboardService.snackBar(res["message"]);
         if (type == 'blnSample') {
-          this.sampleStatus = this.sampleStatus.filter(item => item.orderID != orderID);
+          this.sampleStatusLoader = true;
+          setTimeout(() => {
+            this.sampleStatus = this.sampleStatus.filter(item => item.orderID != orderID);
+            this.sampleStatusLoader = false;
+          }, 200);
         } else if (type == 'blnCustomerLastYear') {
-          this.ordersThisYear = this.ordersThisYear.filter(item => item.orderID != orderID);
+          this.ordersThisYearLoader = true;
+          setTimeout(() => {
+            this.ordersThisYearLoader = false;
+            this.ordersThisYear = this.ordersThisYear.filter(item => item.orderID != orderID);
+          }, 200);
         } else if (type == 'blnFollowUp') {
-          this.activityData = this.activityData.filter(item => item.orderID != orderID);
+          this.isOtherGeneratorLoader = true;
+          setTimeout(() => {
+            this.isOtherGeneratorLoader = false;
+            this.activityData = this.activityData.filter(item => item.orderID != orderID);
+          }, 200);
         }
       }
     });
@@ -682,7 +767,7 @@ export class GeneratorsComponent implements OnInit {
                 }
               }
             });
-            if (type == 'reorder') {
+            if (type == 'reorder' || type == 'follow') {
               const { protocol, storeName, storeURL, storeUserEmail, fk_storeUserID } = res["orderData"][0];
               const { pk_orderID, fk_storeID } = this.emailModalContent;
               const hash = CryptoJS.MD5(`storeID=${fk_storeID}`);
@@ -717,7 +802,6 @@ export class GeneratorsComponent implements OnInit {
             this.getArworkFiles(carts, id, logoID);
             return { locationName, methodName, runPrice: Number(price), setupPrice: Number(setupPrice), logoBankID: logoID, colors, runningPrice: Number(runningPrice) };
           });
-          console.log(carts);
           this.emailModalContent.totalPrice += carts.subTotal;
           this.emailModalContent.body = `${greeting} ${message}`;
           this.emailModalContent.footer = footer;

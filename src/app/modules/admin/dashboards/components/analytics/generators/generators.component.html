@@ -283,8 +283,7 @@
                                             [mode]="'indeterminate'">
                                         </mat-progress-spinner>
                                         <mat-icon *ngIf="!item?.sampleLoader" svgIcon="mat_outline:check"
-                                            matTooltip="Mark this sample order as converted"
-                                            (click)="markOrderAsSample(item)"></mat-icon>
+                                            matTooltip="Mark this sample order as converted"></mat-icon>
                                     </button>
                                     <button mat-button mat-flat-button class="rounded-md p-2"
                                         (click)="removeOrders(item,'blnSample')" [disabled]="item?.delLoader">
@@ -611,9 +610,11 @@
                                             matTooltip="Send a survey to customer"></mat-icon>
                                     </mat-button-toggle>
                                     <mat-button-toggle>
-                                        <mat-icon svgIcon="mat_outline:info"
-                                            [routerLink]="['/apps/orders',item.pk_orderID,'incident-reports']"
-                                            matTooltip="Create an incident report"></mat-icon>
+                                        <a [routerLink]="['/apps/orders',item.pk_orderID,'incident-reports']"
+                                            target="_blank">
+                                            <mat-icon svgIcon="mat_outline:info"
+                                                matTooltip="Create an incident report"></mat-icon>
+                                        </a>
                                     </mat-button-toggle>
                                     <mat-button-toggle (click)="openEmailDetailsModal(item,'follow')">
                                         <mat-icon svgIcon="mat_outline:email"
