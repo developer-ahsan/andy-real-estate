@@ -17,19 +17,26 @@
                         CONFIDENTIAL COST ANALYSIS REPORT - PROJECTED #{{orderDetail.pk_orderID}}
                     </div>
                     <div class="mt-3">
-                        <div *ngFor="let item of orderProducts">
+                        <div *ngFor="let qryOrderLine of qryOrderLines">
                             <mat-accordion>
                                 <mat-expansion-panel class=" my-5">
                                     <mat-expansion-panel-header class="my-10">
                                         <mat-panel-title>
                                             <div class="flex flex-col gap-y-1 py-2">
                                                 <div class="font-bold">
-                                                    ({{item.products[0]?.pk_productID}})
-                                                    {{item.products[0]?.productNumber}}:
-                                                    {{item.products[0]?.productName}}
+                                                    ({{qryOrderLine.fk_productID}})
+                                                    {{qryOrderLine?.productNumber}}:
+                                                    {{qryOrderLine?.productName}}
                                                 </div>
                                                 <div>
-                                                    Quantity: {{item?.totalQuantity}}
+                                                    <ng-container>Quantity: {{qryOrderLine?.quantity}} <span
+                                                            *ngIf="qryOrderLine.blnSample"><b> *
+                                                                * * SAMPLE * * *</b></span>
+                                                        <span
+                                                            *ngIf="!qryOrderLine.blnSample && qryOrderLine.blnWarehouse"><b>
+                                                                * * * FULFILLMENT ITEM * * *</b></span>
+                                                        <br />
+                                                    </ng-container>
                                                 </div>
                                                 <div>
                                                     {{item.totalMerchendisePrice.toFixed(2) | currency}}

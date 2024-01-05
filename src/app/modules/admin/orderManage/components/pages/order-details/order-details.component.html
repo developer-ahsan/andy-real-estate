@@ -177,7 +177,7 @@
                     <div class="space-y-2">
                         <mat-form-field class="w-full">
                             <mat-label>Estimated Shipping Date</mat-label>
-                            <input matInput [matDatepicker]="Estpicker" readonly
+                            <input matInput [matDatepicker]="Estpicker"
                                 [(ngModel)]="orderDataPO.formattedEstimatedShippingDate" (click)="Estpicker.open()">
                             <mat-datepicker-toggle matIconSuffix [for]="Estpicker"></mat-datepicker-toggle>
                             <mat-datepicker #Estpicker></mat-datepicker>
