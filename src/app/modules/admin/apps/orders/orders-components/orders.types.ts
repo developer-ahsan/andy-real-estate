@@ -539,8 +539,6 @@ export interface UpdateIncidentReport {
 
 export interface enter_payment {
     amount_paid: number;
-    current_total: number;
-    order_total: number; // qryOrderTotals.price+qryOrderTotals.tax+qryOrderTotals.royalties
     reference_number: string;
     order_id: number;
     blnWarehouse: boolean;
@@ -549,4 +547,9 @@ export interface enter_payment {
     billingEmail: string;
     storeName: string;
     enter_payment: boolean;
-}
+};
+export interface revertToQuote {
+    fk_cartID: number;
+    orderID: number;
+    revert_to_quote: boolean;
+};

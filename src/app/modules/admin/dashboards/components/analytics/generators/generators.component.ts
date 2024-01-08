@@ -356,6 +356,8 @@ export class GeneratorsComponent implements OnInit {
   }
   // Remove Orders
   removeOrders(order, type) {
+    let user = JSON.parse(localStorage.getItem('userDetails'));
+
     let orderID;
     let storeUserID;
     if (type == 'blnSample') {
@@ -370,7 +372,7 @@ export class GeneratorsComponent implements OnInit {
     }
     let payload = {
       orderID: orderID,
-      pk_userID: storeUserID,
+      pk_userID: user.pk_userID,
       dashboardType: type,
       remove_dashboard_order: true
     }
@@ -386,18 +388,21 @@ export class GeneratorsComponent implements OnInit {
           setTimeout(() => {
             this.sampleStatus = this.sampleStatus.filter(item => item.orderID != orderID);
             this.sampleStatusLoader = false;
+            this._changeDetectorRef.markForCheck();
           }, 200);
         } else if (type == 'blnCustomerLastYear') {
           this.ordersThisYearLoader = true;
           setTimeout(() => {
             this.ordersThisYearLoader = false;
             this.ordersThisYear = this.ordersThisYear.filter(item => item.orderID != orderID);
+            this._changeDetectorRef.markForCheck();
           }, 200);
         } else if (type == 'blnFollowUp') {
           this.isOtherGeneratorLoader = true;
           setTimeout(() => {
             this.isOtherGeneratorLoader = false;
             this.activityData = this.activityData.filter(item => item.orderID != orderID);
+            this._changeDetectorRef.markForCheck();
           }, 200);
         }
       }

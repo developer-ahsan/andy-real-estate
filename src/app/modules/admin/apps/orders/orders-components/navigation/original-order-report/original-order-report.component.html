@@ -336,7 +336,8 @@
                                                 'symbol':'1.3-3'}}</b>
                                         </td>
                                         <td align="center"></td>
-                                        <td align="center"><b>{{qryOrderLine?.getOrderLineTotalsPrice | currency: 'USD':
+                                        <td align="center"><b>{{(qryOrderLine?.getOrderLineTotalsPrice +
+                                                qryOrderLine.royaltyPrice) | currency: 'USD':
                                                 'symbol':'1.3-3'}}</b>
                                         </td>
                                     </tr>

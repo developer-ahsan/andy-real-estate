@@ -339,7 +339,8 @@
                                                 'symbol':'1.3-3'}}</b>
                                         </td>
                                         <td align="center"></td>
-                                        <td align="center"><b>{{qryOrderLine?.getOrderLineTotalsPrice | currency: 'USD':
+                                        <td align="center"><b>{{(qryOrderLine?.getOrderLineTotalsPrice +
+                                                qryOrderLine.royaltyPrice) | currency: 'USD':
                                                 'symbol':'1.3-3'}}</b>
                                         </td>
                                     </tr>
@@ -419,7 +420,8 @@
                                     <td><b>GRAND TOTAL</b></td>
                                     <td></td>
                                     <td></td>
-                                    <td><b>{{orderDetail?.orderCost | currency: 'USD': 'symbol':'1.3-3'}}</b></td>
+                                    <td align="center"><b>{{orderDetail?.orderCost | currency: 'USD':
+                                            'symbol':'1.3-3'}}</b></td>
                                     <td></td>
                                     <td align="center"><b>{{orderDetail?.orderTotal | currency: 'USD':
                                             'symbol':'1.3-3'}}</b></td>

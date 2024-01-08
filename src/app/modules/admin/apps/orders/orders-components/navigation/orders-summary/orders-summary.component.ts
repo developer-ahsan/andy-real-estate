@@ -2,8 +2,9 @@ import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } fro
 import { OrdersService } from 'app/modules/admin/apps/orders/orders-components/orders.service';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
-import { OrderProcess, OrdersList } from 'app/modules/admin/apps/orders/orders-components/orders.types';
+import { OrderProcess, OrdersList, revertToQuote } from 'app/modules/admin/apps/orders/orders-components/orders.types';
 import { Router } from '@angular/router';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-orders-summary',
@@ -37,9 +38,11 @@ export class OrdersSummaryComponent implements OnInit {
   // ShippingReport
   shippingReportProducts: any;
   isShippingReportLoader: boolean = false;
+  isRevertLoader: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _orderService: OrdersService,
+    private _commonService: DashboardsService,
     private router: Router
   ) { }
 
@@ -122,6 +125,26 @@ export class OrdersSummaryComponent implements OnInit {
   }
   goToComments() {
     this.router.navigateByUrl(`/apps/orders/${this.orderDetail.pk_orderID}/comments`);
+  }
+  revertTOQuote() {
+    this._commonService.showConfirmation('Reverting this order back to a quote will completely remove this order from the system and revert all artwork statuses to Artwork Approved.  This cannot be undone.  Are you sure you want to continue?', (confirmed) => {
+      if (confirmed) {
+        let params: revertToQuote = {
+          fk_cartID: this.orderDetail.fk_cartID,
+          orderID: this.orderDetail.pk_orderID,
+          revert_to_quote: true
+        }
+        this.isRevertLoader = true;
+        this._orderService.updateOrderCalls(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+          if (res['success']) {
+            this._orderService.snackBar(res['message']);
+            this.router.navigate(['/apps/quotes', this.orderDetail.fk_cartID]);
+          }
+          this.isRevertLoader = false;
+          this._changeDetectorRef.markForCheck();
+        })
+      }
+    });
   }
   getOrderProducts() {
     this.isShippingReportLoader = true;

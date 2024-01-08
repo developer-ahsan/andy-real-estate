@@ -64,8 +64,6 @@ export class OrderPaymentComponent implements OnInit {
   initializePayment() {
     let payload: enter_payment = {
       amount_paid: this.ngAmount,
-      current_total: this.orderDetail?.currentTotal + this.ngAmount,
-      order_total: this.orderDetail?.orderTotal, // qryOrderTotals.price+qryOrderTotals.tax+qryOrderTotals.royalties
       reference_number: this.referanceNumber?.replace(/'/g, "''"),
       order_id: this.orderDetail.pk_orderID,
       blnWarehouse: this.orderDetail.blnWarehouse,

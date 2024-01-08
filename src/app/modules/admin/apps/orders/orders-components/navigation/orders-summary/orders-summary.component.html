@@ -2,8 +2,10 @@
     <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
     </ngx-skeleton-loader>
     <div *ngIf="!isLoading">
-        <button mat-stroked-button (click)="goToComments()">
-            <span>Revert to Quote</span>
+        <button mat-stroked-button (click)="revertTOQuote()" [disabled]="isRevertLoader">
+            <span *ngIf="!isRevertLoader">Revert to Quote</span>
+            <mat-progress-spinner *ngIf="isRevertLoader" [diameter]="24" [mode]="'indeterminate'">
+            </mat-progress-spinner>
         </button>
         <div class="row">
 
@@ -70,39 +72,39 @@
                 <div class="rounded-2xl shadow bg-card flex items-center  w-full p-6 filter-info  "
                     style="height: 8rem;">
                     <div class="flex flex-row gap-x-8">
-                            <div class="text-center">
-                                <ng-container *ngIf="orderDetail.blnCancelled">
-                                    <span class="fa fa-times disabled fa-3x"></span><br />
-                                </ng-container>
+                        <div class="text-center">
+                            <ng-container *ngIf="orderDetail.blnCancelled">
+                                <span class="fa fa-times disabled fa-3x"></span><br />
+                            </ng-container>
 
-                                <ng-container *ngIf="orderDetail.blnClosed">
-                                    <span class="fa fa-lock disabled fa-3x"></span><br />
-                                </ng-container>
+                            <ng-container *ngIf="orderDetail.blnClosed">
+                                <span class="fa fa-lock disabled fa-3x"></span><br />
+                            </ng-container>
 
-                                <ng-container *ngIf="ngStatus === 1">
-                                    <span class="fa fa-clock-o disabled fa-3x"></span><br />
-                                </ng-container>
+                            <ng-container *ngIf="ngStatus === 1">
+                                <span class="fa fa-clock-o disabled fa-3x"></span><br />
+                            </ng-container>
 
-                                <ng-container *ngIf="ngStatus === 5">
-                                    <span class="fa fa-truck active fa-3x"></span><br />
-                                </ng-container>
+                            <ng-container *ngIf="ngStatus === 5">
+                                <span class="fa fa-truck active fa-3x"></span><br />
+                            </ng-container>
 
-                                <ng-container *ngIf="ngStatus === 6">
-                                    <span class="fa fa-check active fa-3x"></span><br />
-                                </ng-container>
+                            <ng-container *ngIf="ngStatus === 6">
+                                <span class="fa fa-check active fa-3x"></span><br />
+                            </ng-container>
 
-                                <ng-container *ngIf="ngStatus === 7">
-                                    <span class="fa fa-file-text fa-3x" [style.color]="'purple'"></span><br />
-                                </ng-container>
+                            <ng-container *ngIf="ngStatus === 7">
+                                <span class="fa fa-file-text fa-3x" [style.color]="'purple'"></span><br />
+                            </ng-container>
 
-                                <ng-container *ngIf="ngStatus === 8">
-                                    <span class="fa fa-car fa-3x active"></span><br />
-                                </ng-container>
+                            <ng-container *ngIf="ngStatus === 8">
+                                <span class="fa fa-car fa-3x active"></span><br />
+                            </ng-container>
 
-                                <ng-container *ngIf="ngStatus === 10">
-                                    <span class="fa fa-users fa-3x caution"></span><br />
-                                </ng-container>
-                            </div>
+                            <ng-container *ngIf="ngStatus === 10">
+                                <span class="fa fa-users fa-3x caution"></span><br />
+                            </ng-container>
+                        </div>
                         <div class="flex flex-col ">
                             <div class="text-xl font-semibold leading-tight">Status</div>
 
