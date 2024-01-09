@@ -17,6 +17,8 @@ export class OrdersShippingReportsComponent implements OnInit {
   orderDetail: any;
   managerDetails: any;
   qryOrderLines: any;
+
+  groupOrderTotals: any;
   constructor(
     private _orderService: OrdersService,
     private _changeDetectorRef: ChangeDetectorRef
@@ -27,10 +29,26 @@ export class OrdersShippingReportsComponent implements OnInit {
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["data"].length) {
         this.orderDetail = res["data"][0];
+        if (this.orderDetail.fk_groupOrderID) {
+          this.initialize();
+        }
         this.setOrderData();
         this.getOrderProducts();
       }
     })
+  }
+  initialize() {
+    this.groupOrderTotals = {
+      cost: 0,
+      price: 0,
+      tax: 0,
+      royalties: 0,
+      shippingCost: 0,
+      shippingPrice: 0,
+      subtractiveCost: 0,
+      subtractivePrice: 0,
+      margin: 0.00
+    }
   }
   setOrderData() {
     this.orderDetail.totalOrderSHCost = 0;
@@ -65,6 +83,9 @@ export class OrdersShippingReportsComponent implements OnInit {
         this.setImprintsToOrderline(orderLine, res["qryImprintsReport"]);
         this.setColoSizesToOrderline(orderLine, res["qryItemReport"]);
         this.setAccessoriesToOrderline(orderLine, res["qryAccessoriesReport"]);
+        if (this.orderDetail.fk_groupOrderID) {
+          this.setGroupOrderTotals(orderLine);
+        }
       });
       this.qryOrderLines = res["data"];
       this.isLoading = false;
@@ -90,6 +111,10 @@ export class OrdersShippingReportsComponent implements OnInit {
     orderLine.accessoriesData.push(...matchingAccessories);
   }
 
+  // Set Group Order Totals  
+  setGroupOrderTotals(orderLine) {
+    console.log(orderLine)
+  }
   public exportHtmlToPDF() {
     let element = document.getElementById('htmltable');
     var positionInfo = element.getBoundingClientRect();

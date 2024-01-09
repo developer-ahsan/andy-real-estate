@@ -2,14 +2,26 @@
     <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
     </ngx-skeleton-loader>
 </div>
-<div class="row my-3 w-full" *ngIf="!isLoading && !isOrderLineDetailsLoader">
+<div class="row my-3 w-full" *ngIf="!isLoading && !isOrderLineDetailsLoader && qryOrderLines">
     <div class="alert alert-danger col-12">
         <span class="fa fa-exclamation-circle fa-lg"></span> Note: if modifications are made to any
-        fulfillment/warehouse items, an email with a revised invoice will be sent to each fulfillment contact set up for
+        fulfillment/warehouse items, an email with a revised invoice will be sent to <a
+            [routerLink]="['/apps/stores',orderDetail.fk_storeID,'fulfillment-contacts']" target="_blank"></a>each
+        fulfillment contact set up for
         this store, who are set to receive revised
         invoices.
     </div>
     <!-- Selected Products -->
+    <div class="col-12 flex justify-between mb-2">
+        <div>
+            <mat-button-toggle-group #group="matButtonToggleGroup" name="fontStyle" aria-label="Font Style"
+                [(ngModel)]="ngSelectedOrderLine" (change)="changeOrderLineProduct(group.value)">
+                <mat-button-toggle *ngFor="let orderLine of qryOrderLines"
+                    [value]="orderLine">{{orderLine.pk_storeProductID}}</mat-button-toggle>
+            </mat-button-toggle-group>
+        </div>
+    </div>
+    <!-- Old -->
     <div class="col-12 flex justify-between mb-2">
         <div>
             <mat-button-toggle-group #group="matButtonToggleGroup" name="fontStyle" aria-label="Font Style"
@@ -274,22 +286,22 @@
                             <td width="10%">
                                 <input min="0" type="number" name="quantity138125"
                                     class="adminInput light wide form-control" [(ngModel)]="product.quantity"
-                                    required="" maxlength="8"></td>
+                                    required="" maxlength="8">
+                            </td>
                             <td>
                                 <!-- <div class="form-group no-bottom-margin"> -->
-                                    <!-- <div class="input-group no-bottom-margin"> -->
-                                        <!-- <div class="input-group-addon">$</div> -->
-                                        <!-- <input type="text" class="adminInput light wide form-control"
+                                <!-- <div class="input-group no-bottom-margin"> -->
+                                <!-- <div class="input-group-addon">$</div> -->
+                                <!-- <input type="text" class="adminInput light wide form-control"
                                             [(ngModel)]="product.runCost" required="" maxlength="8"> -->
 
 
-                                            <mat-form-field class="w-full">
-                                                <span matSuffix>$ &nbsp;</span>
-                                                <input type="text"
-                                                [(ngModel)]="product.runCost" required="" maxlength="8" matInput>
-                                            </mat-form-field>
+                                <mat-form-field class="w-full">
+                                    <span matSuffix>$ &nbsp;</span>
+                                    <input type="text" [(ngModel)]="product.runCost" required="" maxlength="8" matInput>
+                                </mat-form-field>
 
-                                    <!-- </div> -->
+                                <!-- </div> -->
                                 <!-- </div> -->
                             </td>
                             <td align="center">+ {{ngSelectedProduct.products[0].cost | currency}} = {{(product.runCost
@@ -309,8 +321,8 @@
                                 </div> -->
                                 <mat-form-field class="w-full">
                                     <span matSuffix>$ &nbsp;</span>
-                                    <input type="text"
-                                    [(ngModel)]="product.runPrice" required="" maxlength="8" matInput>
+                                    <input type="text" [(ngModel)]="product.runPrice" required="" maxlength="8"
+                                        matInput>
                                 </mat-form-field>
                             </td>
                             <td align="center">+ {{ngSelectedProduct.products[0].price | currency}} =
@@ -338,11 +350,12 @@
                 </table>
                 <div class=" flex justify-between align-items-center">
                     <div class="flex flex-row gap-x-2 ">
-                        <mat-checkbox class="mr-1" [(ngModel)]="ngSelectedProduct.products[0].blnOverride">Override Standard Cost/Price</mat-checkbox>
-                        <mat-checkbox class="mr-1"
-                            [(ngModel)]="ngSelectedProduct.products[0].blnSample">Override Unit Cost/Price</mat-checkbox>
-                        <mat-checkbox class="mr-1"
-                            [(ngModel)]="ngSelectedProduct.products[0].blnTaxable">Override Shipping:</mat-checkbox>
+                        <mat-checkbox class="mr-1" [(ngModel)]="ngSelectedProduct.products[0].blnOverride">Override
+                            Standard Cost/Price</mat-checkbox>
+                        <mat-checkbox class="mr-1" [(ngModel)]="ngSelectedProduct.products[0].blnSample">Override Unit
+                            Cost/Price</mat-checkbox>
+                        <mat-checkbox class="mr-1" [(ngModel)]="ngSelectedProduct.products[0].blnTaxable">Override
+                            Shipping:</mat-checkbox>
                     </div>
                     <div>
                         <button mat-button mat-stroked-button (click)="updateProductOptions()"
@@ -623,11 +636,10 @@
                             <td>
                                 <input type="text" class="form-control" [(ngModel)]="item.quantity">
                             </td>
-                            <td >
+                            <td>
                                 <mat-form-field class="w-full">
                                     <span matSuffix>$ &nbsp;</span>
-                                    <input type="text"
-                                    [(ngModel)]="item.runCost"  matInput>
+                                    <input type="text" [(ngModel)]="item.runCost" matInput>
                                 </mat-form-field>
                                 <!-- <div class="form-group no-bottom-margin">
                                     <div class="input-group no-bottom-margin">
@@ -640,8 +652,7 @@
 
                                 <mat-form-field class="w-full">
                                     <span matSuffix>$ &nbsp;</span>
-                                    <input type="text"
-                                    [(ngModel)]="item.runPrice"  matInput>
+                                    <input type="text" [(ngModel)]="item.runPrice" matInput>
                                 </mat-form-field>
 
                                 <!-- <div class="form-group no-bottom-margin">
@@ -674,8 +685,7 @@
 
                                 <mat-form-field class="w-full">
                                     <span matSuffix>$ &nbsp;</span>
-                                    <input type="text"
-                                    [(ngModel)]="item.setupCost"  matInput>
+                                    <input type="text" [(ngModel)]="item.setupCost" matInput>
                                 </mat-form-field>
                             </td>
 
@@ -689,8 +699,7 @@
                                 </div> -->
                                 <mat-form-field class="w-full">
                                     <span matSuffix>$ &nbsp;</span>
-                                    <input type="text"
-                                    [(ngModel)]="item.setupPrice"  matInput>
+                                    <input type="text" [(ngModel)]="item.setupPrice" matInput>
                                 </mat-form-field>
                             </td>
                             <td></td>

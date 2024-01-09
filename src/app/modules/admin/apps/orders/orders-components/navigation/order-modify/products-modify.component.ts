@@ -27,7 +27,29 @@ import { AddNewProduct, AddOption, AddProduct, UpdateAccessory, UpdateColorSize,
     right: 0;
     top: 0;
     width: auto;
-}`]
+} 
+.modifyOrderLineButtonGroupRun {
+        background-color: #9a8ffd !important;
+        border: 1px solid #9a8ffd !important;
+        color: #000 !important;
+      }
+      
+      .btn-text-light {
+        color: #eee;
+      }
+      
+      .modifyOrderLineButtonGroupRunSlave {
+        background-color: #DBD7FF !important;
+        border: 1px solid #DBD7FF !important;
+        color: #000 !important;
+      }
+      
+      .modifyOrderLineButtonSelect {
+        font-weight: bold;
+        text-decoration: underline;
+        font-style: italic;
+        color: #fff !important;
+      }`]
 })
 export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
   @ViewChild('shipDateInput') shipDateInput: ElementRef;
@@ -91,6 +113,11 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
 
   // UpdateProduct 
   isUpdateProductLoader: boolean = false;
+
+
+  // New Api Data
+  qryOrderLines: any;
+  ngSelectedOrderLine: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _orderService: OrdersService,
@@ -110,11 +137,13 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
         }
         this._orderService.getOrder(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
           this.orderTotal = res["data"][0];
-        })
+        });
       }
     })
     this.getOrderProducts();
     this.getProductsControl();
+    // New Api Data
+    this.getOrderProductsData();
   }
   getProductsControl() {
     let data = this.orderLines.filter(data => data.pk_orderLineID == this.ngSelectedProduct?.order_line_id);
@@ -412,8 +441,8 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
     });
   }
   changeOrderLine(item) {
-    let index = this.orderProducts.findIndex(data => data.order_line_id == item.order_line_id);
-    let orderLine = this.orderLines.findIndex(data => data.pk_orderLineID == item.order_line_id);
+    let index = this.orderProducts.findIndex(data => data.order_line_id == item.pk_orderLineID);
+    let orderLine = this.orderLines.findIndex(data => data.pk_orderLineID == item.pk_orderLineID);
     if (item.allProducts.length == 0) {
       this.getOrderLineProducts(this.orderLinesItems[orderLine]);
     }
@@ -797,7 +826,7 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
     this._orderService.orderPostCalls(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         // this.getOrderLineDetailsAfterUpdateOrAdd(res["message"]);
-      } 
+      }
       this.isAddNewProdLoader = false;
       this._orderService.snackBar('Product added successfuly');
 
@@ -815,6 +844,78 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
     this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
   };
+
+
+  getOrderProductsData() {
+    this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      res["data"].forEach((orderLine) => {
+        orderLine.imprintsData = [];
+        orderLine.colorSizesData = [];
+        orderLine.accessoriesData = [];
+        this.setImprintsToOrderline(orderLine, res["qryImprintsReport"]);
+        this.setColoSizesToOrderline(orderLine, res["qryItemReport"]);
+        this.setAccessoriesToOrderline(orderLine, res["qryAccessoriesReport"]);
+      });
+      this.qryOrderLines = res["data"];
+      this.ngSelectedOrderLine = this.qryOrderLines[0];
+      console.log(this.qryOrderLines);
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
+  // Set Imprints
+  setImprintsToOrderline(orderLine, imprints) {
+    const matchingImprints = imprints.filter(imprint => imprint.fk_orderLineID === orderLine.pk_orderLineID);
+    orderLine.imprintsData.push(...matchingImprints);
+  }
+  // Set Color/Sizes
+  setColoSizesToOrderline(orderLine, items) {
+    if (items.length) {
+      orderLine.warehouseCode = items.warehouseCode;
+    }
+    const matchingSizes = items.filter(item => item.fk_orderLineID === orderLine.pk_orderLineID);
+    orderLine.colorSizesData.push(...matchingSizes);
+  }
+  // Set Accessories Data
+  setAccessoriesToOrderline(orderLine, items) {
+    const matchingAccessories = items.filter(item => item.fk_orderLineID === orderLine.pk_orderLineID);
+    orderLine.accessoriesData.push(...matchingAccessories);
+  }
+
+  changeOrderLineProduct(orderLine) {
+    if (!orderLine.allProducts) {
+      this.getOrderLineProductsData(orderLine);
+    }
+  }
+  getOrderLineProductsData(orderLine) {
+    orderLine.allProducts = [];
+    let getGroupRunProducts = false;
+    let getWarehouseProducts = false;
+    let getProducts = false;
+    if (orderLine.blnGroupRun && orderLine.groupRunOrderLineID) {
+      getGroupRunProducts = true;
+    } else if (orderLine.blnWarehouse) {
+      getWarehouseProducts = true;
+    } else {
+      getProducts = true;
+    }
+    let params = {
+      store_id: this.orderDetail.fk_storeID,
+      groupRunProducts: getGroupRunProducts,
+      getWarehouseProducts: getWarehouseProducts,
+      getProducts: getProducts,
+      modify_orders_current_products: true,
+    }
+    this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      orderLine.allProducts = res["data"];
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.isLoading = false;
+      this.isLoadingChange.emit(false);
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+
 
 }
 

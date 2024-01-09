@@ -384,14 +384,67 @@
                                     <td>{{orderDetail.pk_orderID + '-' + item.pk_orderLineID}}</td>
                                     <td>{{item?.productName}}</td>
                                     <td>
-                                        <div>
+                                        <ng-container *ngIf="orderDetail.blnEProcurement">
+                                            <div class="alert p-2 text-left"
+                                                [ngClass]="{'alert-success': item.statusData.statusID == 6,'alert-warning': item.statusData.statusID !=6}">
+                                                <ng-container *ngIf="item.statusData.statusID == 6">
+                                                    <span class="fa fa-truck fa-lg active"></span>
+                                                    {{item.statusData.statusName}}
+                                                </ng-container>
+                                                <ng-container *ngIf="item.statusData.statusID != 6">
+                                                    <span class="fa fa-clock-o disabled fa-lg"></span>
+                                                    {{item.statusData.statusName}}
+                                                </ng-container>
+
+                                                <ng-container *ngIf="item.statusData.trackingNumber">
+                                                    <br />
+                                                    <b>Tracking number:</b> {{item.statusData.trackingNumber}}
+                                                </ng-container>
+                                                <ng-container *ngIf="item.statusData.shippingDate">
+                                                    <br />
+                                                    <b>Shipping date:</b> {{item.statusData.shippingDate}}
+                                                </ng-container>
+                                            </div>
+                                        </ng-container>
+                                        <ng-container *ngIf="!orderDetail.blnEProcurement">
+                                            <div class="alert p-2 text-left"
+                                                [ngClass]="{'alert-success': item.statusData.statusID == 5,'alert-warning': item.statusData.statusID !=5}">
+                                                <ng-container *ngIf="item.statusData.statusID == 5">
+                                                    <span class="fa fa-truck fa-lg active"></span>
+                                                    {{item.statusData.statusName}}
+                                                </ng-container>
+                                                <ng-container *ngIf="item.statusData.statusID != 5">
+                                                    <span class="fa fa-clock-o disabled fa-lg"></span>
+                                                    {{item.statusData.statusName}}
+                                                </ng-container>
+                                                <ng-container *ngFor="let qryPO of shippingReportProducts.qryPOS">
+                                                    {{1}}
+                                                    <div
+                                                        *ngIf="(qryPO.blnSupplier && qryPO.blnDecorator) || (!qryPO.blnSupplier && qryPO.blnDecorator)">
+                                                        <ng-container *ngIf="qryPO.trackingNumber">
+                                                            <br />
+                                                            <b>Tracking number:</b> {{qryPO.trackingNumber}}
+                                                        </ng-container>
+                                                        <ng-container *ngIf="qryPO.shippingDate">
+                                                            <br />
+                                                            <b>Shipping date:</b> {{qryPO.shippingDate}}
+                                                        </ng-container>
+                                                    </div>
+                                                </ng-container>
+                                            </div>
+
+                                        </ng-container>
+
+
+
+                                        <!-- <div>
                                             <p>{{item.statusName}}</p>
                                             <p *ngIf="item.trackingNumber"><b>Tracking Number:
                                                 </b>{{item.trackingNumber}}</p>
                                             <p *ngIf="item?.shippingDate"><b>Shipping Date: </b>{{item.shippingDate
                                                 |
                                                 date}}</p>
-                                        </div>
+                                        </div> -->
                                     </td>
                                 </tr>
                             </tbody>

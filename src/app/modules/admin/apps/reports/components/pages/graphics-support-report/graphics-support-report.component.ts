@@ -88,9 +88,10 @@ export class GraphicsSupportReportComponent implements OnInit, OnDestroy {
     })).subscribe(res => {
       if (res["data"].length > 0) {
         res["data"].forEach(element => {
-          const { TotalRevenue, UniqueImprints, Details, ProofSent, grandTotalRevenue, grandTotalUniqueImprints } = element;
+          const { TotalRevenue, UniqueImprints, Details, ProofSent, grandTotalRevenue, grandTotalUniqueImprints, Num_Sales } = element;
           this.grandTotal.ui = grandTotalUniqueImprints;
           this.grandTotal.revenue = grandTotalRevenue;
+          this.grandTotal.ns += Num_Sales;
 
 
           const ttParts = element.TT.split(":").map(part => parseInt(part) || 0);
@@ -120,7 +121,6 @@ export class GraphicsSupportReportComponent implements OnInit, OnDestroy {
               this.grandTotal.annual += Number(annual);
               this.grandTotal.ir += Number(ir);
               this.grandTotal.coi += Number(coi);
-              this.grandTotal.ns += Number(ns);
               let percent = 0;
               percent = Math.round((Number(revenue) / element.grandTotalRevenue) * 100);
               return { id, storeName, revenue, annual, ui, ps, ns, ir, coi, tt, percent };

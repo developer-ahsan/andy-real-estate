@@ -23,7 +23,7 @@
                         <div class="col-12 text-right">
                             <p class="font-bold">CONFIDENTIAL ORDER REPORT</p>
                             <p class="font-bold">#{{orderDetail.pk_orderID}}</p>
-                            <p class="font-bold" *ngIf="orderDetail.fk_groupOrderID">{{orderDetail.fk_groupOrderID}}</p>
+                            <p class="font-bold" *ngIf="orderDetail.fk_groupOrderID">GROUP ORDER</p>
                         </div>
                         <div class="col-12">
                             <b>Total: </b> {{orderDetail?.orderTotal | currency: 'USD': 'symbol':'1.3-3'}}<br />

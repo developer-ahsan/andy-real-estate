@@ -71,6 +71,7 @@ import { QuillModule } from 'ngx-quill';
 import { SentOrdersPurchasesComponent } from './orders-components/navigation/sent-purchase-orders/sent-purchase-orders.component';
 import { NgxDropzoneModule } from 'ngx-dropzone';
 import { MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
+import { CurrencyPipe } from '@angular/common';
 
 @NgModule({
     declarations: [
@@ -147,7 +148,7 @@ import { MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapte
         NgxDropzoneModule,
         QuillModule.forRoot()
     ],
-    providers: [{ provide: MAT_DATE_LOCALE, useValue: 'en-US' }]
+    providers: [{ provide: MAT_DATE_LOCALE, useValue: 'en-US' }, CurrencyPipe]
 })
 export class OrdersModule {
 }

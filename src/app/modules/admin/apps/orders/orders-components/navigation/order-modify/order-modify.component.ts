@@ -136,12 +136,11 @@ export class OrderModifyComponent implements OnInit, OnDestroy {
           let emails = this.selectedOrder.proofEmail.split(',');
           this.emails = emails;
         }
-        console.log(this.selectedOrder);
         this.billingShippingForm.patchValue(this.selectedOrder);
         this.formattedDate = moment(this.selectedOrder.inHandsDate).format('MMM D YYYY');
         this.shippingForm.patchValue(this.selectedOrder);
         this.paymentForm.patchValue(this.selectedOrder);
-        this.paymentForm.patchValue({ salesTaxRate: this.selectedOrder.salesTaxRate * 100 });
+        this.paymentForm.patchValue({ salesTaxRate: this.selectedOrder.salesTaxRate * 100, paymentMethodID: this.selectedOrder.fk_paymentMethodID });
       }
     });
   };
@@ -283,7 +282,7 @@ export class OrderModifyComponent implements OnInit, OnDestroy {
       gateway_trx_id: transactionID,
       discount_code: discountCode,
       discount_amount: discountAmount,
-      sales_tax_rate: salesTaxRate/100,
+      sales_tax_rate: salesTaxRate / 100,
       tax_exemption_comment: taxExemptionComment,
       instructions: instructions,
       is_taxable: blnTaxable,

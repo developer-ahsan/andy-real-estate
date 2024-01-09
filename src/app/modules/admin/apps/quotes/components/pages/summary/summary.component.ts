@@ -58,10 +58,6 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
         this.imprintStatuses = quote['imprintStatuses']
         this.setQuoteTracker();
         this.imprintStatus = this.getCartImprintStatus()
-
-
-
-
         if (this.selectedQuoteDetail.artworkStatus.includes('7') || this.selectedQuoteDetail.artworkStatus.includes('9')) {
           this.selectedQuoteDetail.statusName = 'All artwork approved';
           this.selectedQuoteDetail.statusColor = 'text-green-600';
