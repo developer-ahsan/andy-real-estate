@@ -70,17 +70,16 @@ export class QuoteContactInfoComponent implements OnInit {
     }
     const { billingCompanyName, billingFirstName, billingLastName, billingLocation, billToDeliverTo, billingAddress, billingCity, billingState, billingZip, billingCountry, billingPhone, billingEmail, shippingCompanyName, shippingFirstName, shippingLastName, shippingLocation, shipToDeliverTo, shippingAddress, shippingCity, shippingState, shippingZip, shippingZipExt, shippingCountry, shippingPhone, shippingEmail, accountChargeCode } = this.billingShippingForm.value;
 
-    if(billingCompanyName.trim() === '' || billingFirstName.trim()==='' || billingLastName.trim()==='' || 
-    billingAddress.trim()==='' || billingCity.trim()==='' || billingState.trim()==='' || 
-    billingZip.trim()==='' || billingPhone.trim()==='' || billingEmail.trim()==='' || 
-    shippingCompanyName.trim()==='' || shippingFirstName.trim()==='' || shippingLastName.trim()==='' || 
-    shippingAddress.trim()==='' || shippingCity.trim()==='' || shippingState.trim()==='' || 
-    shippingZip.trim()==='' || shippingPhone.trim()==='' || shippingEmail.trim()==='') {
+    if (billingCompanyName.trim() === '' || billingFirstName.trim() === '' || billingLastName.trim() === '' ||
+      billingAddress.trim() === '' || billingCity.trim() === '' || billingState.trim() === '' ||
+      billingZip.trim() === '' || billingPhone.trim() === '' || billingEmail.trim() === '' ||
+      shippingCompanyName.trim() === '' || shippingFirstName.trim() === '' || shippingLastName.trim() === '' ||
+      shippingAddress.trim() === '' || shippingCity.trim() === '' || shippingState.trim() === '' ||
+      shippingZip.trim() === '' || shippingPhone.trim() === '' || shippingEmail.trim() === '') {
       this._quoteService.snackBar('Please fill out required fields');
       return
-    } 
-console.log(this.selectedQuoteDetail);
-const storedData = JSON.parse(localStorage.getItem('userDetails'));
+    }
+    const storedData = JSON.parse(localStorage.getItem('userDetails'));
     let payload: updateCartInfo = {
       cart_id: this.selectedQuoteDetail.pk_cartID,
       store_id: this.selectedQuoteDetail.storeID,
@@ -104,7 +103,7 @@ const storedData = JSON.parse(localStorage.getItem('userDetails'));
       shipping_zip_ext: shippingZipExt,
       shipping_phone: shippingPhone,
       shipping_email: shippingEmail,
-      account_charge_code: accountChargeCode,
+      account_charge_code: accountChargeCode ? accountChargeCode : '',
       billing_location: billingLocation,
       shipping_location: shippingLocation,
       ship_to_deliver_to: shipToDeliverTo,
@@ -127,10 +126,10 @@ const storedData = JSON.parse(localStorage.getItem('userDetails'));
 
   replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
     for (const key in obj) {
-        if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
-            obj[key] = obj[key]?.replace(/'/g, "''");
-        }
+      if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+        obj[key] = obj[key]?.replace(/'/g, "''");
+      }
     }
     return obj;
-}
+  }
 }

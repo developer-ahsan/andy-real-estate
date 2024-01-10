@@ -42,7 +42,7 @@
             </div>
             <div class="col-lg-4 col-md-6 col-12 my-2">
                 <div class="rounded-2xl shadow bg-card flex items-center  w-full p-6 filter-info" style="height: 8rem;"
-                    matTooltip="{{selectedQuoteDetail.rushFlexibilityComment}}">
+                    matTooltip="{{selectedQuoteDetail?.rushFlexibilityComment}}">
                     <mat-icon role="img" class="icon-size-10 mr-6" svgIcon="mat_outline:date_range"></mat-icon>
                     <div class="flex flex-col w-full">
                         <div class="text-xl font-semibold leading-tight">In-Hands Date</div>
@@ -57,7 +57,7 @@
                             <span *ngIf="selectedQuoteDetail.blnRushFlexibility" class="text-green-500">YES</span>
                             <br>
                             <span class="font-bold">Comment: </span>
-                            <span>{{selectedQuoteDetail.rushFlexibilityComment || not_available}}</span>
+                            <span>{{selectedQuoteDetail?.rushFlexibilityComment || not_available}}</span>
                         </div>
                     </div>
                 </div>
@@ -393,9 +393,9 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        
+
                                     </div>
-                                    
+
                                 </div>
                             </div>
                         </div>

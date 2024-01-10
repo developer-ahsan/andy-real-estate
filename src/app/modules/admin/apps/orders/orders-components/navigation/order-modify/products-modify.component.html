@@ -2,26 +2,16 @@
     <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
     </ngx-skeleton-loader>
 </div>
-<div class="row my-3 w-full" *ngIf="!isLoading && !isOrderLineDetailsLoader && qryOrderLines">
+<div class="row my-3 w-full" *ngIf="!isLoading && !isOrderLineDetailsLoader">
     <div class="alert alert-danger col-12">
         <span class="fa fa-exclamation-circle fa-lg"></span> Note: if modifications are made to any
         fulfillment/warehouse items, an email with a revised invoice will be sent to <a
-            [routerLink]="['/apps/stores',orderDetail.fk_storeID,'fulfillment-contacts']" target="_blank"></a>each
-        fulfillment contact set up for
+            [routerLink]="['/apps/stores',orderDetail.fk_storeID,'fulfillment-contacts']" target="_blank">each
+            fulfillment contact</a> set up for
         this store, who are set to receive revised
         invoices.
     </div>
     <!-- Selected Products -->
-    <div class="col-12 flex justify-between mb-2">
-        <div>
-            <mat-button-toggle-group #group="matButtonToggleGroup" name="fontStyle" aria-label="Font Style"
-                [(ngModel)]="ngSelectedOrderLine" (change)="changeOrderLineProduct(group.value)">
-                <mat-button-toggle *ngFor="let orderLine of qryOrderLines"
-                    [value]="orderLine">{{orderLine.pk_storeProductID}}</mat-button-toggle>
-            </mat-button-toggle-group>
-        </div>
-    </div>
-    <!-- Old -->
     <div class="col-12 flex justify-between mb-2">
         <div>
             <mat-button-toggle-group #group="matButtonToggleGroup" name="fontStyle" aria-label="Font Style"
@@ -111,8 +101,7 @@
                     <div class="text-lg font-bold">
                         <h1>
                             <span class="fa fa-tag fa-lg"></span> {{ngSelectedProduct.products[0]?.productNumber + ': '
-                            +
-                            ngSelectedProduct.products[0]?.productName}}
+                            }}<span [innerHTML]=" ngSelectedProduct.products[0]?.productName"></span>
                         </h1>
                     </div>
                 </mat-panel-title>
@@ -127,11 +116,22 @@
                         [(ngModel)]="ngSelectedProduct.products[0].blnSample">Sample</mat-checkbox>
                     <mat-checkbox class="mr-1"
                         [(ngModel)]="ngSelectedProduct.products[0].blnTaxable">Taxable</mat-checkbox>
-                    <mat-checkbox class="mr-1"
+                    <mat-checkbox *ngIf="orderDetail.blnRoyaltyStore" class="mr-1"
                         [(ngModel)]="ngSelectedProduct.products[0].blnRoyalty">Royalty</mat-checkbox>
                 </div>
                 <div class="space-x-1">
-                    <button mat-button mat-stroked-button class="mr-1">Make group run master</button>
+                    <ng-container
+                        *ngIf="!orderDetail.fk_groupOrderID && !ngSelectedProduct.products[0].blnGroupRun && !ngSelectedProduct.products[0].groupRunOrderLineID">
+                        <button mat-button mat-stroked-button
+                            onClick="convertGroupRun('This will convert the selected product to a group run master, and then allow you to add products to that group run.');">Make
+                            group run master</button>
+                    </ng-container>
+                    <ng-container
+                        *ngIf="!orderDetail.fk_groupOrderID && ngSelectedProduct.products[0].blnGroupRun && !ngSelectedProduct.products[0].groupRunOrderLineID">
+                        <button mat-button mat-stroked-button
+                            onClick="unconvertGroupRun('This will clear the selected product as being a group run master, turning itself and all sub products in the run to regular products.  Are you sure you want to continue?');">Clear
+                            group run master</button>
+                    </ng-container>
                     <button mat-button mat-stroked-button>Remove Item</button>
                 </div>
             </div>
@@ -151,7 +151,7 @@
                 </div>
                 <div class="col-md-6 col-12">
                     <mat-form-field class="w-full">
-                        <mat-label>Current Prducts</mat-label>
+                        <mat-label>Current Products</mat-label>
                         <input matInput placeholder="Search Products" matTooltip="Search Products by name"
                             [matAutocomplete]="auto1" [formControl]="currentSearchProductCtrl">
                         <mat-hint>Min. Quantity: {{currentSelectedProduct?.minQuantity ||
@@ -160,15 +160,29 @@
                             (optionSelected)="onCurrentSelected($event)" [displayWith]="displayWith">
                             <mat-option *ngIf="isSearchingProduct" class="is-loading">Loading...</mat-option>
                             <ng-container *ngIf="!isSearchingProduct">
-                                <mat-option
-                                    [value]="ngSelectedProduct.products[0]">{{ngSelectedProduct.products[0]?.productName}}</mat-option>
+                                <mat-option [value]="ngSelectedProduct.products[0]"><span
+                                        [innerHTML]="ngSelectedProduct.products[0]?.productName"></span></mat-option>
                                 <mat-option *ngFor="let item of allProducts" [value]="item">
-                                    <span>{{item.productNumber}} {{item.productName}}</span>
+                                    <span>{{item.productNumber}} </span><span [innerHTML]="item.productName"></span>
                                 </mat-option>
                             </ng-container>
                         </mat-autocomplete>
                     </mat-form-field>
                 </div>
+                <ng-container *ngIf="orderDetail.blnWarehouse">
+                    <div class="col-12 col-md-6">
+                        <mat-form-field class="w-full">
+                            <mat-label>Event</mat-label>
+                            <input matInput [(ngModel)]="ngSelectedProduct.products[0].eventName">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <mat-label>Event Date</mat-label>
+                        <input #eventDate type="date" [(ngModel)]="ngSelectedProduct.products[0].eventDate"
+                            class="block w-full rounded-md border-0 p-2.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                            aria-describedby="email-optional">
+                    </div>
+                </ng-container>
                 <div class="col-12 text-right">
                     <button mat-button mat-stroked-button (click)="updateModifyProduct()"
                         [disabled]="isUpdateProductLoader" class="min-w-30">
@@ -179,6 +193,7 @@
                 </div>
             </div>
         </mat-expansion-panel>
+        <!--  -->
         <!-- Product Options -->
         <mat-expansion-panel [expanded]="true">
             <mat-expansion-panel-header>
@@ -219,7 +234,7 @@
                                     <mat-label>Standard Cost:</mat-label>
                                     <span matSuffix>$ &nbsp;</span>
                                     <input type="text" maxlength="8" name="standardCost" matInput
-                                        [(ngModel)]="ngSelectedProduct.products[0].cost">
+                                        [(ngModel)]="ngSelectedProduct.products[0].COST">
                                 </mat-form-field>
                             </td>
 
@@ -237,7 +252,7 @@
                                     <mat-label>Standard Price:</mat-label>
                                     <span matSuffix>$ &nbsp;</span>
                                     <input type="text" maxlength="8" name="standardPrice" matInput
-                                        [(ngModel)]="ngSelectedProduct.products[0].price">
+                                        [(ngModel)]="ngSelectedProduct.products[0].PRICE">
                                 </mat-form-field>
                             </td>
                             <td></td>
@@ -305,10 +320,10 @@
                                 <!-- </div> -->
                             </td>
                             <td align="center">+ {{ngSelectedProduct.products[0].cost | currency}} = {{(product.runCost
-                                + ngSelectedProduct.products[0].cost) |
+                                + ngSelectedProduct.products[0].COST) |
                                 currency}}
                                 <br>
-                                {{(product.quantity * (product.runCost + ngSelectedProduct.products[0].cost)) |
+                                {{(product.quantity * (product.runCost + ngSelectedProduct.products[0].COST)) |
                                 currency}}
                             </td>
                             <td>
@@ -325,11 +340,11 @@
                                         matInput>
                                 </mat-form-field>
                             </td>
-                            <td align="center">+ {{ngSelectedProduct.products[0].price | currency}} =
-                                {{(product.runPrice + ngSelectedProduct.products[0].price)
+                            <td align="center">+ {{ngSelectedProduct.products[0].PRICE | currency}} =
+                                {{(product.runPrice + ngSelectedProduct.products[0].PRICE)
                                 | currency}}
                                 <br>
-                                {{(product.quantity * (product.runPrice + ngSelectedProduct.products[0].price)) |
+                                {{(product.quantity * (product.runPrice + ngSelectedProduct.products[0].PRICE)) |
                                 currency}}
                             </td>
                             <td align="center" valign="top">
@@ -368,6 +383,18 @@
                 </div>
             </div>
         </mat-expansion-panel>
+        <!-- newGroupRunItem -->
+        <ng-container *ngIf="ngSelectedProduct.products[0].blnGroupRun">
+            <mat-expansion-panel [expanded]="true"
+                *ngIf="!orderDetail.fk_groupOrderID || (orderDetail.fk_groupOrderID && !orderDetail.blnInvitationsSent)">
+                <mat-expansion-panel-header>
+                    <mat-panel-title class="text-lg font-bold">
+                        Add Group Run Item
+
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+            </mat-expansion-panel>
+        </ng-container>
         <!-- Add Product Options -->
         <mat-expansion-panel [expanded]="true">
             <mat-expansion-panel-header>
@@ -846,11 +873,11 @@
                     </div>
 
                     <div class="col-md-2 col-12 add-padding-sm text-right">
-                        {{ngSelectedProduct.totalMercandiseCost | currency}}
+                        {{ngSelectedProduct.products[0].getOrderLineTotalsCost | currency}}
                     </div>
 
                     <div class="col-md-2 col-12 add-padding-sm text-right">
-                        {{ngSelectedProduct.totalMerchendisePrice | currency}}
+                        {{ngSelectedProduct.products[0].getOrderLineTotalsMerchandiseTotalPrice | currency}}
                     </div>
                 </div>
             </div>
@@ -894,8 +921,11 @@
                     <h2>TOTAL MERCHANDISE:</h2>
                 </div>
 
-                <div class="col-md-4 col-12 text-right">
-                    <h2>{{orderDetail.orderTotal | currency}}</h2>
+                <div class="col-md-2 col-12 text-right">
+                    <h2>{{orderDetail.orderCost | currency}}</h2>
+                </div>
+                <div class="col-md-2 col-12 text-right">
+                    <h2>{{orderDetail.MechandiseTotalPrice | currency}}</h2>
                 </div>
             </div>
             <div class="row">

@@ -247,118 +247,33 @@
                 </div>
             </div>
 
-            <div class="col-12 my-2" *ngIf="!orderDetail.blnCancelled">
-                <div class="rounded-2xl shadow bg-card items-center w-full px-6 py-6 filter-info">
-                    <div class="text-xl font-semibold leading-tight pb-3">Order Tracker</div>
-                    <!-- <div class="container">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="progress font-bold ">
-                                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-success"
-                                        role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0"
-                                        aria-valuemax="100">Art
-                                        Proof Sent</div>
-                                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-success"
-                                        role="progressbar" style="width: 25%" aria-valuenow="50" aria-valuemin="0"
-                                        aria-valuemax="100">All
-                                        Approvals Received</div>
-                                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-success"
-                                        role="progressbar" style="width: 25%" aria-valuenow="75" aria-valuemin="0"
-                                        aria-valuemax="100">In
-                                        Production</div>
-                                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-success"
-                                        role="progressbar" style="width: 25%" aria-valuenow="100" aria-valuemin="0"
-                                        aria-valuemax="100">
-                                        <p>Estimated Ship Date Scheduled</p>
-                                    </div>
-                                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-success"
-                                        role="progressbar" style="width: 25%" aria-valuenow="100" aria-valuemin="0"
-                                        aria-valuemax="100">
-                                        Shipped
-                                    </div>
-                                    <div class="progress-bar progress-bar-striped bg-secondary progress-bar-animated"
-                                        role="progressbar" style="width: 25%" aria-valuenow="100" aria-valuemin="0"
-                                        aria-valuemax="100">
-                                        Delivery Confirmation</div>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div> -->
+            <div class="col-12 my-2" *ngIf="shippingReportProducts">
+                <div *ngIf="orderDetail.blnCancelled"
+                    class="rounded-2xl shadow bg-card items-center w-full px-6 py-6 filter-info">
+                    <div class="alert alert-warning no-bottom-margin">
+                        <span class="fa fa-exclamation-circle fa-lg"></span> Order Cancelled<br />
+                        <b>Your order has been cancelled!</b><br />Your program manager has cancelled this order.
+                    </div>
+                </div>
+                <div class="rounded-2xl shadow bg-card items-center w-full px-6 py-6 filter-info"
+                    *ngIf="!orderDetail.blnCancelled">
+                    <div class=" text-xl font-semibold leading-tight pb-3">Order Tracker</div>
                     <div *ngIf="ngStatus == 0" class="mt-2">
                         <ngx-skeleton-loader count="4" appearance="line" animation="pulse">
                         </ngx-skeleton-loader>
                     </div>
                     <div class="row text-center px-3 font-medium" *ngIf="ngStatus != 0">
-                        <div class="col-md-2 col-6 p-1 ">
-                            <div class="h-20 p-2 tracker" [ngClass]="{'tracker-active': ngStatus >= 1}">
-                                <h1>1</h1>
-                                Art Proof Sent
-                            </div>
-                        </div>
-
-                        <div class="col-md-2 col-6 p-1 ">
-                            <div class="h-20 p-2 tracker" [ngClass]="{'tracker-active': ngStatus >= 2}">
-                                <h1>2</h1>
-                                All Approvals Received
-                            </div>
-
-                        </div>
-
-                        <div class="col-md-2 col-6 p-1 ">
-                            <div class="h-20 p-2 tracker" [ngClass]="{'tracker-active': ngStatus >= 3}">
-                                <h1>3</h1>
-                                In Production
-                            </div>
-
-                        </div>
-
-                        <div class="col-md-2 col-6 p-1 ">
-                            <div class="h-20 p-2 tracker" [ngClass]="{'tracker-active': ngStatus >= 4}">
-                                <h1>4</h1>
-                                Estimated Ship Date Scheduled
-                            </div>
-
-                        </div>
-
-                        <div class="col-md-2 col-6 p-1">
-                            <div class="h-20 p-2 tracker" [ngClass]="{'tracker-active': ngStatus >= 5}">
-                                <h1>5</h1>
-                                Shipped
-                            </div>
-                        </div>
-
-                        <div class="col-md-2 col-6 p-1">
-                            <div class="h-20 p-2 tracker" [ngClass]="{'tracker-active': ngStatus >= 6}">
-                                <h1>6</h1>
-                                Delivery Confirmation
+                        <div class="col-md-2 col-6 p-1 " *ngFor="let status of qryTrackerArray">
+                            <div class="h-20 p-2 tracker"
+                                [ngClass]="{'tracker-active': this.orderDetail.strReturn.statusID >= status.value}">
+                                <h1>{{status.value}}</h1>
+                                {{status.status}}
                             </div>
                         </div>
                         <div class="col-12 text-center">
-                            <div [innerHTML]="statusText"></div>
+                            <div [innerHTML]="this.orderDetail.strReturn.statusDescription"></div>
                         </div>
                     </div>
-
-                    <!-- <div class="flex">
-                        <mat-radio-group class="invisible absolute w-0 h-0 pointer-events-none" [(ngModel)]="ngStatus"
-                            #planRadioGroup="matRadioGroup">
-                            <ng-container *ngFor="let plan of status; trackBy: trackByFn">
-                                <mat-radio-button [value]="plan.value"></mat-radio-button>
-                            </ng-container>
-                        </mat-radio-group>
-                        <ng-container *ngFor="let plan of status; trackBy: trackByFn">
-                            <div class="text-center relative flex flex-col items-start justify-start p-6 rounded-md shadow cursor-pointer bg-card"
-                                [ngClass]="{'ring ring-inset ring-primary': ngStatus === plan.value}">
-                                <ng-container *ngIf="ngStatus === plan.value">
-                                    <mat-icon class="absolute top-0 right-0 mt-3 mr-3 icon-size-7 text-primary"
-                                        [svgIcon]="'heroicons_solid:check-circle'"></mat-icon>
-                                </ng-container>
-                                <div class="w-full font-medium text-xl font-bold">{{plan.value}}</div>
-                                <div class="mt-1 text-sm text-secondary">{{plan.label}}</div>
-                                
-                            </div>
-                        </ng-container>
-                    </div> -->
                 </div>
             </div>
             <!-- Shipping Report -->
@@ -386,46 +301,47 @@
                                     <td>
                                         <ng-container *ngIf="orderDetail.blnEProcurement">
                                             <div class="alert p-2 text-left"
-                                                [ngClass]="{'alert-success': item.statusData.statusID == 6,'alert-warning': item.statusData.statusID !=6}">
-                                                <ng-container *ngIf="item.statusData.statusID == 6">
+                                                [ngClass]="{'alert-success': item.strReturn.statusID == 6,'alert-warning': item.strReturn.statusID !=6}">
+                                                <ng-container *ngIf="item.strReturn.statusID == 6">
                                                     <span class="fa fa-truck fa-lg active"></span>
-                                                    {{item.statusData.statusName}}
+                                                    {{item.strReturn.statusName}}
                                                 </ng-container>
-                                                <ng-container *ngIf="item.statusData.statusID != 6">
+                                                <ng-container *ngIf="item.strReturn.statusID != 6">
                                                     <span class="fa fa-clock-o disabled fa-lg"></span>
-                                                    {{item.statusData.statusName}}
+                                                    {{item.strReturn.statusName}}
                                                 </ng-container>
 
-                                                <ng-container *ngIf="item.statusData.trackingNumber">
+                                                <ng-container *ngIf="item.strReturn.trackingNumber">
                                                     <br />
-                                                    <b>Tracking number:</b> {{item.statusData.trackingNumber}}
+                                                    <b>Tracking number:</b> {{item.strReturn.trackingNumber}}
                                                 </ng-container>
-                                                <ng-container *ngIf="item.statusData.shippingDate">
+                                                <ng-container *ngIf="item.strReturn.shippingDate">
                                                     <br />
-                                                    <b>Shipping date:</b> {{item.statusData.shippingDate}}
+                                                    <b>Shipping date:</b> {{item.strReturn.shippingDate}}
                                                 </ng-container>
                                             </div>
                                         </ng-container>
                                         <ng-container *ngIf="!orderDetail.blnEProcurement">
                                             <div class="alert p-2 text-left"
-                                                [ngClass]="{'alert-success': item.statusData.statusID == 5,'alert-warning': item.statusData.statusID !=5}">
-                                                <ng-container *ngIf="item.statusData.statusID == 5">
+                                                [ngClass]="{'alert-success': item?.strReturn?.statusID == 5,'alert-warning': item?.strReturn?.statusID !=5}">
+                                                <ng-container *ngIf="item?.strReturn?.statusID == 5">
                                                     <span class="fa fa-truck fa-lg active"></span>
-                                                    {{item.statusData.statusName}}
+                                                    {{item?.strReturn?.statusName}}
                                                 </ng-container>
-                                                <ng-container *ngIf="item.statusData.statusID != 5">
+                                                <ng-container *ngIf="item?.strReturn?.statusID != 5">
                                                     <span class="fa fa-clock-o disabled fa-lg"></span>
-                                                    {{item.statusData.statusName}}
+                                                    {{item?.strReturn?.statusName}}
                                                 </ng-container>
-                                                <ng-container *ngFor="let qryPO of shippingReportProducts.qryPOS">
-                                                    {{1}}
+                                                <ng-container *ngFor="let qryPO of item.qryPOS">
                                                     <div
                                                         *ngIf="(qryPO.blnSupplier && qryPO.blnDecorator) || (!qryPO.blnSupplier && qryPO.blnDecorator)">
-                                                        <ng-container *ngIf="qryPO.trackingNumber">
+                                                        <ng-container
+                                                            *ngIf="qryPO.trackingNumber && qryPO.trackingNumber != 'N/A'">
                                                             <br />
                                                             <b>Tracking number:</b> {{qryPO.trackingNumber}}
                                                         </ng-container>
-                                                        <ng-container *ngIf="qryPO.shippingDate">
+                                                        <ng-container
+                                                            *ngIf="qryPO.shippingDate && qryPO.shippingDate != 'N/A'">
                                                             <br />
                                                             <b>Shipping date:</b> {{qryPO.shippingDate}}
                                                         </ng-container>

@@ -27,29 +27,7 @@ import { AddNewProduct, AddOption, AddProduct, UpdateAccessory, UpdateColorSize,
     right: 0;
     top: 0;
     width: auto;
-} 
-.modifyOrderLineButtonGroupRun {
-        background-color: #9a8ffd !important;
-        border: 1px solid #9a8ffd !important;
-        color: #000 !important;
-      }
-      
-      .btn-text-light {
-        color: #eee;
-      }
-      
-      .modifyOrderLineButtonGroupRunSlave {
-        background-color: #DBD7FF !important;
-        border: 1px solid #DBD7FF !important;
-        color: #000 !important;
-      }
-      
-      .modifyOrderLineButtonSelect {
-        font-weight: bold;
-        text-decoration: underline;
-        font-style: italic;
-        color: #fff !important;
-      }`]
+}`]
 })
 export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
   @ViewChild('shipDateInput') shipDateInput: ElementRef;
@@ -113,11 +91,6 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
 
   // UpdateProduct 
   isUpdateProductLoader: boolean = false;
-
-
-  // New Api Data
-  qryOrderLines: any;
-  ngSelectedOrderLine: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _orderService: OrdersService,
@@ -137,13 +110,11 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
         }
         this._orderService.getOrder(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
           this.orderTotal = res["data"][0];
-        });
+        })
       }
     })
     this.getOrderProducts();
     this.getProductsControl();
-    // New Api Data
-    this.getOrderProductsData();
   }
   getProductsControl() {
     let data = this.orderLines.filter(data => data.pk_orderLineID == this.ngSelectedProduct?.order_line_id);
@@ -235,7 +206,10 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
       this.orderLinesItems = res["data"];
       this.getOrderLineProducts(this.orderLinesItems[0]);
       let value = [];
+      this.orderDetail.MechandiseTotalPrice = 0;
       res["data"].forEach((element, index) => {
+        console.log(element.getOrderLineTotalsMerchandiseTotalPrice)
+        this.orderDetail.MechandiseTotalPrice += element.getOrderLineTotalsMerchandiseTotalPrice;
         value.push(element.pk_orderLineID);
         if (index == res["data"].length - 1) {
           this.getLineProducts(value.toString(), 0);
@@ -305,10 +279,10 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
           let royaltyPrice = element.royaltyPrice;
           let shippingCost = element.shippingCost;
           let shippingPrice = element.shippingPrice;
-          let cost = (element.runCost * element.quantity) + element.shippingCost;
-          let price = (element.runPrice * element.quantity) + element.shippingPrice + element.royaltyPrice;
-          let totalRunintCost = (element.runCostInit + element.cost) * element.quantity;
-          let totalRunintPrice = (element.runPriceInit + element.price) * element.quantity;
+          let cost = ((element.runCost + element.runCostInit) * element.quantity) + element.shippingCost;
+          let price = ((element.runPrice + element.runPriceInit) * element.quantity) + element.royaltyPrice + element.shippingCost;
+          let totalRunintCost = (element.runCost) * element.quantity;
+          let totalRunintPrice = (element.runPrice) * element.quantity;
           prod.push(element);
           products.push({ products: prod, order_line_id: element.fk_orderLineID, allProducts: [], accessories: [], imprints: [], totalQuantity: element.quantity, totalMercandiseCost: cost, totalMerchendisePrice: price, royaltyPrice: royaltyPrice, shippingCost: shippingCost, shippingPrice: shippingPrice, colors: element.colors, sizes: element.sizes, imprintColorsData: element.imprintColorsData, totalRunintCost: totalRunintCost, totalRunintPrice: totalRunintPrice });
         } else {
@@ -316,18 +290,18 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
           if (index < 0) {
             let shippingCost = element.shippingCost;
             let shippingPrice = element.shippingPrice;
-            let cost = (element.runCost * element.quantity) + element.shippingCost;
-            let price = (element.runPrice * element.quantity) + element.shippingPrice + element.royaltyPrice;
+            let cost = ((element.runCost + element.runCostInit) * element.quantity) + element.shippingCost;
+            let price = ((element.runPrice + element.runPriceInit) * element.quantity) + element.royaltyPrice + element.shippingCost;
             let royaltyPrice = element.royaltyPrice;
-            let totalRunintCost = (element.runCostInit + element.cost) * element.quantity;
-            let totalRunintPrice = (element.runPriceInit + element.price) * element.quantity;
+            let totalRunintCost = (element.runCost) * element.quantity;
+            let totalRunintPrice = (element.runPrice) * element.quantity;
             prod.push(element);
             products.push({ products: prod, order_line_id: element.fk_orderLineID, allProducts: [], accessories: [], imprints: [], totalQuantity: element.quantity, totalMercandiseCost: cost, totalMerchendisePrice: price, royaltyPrice: royaltyPrice, shippingCost: shippingCost, shippingPrice: shippingPrice, colors: element.colors, sizes: element.sizes, imprintColorsData: element.imprintColorsData, totalRunintCost: totalRunintCost, totalRunintPrice: totalRunintPrice });
           } else {
-            let cost = (element.runCost * element.quantity);
-            let price = (element.runPrice * element.quantity) + element.royaltyPrice;
-            let totalRunintCost = (element.runCostInit + element.cost) * element.quantity;
-            let totalRunintPrice = (element.runPriceInit + element.price) * element.quantity;
+            let cost = ((element.runCost + element.runCostInit) * element.quantity) + element.shippingCost;
+            let price = ((element.runPrice + element.runPriceInit) * element.quantity) + element.royaltyPrice + element.shippingCost;
+            let totalRunintCost = (element.runCost) * element.quantity;
+            let totalRunintPrice = (element.runPrice) * element.quantity;
             prod = products[index].products;
             prod.push(element);
             products[index].products = prod;
@@ -352,13 +326,20 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
           products[index].totalMerchendisePrice = products[index].totalMerchendisePrice + price;
         });
       }
+      console.log(products);
       // this.getProductImprints(value, products);
       this.orderProducts = products;
+      this.calculatePricing();
       this.getOrderLineDetails(this.orderProducts[0].order_line_id, index);
     }, err => {
       this.isLoading = false;
       this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
+    });
+  }
+  calculatePricing() {
+    this.orderProducts.forEach((products, index) => {
+      console.log(products);
     });
   }
   getOrderLineProducts(data) {
@@ -395,6 +376,7 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
       order_lineID: id
     }
     this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      console.log(res["color_sizes"])
       this.orderProducts[check].color_sizes = res["color_sizes"];
       this.orderProducts[check].imprintsSelected = [];
       this.orderProducts[check].imprintsUnSelected = [];
@@ -423,6 +405,7 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
       this.orderProducts[check].allProducts = this.allProducts;
 
       this.ngSelectedProduct = this.orderProducts[check];
+      console.log(this.ngSelectedProduct);
       if (this.ngSelectedProduct.imprintsUnSelected.length > 0) {
         this.ngImprintSelected = this.ngSelectedProduct.imprintsUnSelected[0];
       }
@@ -441,8 +424,8 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
     });
   }
   changeOrderLine(item) {
-    let index = this.orderProducts.findIndex(data => data.order_line_id == item.pk_orderLineID);
-    let orderLine = this.orderLines.findIndex(data => data.pk_orderLineID == item.pk_orderLineID);
+    let index = this.orderProducts.findIndex(data => data.order_line_id == item.order_line_id);
+    let orderLine = this.orderLines.findIndex(data => data.pk_orderLineID == item.order_line_id);
     if (item.allProducts.length == 0) {
       this.getOrderLineProducts(this.orderLinesItems[orderLine]);
     }
@@ -844,78 +827,6 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
     this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
   };
-
-
-  getOrderProductsData() {
-    this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      res["data"].forEach((orderLine) => {
-        orderLine.imprintsData = [];
-        orderLine.colorSizesData = [];
-        orderLine.accessoriesData = [];
-        this.setImprintsToOrderline(orderLine, res["qryImprintsReport"]);
-        this.setColoSizesToOrderline(orderLine, res["qryItemReport"]);
-        this.setAccessoriesToOrderline(orderLine, res["qryAccessoriesReport"]);
-      });
-      this.qryOrderLines = res["data"];
-      this.ngSelectedOrderLine = this.qryOrderLines[0];
-      console.log(this.qryOrderLines);
-      this.isLoading = false;
-      this._changeDetectorRef.markForCheck();
-    })
-  }
-  // Set Imprints
-  setImprintsToOrderline(orderLine, imprints) {
-    const matchingImprints = imprints.filter(imprint => imprint.fk_orderLineID === orderLine.pk_orderLineID);
-    orderLine.imprintsData.push(...matchingImprints);
-  }
-  // Set Color/Sizes
-  setColoSizesToOrderline(orderLine, items) {
-    if (items.length) {
-      orderLine.warehouseCode = items.warehouseCode;
-    }
-    const matchingSizes = items.filter(item => item.fk_orderLineID === orderLine.pk_orderLineID);
-    orderLine.colorSizesData.push(...matchingSizes);
-  }
-  // Set Accessories Data
-  setAccessoriesToOrderline(orderLine, items) {
-    const matchingAccessories = items.filter(item => item.fk_orderLineID === orderLine.pk_orderLineID);
-    orderLine.accessoriesData.push(...matchingAccessories);
-  }
-
-  changeOrderLineProduct(orderLine) {
-    if (!orderLine.allProducts) {
-      this.getOrderLineProductsData(orderLine);
-    }
-  }
-  getOrderLineProductsData(orderLine) {
-    orderLine.allProducts = [];
-    let getGroupRunProducts = false;
-    let getWarehouseProducts = false;
-    let getProducts = false;
-    if (orderLine.blnGroupRun && orderLine.groupRunOrderLineID) {
-      getGroupRunProducts = true;
-    } else if (orderLine.blnWarehouse) {
-      getWarehouseProducts = true;
-    } else {
-      getProducts = true;
-    }
-    let params = {
-      store_id: this.orderDetail.fk_storeID,
-      groupRunProducts: getGroupRunProducts,
-      getWarehouseProducts: getWarehouseProducts,
-      getProducts: getProducts,
-      modify_orders_current_products: true,
-    }
-    this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      orderLine.allProducts = res["data"];
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this.isLoading = false;
-      this.isLoadingChange.emit(false);
-      this._changeDetectorRef.markForCheck();
-    });
-  }
-
 
 }
 

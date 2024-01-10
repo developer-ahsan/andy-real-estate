@@ -18,8 +18,8 @@ export interface AddCartComment {
 };
 export interface updateCartInfo {
     cart_id: number;
+    admin_user_id: number;
     store_id: number;
-    admin_user_id: number,
     billing_company_name: string;
     billing_first_name: string;
     billing_last_name: string;

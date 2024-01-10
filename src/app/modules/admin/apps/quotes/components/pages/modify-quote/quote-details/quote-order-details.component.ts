@@ -44,6 +44,7 @@ export class QuoteOrderDetailsComponent implements OnInit {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((quote) => {
         this.selectedQuoteDetail = quote["data"][0];
+        console.log(this.selectedQuoteDetail);
         this.shippingForm.patchValue(this.selectedQuoteDetail);
         this._changeDetectorRef.markForCheck();
       });
@@ -55,7 +56,7 @@ export class QuoteOrderDetailsComponent implements OnInit {
     }
     const { inHandsDate, shippingCarrierName, paymentDate, shippingServiceName, purchaseOrderNum, shippingCustomerAcc, invoiceDueDate, shippingServiceCode, costCenterCode } = this.shippingForm.value;
 
-    if(shippingCarrierName.trim() === '' || shippingServiceName.trim() === '' || shippingServiceCode.trim() === '') {
+    if (shippingCarrierName.trim() === '' || shippingServiceName.trim() === '' || shippingServiceCode.trim() === '') {
       this._quoteService.snackBar('Please fill out required fields');
 
       return;
@@ -95,10 +96,10 @@ export class QuoteOrderDetailsComponent implements OnInit {
 
   replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
     for (const key in obj) {
-        if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
-            obj[key] = obj[key]?.replace(/'/g, "''");
-        }
+      if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+        obj[key] = obj[key]?.replace(/'/g, "''");
+      }
     }
     return obj;
-}
+  }
 }
