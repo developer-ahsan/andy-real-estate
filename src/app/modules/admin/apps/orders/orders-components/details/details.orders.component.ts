@@ -55,6 +55,9 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
     /**
      * On init
      */
+    goToLockOrder() {
+        this._router.navigate(['/apps/orders', this.selectedOrderDetail.pk_orderID, 'lock-order'])
+    }
     doSomething() {
         this.panel.close();
     }

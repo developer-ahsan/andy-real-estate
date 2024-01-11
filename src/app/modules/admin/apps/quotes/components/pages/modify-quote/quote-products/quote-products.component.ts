@@ -5,6 +5,7 @@ import { QuotesService } from '../../../quotes.service';
 import { Subject } from 'rxjs';
 import { updateCartInfo, updateCartShipping } from '../../../quotes.types';
 import moment from 'moment';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-quote-products',
@@ -78,6 +79,7 @@ export class QuoteProductsComponent implements OnInit {
   constructor(
     private _quoteService: QuotesService,
     private _changeDetectorRef: ChangeDetectorRef,
+    private _commonService: DashboardsService
   ) { }
 
   ngOnInit(): void {
@@ -102,11 +104,25 @@ export class QuoteProductsComponent implements OnInit {
         this._changeDetectorRef.markForCheck();
       });
   }
+  getQuoteFromAPI() {
+    this.isLoading = true;
+    let params = {
+      single_cart: true,
+      cart_id: this.selectedQuoteDetail.pk_cartID
+    }
+    this._quoteService.getQuoteMainDetail(params).subscribe(quote => {
+      this.cartLines = quote["cartLines"];
+      this.refactorCartLinesData();
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
   refactorCartLinesData() {
     this.selectedQuoteDetail.shippingGroundCost = 0;
     this.selectedQuoteDetail.royaltyPrice = 0;
     this.selectedQuoteDetail.shippingGroundPrice = 0;
     this.cartLines.forEach(cartLine => {
+      cartLine.blnOverrideShippingProductInfo = false;
       cartLine.blnOverrideShippingShipping = true;
       cartLine.totalQuantity = 0;
       cartLine.totalRunCost = 0;
@@ -363,8 +379,119 @@ export class QuoteProductsComponent implements OnInit {
       this._changeDetectorRef.markForCheck();
     });
   }
+  updateProduct() {
+    const user = JSON.parse(localStorage.getItem('userDetails'));
+    const { blnSample, blnTaxable, blnRoyaltyStore, blnRoyalty, blnApparel, blnOverrideShippingProductInfo, blnOverrideShippingShipping, pk_storeProductID, pk_cartLineID, fk_productID, productName, fk_cartID, warehouseDeliveryOption, event } = this.selectedCartLine;
+    let isProductChanged = false;
+    if (this.currentSelectedProduct.productName != productName) {
+      isProductChanged = true;
+    }
+    let payload = {
+      bln_sample: blnSample,
+      bln_royalty: blnRoyalty,
+      bln_taxable: blnTaxable,
+      bln_apparel: blnApparel,
+      bln_overRide: blnOverrideShippingProductInfo,
+      product_id: this.currentSelectedProduct.fk_productID,
+      storeProductID: pk_storeProductID,
+      isProductChanged: isProductChanged,
+      previous_product_name: productName,
+      product_number: this.currentSelectedProduct.productNumber,
+      product_name: this.currentSelectedProduct.productName,
+      supplier_id: this.currentSelectedProduct.fk_supplierID,
+      min_quantity: this.currentSelectedProduct?.minQuantity ? this.currentSelectedProduct?.minQuantity : this.currentSelectedProduct?.minOrderQuantity,
+      unitsInShippingPackage: this.currentSelectedProduct.unitsInShippingPackage,
+      admin_user_id: user.pk_userID,
+      min_cost: this.currentSelectedProduct.minCost ? this.currentSelectedProduct.minCost : this.currentSelectedProduct.cartLineBaseCost,
+      min_price: this.currentSelectedProduct.minPrice ? this.currentSelectedProduct.minPrice : this.currentSelectedProduct.cartLineBasePrice,
+      cartLine_id: pk_cartLineID,
+      cart_id: fk_cartID,
+      warehouse_delivery_option: warehouseDeliveryOption,
+      event_name: event,
+      update_cart_product: true
+    };
+    this.selectedCartLine.updateProductLoader = true;
+    this._quoteService.UpdateQuoteData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this._quoteService.snackBar(res["message"]);
+        this.getQuoteFromAPI();
+      }
+      this.selectedCartLine.updateProductLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  removeCartProduct() {
+    if (this.cartLines.length == 1) {
+      this._quoteService.snackBar('You cannot remove the last item on a quote. Please add another item first and then remove this one.');
+      return;
+    }
+    this._commonService.showConfirmation('NOTE:  Removing an item removes all of the imprints for that item, as well as the attached artwork files and customer comments for said imprints.  If you still need these files or comments, please save them before removing the item.  Are you sure you want to remove this item from this order?  This action cannot be undone.', (confirmed) => {
+      if (confirmed) {
+        let paylaod = {
+          blnGroupRun: this.selectedCartLine.blnGroupRun,
+          groupRunCartLineID: this.selectedCartLine.groupRunCartLineID,
+          cartLine_id: this.selectedCartLine.pk_cartLineID,
+          cart_id: this.selectedCartLine.fk_cartID,
+          delete_cart_product: true
+        }
+        this.selectedCartLine.removeCartLoader = true;
+        this._quoteService.UpdateQuoteData(paylaod).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+          if (res["success"]) {
+            this._quoteService.snackBar(res["message"]);
+            this.getQuoteFromAPI();
+          }
+          this.selectedCartLine.removeCartLoader = false;
+          this._changeDetectorRef.markForCheck();
+        }, err => {
+          this.selectedCartLine.removeCartLoader = false;
+          this._changeDetectorRef.markForCheck();
+        });
+      }
+    });
+
+  }
+  addProductOptions() {
+    //   export interface addProductOption {
+    //     cart_id: number;
+    //     cartline_id: number;
+    //     color_id: number;
+    //     color_name: string;
+    //     size_id: number;
+    //     size_name: string;
+    //     product_id: number;
+    //     product_name: string;
+    //     isApparel: boolean;
+    //     groupRunCartLineID: number;
+    //     blnGroupRun: boolean;
+    //     quantity: number;
+    //     admin_user_id: number;
+    //     blnOverrideShippingNewOption: boolean;
+    //     add_cart_product_option: boolean;
+    // };
+  }
   // Implement methods for functionality
   updateProductOptions() {
+    // export interface updateProductOption {
+    //   cart_line_options: cart_line_option[];
+    //   remove_option_ids: cart_line_option[];
+    // }
+
+    // export interface cart_line_option {
+    //   product_id: number;
+    //   color_id: number;
+    //   color_name: string;
+    //   quantity: number;
+    //   size_id: number;
+    //   size_name: string;
+    //   cart_line_option_run_cost: number;
+    //   cart_line_option_run_price: number;
+    //   cart_line_option_setup_cost: number;
+    //   cart_line_option_setup_price: number;
+    //   bln_override: boolean;
+    //   option_id: number;
+    //   bln_quantity_changed: boolean;
+    //   product_name: string;
+    // }
     // Implement logic to update product options
     // Access and modify ngSelectedProduct properties accordingly
     // e.g., this.ngSelectedProduct.totalQuantity = ...;

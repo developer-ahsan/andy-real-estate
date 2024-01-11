@@ -72,6 +72,7 @@ import { SentOrdersPurchasesComponent } from './orders-components/navigation/sen
 import { NgxDropzoneModule } from 'ngx-dropzone';
 import { MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
 import { CurrencyPipe } from '@angular/common';
+import { OrderLockComponent } from './orders-components/navigation/lock-order/lock-order.component';
 
 @NgModule({
     declarations: [
@@ -106,6 +107,7 @@ import { CurrencyPipe } from '@angular/common';
         OrderPaymentBillComponent,
         ProductsOrderModifyComponent,
         SentOrdersPurchasesComponent,
+        OrderLockComponent,
         SafePipe
     ],
     imports: [

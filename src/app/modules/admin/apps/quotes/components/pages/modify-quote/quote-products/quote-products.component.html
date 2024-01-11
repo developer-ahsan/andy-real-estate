@@ -261,14 +261,17 @@
                     <div class="col-12 text-right">
 
                         <button class="bg-red-500 text-white mr-2" mat-button mat-stroked-button
-                            (click)="addNewProduct()" [disabled]="isAddNewProdLoader">
-                            <span *ngIf="!isAddNewProdLoader">Remove item</span>
-                            <mat-progress-spinner *ngIf="isAddNewProdLoader" [diameter]="24" [mode]="'indeterminate'">
+                            (click)="removeCartProduct()" [disabled]="selectedCartLine.removeCartLoader">
+                            <span *ngIf="!selectedCartLine.removeCartLoader">Remove item</span>
+                            <mat-progress-spinner *ngIf="selectedCartLine.removeCartLoader" [diameter]="24"
+                                [mode]="'indeterminate'">
                             </mat-progress-spinner>
                         </button>
-                        <button mat-button mat-stroked-button (click)="addNewProduct()" [disabled]="isAddNewProdLoader">
-                            <span *ngIf="!isAddNewProdLoader">Update product</span>
-                            <mat-progress-spinner *ngIf="isAddNewProdLoader" [diameter]="24" [mode]="'indeterminate'">
+                        <button mat-button mat-stroked-button (click)="updateProduct()"
+                            [disabled]="selectedCartLine.updateProductLoader">
+                            <span *ngIf="!selectedCartLine.updateProductLoader">Update product</span>
+                            <mat-progress-spinner *ngIf="selectedCartLine.updateProductLoader" [diameter]="24"
+                                [mode]="'indeterminate'">
                             </mat-progress-spinner>
                         </button>
                     </div>

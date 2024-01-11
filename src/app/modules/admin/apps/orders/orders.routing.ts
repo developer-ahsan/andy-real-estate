@@ -30,6 +30,7 @@ import { GroupOrdersShippingComponent } from './orders-components/navigation/gro
 import { OrderPaymentBillComponent } from './orders-components/navigation/order-payments-bill/order-payments-billcomponent';
 import { SentOrdersPurchasesComponent } from './orders-components/navigation/sent-purchase-orders/sent-purchase-orders.component';
 import { FlpsComponent } from './orders-components/navigation/flps/flps.component';
+import { OrderLockComponent } from './orders-components/navigation/lock-order/lock-order.component';
 
 export const ordersRoutes: Route[] = [
     {
@@ -275,6 +276,14 @@ export const ordersRoutes: Route[] = [
                 data: {
                     title: 'Group Order Shipping',
                     url: 'group-order-shipping'
+                }
+            },
+            {
+                path: 'lock-order',
+                component: OrderLockComponent,
+                data: {
+                    title: 'Lock Order',
+                    url: 'lock-order'
                 }
             }
         ]

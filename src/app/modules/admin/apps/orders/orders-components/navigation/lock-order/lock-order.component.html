@@ -1,0 +1,41 @@
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading || !orderDetail">
+</ngx-skeleton-loader>
+<div class="row my-3 w-full" *ngIf="!isLoading && orderDetail">
+    <div class="col-12">
+        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+            <div class="p-6 sm:p-8 lg:p-10 w-full">
+                <div class="text-2xl font-bold">
+                    Close order
+                </div>
+                <fuse-alert class="my-2" [appearance]="'soft'" [name]="'alertBox1'" [type]="'warning'">
+                    Use this tool to close this order, signifying that this order is completely finished processing.
+                    This will disable the modify order tool, adjustments, and order flag areas so changes cannot be
+                    made.
+                </fuse-alert>
+                <ng-container *ngIf="!orderDetail.blnClosed; else notClosed">
+                    <mat-label>Enter a date to mark this order closed:</mat-label>
+                    <input #shipDateInput type="date" [(ngModel)]="orderDetail.formattedDateClosed"
+                        class="block w-full rounded-md border-0 p-2.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        aria-describedby="email-optional">
+                    <br />
+                    <button class="min-w-40 rounded-md" mat-flat-button color="primary" [disabled]="isLoader"
+                        (click)="updateOrderFlags(true)">
+                        <mat-progress-spinner *ngIf="isLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                        <span *ngIf="!isLoader" class="ml-1 mr-1">Close Order</span>
+                    </button>
+                </ng-container>
+                <ng-template #notClosed>
+                    <p class="font-bold">Closed on {{orderDetail.formattedDateClosed}}</p>
+                    <br />
+                    <button class="min-w-40 rounded-md" mat-flat-button color="primary" [disabled]="isLoader"
+                        (click)="updateOrderFlags(false)">
+                        <mat-progress-spinner *ngIf="isLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                        <span *ngIf="!isLoader" class="ml-1 mr-1">Re-open order</span>
+                    </button>
+                </ng-template>
+            </div>
+        </fuse-card>
+    </div>
+</div>
