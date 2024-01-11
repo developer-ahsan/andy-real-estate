@@ -135,10 +135,10 @@
                                         <td colspan="3">
                                             Supplier Zip: {{qryOrderLine.supplierFOBzip }}
                                             <span
-                                                *ngIf="qryOrderLine.fk_decoratorID != qryOrderLine.fk_supplierID && qryOrderLine.imprintsData.length">
-                                                &rarr; Decorator Zip: {{qryOrderLine.decoratorFOBzip}}
+                                                *ngIf="qryOrderLine.imprintsData.length && qryOrderLine?.imprintsData[0]?.fk_decoratorID != qryOrderLine.fk_supplierID">
+                                                &rarr; Decorator Zip: {{qryOrderLine?.imprintsData[0]?.decoratorFOBzip}}
                                             </span>
-                                            &rarr; Customer Zip: {{qryOrderLine.shippingZip}}
+                                            &rarr; Customer Zip: {{orderDetail.shippingZip}}
                                         </td>
                                     </tr>
                                     <tr>

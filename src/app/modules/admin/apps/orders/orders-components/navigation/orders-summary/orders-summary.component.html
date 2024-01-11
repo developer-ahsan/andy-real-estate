@@ -412,10 +412,13 @@
                                     <h2 class="font-bold">
                                         Location:
                                     </h2>
-                                    <h2 class="ml-2">{{(orderDetail?.companyName + ' - ' +
+
+                                    <h2 *ngIf="orderDetail.qryUserProfileLocationName" class="ml-2">
+                                        {{(orderDetail?.qryUserProfileCompanyName + ' - ' +
                                         orderDetail?.qryUserProfileLocationName + ' - ' +
-                                        orderDetail?.qryUserProfileDepartmentName) || not_available}}
+                                        orderDetail?.qryUserProfileDepartmentName)}}
                                     </h2>
+                                    <h2 *ngIf="!orderDetail.qryUserProfileLocationName">N/A</h2>
                                 </span>
                                 <span class="flex  mt-1">
                                     <h2 class="font-bold">
@@ -489,7 +492,18 @@
                                             <b>Additional Status</b>
                                         </div>
                                         <div class="col-6">
-                                            {{orderDetail?.accountChargeCode || not_available}}
+                                            <p *ngIf="orderDetail.blnIgnore"><span color="#FF0000"><b>IGNORED BY THE
+                                                        LOGS</b></span><br /></p>
+                                            <p *ngIf="orderDetail.blnReviewIgnore"><span color="#FF0000"><b>IGNORED BY
+                                                        THE REVIEW SCHEDULER</b></span><br /></p>
+                                            <p *ngIf="orderDetail.blnReorderIgnore"><span color="#FF0000"><b>IGNORED BY
+                                                        THE RAPID REORDER SYSTEM</b></span><br /></p>
+                                            <p *ngIf="orderDetail.blnCancelled"><span color="#FF0000"><b>MARKED AS
+                                                        CANCELLED</b></span><br /></p>
+                                            <p
+                                                *ngIf="!orderDetail.blnIgnore && orderDetail.blnReviewIgnore && !orderDetail.blnCancelled">
+                                                NONE</p>
+                                            <br /><br />
                                         </div>
                                     </div>
                                 </div>
@@ -568,6 +582,27 @@
                                 <button mat-stroked-button (click)="goToComments()">
                                     <span>Add Comment</span>
                                 </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="my-2 rounded-2xl shadow bg-card">
+            <div class="row">
+                <div class="col-12 py-2">
+                    <div class=" flex flex-col lg:flex-row w-full">
+                        <div class="p-4 w-full">
+                            <div class="text-lg font-medium tracking-tight leading-6 truncate ">
+                                Modify comments
+                            </div>
+                            <div *ngIf="!htmlComment">
+                                <fuse-alert [appearance]="'border'" [type]="'warning'">
+                                    There are no modify comments on this order.
+                                </fuse-alert>
+                            </div>
+                            <div class="max-h-80 overflow-auto" *ngIf="orderDetail.modifyComments">
+                                <div [innerHTML]="orderDetail.modifyComments"></div>
                             </div>
                         </div>
                     </div>

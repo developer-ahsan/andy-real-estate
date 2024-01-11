@@ -96,8 +96,9 @@ export class OrdersReportComponent implements OnInit {
       var height = positionInfo.height;
       var width = positionInfo.width;
       var top_left_margin = 15;
+      var padding_bottom = 15;
       let PDF_Width = width + (top_left_margin * 2);
-      var PDF_Height = (PDF_Width * 1.5) + (top_left_margin * 2);
+      var PDF_Height = (PDF_Width * 1.5) + (top_left_margin * 2) + padding_bottom;
       var canvas_image_width = width;
       var canvas_image_height = height;
 
@@ -106,23 +107,24 @@ export class OrdersReportComponent implements OnInit {
       let data = document.getElementById('htmltable');
       const file_name = `OrderReport_${pk_orderID}.pdf`;
 
-      // Adjust html2canvas options for better quality
-      html2canvas(data, { useCORS: true, scale: 2, logging: false }).then(canvas => {
-        var imgData = canvas.toDataURL("image/jpeg", 0.7); // Adjust quality here (0.7 is just an example)
+      // Adjust html2canvas options for better quality and capturing the entire content
+      html2canvas(data, { useCORS: true, scale: 2, logging: false, scrollY: -window.scrollY }).then(canvas => {
+        var imgData = canvas.toDataURL("image/jpeg", 0.7);
 
         var pdf = new jsPDF('p', 'pt', [PDF_Width, PDF_Height]);
         pdf.addImage(imgData, 'jpeg', top_left_margin, top_left_margin, canvas_image_width, canvas_image_height);
 
         for (var i = 1; i <= totalPDFPages; i++) {
           pdf.addPage([PDF_Width, PDF_Height]);
-          pdf.addImage(imgData, 'jpeg', top_left_margin, -(PDF_Height * i) + (top_left_margin * 4), canvas_image_width, canvas_image_height);
-        }
 
+          // Adjust the position to account for padding at the bottom
+          var yPosition = -(PDF_Height * i) + (top_left_margin * 4);
+          pdf.addImage(imgData, 'jpeg', top_left_margin, yPosition, canvas_image_width, canvas_image_height);
+        }
         pdf.save(file_name);
         this.isGeneratePDFLoader = false;
         this._changeDetectorRef.markForCheck();
       });
-
     }, 100);
   }
 

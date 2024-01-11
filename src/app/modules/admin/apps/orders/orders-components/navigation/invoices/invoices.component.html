@@ -187,7 +187,8 @@
                                             </td>
                                         </tr>
                                     </ng-container>
-                                    <ng-template #notpaymentDate>
+                                    <ng-template #notpaymentDate
+                                        *ngIf="orderDetail.fk_storeID == 60 || orderDetail.fk_storeID == 64">
                                         <tr>
                                             <td>Payment Status</td>
                                             <td>
@@ -235,7 +236,7 @@
                                 <!--- ORDER LINES --->
                                 <ng-container *ngFor="let qryOrderLine of qryOrderLines">
                                     <br /><br />
-                                    <h1>(ID: {{qryOrderLine.pk_storeProductID}}) <span
+                                    <h1 class="font-bold">(ID: {{qryOrderLine.pk_storeProductID}}) <span
                                             [innerHTML]="qryOrderLine.productName"></span></h1>
                                     <h2>Quantity: {{qryOrderLine?.quantity}} <span *ngIf="qryOrderLine.blnSample"><b> *
                                                 * * SAMPLE * * *</b></span>
