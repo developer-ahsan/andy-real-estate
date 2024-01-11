@@ -21,6 +21,7 @@ export class OrderLockComponent implements OnInit, OnDestroy {
   orderDetailTemp: any;
   isLoader: boolean = false;
   flagForm: FormGroup;
+  currentDate = new Date();
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _orderService: OrdersService
