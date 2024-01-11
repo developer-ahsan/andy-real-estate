@@ -352,7 +352,7 @@
                             </td>
                         </tr>
 
-                        <tr class="columnHeader2">
+                        <tr class="columnHeader2 font-bold">
                             <td colspan="2">GRAND TOTAL:</td>
                             <td align="center">{{ngSelectedProduct.totalQuantity}}</td>
                             <td></td>
@@ -365,11 +365,14 @@
                 </table>
                 <div class=" flex justify-between align-items-center">
                     <div class="flex flex-row gap-x-2 ">
-                        <mat-checkbox class="mr-1" [(ngModel)]="ngSelectedProduct.products[0].blnOverride">Override
+                        <mat-checkbox class="mr-1"
+                            [(ngModel)]="ngSelectedProduct.products[0].blnOverrideStandardCostPrice">Override
                             Standard Cost/Price</mat-checkbox>
-                        <mat-checkbox class="mr-1" [(ngModel)]="ngSelectedProduct.products[0].blnSample">Override Unit
+                        <mat-checkbox class="mr-1"
+                            [(ngModel)]="ngSelectedProduct.products[0].blnOverrideCostPrice">Override Unit
                             Cost/Price</mat-checkbox>
-                        <mat-checkbox class="mr-1" [(ngModel)]="ngSelectedProduct.products[0].blnTaxable">Override
+                        <mat-checkbox class="mr-1"
+                            [(ngModel)]="ngSelectedProduct.products[0].blnOverrideShippingOptions">Override
                             Shipping:</mat-checkbox>
                     </div>
                     <div>
@@ -448,175 +451,188 @@
                 </div>
             </div>
         </mat-expansion-panel>
-        <!-- Imprint Options -->
-        <mat-expansion-panel [expanded]="true">
-            <mat-expansion-panel-header>
-                <mat-panel-title class="text-lg font-bold">
-                    Imprint Options
-                </mat-panel-title>
-            </mat-expansion-panel-header>
-            <div *ngIf="ngSelectedProduct.main_imprints.length == 0" class="mt-2">
-                <div class="alert alert-warning">
-                    There are currently no imprint defined for this line item.
-                </div>
-            </div>
-            <div *ngFor="let imprint of ngSelectedProduct.main_imprints" class="my-2 border-b">
-                <div class="flex justify-between">
-                    <div>
-                        <h2 class="font-bold text-lg no-underline inline no-margin no-padding">{{imprint.locationName}}
-                            /
-                            {{imprint.methodName}}
-                        </h2>
-                    </div>
-                    <div>
-                        <mat-icon svgIcon="heroicons_outline:trash"></mat-icon>
+        <ng-container *ngIf="!ngSelectedProduct.products[0].groupRunOrderLineID;else NotImprint">
+            <!-- Imprint Options -->
+            <mat-expansion-panel [expanded]="true">
+                <mat-expansion-panel-header>
+                    <mat-panel-title class="text-lg font-bold">
+                        Imprint Options
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <div *ngIf="ngSelectedProduct.main_imprints.length == 0" class="mt-2">
+                    <div class="alert alert-warning">
+                        There are currently no imprint defined for this line item.
                     </div>
                 </div>
-                <div class="w-full">
-                    <table class="table table-condensed padding-1x wide no-bottom-margin">
-                        <thead>
-                            <tr class="columnHeader2">
-                                <td width="30%" colspan="2">IMPRINT</td>
-                                <td width="5%" align="center">QTY</td>
-                                <td width="10%" colspan="2" align="center">COST</td>
-                                <td width="10%" colspan="2" align="center">PRICE</td>
-                            </tr>
-                        </thead>
+                <div *ngFor="let imprint of ngSelectedProduct.main_imprints" class="my-2 border-b">
+                    <div class="flex justify-between">
+                        <div>
+                            <h2 class="font-bold text-lg no-underline inline no-margin no-padding">
+                                {{imprint.locationName}}
+                                /
+                                {{imprint.methodName}}
+                            </h2>
+                        </div>
+                        <div>
+                            <mat-icon svgIcon="heroicons_outline:trash"></mat-icon>
+                        </div>
+                    </div>
+                    <div class="w-full">
+                        <table class="table table-condensed padding-1x wide no-bottom-margin">
+                            <thead>
+                                <tr class="columnHeader2">
+                                    <td width="30%" colspan="2">IMPRINT</td>
+                                    <td width="5%" align="center">QTY</td>
+                                    <td width="10%" colspan="2" align="center">COST</td>
+                                    <td width="10%" colspan="2" align="center">PRICE</td>
+                                </tr>
+                            </thead>
 
-                        <tbody>
-                            <tr>
-                                <td colspan="2"></td>
-                                <td></td>
-                                <td align="center"><b>Unit</b></td>
-                                <td align="center"><b>Total</b></td>
-                                <td align="center"><b>Unit</b></td>
-                                <td align="center"><b>Total</b></td>
-                            </tr>
+                            <tbody>
+                                <tr>
+                                    <td colspan="2"></td>
+                                    <td></td>
+                                    <td align="center"><b>Unit</b></td>
+                                    <td align="center"><b>Total</b></td>
+                                    <td align="center"><b>Unit</b></td>
+                                    <td align="center"><b>Total</b></td>
+                                </tr>
 
-                            <tr>
-                                <td>
-                                    <select class="select1 wide form-control" [(ngModel)]="imprint.fk_imprintID">
-                                        <option [value]="imprint.fk_imprintID">
-                                            {{imprint.locationName}} / {{imprint.methodName}}</option>
-                                        <option [value]="item.pk_imprintID"
-                                            *ngFor="let item of ngSelectedProduct.imprintsUnSelected">
-                                            {{item.locationName}} / {{item.methodName}}</option>
-                                    </select>
-                                </td>
+                                <tr>
+                                    <td>
+                                        <select class="select1 wide form-control" [(ngModel)]="imprint.fk_imprintID">
+                                            <option [value]="imprint.fk_imprintID">
+                                                {{imprint.locationName}} / {{imprint.methodName}}</option>
+                                            <option [value]="item.pk_imprintID"
+                                                *ngFor="let item of ngSelectedProduct.imprintsUnSelected">
+                                                {{item.locationName}} / {{item.methodName}}</option>
+                                        </select>
+                                    </td>
 
-                                <td></td>
+                                    <td></td>
 
-                                <td align="center" valign="middle">{{ngSelectedProduct.totalQuantity}}</td>
+                                    <td align="center" valign="middle">{{ngSelectedProduct.totalQuantity}}</td>
 
-                                <td>
-                                    <input type="text" class="form-control" [(ngModel)]="imprint.runCost">
-                                </td>
+                                    <td>
+                                        <input type="text" class="form-control" [(ngModel)]="imprint.runCost">
+                                    </td>
 
-                                <td align="center">{{(imprint.runCost * ngSelectedProduct.totalQuantity) | currency}}
-                                </td>
+                                    <td align="center">{{(imprint.runCost * ngSelectedProduct.totalQuantity) |
+                                        currency}}
+                                    </td>
 
-                                <td><input type="text" class="form-control" [(ngModel)]="imprint.runPrice">
-                                </td>
+                                    <td><input type="text" class="form-control" [(ngModel)]="imprint.runPrice">
+                                    </td>
 
-                                <td align="center">{{(imprint.runPrice * ngSelectedProduct.totalQuantity) | currency}}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <mat-checkbox [(ngModel)]="imprint.blnOverride">Override Run/Setup</mat-checkbox>
-                                </td>
-                                <td colspan="2" align="right">
-                                    <h2 class="no-underline no-padding no-margin">Setups:</h2>
-                                </td>
-                                <td><input type="text" class="form-control" [(ngModel)]="imprint.setupCost"></td>
-                                <td></td>
-                                <td><input type="text" class="form-control" [(ngModel)]="imprint.setupPrice"></td>
-                                <td></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div class="row">
-                        <div *ngIf="ngSelectedProduct.imprintColorsData?.length > 0" class="col-12 col-md-6">
-                            <p class="font-bold border-b">Colors</p>
-                            <p class="my-2">Total Colors: {{imprint.maxColors}}
-                                <br>
-                                Current Colors: {{imprint.imprintColors}}
-                            </p>
-                            <div>
-                                <mat-form-field class="w-full">
-                                    <mat-select placeholder="Colors" [(ngModel)]="imprint.colorsList" multiple>
-                                        <mat-option class="font-bold text-white p-2"
-                                            *ngFor="let colors of ngSelectedProduct.imprintColorsData; let i =index"
-                                            [value]="colors.name" [ngStyle]="{'background': '#'+colors.code}"
-                                            [ngClass]="{'text-gray-900': colors.code == 'FFFFFF'}">
-                                            {{colors.name}}
-                                        </mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                                <mat-form-field class="w-full">
-                                    <mat-label>Or Enter PMS colors (comma separated):</mat-label>
-                                    <input matInput>
-                                </mat-form-field>
-                                <mat-checkbox>Match artwork colors</mat-checkbox>
-                                <!-- <mat-checkbox class="w-full font-bold text-white"
+                                    <td align="center">{{(imprint.runPrice * ngSelectedProduct.totalQuantity) |
+                                        currency}}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <mat-checkbox [(ngModel)]="imprint.blnOverride">Override
+                                            Run/Setup</mat-checkbox>
+                                    </td>
+                                    <td colspan="2" align="right">
+                                        <h2 class="no-underline no-padding no-margin">Setups:</h2>
+                                    </td>
+                                    <td><input type="text" class="form-control" [(ngModel)]="imprint.setupCost"></td>
+                                    <td></td>
+                                    <td><input type="text" class="form-control" [(ngModel)]="imprint.setupPrice"></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="row">
+                            <div *ngIf="ngSelectedProduct.imprintColorsData?.length > 0" class="col-12 col-md-6">
+                                <p class="font-bold border-b">Colors</p>
+                                <p class="my-2">Total Colors: {{imprint.maxColors}}
+                                    <br>
+                                    Current Colors: {{imprint.imprintColors}}
+                                </p>
+                                <div>
+                                    <mat-form-field class="w-full">
+                                        <mat-select placeholder="Colors" [(ngModel)]="imprint.colorsList" multiple>
+                                            <mat-option class="font-bold text-white p-2"
+                                                *ngFor="let colors of ngSelectedProduct.imprintColorsData; let i =index"
+                                                [value]="colors.name" [ngStyle]="{'background': '#'+colors.code}"
+                                                [ngClass]="{'text-gray-900': colors.code == 'FFFFFF'}">
+                                                {{colors.name}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                    <mat-form-field class="w-full">
+                                        <mat-label>Or Enter PMS colors (comma separated):</mat-label>
+                                        <input matInput>
+                                    </mat-form-field>
+                                    <mat-checkbox>Match artwork colors</mat-checkbox>
+                                    <!-- <mat-checkbox class="w-full font-bold text-white"
                                     [ngStyle]="{'background': '#'+item.code}"
                                     *ngFor="let item of ngSelectedProduct.imprintColorsData">{{item.name}}</mat-checkbox> -->
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-12 col-md-6" *ngIf="ngSelectedProduct.imprintColorsData?.length === 0">
-                            <div class="alert alert-info add-padding-sm no-bottom-margin">
-                                <span class="fa fa-info-circle fa-lg"></span>
-                                This imprint has no color options.
+                            <div class="col-12 col-md-6" *ngIf="ngSelectedProduct.imprintColorsData?.length === 0">
+                                <div class="alert alert-info add-padding-sm no-bottom-margin">
+                                    <span class="fa fa-info-circle fa-lg"></span>
+                                    This imprint has no color options.
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <p class="font-bold border-b">Customer Artwork Comments</p>
-                            <quill-editor class="mt-3" [modules]="quillModules"
-                                [(ngModel)]="imprint.customerArtworkComment">
-                            </quill-editor>
+                            <div class="col-12 col-md-6">
+                                <p class="font-bold border-b">Customer Artwork Comments</p>
+                                <quill-editor class="mt-3" [modules]="quillModules"
+                                    [(ngModel)]="imprint.customerArtworkComment">
+                                </quill-editor>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="text-right" *ngIf="ngSelectedProduct.main_imprints.length > 0">
-                <button mat-button mat-stroked-button (click)="updateImprintOptions()"
-                    [disabled]="isUpdateImprintLoader">
-                    <span *ngIf="!isUpdateImprintLoader">Update Imprints</span>
-                    <mat-progress-spinner *ngIf="isUpdateImprintLoader" [diameter]="24" [mode]="'indeterminate'">
-                    </mat-progress-spinner>
-                </button>
-            </div>
-        </mat-expansion-panel>
-        <!-- Add Imprint Options -->
-        <mat-expansion-panel [expanded]="true">
-            <mat-expansion-panel-header>
-                <mat-panel-title class="text-lg font-bold">
-                    Add Imprint Option
-                </mat-panel-title>
-            </mat-expansion-panel-header>
-            <div *ngIf="ngSelectedProduct.imprintsUnSelected.length == 0" class="mt-2">
-                <div class="alert alert-warning">
-                    There are currently no imprint defined for this line item.
-                </div>
-            </div>
-            <div *ngIf="ngSelectedProduct.imprintsUnSelected.length > 0">
-                <mat-form-field class="w-full">
-                    <mat-select matInput [(ngModel)]="ngImprintSelected">
-                        <mat-option *ngFor="let imprint of ngSelectedProduct.imprintsUnSelected"
-                            [value]="imprint">{{imprint.locationName}} /
-                            {{imprint.methodName}}</mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <div class="text-right">
-                    <button class="min-w-30" mat-button mat-stroked-button (click)="addImprintOptions()"
-                        [disabled]="isAddImprintLoader">
-                        <span *ngIf="!isAddImprintLoader">Add Imprint Option</span>
-                        <mat-progress-spinner *ngIf="isAddImprintLoader" [diameter]="24" [mode]="'indeterminate'">
+                <div class="text-right" *ngIf="ngSelectedProduct.main_imprints.length > 0">
+                    <button mat-button mat-stroked-button (click)="updateImprintOptions()"
+                        [disabled]="isUpdateImprintLoader">
+                        <span *ngIf="!isUpdateImprintLoader">Update Imprints</span>
+                        <mat-progress-spinner *ngIf="isUpdateImprintLoader" [diameter]="24" [mode]="'indeterminate'">
                         </mat-progress-spinner>
                     </button>
                 </div>
+            </mat-expansion-panel>
+            <!-- Add Imprint Options -->
+            <mat-expansion-panel [expanded]="true">
+                <mat-expansion-panel-header>
+                    <mat-panel-title class="text-lg font-bold">
+                        Add Imprint Option
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <div *ngIf="ngSelectedProduct.imprintsUnSelected.length == 0" class="mt-2">
+                    <div class="alert alert-warning">
+                        There are currently no imprint defined for this line item.
+                    </div>
+                </div>
+                <div *ngIf="ngSelectedProduct.imprintsUnSelected.length > 0">
+                    <mat-form-field class="w-full">
+                        <mat-select matInput [(ngModel)]="ngImprintSelected">
+                            <mat-option *ngFor="let imprint of ngSelectedProduct.imprintsUnSelected"
+                                [value]="imprint">{{imprint.locationName}} /
+                                {{imprint.methodName}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <div class="text-right">
+                        <button class="min-w-30" mat-button mat-stroked-button (click)="addImprintOptions()"
+                            [disabled]="isAddImprintLoader">
+                            <span *ngIf="!isAddImprintLoader">Add Imprint Option</span>
+                            <mat-progress-spinner *ngIf="isAddImprintLoader" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                        </button>
+                    </div>
+                </div>
+            </mat-expansion-panel>
+        </ng-container>
+        <ng-template #NotImprint>
+            <div class="alert alert-warning my-2">
+                <span class="fa fa-exclamation-circle fa-lg"></span>
+                This item is part of a group run, and the imprints for this item are determined by the master group run
+                product.
             </div>
-        </mat-expansion-panel>
+        </ng-template>
         <!-- Accessories -->
         <mat-expansion-panel [expanded]="true">
             <mat-expansion-panel-header>
@@ -822,7 +838,7 @@
                     <mat-form-field class="w-full">
                         <mat-label>Royalty Price</mat-label>
                         <span matTextPrefix>$&nbsp;</span>
-                        <input matInput [(ngModel)]="ngSelectedProduct.royaltyPrice">
+                        <input matInput [(ngModel)]="ngSelectedProduct.products[0].royaltyPrice">
                     </mat-form-field>
                 </div>
                 <div class="col-12 col-md-3 mt-7">
@@ -859,11 +875,11 @@
                     </div>
 
                     <div class="col-md-2 col-12 text-right">
-                        {{ngSelectedProduct.shippingCost | currency}}
+                        {{ngSelectedProduct.products[0].shippingCost | currency}}
                     </div>
 
                     <div class="col-md-2 col-12 text-right">
-                        {{ngSelectedProduct.shippingPrice | currency}}
+                        {{ngSelectedProduct.products[0].shippingPrice | currency}}
                     </div>
                 </div>
 
@@ -877,7 +893,9 @@
                     </div>
 
                     <div class="col-md-2 col-12 add-padding-sm text-right">
-                        {{ngSelectedProduct.products[0].getOrderLineTotalsMerchandiseTotalPrice | currency}}
+                        {{(ngSelectedProduct.products[0].getOrderLineTotalsPrice +
+                        ngSelectedProduct.products[0].royaltyPrice ) |
+                        currency}}
                     </div>
                 </div>
             </div>
@@ -889,54 +907,60 @@
                     Total
                 </mat-panel-title>
             </mat-expansion-panel-header>
-            <div class="row mt-2 text-lg">
-                <div class="col-md-9 col-12">
-                    <h2>TOTAL DISCOUNT:</h2>
-                </div>
+            <div class="container-fluid text-lg">
 
-                <div class="col-md-3 col-12 text-right">
-                    <h2>{{orderDetail.discountAmount | currency}}</h2>
+                <div class="row mt-2 text-lg">
+                    <div class="col-md-8 col-12">
+                        <h2>TOTAL DISCOUNT:</h2>
+                    </div>
+                    <div class="col-2"></div>
+                    <div class="col-md-2 col-12 text-right">
+                        <h2>{{orderDetail.discountAmount | currency}}</h2>
+                    </div>
                 </div>
-            </div>
-            <div class="row text-lg">
-                <div class="col-md-9 col-12">
-                    <h2>ADJUSTMENTS:</h2>
-                </div>
+                <div class="row text-lg">
+                    <div class="col-md-8 col-12">
+                        <h2>ADJUSTMENTS:</h2>
+                    </div>
+                    <div class="col-2"></div>
 
-                <div class="col-md-3 col-12 text-right">
-                    <h2>{{orderDetail.discountAmount | currency}}</h2>
+                    <div class="col-md-2 col-12 text-right">
+                        <h2>{{orderDetail.discountAmount | currency}}</h2>
+                    </div>
                 </div>
-            </div>
-            <div class="row text-lg">
-                <div class="col-md-9 col-12">
-                    <h2>TOTAL TAX:</h2>
-                </div>
+                <div class="row text-lg">
+                    <div class="col-md-8 col-12">
+                        <h2>TOTAL TAX:</h2>
+                    </div>
+                    <div class="col-2"></div>
 
-                <div class="col-md-3 col-12 text-right">
-                    <h2>{{orderDetail.orderTax | currency}}</h2>
+                    <div class="col-md-2 col-12 text-right">
+                        <h2>{{orderDetail.orderTax | currency}}</h2>
+                    </div>
                 </div>
-            </div>
-            <div class="row text-lg">
-                <div class="col-md-8 col-12">
-                    <h2>TOTAL MERCHANDISE:</h2>
-                </div>
+                <div class="row text-lg">
+                    <div class="col-md-8 col-12">
+                        <h2>TOTAL MERCHANDISE:</h2>
+                    </div>
 
-                <div class="col-md-2 col-12 text-right">
-                    <h2>{{orderDetail.orderCost | currency}}</h2>
+                    <div class="col-2  text-right">
+                        <h2>{{orderDetail.orderCost | currency}}</h2>
+                    </div>
+                    <div class="col-md-2 col-12 text-right">
+                        <h2>{{(orderDetail.orderPrice + orderDetail.royalties)| currency}}</h2>
+                    </div>
                 </div>
-                <div class="col-md-2 col-12 text-right">
-                    <h2>{{orderDetail.MechandiseTotalPrice | currency}}</h2>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-9 col-12">
-                    <h1 class="text-success text-lg">GRAND TOTAL:</h1>
-                </div>
+                <div class="row">
+                    <div class="col-md-8 col-12">
+                        <h1 class="text-success text-lg">GRAND TOTAL:</h1>
+                    </div>
+                    <div class="col-2"></div>
 
-                <div class="col-md-3 col-12 text-right">
-                    <h1 class="text-success text-lg" id="grandTotal">
-                        {{orderDetail.orderTotal | currency}}
-                    </h1>
+                    <div class="col-md-2 col-12 text-right">
+                        <h1 class="text-success text-lg" id="grandTotal">
+                            {{orderDetail.orderTotal | currency}}
+                        </h1>
+                    </div>
                 </div>
             </div>
         </mat-expansion-panel>

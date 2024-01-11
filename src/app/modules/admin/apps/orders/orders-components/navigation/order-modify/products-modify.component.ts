@@ -208,7 +208,6 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
       let value = [];
       this.orderDetail.MechandiseTotalPrice = 0;
       res["data"].forEach((element, index) => {
-        console.log(element.getOrderLineTotalsMerchandiseTotalPrice)
         this.orderDetail.MechandiseTotalPrice += element.getOrderLineTotalsMerchandiseTotalPrice;
         value.push(element.pk_orderLineID);
         if (index == res["data"].length - 1) {
@@ -326,7 +325,6 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
           products[index].totalMerchendisePrice = products[index].totalMerchendisePrice + price;
         });
       }
-      console.log(products);
       // this.getProductImprints(value, products);
       this.orderProducts = products;
       this.calculatePricing();
@@ -339,7 +337,6 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
   }
   calculatePricing() {
     this.orderProducts.forEach((products, index) => {
-      console.log(products);
     });
   }
   getOrderLineProducts(data) {
@@ -376,7 +373,6 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
       order_lineID: id
     }
     this._orderService.getOrderCommonCall(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      console.log(res["color_sizes"])
       this.orderProducts[check].color_sizes = res["color_sizes"];
       this.orderProducts[check].imprintsSelected = [];
       this.orderProducts[check].imprintsUnSelected = [];
@@ -405,7 +401,6 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
       this.orderProducts[check].allProducts = this.allProducts;
 
       this.ngSelectedProduct = this.orderProducts[check];
-      console.log(this.ngSelectedProduct);
       if (this.ngSelectedProduct.imprintsUnSelected.length > 0) {
         this.ngImprintSelected = this.ngSelectedProduct.imprintsUnSelected[0];
       }
@@ -439,8 +434,12 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
   }
   updateRoyalties() {
     let price = 0;
-    if (this.ngSelectedProduct.royaltyPrice) {
-      price = this.ngSelectedProduct.royaltyPrice;
+    if (this.ngSelectedProduct.products[0].royaltyPrice) {
+      price = this.ngSelectedProduct.products[0].royaltyPrice;
+    }
+    if (price < 0) {
+      this._orderService.snackBar('Royalties should be 0 or positive value');
+      return;
     }
     let paylaod: UpdateRoyalties = {
       royalty_price: price,
@@ -450,9 +449,9 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
     this.isRoyaltyLoader = true;
     this._orderService.updateOrderCalls(paylaod).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
-        this._orderService.snackBar(res["message"]);
+        // this._orderService.snackBar(res["message"]);
+        this.refreshCalculations(res["message"]);
       }
-      this.isRoyaltyLoader = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isRoyaltyLoader = false;
@@ -463,6 +462,11 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
     let price = 0;
     if (this.ngSelectedProduct.royaltyPrice) {
       price = this.ngSelectedProduct.royaltyPrice;
+    }
+
+    if (price < 0) {
+      this._orderService.snackBar('Shipping Price should be 0 or positive value');
+      return;
     }
     let paylaod: UpdateShipping = {
       shipping_price: Number(this.ngSelectedProduct.products[0].shippingPrice),
@@ -528,6 +532,7 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
       }
       this.currentSearchProductCtrl.setValue(this.ngSelectedProduct.products[0]);
       this._orderService.snackBar(msg);
+      this.isRoyaltyLoader = false;
       this.isAddOptionLoader = false;
       this.isUpdateImprintLoader = false;
       this.isUpdateOptionLoader = false;
@@ -566,7 +571,7 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
     this.isAddOptionLoader = true;
     this._orderService.orderPostCalls(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
-        this.getOrderLineDetailsAfterUpdateOrAdd(res["message"]);
+        this.refreshCalculations(res["message"]);
       } else {
         this.isAddOptionLoader = false;
       }
@@ -818,6 +823,18 @@ export class ProductsOrderModifyComponent implements OnInit, OnDestroy {
       this.isAddNewProdLoader = false;
       this._changeDetectorRef.markForCheck();
     });
+  }
+  refreshCalculations(msg) {
+    let params = {
+      main: true,
+      order_id: this.orderDetail.pk_orderID
+    }
+    this._orderService.getOrderMainDetail(params).subscribe(res => {
+      this._orderService.getOrderProducts(this.orderDetail.pk_orderID).subscribe(res => {
+        this.getOrderLineDetailsAfterUpdateOrAdd(msg);
+      });
+    });
+
   }
   /**
      * On destroy

@@ -188,12 +188,11 @@ export class OrdersSummaryComponent implements OnInit {
   }
   processOrderLineAsync(orderLine) {
     return new Promise((resolve) => {
-      let orderLineStatus;
-      orderLine.qryOrderLineStatus;
-      if (orderLine.qryOrderLineStatus) {
-        const [id, name, date] = orderLine.qryOrderLineStatus.split('::');
-        orderLine.qryOrderLineStatus = { id, name, date };
-      }
+      // let orderLineStatus;
+      // if (orderLine.qryOrderLineStatus) {
+      //   const [id, name, date] = orderLine.qryOrderLineStatus.split('::');
+      //   orderLine.qryOrderLineStatus = { id, name, date };
+      // }
 
       let pos;
       orderLine.qryPOS = [];
