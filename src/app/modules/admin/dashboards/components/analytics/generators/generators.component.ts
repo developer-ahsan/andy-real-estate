@@ -639,7 +639,7 @@ export class GeneratorsComponent implements OnInit {
         greeting = 'Hello';
         // Body 
         if (res["qryStoreDefaultEmails"][0].sampleEmail) {
-          message = `${res["orderData"][0].storeUserFirstName} <br /> ${res["qryStoreDefaultEmails"][0].sampleEmail}`;
+          message = `${res["orderData"][0].storeUserFirstName}, <br /> ${res["qryStoreDefaultEmails"][0].sampleEmail}`;
         } else {
           message = `${res["orderData"][0].storeUserFirstName}, <br /><br /> I wanted to reach out today because I noticed you received your sample${res["qryOrderLines"].length > 1 ? 's' : ''} of the item${res["qryOrderLines"].length > 1 ? 's' : ''} below.  How did ${res["qryOrderLines"].length > 1 ? 'they' : 'it'} turn out?  As you know, it is our goal to exceed your expectations, and we would love to hear your feedback.<br /><br /> If the sample${res["qryOrderLines"].length > 1 ? 's' : ''} did not suit your needs, let me know, and I can help you find the perfect product!<br /><br /> Thank you!`;
         }
@@ -660,7 +660,7 @@ export class GeneratorsComponent implements OnInit {
         greeting = 'Hello';
         // Body 
         if (res["qryStoreDefaultEmails"][0].followUpEmail) {
-          message = `${res["orderData"][0].storeUserFirstName} <br /> ${res["qryStoreDefaultEmails"][0].followUpEmail}`;
+          message = `${res["orderData"][0].storeUserFirstName}, <br /> ${res["qryStoreDefaultEmails"][0].followUpEmail}`;
         } else {
           message = `${res["orderData"][0].storeUserFirstName}, <br /><br /> About this time last year, you ordered the product(s) below with us.  I wanted to check in with you and see if there is anything you are currently 
           working on or if you have any additional promotional products needs.  I would be happy to get you a quote or suggest some new ideas for you. <br /><br /> It is my job to make sure we help you find the right products!  If I can be of any assistance, please don't hesitate to let me know.  Of course, you can visit your store, <a href="${res["orderData"][0].protocol + res["orderData"][0].storeURL}">${res["orderData"][0].storeName}</a>, for a great selection of custom branded products or to request a quote.<br /><br /> Thank you!`;
@@ -682,7 +682,7 @@ export class GeneratorsComponent implements OnInit {
         greeting = 'Hello';
         // Body 
         if (res["qryStoreDefaultEmails"][0].reorderEmail) {
-          message = `${res["orderData"][0].storeUserFirstName} <br /> ${res["qryStoreDefaultEmails"][0].reorderEmail}`;
+          message = `${res["orderData"][0].storeUserFirstName}, <br /> ${res["qryStoreDefaultEmails"][0].reorderEmail}`;
         } else {
           message = `${res["orderData"][0].storeUserFirstName}, <br /><br /> I wanted to reach out because I noticed you received your recent order!  How did everything turn out?  As you know, it is always our goal to exceed your expectations so please let us know how we did.<br /><br />
           Please provide some feedback about the quality of the products and/or service you received.  I would greatly appreciate it!  <u>Simply click on the link below to provide a review or just reply to this email and I can do it for you.</u>`;
@@ -704,7 +704,7 @@ export class GeneratorsComponent implements OnInit {
         greeting = 'Hello';
         // Body 
         if (res["qryStoreDefaultEmails"][0].quoteEmail) {
-          message = `${res["cartData"][0].storeUserFirstName} <br /> ${res["qryStoreDefaultEmails"][0].quoteEmail}`;
+          message = `${res["cartData"][0].storeUserFirstName}, <br /> ${res["qryStoreDefaultEmails"][0].quoteEmail}`;
         } else {
           message = `${res["cartData"][0].storeUserFirstName}, <br /><br /> I wanted to reach out to follow up on the recent quote you created, which is included below.`;
         }

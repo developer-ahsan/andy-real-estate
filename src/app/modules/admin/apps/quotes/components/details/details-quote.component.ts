@@ -93,7 +93,7 @@ export class QuotesDetailsComponent implements OnInit, OnDestroy {
           this.selectedQuoteDetail.ManagerEmail = program_manager[1];
           this.selectedQuoteDetail.ManagerID = program_manager[2];
         }
-        if (this.selectedQuoteDetail.artworkStatus.includes('7') || this.selectedQuoteDetail.artworkStatus.includes('9')) {
+        if (this.selectedQuoteDetail?.artworkStatus && (this.selectedQuoteDetail?.artworkStatus.includes('7') || this.selectedQuoteDetail?.artworkStatus.includes('9'))) {
           this.selectedQuoteDetail.statusName = 'All artwork approved';
           this.selectedQuoteDetail.statusColor = 'text-green-600';
         } else {

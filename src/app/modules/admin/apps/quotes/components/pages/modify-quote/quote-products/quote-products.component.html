@@ -198,7 +198,7 @@
                     </div>
                     <div class="w-full">
                         <div class="alert alert-info">Quantity must be greater than or equal to
-                            {{ngNewProduct[0].minQuantity}}</div>
+                            {{ngNewProduct[0]?.minQuantity}}</div>
                     </div>
                     <div class="flex flex-row gap-x-3 ml-3">
                         <mat-checkbox class="mr-1" [(ngModel)]="newBlnOverride">Override Shipping</mat-checkbox>
@@ -227,41 +227,30 @@
                     <div class="col-12 ">
                         <b>Vendor:</b> {{selectedCartLine.companyName}}
                     </div>
-                    <div class="col-md-6 col-12">
-                        <mat-form-field class="w-full">
-                            <mat-label>Current Product</mat-label>
-                            <input matInput placeholder="Search Products" matTooltip="Search Products by name"
-                                [matAutocomplete]="auto1" [formControl]="currentSearchProductCtrl">
-                            <mat-autocomplete class="w-full" #auto1="matAutocomplete"
-                                (optionSelected)="onSelectedCurrent($event)" [displayWith]="displayWith">
-                                <mat-option *ngIf="isSearchingProduct" class="is-loading">Loading...</mat-option>
-                                <ng-container *ngIf="!isSearchingProduct">
-                                    <mat-option [value]="currentSelectedProduct">
-                                        <span [innerHTML]="currentSelectedProduct.productName"></span>
-                                    </mat-option>
-                                    <mat-option *ngFor="let item of allProducts" [value]="item">
-                                        <span [innerHTML]="item.productName"></span>
-                                    </mat-option>
-                                </ng-container>
-                            </mat-autocomplete>
-                        </mat-form-field>
+                    <div class="col-md-6 col-12 min-h-60" style="position: relative;">
+                        <mat-label>Current Product</mat-label>
+                        <ng-multiselect-dropdown [(ngModel)]="ngCurrentProduct" [placeholder]="'Select Product'"
+                            [settings]="dropdownSettings" [data]="allProducts" [style]="{ 'position': 'relative' }"
+                            (onSelect)="onItemSelectUpdate($event)">
+                        </ng-multiselect-dropdown>
                     </div>
                     <div class="col-md-6 col-12 ">
                         <div class="alert alert-info mt-6">
                             <span class="fa fa-info-circle fa-lg"></span>
-                            <b class="ml-2">Min. Quantity:</b> {{currentSelectedProduct.minQuantity ||
-                            currentSelectedProduct.minOrderQuantity}}
+                            <b class="ml-2">Min. Quantity:</b> {{ngCurrentProduct[0]?.minQuantity ||
+                            ngCurrentProduct[0]?.minOrderQuantity}}
+                        </div>
+                        <div class="flex flex-row gap-x-3 ml-3">
+                            <mat-checkbox class="mr-1"
+                                [(ngModel)]="selectedCartLine.blnOverrideShippingProductInfo">Override
+                                Shipping</mat-checkbox>
+                            <mat-checkbox class="mr-1" [(ngModel)]="selectedCartLine.blnSample">Sample</mat-checkbox>
+                            <mat-checkbox class="mr-1" [(ngModel)]="selectedCartLine.blnTaxable">Taxable</mat-checkbox>
+                            <mat-checkbox class="mr-1" *ngIf="selectedQuoteDetail.blnRoyaltyStore"
+                                [(ngModel)]="selectedCartLine.blnRoyalty">Royalty</mat-checkbox>
                         </div>
                     </div>
-                    <div class="flex flex-row gap-x-3 ml-3">
-                        <mat-checkbox class="mr-1"
-                            [(ngModel)]="selectedCartLine.blnOverrideShippingProductInfo">Override
-                            Shipping</mat-checkbox>
-                        <mat-checkbox class="mr-1" [(ngModel)]="selectedCartLine.blnSample">Sample</mat-checkbox>
-                        <mat-checkbox class="mr-1" [(ngModel)]="selectedCartLine.blnTaxable">Taxable</mat-checkbox>
-                        <mat-checkbox class="mr-1" *ngIf="selectedQuoteDetail.blnRoyaltyStore"
-                            [(ngModel)]="selectedCartLine.blnRoyalty">Royalty</mat-checkbox>
-                    </div>
+
                     <div class="col-12 text-right">
 
                         <button class="bg-red-500 text-white mr-2 min-w-40" mat-button mat-stroked-button
@@ -534,11 +523,16 @@
                                     <h2 class="font-bold text-lg no-underline inline no-margin no-padding">
                                         {{imprint.locationName}}
                                         /
-                                        {{imprint.methodName}}
+                                        {{imprint.decorationName}}
                                     </h2>
                                 </div>
                                 <div>
-                                    <mat-icon svgIcon="heroicons_outline:trash"></mat-icon>
+                                    <mat-icon svgIcon="heroicons_outline:trash" (click)="removeImprintOption(imprint)"
+                                        *ngIf="!imprint.isRemoveImprintLoader"
+                                        [matTooltip]="'Remove Imprint'"></mat-icon>
+                                    <mat-progress-spinner *ngIf="imprint.isRemoveImprintLoader" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
                                 </div>
                             </div>
                             <div class="w-full">
@@ -565,9 +559,9 @@
                                         <tr>
                                             <td>
                                                 <select class="select1 wide form-control"
-                                                    [(ngModel)]="imprint.pk_imprintID">
-                                                    <option [value]="imprint.pk_imprintID">
-                                                        {{imprint.locationName}} / {{imprint.methodName}}</option>
+                                                    [(ngModel)]="imprint.imprintID">
+                                                    <option [value]="imprint.imprintID">
+                                                        {{imprint.locationName}} / {{imprint.decorationName}}</option>
                                                     <option [value]="item.pk_imprintID"
                                                         *ngFor="let item of selectedCartLine.unselectedImprints">
                                                         {{item.locationName}} / {{item.methodName}}</option>
@@ -579,7 +573,7 @@
                                             <td align="center" valign="middle">{{selectedCartLine.totalQuantity}}</td>
 
                                             <td>
-                                                <input type="text" class="form-control"
+                                                <input type="number" class="form-control"
                                                     [(ngModel)]="imprint.cartLineImprintRunCost">
                                             </td>
 
@@ -588,7 +582,7 @@
                                                 currency}}
                                             </td>
 
-                                            <td><input type="text" class="form-control"
+                                            <td><input type="number" class="form-control"
                                                     [(ngModel)]="imprint.cartLineImprintRunPrice">
                                             </td>
 
@@ -599,17 +593,17 @@
                                         </tr>
                                         <tr>
                                             <td>
-                                                <mat-checkbox [(ngModel)]="imprint.blnOverride">Override
+                                                <mat-checkbox [(ngModel)]="imprint.blnOverrideRunSetup">Override
                                                     Run/Setup</mat-checkbox>
                                             </td>
                                             <td colspan="2" align="right">
                                                 <h2 class="no-underline no-padding no-margin">Setups:</h2>
                                             </td>
-                                            <td><input type="text" class="form-control"
+                                            <td><input type="number" class="form-control"
                                                     [(ngModel)]="imprint.cartLineImprintSetupCost">
                                             </td>
                                             <td></td>
-                                            <td><input type="text" class="form-control"
+                                            <td><input type="number" class="form-control"
                                                     [(ngModel)]="imprint.cartLineImprintSetupPrice">
                                             </td>
                                             <td></td>
@@ -617,7 +611,8 @@
                                     </tbody>
                                 </table>
                                 <div class="row">
-                                    <div *ngIf="selectedCartLine.imprintColorsData?.length > 0" class="col-12 col-md-6">
+                                    <div *ngIf="selectedCartLine?.imprintColorsData?.length > 0"
+                                        class="col-12 col-md-6">
                                         <p class="font-bold border-b">Colors</p>
                                         <p class="my-2">Total Colors: {{imprint.processQuantity}}
                                             <br>
@@ -660,10 +655,10 @@
                             </div>
                         </div>
                         <div class="text-right" *ngIf="selectedCartLine?.selectedImprints?.length > 0">
-                            <button mat-button mat-stroked-button (click)="updateImprintOptions()"
-                                [disabled]="isUpdateImprintLoader">
-                                <span *ngIf="!isUpdateImprintLoader">Update Imprints</span>
-                                <mat-progress-spinner *ngIf="isUpdateImprintLoader" [diameter]="24"
+                            <button mat-button mat-flat-button color="primary" class="min-w-30"
+                                (click)="updateImprintsOptions()" [disabled]="selectedCartLine.isUpdateImprintsLoader">
+                                <span *ngIf="!selectedCartLine.isUpdateImprintsLoader">Update Imprints</span>
+                                <mat-progress-spinner *ngIf="selectedCartLine.isUpdateImprintsLoader" [diameter]="24"
                                     [mode]="'indeterminate'">
                                 </mat-progress-spinner>
                             </button>
@@ -691,16 +686,16 @@
                     <div>
                         <mat-form-field class="w-full">
                             <mat-select matInput [(ngModel)]="selectedCartLine.ngImprintSelected">
-                                <mat-option *ngFor="let imprint of selectedCartLine.unselectedImprints"
+                                <mat-option *ngFor="let imprint of selectedCartLine?.unselectedImprints"
                                     [value]="imprint">{{imprint.locationName}} /
                                     {{imprint.methodName}}</mat-option>
                             </mat-select>
                         </mat-form-field>
                         <div class="text-right">
-                            <button class="min-w-30" mat-button mat-stroked-button (click)="addImprintOptions()"
-                                [disabled]="isAddImprintLoader">
-                                <span *ngIf="!isAddImprintLoader">Add Imprint Option</span>
-                                <mat-progress-spinner *ngIf="isAddImprintLoader" [diameter]="24"
+                            <button class="min-w-30" mat-button mat-flat-button color="primary"
+                                (click)="addImprintOptions()" [disabled]="selectedCartLine.isAddImprintLoader">
+                                <span *ngIf="!selectedCartLine.isAddImprintLoader">Add Imprint Option</span>
+                                <mat-progress-spinner *ngIf="selectedCartLine.isAddImprintLoader" [diameter]="24"
                                     [mode]="'indeterminate'">
                                 </mat-progress-spinner>
                             </button>
@@ -717,17 +712,20 @@
                     </mat-panel-title>
                 </mat-expansion-panel-header>
                 <div class="p-3">
-                    <div class="mt-2 alert alert-warning" *ngIf="selectedCartLine.selectedAccessories.length == 0">
+                    <div class="mt-2 alert alert-warning" *ngIf="selectedCartLine?.selectedAccessories?.length == 0">
                         There are currently no accessories defined for this line item.
                     </div>
-                    <div *ngIf="selectedCartLine.selectedAccessories.length > 0">
+                    <div *ngIf="selectedCartLine?.selectedAccessories?.length > 0">
+                        <mat-checkbox [(ngModel)]="selectedCartLine.blnOverrideShippingNewAccessory">Override
+                            Shipping</mat-checkbox>
                         <table
                             class="table table-striped table-bordered table-condensed table-hover padding-1x wide no-bottom-margin"
                             id="updateAccessoriesTable_431">
                             <thead>
                                 <tr class="columnHeader2">
                                     <td width="15%" colspan="2">ACCESSORY</td>
-                                    <td width="5%" align="center">QTY</td>
+                                    <td width="5%" align="center">QTY PER PACKAGE</td>
+                                    <td width="5%" align="center">TOTAL PACKAGING QTY</td>
                                     <td width="15%" colspan="2" align="center">COST</td>
                                     <td width="15%" colspan="2" align="center">PRICE</td>
                                     <td width="15%" align="center">DECORATOR PO</td>
@@ -737,14 +735,15 @@
                                 </tr>
                             </thead>
 
-                            <tbody *ngFor="let item of selectedCartLine.selectedAccessories">
+                            <tbody *ngFor="let item of selectedCartLine?.selectedAccessories">
                                 <tr>
                                     <td colspan="2"></td>
                                     <td></td>
-                                    <td align="center"><b>Unit</b></td>
+                                    <td align="center">Unit</td>
                                     <td align="center"><b>Total</b></td>
                                     <td align="center"><b>Unit</b></td>
                                     <td align="center"><b>Total</b></td>
+                                    <td align="center"><b></b></td>
                                     <td align="center"></td>
                                     <td></td>
                                 </tr>
@@ -756,18 +755,17 @@
                                     </td>
 
                                     <td>
-                                        <input type="text" class="form-control" [(ngModel)]="item.quantityPerPackage">
+                                        <input type="number" class="form-control" [(ngModel)]="item.quantityPerPackage">
+                                    </td>
+                                    <td align="center">
+                                        {{item.quantityPerPackage ?
+                                        selectedCartLine.orderQuantity/item.quantityPerPackage : 0}}
                                     </td>
                                     <td>
                                         <mat-form-field class="w-full">
                                             <span matSuffix>$ &nbsp;</span>
-                                            <input type="text" [(ngModel)]="item.cartLineAccessoryRunCost" matInput>
+                                            <input type="number" [(ngModel)]="item.cartLineAccessoryRunCost" matInput>
                                         </mat-form-field>
-                                        <!-- <div class="form-group no-bottom-margin">
-                                <div class="input-group no-bottom-margin">
-                                    <input type="text" class="form-control" [(ngModel)]="item.runCost">
-                                </div>
-                            </div> -->
                                     </td>
                                     <td align="center">{{(item.quantityPerPackage * item.cartLineAccessoryRunCost) |
                                         currency}}</td>
@@ -775,14 +773,8 @@
 
                                         <mat-form-field class="w-full">
                                             <span matSuffix>$ &nbsp;</span>
-                                            <input type="text" [(ngModel)]="item.cartLineAccessoryRunPrice" matInput>
+                                            <input type="number" [(ngModel)]="item.cartLineAccessoryRunPrice" matInput>
                                         </mat-form-field>
-
-                                        <!-- <div class="form-group no-bottom-margin">
-                                <div class="input-group no-bottom-margin">
-                                    <input type="text" class="form-control" [(ngModel)]="item.runPrice">
-                                </div>
-                            </div> -->
                                     </td>
                                     <td align="center">{{(item.quantityPerPackage * item.cartLineAccessoryRunPrice) |
                                         currency}}</td>
@@ -793,37 +785,29 @@
                                         </select>
                                     </td>
                                     <td align="center" valign="top">
-                                        <mat-checkbox></mat-checkbox>
+                                        <mat-checkbox [(ngModel)]="item.isSelected"></mat-checkbox>
                                 </tr>
 
                                 <tr>
+                                    <td></td>
                                     <td colspan="3" align="right">
                                         <h2 class="no-underline no-padding no-margin">Setups:</h2>
                                     </td>
                                     <td>
-                                        <!-- <div class="form-group no-bottom-margin">
-                                <div class="input-group no-bottom-margin">
-                                    <input type="text" class="form-control" [(ngModel)]="item.setupCost">
-                                </div>
-                            </div> -->
 
                                         <mat-form-field class="w-full">
                                             <span matSuffix>$ &nbsp;</span>
-                                            <input type="text" [(ngModel)]="item.cartLineAccessorySetupCost" matInput>
+                                            <input type="number" [(ngModel)]="item.cartLineAccessorySetupCost" matInput>
                                         </mat-form-field>
                                     </td>
 
                                     <td></td>
 
                                     <td>
-                                        <!-- <div class="form-group no-bottom-margin">
-                                <div class="input-group no-bottom-margin">
-                                    <input type="text" class="form-control" [(ngModel)]="item.setupPrice">
-                                </div>
-                            </div> -->
                                         <mat-form-field class="w-full">
                                             <span matSuffix>$ &nbsp;</span>
-                                            <input type="text" [(ngModel)]="item.cartLineAccessorySetupPrice" matInput>
+                                            <input type="number" [(ngModel)]="item.cartLineAccessorySetupPrice"
+                                                matInput>
                                         </mat-form-field>
                                     </td>
                                     <td></td>
@@ -835,11 +819,11 @@
 
                         </table>
                     </div>
-                    <div class="text-right" *ngIf="selectedCartLine.selectedAccessories.length > 0">
-                        <button mat-button mat-stroked-button (click)="updateAccessoriesOptions()" class="min-w-30"
-                            [disabled]="isUpdateAccessoryLoader">
-                            <span *ngIf="!isUpdateAccessoryLoader">Update Accessories</span>
-                            <mat-progress-spinner *ngIf="isUpdateAccessoryLoader" [diameter]="24"
+                    <div class="text-right" *ngIf="selectedCartLine?.selectedAccessories?.length > 0">
+                        <button mat-button mat-flat-button color="primary" (click)="updateAccessories()"
+                            class="min-w-30" [disabled]="selectedCartLine.isUpdateAccessoryLoader">
+                            <span *ngIf="!selectedCartLine.isUpdateAccessoryLoader">Update Accessories</span>
+                            <mat-progress-spinner *ngIf="selectedCartLine.isUpdateAccessoryLoader" [diameter]="24"
                                 [mode]="'indeterminate'">
                             </mat-progress-spinner>
                         </button>
@@ -854,16 +838,16 @@
                     </mat-panel-title>
                 </mat-expansion-panel-header>
                 <div class="p-3">
-                    <div class="alert alert-warning mt-2" *ngIf="selectedCartLine.unselectedAccessories.length == 0">
+                    <div class="alert alert-warning mt-2" *ngIf="selectedCartLine?.unselectedAccessories?.length == 0">
                         This product does not have any available accessories.
                     </div>
-                    <div *ngIf="selectedCartLine.unselectedAccessories.length > 0">
+                    <div *ngIf="selectedCartLine?.unselectedAccessories?.length > 0">
                         <mat-checkbox
                             [(ngModel)]="selectedCartLine.ngSelectedAccessory.blnOverrideShippingNewAccessory">Override
                             Shipping</mat-checkbox>
                         <mat-form-field class="w-full">
                             <mat-select [(ngModel)]="selectedCartLine.ngSelectedAccessory">
-                                <mat-option *ngFor="let item of selectedCartLine.unselectedAccessories"
+                                <mat-option *ngFor="let item of selectedCartLine?.unselectedAccessories"
                                     [value]="item">{{item.packagingName}}</mat-option>
                             </mat-select>
                         </mat-form-field>

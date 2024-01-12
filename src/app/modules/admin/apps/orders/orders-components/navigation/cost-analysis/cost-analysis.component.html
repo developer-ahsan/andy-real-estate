@@ -3,428 +3,698 @@
     </ngx-skeleton-loader>
 
 
-    <div *ngIf="!isLoading && qryOrderLines" class="m-5 p-5 card rounded-2xl">
-        <table class="padding-1x wide">
-            <tr>
-                <td valign="top" align="left">
-                    <b>CONFIDENTIAL COST ANALYSIS REPORT - PROJECTED <br>{{orderDetail.pk_orderID}}</b><br>
-                </td>
-            </tr>
-        </table>
+    <div *ngIf="!isLoading && qryOrderLines" class="m-5">
+        <mat-button-toggle-group class="mb-4" #group="matButtonToggleGroup" [(ngModel)]="mainScreen">
+            <mat-button-toggle value="PROJECTED">
+                PROJECTED COST
+            </mat-button-toggle>
+            <mat-button-toggle value="ACTUAL">
+                ACTUAL COST
+            </mat-button-toggle>
+        </mat-button-toggle-group>
+        <!-- CONFIDENTIAL COST ANALYSIS REPORT - PROJECTED -->
+        <ng-container *ngIf="mainScreen == 'PROJECTED'">
+            <div class="card rounded-2xl p-5">
+                <table class="padding-1x wide">
+                    <tr>
+                        <td valign="top" align="left">
+                            <b>CONFIDENTIAL COST ANALYSIS REPORT - PROJECTED <br>{{orderDetail.pk_orderID}}</b><br>
+                        </td>
+                    </tr>
+                </table>
 
-        <!--- ORDER LINES --->
+                <!--- ORDER LINES --->
 
-        <ng-container *ngFor="let qryOrderLine of qryOrderLines">
-            <hr>
-            <mat-accordion>
-                <mat-expansion-panel>
-                    <mat-expansion-panel-header class="my-10">
-                        <table class="p-2 w-full">
-                            <tr>
-                                <td width="70%" valign="top" align="left">
-                                    <b>({{qryOrderLine.fk_productID}}) {{qryOrderLine.productNumber}}: <span
-                                            [innerHTML]="qryOrderLine.productName"></span></b><br>
-                                    Quantity:{{qryOrderLine.quantity}} <span *ngIf="qryOrderLine.blnSample"><b> * * *
-                                            SAMPLE
-                                            * *
-                                            *</b></span>
-                                </td>
-
-                                <!-- <ng-container structKeyExists(arguments, 'blnFromAdmin') AND arguments.blnFromAdmin> -->
-                                <td width="30%" valign="top" align="right">
-                                    <h2 class="no-underline no-border no-margin no-padding">
-                                        {{(qryOrderLine.getOrderLineTotalsPrice + qryOrderLine.royaltyPrice) | currency:
-                                        'USD':
-                                        'symbol':'1.3-3'}} </h2>
-                                </td>
-                                <!-- </ng-container> -->
-                            </tr>
-                        </table>
-                    </mat-expansion-panel-header>
+                <ng-container *ngFor="let qryOrderLine of qryOrderLines">
                     <hr>
-                    <div>
-                        <table class="p-1 w-full">
-                            <tr height="1">
-                                <td width="30%"></td>
-                                <td width="10%"></td>
-                                <td width="10%"></td>
-                                <td width="10%"></td>
-                                <td width="10%"></td>
-                                <td width="10%"></td>
-                                <td width="10%"></td>
-                                <td width="10%"></td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td align="center">QTY</td>
-                                <td colspan="2" align="center">COST</td>
-                                <td colspan="2" align="center">PRICE</td>
-                                <td colspan="2" align="center">MARGIN</td>
-                            </tr>
-                            <tr>
-                                <td colspan="2"></td>
-                                <td align="center">unit</td>
-                                <td align="center">total</td>
-                                <td align="center">unit</td>
-                                <td align="center">total</td>
-                                <td align="center">$</td>
-                                <td align="center">%</td>
-                                <td></td>
-                            </tr>
-                            <!--- ITEM & OPTIONS --->
-                            <tr>
-                                <td colspan="8"><i>COLOR/SIZE BREAKDOWN</i></td>
-                            </tr>
-                            <ng-container *ngFor="let qryItemReport of qryOrderLine.colorSizesData">
-                                <tr>
-                                    <td>{{qryItemReport.colorName}} <span *ngIf="qryItemReport.sizeName">&amp;
-                                            {{qryItemReport.sizeName}}</span></td>
-                                    <td align="center">{{qryItemReport.quantity}}</td>
-                                    <td align="center"> {{qryItemReport.runCost | currency: 'USD': 'symbol':'1.3-3' }}
-                                    </td>
-                                    <td align="center">{{(qryItemReport.runCost *qryItemReport.quantity) | currency:
-                                        'USD':
-                                        'symbol':'1.3-3' }} </td>
-                                    <td align="center">{{qryItemReport.runPrice | currency: 'USD': 'symbol':'1.3-3' }}
-                                    </td>
-                                    <td align="center">{{(qryItemReport.runPrice *qryItemReport.quantity) | currency:
-                                        'USD':
-                                        'symbol':'1.3-3' }}</td>
-                                    <td align="center">
-                                        <span>{{(qryOrderLine.blnSample ? 0.00 :
-                                            (qryItemReport.runPrice*qryItemReport.quantity-qryItemReport.runCost*qryItemReport.quantity))
-                                            | currency: 'USD': 'symbol':'1.3-3'
-                                            }}</span>
-                                    </td>
-                                    <td align="center">
-                                        <span *ngIf="qryItemReport.runPrice">{{ (((1 -
-                                            (qryItemReport.runCost)/(qryItemReport.runPrice))) * 100) |
-                                            number:'1.2-2'}}%</span>
-                                    </td>
-                                </tr>
-                                <ng-container *ngIf="qryItemReport.setupCost || qryItemReport.setupPrice">
+                    <mat-accordion>
+                        <mat-expansion-panel>
+                            <mat-expansion-panel-header class="my-10">
+                                <table class="p-2 w-full">
                                     <tr>
-                                        <td align="right">Color/Size Setup</td>
+                                        <td width="70%" valign="top" align="left">
+                                            <b>({{qryOrderLine.fk_productID}}) {{qryOrderLine.productNumber}}: <span
+                                                    [innerHTML]="qryOrderLine.productName"></span></b><br>
+                                            Quantity:{{qryOrderLine.quantity}} <span *ngIf="qryOrderLine.blnSample"><b>
+                                                    * *
+                                                    *
+                                                    SAMPLE
+                                                    * *
+                                                    *</b></span>
+                                        </td>
+
+                                        <!-- <ng-container structKeyExists(arguments, 'blnFromAdmin') AND arguments.blnFromAdmin> -->
+                                        <td width="30%" valign="top" align="right">
+                                            <h2 class="no-underline no-border no-margin no-padding">
+                                                {{(qryOrderLine.getOrderLineTotalsPrice + qryOrderLine.royaltyPrice) |
+                                                currency:
+                                                'USD':
+                                                'symbol':'1.3-3'}} </h2>
+                                        </td>
+                                        <!-- </ng-container> -->
+                                    </tr>
+                                </table>
+                            </mat-expansion-panel-header>
+                            <hr>
+                            <div>
+                                <table class="p-1 w-full">
+                                    <tr height="1">
+                                        <td width="30%"></td>
+                                        <td width="10%"></td>
+                                        <td width="10%"></td>
+                                        <td width="10%"></td>
+                                        <td width="10%"></td>
+                                        <td width="10%"></td>
+                                        <td width="10%"></td>
+                                        <td width="10%"></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td align="center">QTY</td>
+                                        <td colspan="2" align="center">COST</td>
+                                        <td colspan="2" align="center">PRICE</td>
+                                        <td colspan="2" align="center">MARGIN</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2"></td>
+                                        <td align="center">unit</td>
+                                        <td align="center">total</td>
+                                        <td align="center">unit</td>
+                                        <td align="center">total</td>
+                                        <td align="center">$</td>
+                                        <td align="center">%</td>
+                                        <td></td>
+                                    </tr>
+                                    <!--- ITEM & OPTIONS --->
+                                    <tr>
+                                        <td colspan="8"><i>COLOR/SIZE BREAKDOWN</i></td>
+                                    </tr>
+                                    <ng-container *ngFor="let qryItemReport of qryOrderLine.colorSizesData">
+                                        <tr>
+                                            <td>{{qryItemReport.colorName}} <span *ngIf="qryItemReport.sizeName">&amp;
+                                                    {{qryItemReport.sizeName}}</span></td>
+                                            <td align="center">{{qryItemReport.quantity}}</td>
+                                            <td align="center"> {{qryItemReport.runCost | currency: 'USD':
+                                                'symbol':'1.3-3'
+                                                }}
+                                            </td>
+                                            <td align="center">{{(qryItemReport.runCost *qryItemReport.quantity) |
+                                                currency:
+                                                'USD':
+                                                'symbol':'1.3-3' }} </td>
+                                            <td align="center">{{qryItemReport.runPrice | currency: 'USD':
+                                                'symbol':'1.3-3'
+                                                }}
+                                            </td>
+                                            <td align="center">{{(qryItemReport.runPrice *qryItemReport.quantity) |
+                                                currency:
+                                                'USD':
+                                                'symbol':'1.3-3' }}</td>
+                                            <td align="center">
+                                                <span>{{(qryOrderLine.blnSample ? 0.00 :
+                                                    (qryItemReport.runPrice*qryItemReport.quantity-qryItemReport.runCost*qryItemReport.quantity))
+                                                    | currency: 'USD': 'symbol':'1.3-3'
+                                                    }}</span>
+                                            </td>
+                                            <td align="center">
+                                                <span *ngIf="qryItemReport.runPrice">{{ (((1 -
+                                                    (qryItemReport.runCost)/(qryItemReport.runPrice))) * 100) |
+                                                    number:'1.2-2'}}%</span>
+                                            </td>
+                                        </tr>
+                                        <ng-container *ngIf="qryItemReport.setupCost || qryItemReport.setupPrice">
+                                            <tr>
+                                                <td align="right">Color/Size Setup</td>
+                                                <td align="center"></td>
+                                                <td align="center"></td>
+                                                <td align="center">{{qryItemReport.setupCost | currency: 'USD':
+                                                    'symbol':'1.3-3'
+                                                    }}
+                                                </td>
+                                                <td align="center"></td>
+                                                <td align="center">{{qryItemReport.setupPrice | currency: 'USD':
+                                                    'symbol':'1.3-3' }}
+                                                </td>
+                                                <td align="center">{{(qryItemReport.setupCost - qryItemReport.runPrice)
+                                                    |
+                                                    currency:
+                                                    'USD': 'symbol':'1.3-3' }}</td>
+                                                <td align="center"><span
+                                                        *ngIf="qryItemReport.setupPrice">{{((1-(qryItemReport.setupCost)/(qryItemReport.setupPrice))*100)
+                                                        | number:'1.2-2'}}%</span>
+                                                </td>
+                                            </tr>
+                                        </ng-container>
+                                    </ng-container>
+                                    <!--- IMPRINTS --->
+                                    <tr>
+                                        <td colspan="8"><br><i>IMPRINTS</i></td>
+                                    </tr>
+                                    <ng-container *ngFor="let qryImprintsReport of qryOrderLine.imprintsData">
+                                        <tr>
+                                            <td>{{qryImprintsReport.locationName}} | {{qryImprintsReport.methodName}} |
+                                                Processes:
+                                                {{qryImprintsReport.processQuantity}}</td>
+                                            <td align="center">{{qryImprintsReport.quantity}}</td>
+                                            <td align="center">{{qryImprintsReport.runCost | currency: 'USD':
+                                                'symbol':'1.3-3'}}
+                                            </td>
+                                            <td align="center">{{(qryImprintsReport.runCost*qryImprintsReport.quantity)
+                                                |
+                                                currency:
+                                                'USD': 'symbol':'1.3-3'}}</td>
+                                            <td align="center">{{qryImprintsReport.runPrice | currency: 'USD':
+                                                'symbol':'1.3-3'}}
+                                            </td>
+                                            <td align="center">{{(qryImprintsReport.runPrice*qryImprintsReport.quantity)
+                                                |
+                                                currency:
+                                                'USD': 'symbol':'1.3-3'}}</td>
+                                            <td align="center">
+                                                {{(qryImprintsReport.runPrice*qryImprintsReport.quantity-qryImprintsReport.runCost*qryImprintsReport.quantity)
+                                                | currency: 'USD': 'symbol':'1.3-3'}}</td>
+                                            <td align="center">
+                                                <cfif runPrice>
+                                                    {{((1-(qryImprintsReport.runCost)/(qryImprintsReport.runPrice))*100)
+                                                    |
+                                                    number:'1.2-2'}}%
+                                                </cfif>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td align="right">{{qryImprintsReport.blnStitchProcess ? 'Digitization(s)':
+                                                'Setup(s)'}}
+                                            </td>
+                                            <td align="center"></td>
+                                            <td align="center"></td>
+                                            <td align="center">{{qryImprintsReport.setupCost | currency: 'USD':
+                                                'symbol':'1.3-3'}}
+                                            </td>
+                                            <td align="center"></td>
+                                            <td align="center">{{qryImprintsReport.setupPrice | currency: 'USD':
+                                                'symbol':'1.3-3'}}
+                                            </td>
+                                            <td align="center">
+                                                {{(qryImprintsReport.setupPrice-qryImprintsReport.setupCost)
+                                                |
+                                                currency:
+                                                'USD': 'symbol':'1.3-3'}}</td>
+                                            <td align="center"><span
+                                                    *ngIf="qryImprintsReport.setupPrice">{{((1-(qryImprintsReport.setupCost)/(qryImprintsReport.setupPrice))*100)
+                                                    | number:'1.2-2'}}%</span>
+                                            </td>
+                                        </tr>
+                                    </ng-container>
+                                    <!--- ACCESSORIES --->
+                                    <tr>
+                                        <td colspan="8"><br><i>ACCESSORIES</i></td>
+                                    </tr>
+                                    <ng-container *ngFor="let qryAccessoriesReport of qryOrderLine.accessoriesData">
+                                        <tr>
+                                            <td>{{qryAccessoriesReport.packagingName}}</td>
+                                            <td align="center">{{qryAccessoriesReport.quantity}}</td>
+                                            <td align="center">{{qryAccessoriesReport.runCost | currency: 'USD':
+                                                'symbol':'1.3-3'}}
+                                            </td>
+                                            <td align="center">{{(qryAccessoriesReport.runCost *
+                                                qryAccessoriesReport.quantity)
+                                                |
+                                                currency: 'USD': 'symbol':'1.3-3'}}</td>
+                                            <td align="center">{{qryAccessoriesReport.runPrice | currency: 'USD':
+                                                'symbol':'1.3-3'}}
+                                            </td>
+                                            <td align="center">{{(qryAccessoriesReport.runPrice *
+                                                qryAccessoriesReport.quantity)
+                                                |
+                                                currency: 'USD': 'symbol':'1.3-3'}}</td>
+                                            <td align="center">{{(qryAccessoriesReport.runPrice *
+                                                qryAccessoriesReport.quantity
+                                                -
+                                                qryAccessoriesReport.runCost * qryAccessoriesReport.quantity) |
+                                                currency:
+                                                'USD':
+                                                'symbol':'1.3-3'}}</td>
+                                            <td align="center"><span
+                                                    *ngIf="qryAccessoriesReport.runPrice">{{((1-(qryAccessoriesReport.runCost)/(qryAccessoriesReport.runPrice))*100)
+                                                    | number:'1.2-2'
+                                                    }} %</span></td>
+                                        </tr>
+                                        <ng-container
+                                            *ngIf="qryAccessoriesReport.setupCost || qryAccessoriesReport.setupPrice">
+                                            <tr>
+                                                <td align="right">Accessory Setup</td>
+                                                <td align="center"></td>
+                                                <td align="center"></td>
+                                                <td align="center">{{qryAccessoriesReport.setupCost | currency: 'USD':
+                                                    'symbol':'1.3-3'}}</td>
+                                                <td align="center"></td>
+                                                <td align="center">{{qryAccessoriesReport.setupPrice | currency: 'USD':
+                                                    'symbol':'1.3-3'}}</td>
+                                                <td align="center">{{(qryAccessoriesReport.setupPrice -
+                                                    qryAccessoriesReport.setupCost)
+                                                    | currency: 'USD': 'symbol':'1.3-3'}}</td>
+                                                <td align="center"><span
+                                                        *ngIf="qryAccessoriesReport.setupPrice">{{((1-(qryAccessoriesReport.setupCost)/(qryAccessoriesReport.setupPrice))*100)
+                                                        | number:'1.2-2'}}%</span>
+                                                </td>
+                                            </tr>
+                                        </ng-container>
+                                    </ng-container>
+                                    <!--- SHIPPING --->
+                                    <tr height="10">
+                                        <td colspan="6"></td>
+                                    </tr>
+                                    <tr>
+                                        <td><i>SHIPPING &amp; HANDLING</i></td>
                                         <td align="center"></td>
                                         <td align="center"></td>
-                                        <td align="center">{{qryItemReport.setupCost | currency: 'USD': 'symbol':'1.3-3'
-                                            }}
+                                        <td align="center">{{qryOrderLine.shippingCost | currency: 'USD':
+                                            'symbol':'1.3-3'}}
                                         </td>
                                         <td align="center"></td>
-                                        <td align="center">{{qryItemReport.setupPrice | currency: 'USD':
-                                            'symbol':'1.3-3' }}
+                                        <td align="center">{{qryOrderLine.shippingPrice | currency: 'USD':
+                                            'symbol':'1.3-3'}}
                                         </td>
-                                        <td align="center">{{(qryItemReport.setupCost - qryItemReport.runPrice) |
-                                            currency:
-                                            'USD': 'symbol':'1.3-3' }}</td>
-                                        <td align="center"><span
-                                                *ngIf="qryItemReport.setupPrice">{{((1-(qryItemReport.setupCost)/(qryItemReport.setupPrice))*100)
-                                                | number:'1.2-2'}}%</span>
+                                        <td align="center"> {{(qryOrderLine.blnSample ? 0.00 :
+                                            (qryOrderLine.shippingPrice
+                                            -qryOrderLine.shippingCost)) | currency: 'USD': 'symbol':'1.3-3'}}</td>
+                                        <td align="center"><span *ngIf="qryOrderLine.shippingPrice">
+                                                {{(qryOrderLine.blnSample ? 0.00 :
+                                                ((1-(qryOrderLine.shippingCost)/(qryOrderLine.shippingPrice))*100)) |
+                                                number:'1.2-2'}}%
+                                            </span>
                                         </td>
                                     </tr>
-                                </ng-container>
-                            </ng-container>
-                            <!--- IMPRINTS --->
-                            <tr>
-                                <td colspan="8"><br><i>IMPRINTS</i></td>
-                            </tr>
-                            <ng-container *ngFor="let qryImprintsReport of qryOrderLine.imprintsData">
-                                <tr>
-                                    <td>{{qryImprintsReport.locationName}} | {{qryImprintsReport.methodName}} |
-                                        Processes:
-                                        {{qryImprintsReport.processQuantity}}</td>
-                                    <td align="center">{{qryImprintsReport.quantity}}</td>
-                                    <td align="center">{{qryImprintsReport.runCost | currency: 'USD': 'symbol':'1.3-3'}}
-                                    </td>
-                                    <td align="center">{{(qryImprintsReport.runCost*qryImprintsReport.quantity) |
-                                        currency:
-                                        'USD': 'symbol':'1.3-3'}}</td>
-                                    <td align="center">{{qryImprintsReport.runPrice | currency: 'USD':
-                                        'symbol':'1.3-3'}}
-                                    </td>
-                                    <td align="center">{{(qryImprintsReport.runPrice*qryImprintsReport.quantity) |
-                                        currency:
-                                        'USD': 'symbol':'1.3-3'}}</td>
-                                    <td align="center">
-                                        {{(qryImprintsReport.runPrice*qryImprintsReport.quantity-qryImprintsReport.runCost*qryImprintsReport.quantity)
-                                        | currency: 'USD': 'symbol':'1.3-3'}}</td>
-                                    <td align="center">
-                                        <cfif runPrice>
-                                            {{((1-(qryImprintsReport.runCost)/(qryImprintsReport.runPrice))*100)
-                                            |
-                                            number:'1.2-2'}}%
-                                        </cfif>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td align="right">{{qryImprintsReport.blnStitchProcess ? 'Digitization(s)':
-                                        'Setup(s)'}}
-                                    </td>
-                                    <td align="center"></td>
-                                    <td align="center"></td>
-                                    <td align="center">{{qryImprintsReport.setupCost | currency: 'USD':
-                                        'symbol':'1.3-3'}}
-                                    </td>
-                                    <td align="center"></td>
-                                    <td align="center">{{qryImprintsReport.setupPrice | currency: 'USD':
-                                        'symbol':'1.3-3'}}
-                                    </td>
-                                    <td align="center">{{(qryImprintsReport.setupPrice-qryImprintsReport.setupCost) |
-                                        currency:
-                                        'USD': 'symbol':'1.3-3'}}</td>
-                                    <td align="center"><span
-                                            *ngIf="qryImprintsReport.setupPrice">{{((1-(qryImprintsReport.setupCost)/(qryImprintsReport.setupPrice))*100)
-                                            | number:'1.2-2'}}%</span>
-                                    </td>
-                                </tr>
-                            </ng-container>
-                            <!--- ACCESSORIES --->
-                            <tr>
-                                <td colspan="8"><br><i>ACCESSORIES</i></td>
-                            </tr>
-                            <ng-container *ngFor="let qryAccessoriesReport of qryOrderLine.accessoriesData">
-                                <tr>
-                                    <td>{{qryAccessoriesReport.packagingName}}</td>
-                                    <td align="center">{{qryAccessoriesReport.quantity}}</td>
-                                    <td align="center">{{qryAccessoriesReport.runCost | currency: 'USD':
-                                        'symbol':'1.3-3'}}
-                                    </td>
-                                    <td align="center">{{(qryAccessoriesReport.runCost * qryAccessoriesReport.quantity)
-                                        |
-                                        currency: 'USD': 'symbol':'1.3-3'}}</td>
-                                    <td align="center">{{qryAccessoriesReport.runPrice | currency: 'USD':
-                                        'symbol':'1.3-3'}}
-                                    </td>
-                                    <td align="center">{{(qryAccessoriesReport.runPrice * qryAccessoriesReport.quantity)
-                                        |
-                                        currency: 'USD': 'symbol':'1.3-3'}}</td>
-                                    <td align="center">{{(qryAccessoriesReport.runPrice * qryAccessoriesReport.quantity
-                                        -
-                                        qryAccessoriesReport.runCost * qryAccessoriesReport.quantity) | currency: 'USD':
-                                        'symbol':'1.3-3'}}</td>
-                                    <td align="center"><span
-                                            *ngIf="qryAccessoriesReport.runPrice">{{((1-(qryAccessoriesReport.runCost)/(qryAccessoriesReport.runPrice))*100)
-                                            | number:'1.2-2'
-                                            }} %</span></td>
-                                </tr>
-                                <ng-container *ngIf="qryAccessoriesReport.setupCost || qryAccessoriesReport.setupPrice">
+                                    <ng-container *ngIf="orderDetail.blnRoyaltyStore && qryOrderLine.blnRoyalty">
+                                        <tr height="10">
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td><i>{{orderDetail.royaltyName}}</i></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td align="center">{{qryOrderLine?.royaltyPrice | currency: 'USD':
+                                                'symbol':'1.3-3'}}
+                                            </td>
+                                            <td></td>
+                                            <td align="center">{{qryOrderLine?.royaltyPrice | currency: 'USD':
+                                                'symbol':'1.3-3'}}
+                                            </td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    </ng-container>
+                                    <!--- SUB-TOTAL --->
+                                    <tr height="10">
+                                        <td colspan="8"></td>
+                                    </tr>
                                     <tr>
-                                        <td align="right">Accessory Setup</td>
+                                        <td><i>MERCHANDISE SUB-TOTAL</i></td>
                                         <td align="center"></td>
                                         <td align="center"></td>
-                                        <td align="center">{{qryAccessoriesReport.setupCost | currency: 'USD':
-                                            'symbol':'1.3-3'}}</td>
+                                        <td align="center"><b>{{(qryOrderLine.getOrderLineTotalsCost +
+                                                qryOrderLine.royaltyPrice) |
+                                                currency: 'USD': 'symbol':'1.3-3'}}</b></td>
                                         <td align="center"></td>
-                                        <td align="center">{{qryAccessoriesReport.setupPrice | currency: 'USD':
-                                            'symbol':'1.3-3'}}</td>
-                                        <td align="center">{{(qryAccessoriesReport.setupPrice -
-                                            qryAccessoriesReport.setupCost)
-                                            | currency: 'USD': 'symbol':'1.3-3'}}</td>
-                                        <td align="center"><span
-                                                *ngIf="qryAccessoriesReport.setupPrice">{{((1-(qryAccessoriesReport.setupCost)/(qryAccessoriesReport.setupPrice))*100)
-                                                | number:'1.2-2'}}%</span>
+                                        <td align="center"><b> {{(qryOrderLine.getOrderLineTotalsPrice +
+                                                qryOrderLine.royaltyPrice)
+                                                |
+                                                currency: 'USD': 'symbol':'1.3-3'}}</b></td>
+                                        <td align="center"><b>
+                                                <span *ngIf="qryOrderLine.blnSample">{{0.00 | currency: 'USD':
+                                                    'symbol':'1.3-3'}}</span>
+                                                <span
+                                                    *ngIf="!qryOrderLine.blnSample">{{((qryOrderLine.getOrderLineTotalsPrice
+                                                    +
+                                                    qryOrderLine.royaltyPrice) - (qryOrderLine.getOrderLineTotalsCost +
+                                                    qryOrderLine.royaltyPrice)) | currency: 'USD':
+                                                    'symbol':'1.3-3'}}</span>
+                                            </b></td>
+                                        <td align="center">
+                                            <span *ngIf="qryOrderLine.getOrderLineTotalsPrice">
+                                                <span>
+                                                    {{(qryOrderLine.blnSample ? 0.00 : (1 -
+                                                    (qryOrderLine.getOrderLineTotalsCost)/(qryOrderLine.getOrderLineTotalsPrice))
+                                                    *100)
+                                                    | number:'1.2-2'}} %
+                                                </span>
+                                            </span>
                                         </td>
                                     </tr>
-                                </ng-container>
-                            </ng-container>
-                            <!--- SHIPPING --->
-                            <tr height="10">
-                                <td colspan="6"></td>
-                            </tr>
-                            <tr>
-                                <td><i>SHIPPING &amp; HANDLING</i></td>
-                                <td align="center"></td>
-                                <td align="center"></td>
-                                <td align="center">{{qryOrderLine.shippingCost | currency: 'USD': 'symbol':'1.3-3'}}
-                                </td>
-                                <td align="center"></td>
-                                <td align="center">{{qryOrderLine.shippingPrice | currency: 'USD': 'symbol':'1.3-3'}}
-                                </td>
-                                <td align="center"> {{(qryOrderLine.blnSample ? 0.00 : (qryOrderLine.shippingPrice
-                                    -qryOrderLine.shippingCost)) | currency: 'USD': 'symbol':'1.3-3'}}</td>
-                                <td align="center"><span *ngIf="qryOrderLine.shippingPrice">
-                                        {{(qryOrderLine.blnSample ? 0.00 :
-                                        ((1-(qryOrderLine.shippingCost)/(qryOrderLine.shippingPrice))*100)) |
-                                        number:'1.2-2'}}%
-                                    </span>
-                                </td>
-                            </tr>
-                            <ng-container *ngIf="orderDetail.blnRoyaltyStore && qryOrderLine.blnRoyalty">
-                                <tr height="10">
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td><i>{{orderDetail.royaltyName}}</i></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td align="center">{{qryOrderLine?.royaltyPrice | currency: 'USD':
-                                        'symbol':'1.3-3'}}
-                                    </td>
-                                    <td></td>
-                                    <td align="center">{{qryOrderLine?.royaltyPrice | currency: 'USD':
-                                        'symbol':'1.3-3'}}
-                                    </td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </ng-container>
-                            <!--- SUB-TOTAL --->
-                            <tr height="10">
-                                <td colspan="8"></td>
-                            </tr>
-                            <tr>
-                                <td><i>MERCHANDISE SUB-TOTAL</i></td>
-                                <td align="center"></td>
-                                <td align="center"></td>
-                                <td align="center"><b>{{(qryOrderLine.getOrderLineTotalsCost +
-                                        qryOrderLine.royaltyPrice) |
-                                        currency: 'USD': 'symbol':'1.3-3'}}</b></td>
-                                <td align="center"></td>
-                                <td align="center"><b> {{(qryOrderLine.getOrderLineTotalsPrice +
-                                        qryOrderLine.royaltyPrice)
-                                        |
-                                        currency: 'USD': 'symbol':'1.3-3'}}</b></td>
-                                <td align="center"><b>
-                                        <span *ngIf="qryOrderLine.blnSample">{{0.00 | currency: 'USD':
-                                            'symbol':'1.3-3'}}</span>
-                                        <span *ngIf="!qryOrderLine.blnSample">{{((qryOrderLine.getOrderLineTotalsPrice +
-                                            qryOrderLine.royaltyPrice) - (qryOrderLine.getOrderLineTotalsCost +
-                                            qryOrderLine.royaltyPrice)) | currency: 'USD': 'symbol':'1.3-3'}}</span>
-                                    </b></td>
-                                <td align="center">
-                                    <span *ngIf="qryOrderLine.getOrderLineTotalsPrice">
-                                        <span>
-                                            {{(qryOrderLine.blnSample ? 0.00 : (1 -
-                                            (qryOrderLine.getOrderLineTotalsCost)/(qryOrderLine.getOrderLineTotalsPrice))
-                                            *100)
-                                            | number:'1.2-2'}} %
-                                        </span>
-                                    </span>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                </mat-expansion-panel>
-            </mat-accordion>
+                                </table>
+                            </div>
+                        </mat-expansion-panel>
+                    </mat-accordion>
+                </ng-container>
+
+                <!--- ORDER TOTALS --->
+                <hr>
+                <table class="padding-1x wide">
+                    <tr height="1">
+                        <td width="30%"></td>
+                        <td width="10%"></td>
+                        <td width="10%"></td>
+                        <td width="10%"></td>
+                        <td width="10%"></td>
+                        <td width="10%"></td>
+                        <td width="10%"></td>
+                        <td width="10%"></td>
+                    </tr>
+                    <tr>
+                        <td>TOTAL DISCOUNT</td>
+                        <td align="center"></td>
+                        <td align="center"></td>
+                        <td align="center"></td>
+                        <td align="center"></td>
+                        <td align="center">{{(orderDetail.discount * -1) | currency: 'USD': 'symbol':'1.3-3'}}</td>
+                        <td align="center">{{(orderDetail.discount * -1) | currency: 'USD': 'symbol':'1.3-3'}}</td>
+                        <td align="center"></td>
+                    </tr>
+                    <ng-container *ngIf="orderDetail.cashbackDiscount">
+                        <tr>
+                            <td>CASH BACK DISCOUNT</td>
+                            <td align="center"></td>
+                            <td align="center"></td>
+                            <td align="center"></td>
+                            <td align="center"></td>
+                            <td align="center">{{(orderDetail.cashbackDiscount * -1) | currency: 'USD':
+                                'symbol':'1.3-3'}}
+                            </td>
+                            <td align="center"> {{(orderDetail.cashbackDiscount * -1) | currency: 'USD':
+                                'symbol':'1.3-3'}}
+                            </td>
+                            <td align="center"></td>
+                        </tr>
+                    </ng-container>
+                    <tr>
+                        <td colspan="8">ADJUSTMENTS</td>
+                    </tr>
+
+                    <ng-container *ngFor="let item of orderDetail.adjustmentsData">
+                        <tr>
+                            <td align="right">{{item.description}}</td>
+                            <td align="center"></td>
+                            <td align="center"></td>
+                            <td align="center">{{item.cost | currency}}</td>
+                            <td align="center"></td>
+                            <td align="center">{{item.price | currency}}</td>
+                            <td align="center">{{(item.price - item.cost) | currency}}</td>
+                            <td align="center"><span *ngIf="item.price">{{((1-(item.cost)/(item.price))*100) |
+                                    currency}}%</span></td>
+                        </tr>
+                    </ng-container>
+                    <ng-container *ngIf="orderDetail.blnRoyaltyStore">
+                        <tr>
+                            <td>TOTAL ROYALTIES</td>
+                            <td></td>
+                            <td></td>
+                            <td align="center">{{orderDetail.royalties | currency: 'USD': 'symbol':'1.3-3'}}</td>
+                            <td></td>
+                            <td align="center">{{orderDetail.royalties | currency: 'USD': 'symbol':'1.3-3'}}</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </ng-container>
+                    <tr height="1">
+                        <td>TOTAL B.T.</td>
+                        <td></td>
+                        <td></td>
+                        <td align="center" width="10%">
+                            {{(orderDetail.blnRoyaltyStore ? (orderDetail.orderCost+orderDetail.royalties) :
+                            (orderDetail.orderCost)) | currency: 'USD': 'symbol':'1.3-3'}}
+                        </td>
+                        <td></td>
+                        <td align="center">
+                            {{(orderDetail.blnRoyaltyStore ? (orderDetail.orderPrice+orderDetail.royalties) :
+                            (orderDetail.orderPrice)) | currency: 'USD': 'symbol':'1.3-3'}}</td>
+
+                        <td align="center">
+                            {{((orderDetail.orderPrice+orderDetail.royalties) -
+                            (orderDetail.orderCost+orderDetail.royalties)) |
+                            currency: 'USD': 'symbol':'1.3-3'}}
+                        </td>
+                        <td align="center">
+                            <span>
+                                {{(orderDetail.orderPrice ? (1 - (orderDetail.orderCost)/(orderDetail.orderPrice)) *100
+                                :
+                                0.00)
+                                | number:'1.2-2'}} %
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>TOTAL TAX</td>
+                        <td align="center"></td>
+                        <td align="center"></td>
+                        <td align="center"></td>
+                        <td align="center"></td>
+                        <td align="center">{{orderDetail.orderTax | currency: 'USD': 'symbol':'1.3-3'}}</td>
+                        <td align="center"></td>
+                        <td align="center"></td>
+                    </tr>
+                    <tr>
+                        <td><b>GRAND TOTAL</b></td>
+                        <td align="center"></td>
+                        <td align="center"></td>
+                        <td align="center">
+                            <b>
+                                {{(orderDetail.blnRoyaltyStore ? (orderDetail.orderCost + orderDetail.royalties) :
+                                (orderDetail.orderCost)) | currency: 'USD': 'symbol':'1.3-3'}}
+                            </b>
+                        </td>
+                        <td align="center"></td>
+                        <td align="center"><b>
+                                {{(orderDetail.blnRoyaltyStore ? orderDetail.orderPrice + orderDetail.royalties +
+                                orderDetail.orderTax : orderDetail.orderPrice + orderDetail.orderTax ) | currency:
+                                'USD':
+                                'symbol':'1.3-3'}}</b>
+                        </td>
+                        <td align="center"></td>
+                        <td align="center"></td>
+                    </tr>
+                </table>
+            </div>
         </ng-container>
+        <!-- CONFIDENTIAL COST ANALYSIS REPORT - ACTUAL -->
+        <ng-container *ngIf="mainScreen == 'ACTUAL'">
+            <div class=" card rounded-2xl p-5">
+                <table class="p-2 w-full">
+                    <tr>
+                        <td valign="top" align="left">
+                            <b>CONFIDENTIAL COST ANALYSIS REPORT - ACTUAL <br>#{{orderDetail.pk_orderID}}</b><br>
+                        </td>
+                    </tr>
+                </table>
 
-        <!--- ORDER TOTALS --->
-        <hr>
-        <table class="padding-1x wide">
-            <tr height="1">
-                <td width="30%"></td>
-                <td width="10%"></td>
-                <td width="10%"></td>
-                <td width="10%"></td>
-                <td width="10%"></td>
-                <td width="10%"></td>
-                <td width="10%"></td>
-                <td width="10%"></td>
-            </tr>
-            <tr>
-                <td>TOTAL DISCOUNT</td>
-                <td align="center"></td>
-                <td align="center"></td>
-                <td align="center"></td>
-                <td align="center"></td>
-                <td align="center">{{(orderDetail.discount * -1) | currency: 'USD': 'symbol':'1.3-3'}}</td>
-                <td align="center">{{(orderDetail.discount * -1) | currency: 'USD': 'symbol':'1.3-3'}}</td>
-                <td align="center"></td>
-            </tr>
-            <ng-container *ngIf="orderDetail.cashbackDiscount">
-                <tr>
-                    <td>CASH BACK DISCOUNT</td>
-                    <td align="center"></td>
-                    <td align="center"></td>
-                    <td align="center"></td>
-                    <td align="center"></td>
-                    <td align="center">{{(orderDetail.cashbackDiscount * -1) | currency: 'USD': 'symbol':'1.3-3'}}</td>
-                    <td align="center"> {{(orderDetail.cashbackDiscount * -1) | currency: 'USD': 'symbol':'1.3-3'}}</td>
-                    <td align="center"></td>
-                </tr>
-            </ng-container>
-            <tr>
-                <td colspan="8">ADJUSTMENTS</td>
-            </tr>
+                <!--- ORDER LINES --->
+                <ng-container *ngFor="let qryPO of qryPOS">
+                    <hr>
+                    <mat-accordion>
+                        <mat-expansion-panel (opened)="getPoDetails(qryPO)">
+                            <mat-expansion-panel-header class="my-10">
+                                <table class="p-2 w-full">
+                                    <tr>
+                                        <td width="70%" valign="top" align="left">
+                                            <div>
+                                                <b>{{qryPO.productName}}</b><br>
+                                                <b>PO:
+                                                    <a [routerLink]="['/ordermanage/order-details?fk_orderID=',orderDetail.pk_orderID,'&pk_orderLineID=',qryPO.fk_orderLineID,'&pk_orderLinePOID=',qryPO.pk_orderLinePOID]"
+                                                        target="_blank">{{qryPO.purchaseOrderNumber}}</a></b><br />
+                                                Status: {{qryPO.statusName}}<br />
+                                                Quantity: {{qryPO.quantity}} <span *ngIf="qryPO.blnSample">
+                                                    <b> * * * SAMPLE * * *</b>
+                                                </span>
+                                            </div>
+                                        </td>
 
-            <ng-container *ngFor="let item of orderDetail.adjustmentsData">
-                <tr>
-                    <td align="right">{{item.description}}</td>
-                    <td align="center"></td>
-                    <td align="center"></td>
-                    <td align="center">{{item.cost | currency}}</td>
-                    <td align="center"></td>
-                    <td align="center">{{item.price | currency}}</td>
-                    <td align="center">{{(item.price - item.cost) | currency}}</td>
-                    <td align="center"><span *ngIf="item.price">{{((1-(item.cost)/(item.price))*100) |
-                            currency}}%</span></td>
-                </tr>
-            </ng-container>
-            <ng-container *ngIf="orderDetail.blnRoyaltyStore">
-                <tr>
-                    <td>TOTAL ROYALTIES</td>
-                    <td></td>
-                    <td></td>
-                    <td align="center">{{orderDetail.royalties | currency: 'USD': 'symbol':'1.3-3'}}</td>
-                    <td></td>
-                    <td align="center">{{orderDetail.royalties | currency: 'USD': 'symbol':'1.3-3'}}</td>
-                    <td></td>
-                    <td></td>
-                </tr>
-            </ng-container>
-            <tr height="1">
-                <td>TOTAL B.T.</td>
-                <td></td>
-                <td></td>
-                <td align="center" width="10%">
-                    {{(orderDetail.blnRoyaltyStore ? (orderDetail.orderCost+orderDetail.royalties) :
-                    (orderDetail.orderCost)) | currency: 'USD': 'symbol':'1.3-3'}}
-                </td>
-                <td></td>
-                <td align="center">
-                    {{(orderDetail.blnRoyaltyStore ? (orderDetail.orderPrice+orderDetail.royalties) :
-                    (orderDetail.orderPrice)) | currency: 'USD': 'symbol':'1.3-3'}}</td>
+                                        <td width="30%" valign="top" align="right">
+                                            <h2 class="font-bold">{{qryPO.POTotal |
+                                                currency:
+                                                'USD':
+                                                'symbol':'1.3-3'}}</h2>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </mat-expansion-panel-header>
+                            <hr>
+                            <div *ngIf="qryPO.isDetailLoader" class="flex justify-center">
+                                <mat-progress-spinner [diameter]="24" [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                            </div>
+                            <div *ngIf="!qryPO.isDetailLoader && qryPO.Details">
+                                <table class="p-2 w-full">
+                                    <ng-container *ngIf="qryPO?.Details?.color_sizes.length">
+                                        <tr>
+                                            <td width="60%"><b><i>COLOR/SIZE BREAKDOWN</i></b></td>
+                                            <td width="10%" align="center"><b>Qty</b></td>
+                                            <td width="15%" align="center"><b>Unit</b></td>
+                                            <td width="15%" align="center"><b>Total</b></td>
+                                        </tr>
+                                        <ng-container *ngFor="let qryOptions of qryPO?.Details?.color_sizes"
+                                            query="local.qryOptions">
+                                            <tr>
+                                                <td>{{qryOptions.optionName}}</td>
+                                                <td align="center">{{qryOptions.quantity}}</td>
+                                                <td align="center">{{qryOptions.unitCost |
+                                                    currency:
+                                                    'USD':
+                                                    'symbol':'1.3-3'}}</td>
+                                                <td align="center">{{qryOptions.total |
+                                                    currency:
+                                                    'USD':
+                                                    'symbol':'1.3-3'}}</td>
+                                            </tr>
+                                        </ng-container>
+                                    </ng-container>
 
-                <td align="center">
-                    {{((orderDetail.orderPrice+orderDetail.royalties) - (orderDetail.orderCost+orderDetail.royalties)) |
-                    currency: 'USD': 'symbol':'1.3-3'}}
-                </td>
-                <td align="center">
-                    <span>
-                        {{(orderDetail.orderPrice ? (1 - (orderDetail.orderCost)/(orderDetail.orderPrice)) *100 : 0.00)
-                        | number:'1.2-2'}} %
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td>TOTAL TAX</td>
-                <td align="center"></td>
-                <td align="center"></td>
-                <td align="center"></td>
-                <td align="center"></td>
-                <td align="center">{{orderDetail.orderTax | currency: 'USD': 'symbol':'1.3-3'}}</td>
-                <td align="center"></td>
-                <td align="center"></td>
-            </tr>
-            <tr>
-                <td><b>GRAND TOTAL</b></td>
-                <td align="center"></td>
-                <td align="center"></td>
-                <td align="center">
-                    <b>
-                        {{(orderDetail.blnRoyaltyStore ? (orderDetail.orderCost + orderDetail.royalties) :
-                        (orderDetail.orderCost)) | currency: 'USD': 'symbol':'1.3-3'}}
-                    </b>
-                </td>
-                <td align="center"></td>
-                <td align="center"><b>
-                        {{(orderDetail.blnRoyaltyStore ? orderDetail.orderPrice + orderDetail.royalties +
-                        orderDetail.orderTax : orderDetail.orderPrice + orderDetail.orderTax ) | currency: 'USD':
-                        'symbol':'1.3-3'}}</b>
-                </td>
-                <td align="center"></td>
-                <td align="center"></td>
-            </tr>
-        </table>
+                                    <!--- IMPRINTS --->
+                                    <ng-container *ngIf="qryPO?.Details?.imprints.length">
+                                        <tr>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td><b><i>IMPRINTS</i></b></td>
+                                            <td align="center"><b>Qty</b></td>
+                                            <td align="center"><b>Unit</b></td>
+                                            <td align="center"><b>Total</b></td>
+                                        </tr>
+
+                                        <ng-container *ngFor="let qryImprints of qryPO?.Details?.imprints">
+                                            <tr>
+                                                <td>{{qryImprints.imprintName}} <span
+                                                        *ngIf="qryImprints.processQuantity"> |
+                                                        Processes:
+                                                        {{qryImprints.processQuantity}}</span></td>
+                                                <td align="center">{{qryImprints.quantity}}</td>
+                                                <td align="center">{{qryImprints.unitCost |
+                                                    currency:
+                                                    'USD':
+                                                    'symbol':'1.3-3'}}</td>
+                                                <td align="center">{{qryImprints.total |
+                                                    currency:
+                                                    'USD':
+                                                    'symbol':'1.3-3'}}</td>
+                                            </tr>
+                                            <ng-container *ngIf="qryImprints.setup">
+                                                <tr>
+                                                    <td>Setup:</td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td align="center">{{qryImprints.setup |
+                                                        currency:
+                                                        'USD':
+                                                        'symbol':'1.3-3'}}</td>
+                                                </tr>
+                                            </ng-container>
+                                        </ng-container>
+                                    </ng-container>
+
+                                    <ng-container *ngIf="qryPO?.Details?.accessories.length">
+                                        <tr>
+                                            <td></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td><b><i>ACCESSORIES</i></b></td>
+                                            <td align="center"><b>Qty</b></td>
+                                            <td align="center"><b>Unit</b></td>
+                                            <td align="center"><b>Total</b></td>
+                                        </tr>
+
+                                        <ng-container *ngFor="let qryAccessories of qryPO?.Details?.accessories">
+                                            <tr>
+                                                <td>{{qryAccessories.accessoryName}}</td>
+                                                <td align="center">{{qryAccessories.quantity}}</td>
+                                                <td align="center">{{qryAccessories?.unitCost |
+                                                    currency:
+                                                    'USD':
+                                                    'symbol':'1.3-3'}}</td>
+                                                <td align="center">{{qryAccessories.total |
+                                                    currency:
+                                                    'USD':
+                                                    'symbol':'1.3-3'}}</td>
+                                            </tr>
+                                        </ng-container>
+                                    </ng-container>
+
+                                    <ng-container *ngIf="qryPO?.Details?.adjustments.length">
+                                        <tr>
+                                            <td></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td><b><i>ADJUSTMENTS</i></b></td>
+                                            <td align="center"><b>Qty</b></td>
+                                            <td align="center"><b>Unit</b></td>
+                                            <td align="center"><b>Total</b></td>
+                                        </tr>
+
+                                        <ng-container *ngFor="let qryAdjustments of qryPO?.Details?.adjustments">
+                                            <tr>
+                                                <td>{{qryAdjustments.adjustmentName}}</td>
+                                                <td align="center">1</td>
+                                                <td align="center">{{qryAdjustments.unitCost |
+                                                    currency:
+                                                    'USD':
+                                                    'symbol':'1.3-3'}}</td>
+                                                <td align="center">{{qryAdjustments.unitCost |
+                                                    currency:
+                                                    'USD':
+                                                    'symbol':'1.3-3'}}</td>
+                                            </tr>
+                                        </ng-container>
+                                    </ng-container>
+                                </table>
+                                <br />
+                            </div>
+                        </mat-expansion-panel>
+                    </mat-accordion>
+                </ng-container>
+
+                <table class="p-2 my-3 w-full">
+                    <tr>
+                        <td width="40%">
+                            <b>Grand totals:</b><br />
+                        </td>
+
+                        <td width="15%"><b>Actual cost</b></td>
+
+                        <td width="15%"><b>Order price</b></td>
+
+                        <td width="15%"><b>Diff</b></td>
+
+                        <td width="15%"><b>Margin</b></td>
+                    </tr>
+
+                    <tr>
+                        <td></td>
+                        <td>{{purchaseOrderTotal |
+                            currency:
+                            'USD':
+                            'symbol':'1.3-3'}}</td>
+                        <td>{{orderDetail.orderPrice |
+                            currency:
+                            'USD':
+                            'symbol':'1.3-3'}}</td>
+                        <td>
+                            <ng-container
+                                *ngIf="purchaseOrderTotal > orderDetail.orderPrice;else lessOrderPrice">{{(purchaseOrderTotal-orderDetail.orderPrice)
+                                |
+                                currency:
+                                'USD':
+                                'symbol':'1.3-3'}}</ng-container>
+                            <ng-template #lessOrderPrice>
+                                {{(orderDetail.orderPrice-purchaseOrderTotal) | currency: 'USD':
+                                'symbol':'1.3-3'}}
+                            </ng-template>
+                        </td>
+                        <td>
+                            {{(orderDetail.orderPrice ?
+                            (1-(purchaseOrderTotal)/(orderDetail.orderPrice))*100 : 0) | number:'1.2-2'}} %
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </ng-container>
     </div>
 </div>

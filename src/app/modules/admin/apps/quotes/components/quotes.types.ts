@@ -113,3 +113,99 @@ export interface addAccessory {
     cartLineGroundPrice: number;
     add_modify_quote_accessory: boolean;
 };
+
+
+export interface updateAccessories {
+    cartID: number;
+    cartLineID: number;
+    blnGroupRun: number;
+    productName: string;
+    loggedInUserID: number;
+    accessories: UpdateAccessory[];
+    deleteAccessories: DeleteAccessory[];
+    blnOverrideShippingNewAccessory: boolean;
+    orderQuantity: number;
+    isFulfillmentCart: boolean;
+    warehouse_delivery_option: number;
+    cartLineGroundCost: number;
+    cartLineGroundPrice: number;
+    update_modify_quote_accessory: boolean;
+};
+
+interface UpdateAccessory {
+    packagingName: string;
+    quantityPerPackage: number;
+    runPrice: number;
+    runCost: number;
+    setupPrice: number;
+    setupCost: number;
+    packagingID: number;
+};
+
+interface DeleteAccessory {
+    packagingID: number;
+    packagingName: string;
+};
+
+
+export interface updateImprints {
+    cartID: number;
+    cartLineID: number;
+    blnGroupRun: number;
+    productName: string;
+    loggedInUserID: number;
+    imprints: UpdateImprint[];
+    update_modify_quote_imprint: boolean;
+};
+
+interface UpdateImprint {
+    imprintID: number;
+    processQuantity: number;
+    locationName: string;
+    decorationName: string;
+    colorNameList: string;
+    pmsColors: string;
+    cartLineImprintRunCost: number;
+    cartLineImprintRunPrice: number;
+    cartLineImprintSetupCost: number;
+    cartLineImprintSetupPrice: number;
+    blnOverride: boolean;
+    customerArtworkComment: string;
+    decoratorID: number;
+    runCost: number;
+    runPrice: number;
+    setupCost: number;
+    setupPrice: number;
+    blnOverrideRunSetup: boolean;
+};
+
+export interface deleteImprints {
+    cartID: number;
+    cartLineID: number;
+    blnGroupRun: number;
+    productName: string;
+    loggedInUserID: number;
+    imprintID: number;
+    locationName: string;
+    decorationName: string;
+    delete_modify_quote_imprint: boolean;
+};
+export interface AddImprints {
+    cartID: number;
+    cartLineID: number;
+    blnGroupRun: number;
+    productName: string;
+    loggedInUserID: number;
+    imprintID: number;
+    locationID: number;
+    locationName: string;
+    decoratorID: number;
+    decorationName: string;
+    processQuantity: number;
+    imprintColorName: string;
+    runCost: number;
+    runPrice: number;
+    setupCost: number;
+    setupPrice: number;
+    add_modify_quote_imprint: boolean;
+};
