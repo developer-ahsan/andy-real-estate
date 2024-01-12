@@ -1,585 +1,430 @@
 <div class="w-full">
     <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
     </ngx-skeleton-loader>
-    <div class="row" *ngIf="!isLoading" cdkScrollable>
-        <div class="col-12 my-2">
-            <div class="rounded-2xl justify-between flex flex-col ">
-                <button (click)="exportHtmlToPDF('projected')" mat-stroked-button class="w-20">
-                    <span class="test-sm">PDF</span>
-                </button>
-                <div id="projected" class="my-5 rounded-2xl shadow bg-card p-5">
 
-                    <div class="mb-3 font-bold">
-                        Projected cost Analysis
-                    </div>
 
-                    <div class="mb-3 font-bold border-b">
-                        CONFIDENTIAL COST ANALYSIS REPORT - PROJECTED #{{orderDetail.pk_orderID}}
-                    </div>
-                    <div class="mt-3">
-                        <div *ngFor="let qryOrderLine of qryOrderLines">
-                            <mat-accordion>
-                                <mat-expansion-panel class=" my-5">
-                                    <mat-expansion-panel-header class="my-10">
-                                        <mat-panel-title>
-                                            <div class="flex flex-col gap-y-1 py-2">
-                                                <div class="font-bold">
-                                                    ({{qryOrderLine.fk_productID}})
-                                                    {{qryOrderLine?.productNumber}}:
-                                                    {{qryOrderLine?.productName}}
-                                                </div>
-                                                <div>
-                                                    <ng-container>Quantity: {{qryOrderLine?.quantity}} <span
-                                                            *ngIf="qryOrderLine.blnSample"><b> *
-                                                                * * SAMPLE * * *</b></span>
-                                                        <span
-                                                            *ngIf="!qryOrderLine.blnSample && qryOrderLine.blnWarehouse"><b>
-                                                                * * * FULFILLMENT ITEM * * *</b></span>
-                                                        <br />
-                                                    </ng-container>
-                                                </div>
-                                                <div>
-                                                    {{item.totalMerchendisePrice.toFixed(2) | currency}}
-                                                </div>
-                                            </div>
-                                        </mat-panel-title>
-                                        <!-- <mat-panel-description>
-                                            This is a summary of the content
+    <div *ngIf="!isLoading && qryOrderLines" class="m-5 p-5 card rounded-2xl">
+        <table class="padding-1x wide">
+            <tr>
+                <td valign="top" align="left">
+                    <b>CONFIDENTIAL COST ANALYSIS REPORT - PROJECTED <br>{{orderDetail.pk_orderID}}</b><br>
+                </td>
+            </tr>
+        </table>
 
-                                        </mat-panel-description> -->
-                                    </mat-expansion-panel-header>
-                                    <div class="grid grid-cols-12 gap-x-1 my-5">
-                                        <div class="col-span-5 font-medium text-md text-secondary">DETAILS</div>
-                                        <div class="font-medium text-md text-center text-secondary">QTY</div>
-                                        <div class="font-medium col-span-2  text-md text-center text-secondary">
-                                            <p>COST</p>
-                                            <!-- <p>unit*qty</p> -->
-                                        </div>
-                                        <div class="font-medium col-span-2 text-md text-center text-secondary">
-                                            <p>PRICE</p>
-                                            <!-- <p>price*qty</p> -->
-                                        </div>
-                                        <div class="font-medium col-span-1 text-md text-center text-secondary">
-                                            $
-                                        </div>
-                                        <div class="font-medium col-span-1 text-md text-center text-secondary">
-                                            Margin %
-                                        </div>
+        <!--- ORDER LINES --->
 
-                                        <!-- Divider -->
-                                        <div class="col-span-12 my-3 border-b"></div>
-                                        <div class="col-span-6 font-medium font-bold text-md">
-                                            <p>COLOR/SIZE BREAKDOWN</p>
-                                        </div>
-                                        <div class="font-medium col-span-1  text-md text-center text-secondary">
-                                            <p>Unit</p>
-                                        </div>
-                                        <div class="font-medium col-span-1  text-md text-center text-secondary">
-                                            <p>Total</p>
-                                        </div>
-                                        <div class="font-medium col-span-1  text-md text-center text-secondary">
-                                            <p>Price</p>
-                                        </div>
-                                        <div class="font-medium col-span-1  text-md text-center text-secondary">
-                                            <p>Total</p>
-                                        </div>
-                                        <!-- Colors -->
-                                        <div class="col-span-12 my-2" *ngFor="let colors of item.products">
-                                            <div class="grid grid-cols-12">
-                                                <div class="col-span-5 font-medium text-md text-secondary">
-                                                    <p>{{colors.colorName}} <span *ngIf="colors.sizeName"> &
-                                                            {{colors.sizeName}}</span></p>
-                                                </div>
-                                                <div class="font-medium text-md  text-center text-secondary">
-                                                    {{colors.quantity}}</div>
-                                                <div class="col-span-1 text-center font-medium text-md text-secondary">
-                                                    <p>{{colors.cost}}</p>
-                                                </div>
-                                                <div class="col-span-1 text-center font-medium text-md  text-secondary">
-                                                    {{(colors.cost * colors.quantity).toFixed(2) }}
-                                                </div>
-                                                <div class="col-span-1 text-center font-medium text-md text-secondary">
-                                                    <p>{{colors.price}}</p>
-                                                </div>
-                                                <div class="col-span-1 text-center font-medium text-md  text-secondary">
-                                                    {{(colors.price * colors.quantity).toFixed(2) }}
-                                                </div>
-                                                <div class="text-center font-medium col-span-1 text-md text-secondary">
-                                                    <p>{{((colors.price * colors.quantity) - (colors.cost *
-                                                        colors.quantity)).toFixed(2) }}</p>
-                                                </div>
-                                                <div class="text-center font-medium col-span-1 text-md text-secondary">
-                                                    <p>{{(( 1 - (colors.cost/colors.price))*100).toFixed(2)}} %
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!-- Imprints -->
-                                        <div class="mt-2 col-span-12 font-medium font-bold text-md">
-                                            <p>IMPRINTS</p>
-                                        </div>
-                                        <div class="col-span-12 my-2" *ngFor="let imprint of item.imprints">
-                                            <div class="grid grid-cols-12">
+        <ng-container *ngFor="let qryOrderLine of qryOrderLines">
+            <hr>
+            <mat-accordion>
+                <mat-expansion-panel>
+                    <mat-expansion-panel-header class="my-10">
+                        <table class="p-2 w-full">
+                            <tr>
+                                <td width="70%" valign="top" align="left">
+                                    <b>({{qryOrderLine.fk_productID}}) {{qryOrderLine.productNumber}}: <span
+                                            [innerHTML]="qryOrderLine.productName"></span></b><br>
+                                    Quantity:{{qryOrderLine.quantity}} <span *ngIf="qryOrderLine.blnSample"><b> * * *
+                                            SAMPLE
+                                            * *
+                                            *</b></span>
+                                </td>
 
-                                                <div class="col-span-5 font-medium text-md text-secondary">
-                                                    <p>{{imprint?.locationName}} | {{imprint?.methodName}} |
-                                                        Processes: {{imprint?.processQuantity}}</p>
-                                                </div>
-                                                <div class="font-medium text-md  text-center text-secondary">
-                                                    {{imprint?.quantity}}
-                                                </div>
-                                                <div
-                                                    class=" col-span-1 text-center font-medium text-md  text-secondary">
-                                                    {{(imprint?.runCost)}}
-                                                </div>
-                                                <div
-                                                    class=" col-span-1 text-center font-medium text-md  text-secondary">
-                                                    {{(imprint?.runCost * imprint?.quantity).toFixed(2)}}
-                                                </div>
-                                                <div
-                                                    class=" col-span-1 text-center font-medium text-md  text-secondary">
-                                                    {{(imprint?.runPrice)}}
-                                                </div>
-                                                <div
-                                                    class=" col-span-1 text-center font-medium text-md  text-secondary">
-                                                    {{(imprint?.runPrice *
-                                                    imprint?.quantity).toFixed(2)}}
-                                                </div>
-                                                <div
-                                                    class=" col-span-1 text-center font-medium text-md  text-secondary">
-                                                    {{(imprint?.runPrice - imprint?.runCost).toFixed(2)}}
-                                                </div>
-                                                <div class="text-center font-medium col-span-1 text-md text-secondary">
-                                                    <p>{{getPercentage(imprint,'imprints').toFixed(2)}} %</p>
-                                                </div>
-                                                <!-- Setups -->
-                                                <div
-                                                    class="mt-2 col-span-5 font-medium text-right text-md text-secondary">
-                                                    <p>Setup(s)</p>
-                                                </div>
-                                                <div class="font-medium text-md  text-center text-secondary">
-                                                </div>
-                                                <div
-                                                    class="mt-2 col-span-1 text-center font-medium text-md  text-secondary">
-                                                </div>
-                                                <div
-                                                    class="mt-2 col-span-1 text-center font-medium text-md  text-secondary">
-                                                    {{(imprint?.setupCost)}}
-                                                </div>
-                                                <div
-                                                    class="mt-2 text-center font-medium col-span-1 text-md text-secondary">
-
-                                                </div>
-                                                <div
-                                                    class="mt-2 col-span-1 text-center font-medium text-md  text-secondary">
-                                                    {{(imprint?.setupPrice)}}
-                                                </div>
-                                                <div
-                                                    class="mt-2 col-span-1 text-center font-medium text-md  text-secondary">
-                                                    {{(imprint?.setupPrice - imprint?.setupCost).toFixed(2)}}
-                                                </div>
-                                                <div
-                                                    class="mt-2 text-center font-medium col-span-1 text-md text-secondary">
-                                                    <p>{{getPercentage(imprint,'setup').toFixed(2)}} %
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!-- ACCESSORIES -->
-                                        <div class="mt-2 col-span-12 font-medium font-bold text-md ">
-                                            <p>ACCESSORIES</p>
-                                        </div>
-                                        <div class="col-span-12 my-2" *ngFor="let access of item.accessories">
-                                            <div class="grid grid-cols-12">
-                                                <div class=" col-span-5 font-medium text-md text-secondary">
-                                                    <p>{{access.packagingName}}</p>
-                                                </div>
-                                                <div class=" font-medium text-md  text-center text-secondary">
-                                                    {{access.quantity}}</div>
-                                                <div class="font-medium text-md text-secondary col-span-1 text-center">
-                                                    {{access?.runCost}}</div>
-                                                <div class="font-medium text-md text-secondary col-span-1 text-center">
-                                                    {{(access?.runCost * access.quantity).toFixed(2)}}</div>
-                                                <!-- <div class="col-span-1"></div> -->
-                                                <div class="font-medium text-md text-secondary col-span-1 text-center">
-                                                    {{access?.runPrice}}</div>
-                                                <div class="font-medium text-md text-secondary col-span-1 text-center">
-                                                    {{(access?.runPrice * access.quantity).toFixed(2)}}</div>
-                                                <div class="col-span-1 font-medium text-md text-secondary text-center">
-                                                    {{(access?.runPrice -
-                                                    access?.runCost).toFixed(2)}}</div>
-                                                <div class=" col-span-1 text-center font-medium text-md text-secondary">
-                                                    {{((1- (access?.runCost/access?.runPrice))*100).toFixed(2)}}
-                                                    %
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!-- SHIPPING & HANDLING     -->
-                                        <div class="mt-2 col-span-5 font-medium font-bold text-md mb-4">
-                                            <p>SHIPPING & HANDLING</p>
-                                        </div>
-                                        <div class="font-medium text-md  text-center text-secondary"></div>
-                                        <div class="col-span-1"></div>
-                                        <div class="mt-2 col-span-1 text-secondary text-center font-medium text-md">
-                                            {{item.products[0]?.shippingCost}}</div>
-                                        <div class="col-span-1"></div>
-                                        <div class="mt-2 col-span-1 text-secondary text-center font-medium text-md">
-                                            {{item.products[0]?.shippingPrice}}</div>
-                                        <div class="mt-2 col-span-1 text-secondary text-center font-medium text-md">
-                                            {{(item.products[0]?.shippingPrice -
-                                            item.products[0]?.shippingCost).toFixed(2)}}
-                                        </div>
-                                        <div class="mt-2 col-span-1 text-secondary text-center font-medium text-md">
-                                            {{getPercentage(item, 'shipping').toFixed(2)}} %
-                                        </div>
-
-                                        <!-- Internal Royalties -->
-                                        <div class="mt-2 col-span-5 font-bold font-medium text-md  mb-4">
-                                            <p>Internal Royalties</p>
-                                        </div>
-                                        <div class="font-medium text-md  text-center text-secondary"></div>
-                                        <div class="col-span-1"></div>
-                                        <div class="mt-2 col-span-1 text-center font-medium text-md  font-bold">
-                                            {{item.totalMercandiseCost.toFixed(2) | currency}}
-                                            <!-- {{((item.imprints?.runCost * item.product?.quantity) +
-                                            (item.product?.cost * item.product?.quantity) +
-                                            (item.imprints?.setupCost) +(item.product?.shippingCost) ) | currency}} -->
-                                        </div>
-                                        <div class="col-span-1"></div>
-                                        <div class="mt-2 text-center font-medium col-span-1 text-md font-bold">
-                                            {{item.totalMerchendisePrice.toFixed(2) | currency}}
-                                        </div>
-                                        <div class="mt-2 text-center font-medium col-span-1 text-md font-bold">
-                                            {{(item.totalMerchendisePrice - item.totalMercandiseCost).toFixed(2)
+                                <!-- <ng-container structKeyExists(arguments, 'blnFromAdmin') AND arguments.blnFromAdmin> -->
+                                <td width="30%" valign="top" align="right">
+                                    <h2 class="no-underline no-border no-margin no-padding">
+                                        {{(qryOrderLine.getOrderLineTotalsPrice + qryOrderLine.royaltyPrice) | currency:
+                                        'USD':
+                                        'symbol':'1.3-3'}} </h2>
+                                </td>
+                                <!-- </ng-container> -->
+                            </tr>
+                        </table>
+                    </mat-expansion-panel-header>
+                    <hr>
+                    <div>
+                        <table class="p-1 w-full">
+                            <tr height="1">
+                                <td width="30%"></td>
+                                <td width="10%"></td>
+                                <td width="10%"></td>
+                                <td width="10%"></td>
+                                <td width="10%"></td>
+                                <td width="10%"></td>
+                                <td width="10%"></td>
+                                <td width="10%"></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td align="center">QTY</td>
+                                <td colspan="2" align="center">COST</td>
+                                <td colspan="2" align="center">PRICE</td>
+                                <td colspan="2" align="center">MARGIN</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2"></td>
+                                <td align="center">unit</td>
+                                <td align="center">total</td>
+                                <td align="center">unit</td>
+                                <td align="center">total</td>
+                                <td align="center">$</td>
+                                <td align="center">%</td>
+                                <td></td>
+                            </tr>
+                            <!--- ITEM & OPTIONS --->
+                            <tr>
+                                <td colspan="8"><i>COLOR/SIZE BREAKDOWN</i></td>
+                            </tr>
+                            <ng-container *ngFor="let qryItemReport of qryOrderLine.colorSizesData">
+                                <tr>
+                                    <td>{{qryItemReport.colorName}} <span *ngIf="qryItemReport.sizeName">&amp;
+                                            {{qryItemReport.sizeName}}</span></td>
+                                    <td align="center">{{qryItemReport.quantity}}</td>
+                                    <td align="center"> {{qryItemReport.runCost | currency: 'USD': 'symbol':'1.3-3' }}
+                                    </td>
+                                    <td align="center">{{(qryItemReport.runCost *qryItemReport.quantity) | currency:
+                                        'USD':
+                                        'symbol':'1.3-3' }} </td>
+                                    <td align="center">{{qryItemReport.runPrice | currency: 'USD': 'symbol':'1.3-3' }}
+                                    </td>
+                                    <td align="center">{{(qryItemReport.runPrice *qryItemReport.quantity) | currency:
+                                        'USD':
+                                        'symbol':'1.3-3' }}</td>
+                                    <td align="center">
+                                        <span>{{(qryOrderLine.blnSample ? 0.00 :
+                                            (qryItemReport.runPrice*qryItemReport.quantity-qryItemReport.runCost*qryItemReport.quantity))
+                                            | currency: 'USD': 'symbol':'1.3-3'
+                                            }}</span>
+                                    </td>
+                                    <td align="center">
+                                        <span *ngIf="qryItemReport.runPrice">{{ (((1 -
+                                            (qryItemReport.runCost)/(qryItemReport.runPrice))) * 100) |
+                                            number:'1.2-2'}}%</span>
+                                    </td>
+                                </tr>
+                                <ng-container *ngIf="qryItemReport.setupCost || qryItemReport.setupPrice">
+                                    <tr>
+                                        <td align="right">Color/Size Setup</td>
+                                        <td align="center"></td>
+                                        <td align="center"></td>
+                                        <td align="center">{{qryItemReport.setupCost | currency: 'USD': 'symbol':'1.3-3'
+                                            }}
+                                        </td>
+                                        <td align="center"></td>
+                                        <td align="center">{{qryItemReport.setupPrice | currency: 'USD':
+                                            'symbol':'1.3-3' }}
+                                        </td>
+                                        <td align="center">{{(qryItemReport.setupCost - qryItemReport.runPrice) |
+                                            currency:
+                                            'USD': 'symbol':'1.3-3' }}</td>
+                                        <td align="center"><span
+                                                *ngIf="qryItemReport.setupPrice">{{((1-(qryItemReport.setupCost)/(qryItemReport.setupPrice))*100)
+                                                | number:'1.2-2'}}%</span>
+                                        </td>
+                                    </tr>
+                                </ng-container>
+                            </ng-container>
+                            <!--- IMPRINTS --->
+                            <tr>
+                                <td colspan="8"><br><i>IMPRINTS</i></td>
+                            </tr>
+                            <ng-container *ngFor="let qryImprintsReport of qryOrderLine.imprintsData">
+                                <tr>
+                                    <td>{{qryImprintsReport.locationName}} | {{qryImprintsReport.methodName}} |
+                                        Processes:
+                                        {{qryImprintsReport.processQuantity}}</td>
+                                    <td align="center">{{qryImprintsReport.quantity}}</td>
+                                    <td align="center">{{qryImprintsReport.runCost | currency: 'USD': 'symbol':'1.3-3'}}
+                                    </td>
+                                    <td align="center">{{(qryImprintsReport.runCost*qryImprintsReport.quantity) |
+                                        currency:
+                                        'USD': 'symbol':'1.3-3'}}</td>
+                                    <td align="center">{{qryImprintsReport.runPrice | currency: 'USD':
+                                        'symbol':'1.3-3'}}
+                                    </td>
+                                    <td align="center">{{(qryImprintsReport.runPrice*qryImprintsReport.quantity) |
+                                        currency:
+                                        'USD': 'symbol':'1.3-3'}}</td>
+                                    <td align="center">
+                                        {{(qryImprintsReport.runPrice*qryImprintsReport.quantity-qryImprintsReport.runCost*qryImprintsReport.quantity)
+                                        | currency: 'USD': 'symbol':'1.3-3'}}</td>
+                                    <td align="center">
+                                        <cfif runPrice>
+                                            {{((1-(qryImprintsReport.runCost)/(qryImprintsReport.runPrice))*100)
                                             |
-                                            currency}}
-                                        </div>
-                                        <div class="mt-2 text-center font-medium col-span-1 text-md font-bold">
-                                            {{((1 - (item.totalMercandiseCost /
-                                            item.totalMerchendisePrice))*100).toFixed(2)}}%
-                                        </div>
-
-
-
-                                        <!-- Mechandise Subtotal -->
-                                        <div class="mt-2 col-span-5 font-bold font-medium text-md  mb-4">
-                                            <p>Merchandise SubTotal</p>
-                                        </div>
-                                        <div class="font-medium text-md  text-center text-secondary"></div>
-                                        <div class="col-span-1"></div>
-                                        <div class="mt-2 col-span-1 text-center font-medium text-md  font-bold">
-                                            {{item.totalMercandiseCost.toFixed(2) | currency}}
-                                            <!-- {{((item.imprints?.runCost * item.product?.quantity) +
-                                            (item.product?.cost * item.product?.quantity) +
-                                            (item.imprints?.setupCost) +(item.product?.shippingCost) ) | currency}} -->
-                                        </div>
-                                        <div class="col-span-1"></div>
-                                        <div class="mt-2 text-center font-medium col-span-1 text-md font-bold">
-                                            {{item.totalMerchendisePrice.toFixed(2) | currency}}
-                                        </div>
-                                        <div class="mt-2 text-center font-medium col-span-1 text-md font-bold">
-                                            {{(item.totalMerchendisePrice - item.totalMercandiseCost).toFixed(2)
-                                            |
-                                            currency}}
-                                        </div>
-                                        <div class="mt-2 text-center font-medium col-span-1 text-md font-bold">
-                                            {{((1 - (item.totalMercandiseCost /
-                                            item.totalMerchendisePrice))*100).toFixed(2)}}%
-                                        </div>
-                                    </div>
-                                </mat-expansion-panel>
-                            </mat-accordion>
-
-                        </div>
-                        <div class="my-5">
-                            <div class="grid grid-cols-12 gap-x-1 mt-8" *ngIf="orderProducts?.length > 0">
-
-                                <div class="col-span-5 self-center my-2 font-medium tracking-tight text-secondary">
-                                    TOTAL DISCOUNT
-                                </div>
-                                <div class="font-medium text-md my-2  text-center text-secondary"></div>
-                                <div class="col-span-1"></div>
-                                <div class="col-span-1"></div>
-                                <div class="col-span-1"></div>
-                                <div class="col-span-1 text-center my-2  font-medium text-md">
-                                    -{{orderTotal.discount.toFixed(2)}}
-                                </div>
-                                <div class="col-span-1 text-center my-2 font-medium text-md">
-                                    -{{orderTotal.discount.toFixed(2)}}
-                                </div>
-                                <div class="col-span-5 self-center my-2 font-medium tracking-tight text-secondary">
-                                    TOTAL B T
-                                </div>
-                                <div class="font-medium text-md my-2 text-center text-secondary"></div>
-                                <div class="col-span-1"></div>
-                                <div class="col-span-1 text-center my-2 font-medium text-md">
-                                    {{orderTotal.cost.toFixed(2)}}</div>
-                                <div class="col-span-1"></div>
-                                <div class="col-span-1 text-center my-2 font-medium text-md">
-                                    {{orderTotal.price.toFixed(2)}}
-                                </div>
-                                <div class="col-span-1 text-center my-2 font-medium text-md">{{(orderTotal.price
-                                    -
-                                    orderTotal.cost).toFixed(2)}}
-                                </div>
-                                <div class="col-span-1 text-center my-2 font-medium text-md">
-                                    {{orderTotal.margin.toFixed(2)}}%
-                                </div>
-                                <div class="col-span-5 self-center my-2 font-medium tracking-tight text-secondary">
-                                    TOTAL TAX
-                                </div>
-                                <div class="font-medium text-md my-2 text-center text-secondary"></div>
-                                <div class="col-span-1"></div>
-                                <div class="col-span-1"></div>
-                                <div class="col-span-1  text-center my-2 font-medium text-md"></div>
-                                <div class="col-span-1  text-center my-2  font-medium text-md">
-                                    {{orderTotal.tax}}
-                                </div>
-                                <!-- <div class="col-span-5 self-center font-medium tracking-tight text-secondary">
-                                ADJUSTMENTS
-                            </div> -->
-                                <!-- <div class="col-span-1  text-center  font-medium text-md">$0.00</div> -->
-                                <div class="col-span-5 self-center my-2 font-medium tracking-tight text-secondary">
-                                    GRAND TOTAL
-                                </div>
-                                <div class="font-medium text-md my-2 text-center text-secondary"></div>
-                                <div class="col-span-1"></div>
-                                <div class="col-span-1 my-2 text-center  font-medium text-md font-bold">
-                                    {{orderTotal.cost.toFixed(2) | currency}}</div>
-                                <div class="col-span-1"></div>
-                                <div class="col-span-1 my-2 text-center  font-medium text-md font-bold">
-                                    {{orderTotal.total.toFixed(2) | currency}}
-                                </div>
-                            </div>
-
-
-
-
-                            <div class="mt-10">
-                                <div style="text-align: -webkit-center;">
-                                    <img class="w-40" src="assets/images/logo/consolidus-logo.jpeg">
-                                </div>
-                            </div>
-                        </div>
+                                            number:'1.2-2'}}%
+                                        </cfif>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="right">{{qryImprintsReport.blnStitchProcess ? 'Digitization(s)':
+                                        'Setup(s)'}}
+                                    </td>
+                                    <td align="center"></td>
+                                    <td align="center"></td>
+                                    <td align="center">{{qryImprintsReport.setupCost | currency: 'USD':
+                                        'symbol':'1.3-3'}}
+                                    </td>
+                                    <td align="center"></td>
+                                    <td align="center">{{qryImprintsReport.setupPrice | currency: 'USD':
+                                        'symbol':'1.3-3'}}
+                                    </td>
+                                    <td align="center">{{(qryImprintsReport.setupPrice-qryImprintsReport.setupCost) |
+                                        currency:
+                                        'USD': 'symbol':'1.3-3'}}</td>
+                                    <td align="center"><span
+                                            *ngIf="qryImprintsReport.setupPrice">{{((1-(qryImprintsReport.setupCost)/(qryImprintsReport.setupPrice))*100)
+                                            | number:'1.2-2'}}%</span>
+                                    </td>
+                                </tr>
+                            </ng-container>
+                            <!--- ACCESSORIES --->
+                            <tr>
+                                <td colspan="8"><br><i>ACCESSORIES</i></td>
+                            </tr>
+                            <ng-container *ngFor="let qryAccessoriesReport of qryOrderLine.accessoriesData">
+                                <tr>
+                                    <td>{{qryAccessoriesReport.packagingName}}</td>
+                                    <td align="center">{{qryAccessoriesReport.quantity}}</td>
+                                    <td align="center">{{qryAccessoriesReport.runCost | currency: 'USD':
+                                        'symbol':'1.3-3'}}
+                                    </td>
+                                    <td align="center">{{(qryAccessoriesReport.runCost * qryAccessoriesReport.quantity)
+                                        |
+                                        currency: 'USD': 'symbol':'1.3-3'}}</td>
+                                    <td align="center">{{qryAccessoriesReport.runPrice | currency: 'USD':
+                                        'symbol':'1.3-3'}}
+                                    </td>
+                                    <td align="center">{{(qryAccessoriesReport.runPrice * qryAccessoriesReport.quantity)
+                                        |
+                                        currency: 'USD': 'symbol':'1.3-3'}}</td>
+                                    <td align="center">{{(qryAccessoriesReport.runPrice * qryAccessoriesReport.quantity
+                                        -
+                                        qryAccessoriesReport.runCost * qryAccessoriesReport.quantity) | currency: 'USD':
+                                        'symbol':'1.3-3'}}</td>
+                                    <td align="center"><span
+                                            *ngIf="qryAccessoriesReport.runPrice">{{((1-(qryAccessoriesReport.runCost)/(qryAccessoriesReport.runPrice))*100)
+                                            | number:'1.2-2'
+                                            }} %</span></td>
+                                </tr>
+                                <ng-container *ngIf="qryAccessoriesReport.setupCost || qryAccessoriesReport.setupPrice">
+                                    <tr>
+                                        <td align="right">Accessory Setup</td>
+                                        <td align="center"></td>
+                                        <td align="center"></td>
+                                        <td align="center">{{qryAccessoriesReport.setupCost | currency: 'USD':
+                                            'symbol':'1.3-3'}}</td>
+                                        <td align="center"></td>
+                                        <td align="center">{{qryAccessoriesReport.setupPrice | currency: 'USD':
+                                            'symbol':'1.3-3'}}</td>
+                                        <td align="center">{{(qryAccessoriesReport.setupPrice -
+                                            qryAccessoriesReport.setupCost)
+                                            | currency: 'USD': 'symbol':'1.3-3'}}</td>
+                                        <td align="center"><span
+                                                *ngIf="qryAccessoriesReport.setupPrice">{{((1-(qryAccessoriesReport.setupCost)/(qryAccessoriesReport.setupPrice))*100)
+                                                | number:'1.2-2'}}%</span>
+                                        </td>
+                                    </tr>
+                                </ng-container>
+                            </ng-container>
+                            <!--- SHIPPING --->
+                            <tr height="10">
+                                <td colspan="6"></td>
+                            </tr>
+                            <tr>
+                                <td><i>SHIPPING &amp; HANDLING</i></td>
+                                <td align="center"></td>
+                                <td align="center"></td>
+                                <td align="center">{{qryOrderLine.shippingCost | currency: 'USD': 'symbol':'1.3-3'}}
+                                </td>
+                                <td align="center"></td>
+                                <td align="center">{{qryOrderLine.shippingPrice | currency: 'USD': 'symbol':'1.3-3'}}
+                                </td>
+                                <td align="center"> {{(qryOrderLine.blnSample ? 0.00 : (qryOrderLine.shippingPrice
+                                    -qryOrderLine.shippingCost)) | currency: 'USD': 'symbol':'1.3-3'}}</td>
+                                <td align="center"><span *ngIf="qryOrderLine.shippingPrice">
+                                        {{(qryOrderLine.blnSample ? 0.00 :
+                                        ((1-(qryOrderLine.shippingCost)/(qryOrderLine.shippingPrice))*100)) |
+                                        number:'1.2-2'}}%
+                                    </span>
+                                </td>
+                            </tr>
+                            <ng-container *ngIf="orderDetail.blnRoyaltyStore && qryOrderLine.blnRoyalty">
+                                <tr height="10">
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><i>{{orderDetail.royaltyName}}</i></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td align="center">{{qryOrderLine?.royaltyPrice | currency: 'USD':
+                                        'symbol':'1.3-3'}}
+                                    </td>
+                                    <td></td>
+                                    <td align="center">{{qryOrderLine?.royaltyPrice | currency: 'USD':
+                                        'symbol':'1.3-3'}}
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </ng-container>
+                            <!--- SUB-TOTAL --->
+                            <tr height="10">
+                                <td colspan="8"></td>
+                            </tr>
+                            <tr>
+                                <td><i>MERCHANDISE SUB-TOTAL</i></td>
+                                <td align="center"></td>
+                                <td align="center"></td>
+                                <td align="center"><b>{{(qryOrderLine.getOrderLineTotalsCost +
+                                        qryOrderLine.royaltyPrice) |
+                                        currency: 'USD': 'symbol':'1.3-3'}}</b></td>
+                                <td align="center"></td>
+                                <td align="center"><b> {{(qryOrderLine.getOrderLineTotalsPrice +
+                                        qryOrderLine.royaltyPrice)
+                                        |
+                                        currency: 'USD': 'symbol':'1.3-3'}}</b></td>
+                                <td align="center"><b>
+                                        <span *ngIf="qryOrderLine.blnSample">{{0.00 | currency: 'USD':
+                                            'symbol':'1.3-3'}}</span>
+                                        <span *ngIf="!qryOrderLine.blnSample">{{((qryOrderLine.getOrderLineTotalsPrice +
+                                            qryOrderLine.royaltyPrice) - (qryOrderLine.getOrderLineTotalsCost +
+                                            qryOrderLine.royaltyPrice)) | currency: 'USD': 'symbol':'1.3-3'}}</span>
+                                    </b></td>
+                                <td align="center">
+                                    <span *ngIf="qryOrderLine.getOrderLineTotalsPrice">
+                                        <span>
+                                            {{(qryOrderLine.blnSample ? 0.00 : (1 -
+                                            (qryOrderLine.getOrderLineTotalsCost)/(qryOrderLine.getOrderLineTotalsPrice))
+                                            *100)
+                                            | number:'1.2-2'}} %
+                                        </span>
+                                    </span>
+                                </td>
+                            </tr>
+                        </table>
                     </div>
-                </div>
+                </mat-expansion-panel>
+            </mat-accordion>
+        </ng-container>
 
-                <button (click)="exportHtmlToPDF('actual')" mat-stroked-button class="w-20">
-                    <span class="test-sm">PDF</span>
-                </button>
-                <div id="actual" class="my-5 rounded-2xl shadow bg-card p-5">
+        <!--- ORDER TOTALS --->
+        <hr>
+        <table class="padding-1x wide">
+            <tr height="1">
+                <td width="30%"></td>
+                <td width="10%"></td>
+                <td width="10%"></td>
+                <td width="10%"></td>
+                <td width="10%"></td>
+                <td width="10%"></td>
+                <td width="10%"></td>
+                <td width="10%"></td>
+            </tr>
+            <tr>
+                <td>TOTAL DISCOUNT</td>
+                <td align="center"></td>
+                <td align="center"></td>
+                <td align="center"></td>
+                <td align="center"></td>
+                <td align="center">{{(orderDetail.discount * -1) | currency: 'USD': 'symbol':'1.3-3'}}</td>
+                <td align="center">{{(orderDetail.discount * -1) | currency: 'USD': 'symbol':'1.3-3'}}</td>
+                <td align="center"></td>
+            </tr>
+            <ng-container *ngIf="orderDetail.cashbackDiscount">
+                <tr>
+                    <td>CASH BACK DISCOUNT</td>
+                    <td align="center"></td>
+                    <td align="center"></td>
+                    <td align="center"></td>
+                    <td align="center"></td>
+                    <td align="center">{{(orderDetail.cashbackDiscount * -1) | currency: 'USD': 'symbol':'1.3-3'}}</td>
+                    <td align="center"> {{(orderDetail.cashbackDiscount * -1) | currency: 'USD': 'symbol':'1.3-3'}}</td>
+                    <td align="center"></td>
+                </tr>
+            </ng-container>
+            <tr>
+                <td colspan="8">ADJUSTMENTS</td>
+            </tr>
 
-                    <div class="mb-3 font-bold">
-                        Actual cost Analysis
-                    </div>
+            <ng-container *ngFor="let item of orderDetail.adjustmentsData">
+                <tr>
+                    <td align="right">{{item.description}}</td>
+                    <td align="center"></td>
+                    <td align="center"></td>
+                    <td align="center">{{item.cost | currency}}</td>
+                    <td align="center"></td>
+                    <td align="center">{{item.price | currency}}</td>
+                    <td align="center">{{(item.price - item.cost) | currency}}</td>
+                    <td align="center"><span *ngIf="item.price">{{((1-(item.cost)/(item.price))*100) |
+                            currency}}%</span></td>
+                </tr>
+            </ng-container>
+            <ng-container *ngIf="orderDetail.blnRoyaltyStore">
+                <tr>
+                    <td>TOTAL ROYALTIES</td>
+                    <td></td>
+                    <td></td>
+                    <td align="center">{{orderDetail.royalties | currency: 'USD': 'symbol':'1.3-3'}}</td>
+                    <td></td>
+                    <td align="center">{{orderDetail.royalties | currency: 'USD': 'symbol':'1.3-3'}}</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </ng-container>
+            <tr height="1">
+                <td>TOTAL B.T.</td>
+                <td></td>
+                <td></td>
+                <td align="center" width="10%">
+                    {{(orderDetail.blnRoyaltyStore ? (orderDetail.orderCost+orderDetail.royalties) :
+                    (orderDetail.orderCost)) | currency: 'USD': 'symbol':'1.3-3'}}
+                </td>
+                <td></td>
+                <td align="center">
+                    {{(orderDetail.blnRoyaltyStore ? (orderDetail.orderPrice+orderDetail.royalties) :
+                    (orderDetail.orderPrice)) | currency: 'USD': 'symbol':'1.3-3'}}</td>
 
-                    <div class="mb-3 font-bold border-b">
-                        CONFIDENTIAL COST ANALYSIS REPORT - Actual #{{orderDetail.pk_orderID}}
-                    </div>
-                    <div class="mt-3">
-                        <div *ngFor="let item of orderProducts">
-                            <mat-accordion>
-                                <mat-expansion-panel class=" my-5">
-                                    <mat-expansion-panel-header class="my-10">
-                                        <mat-panel-title>
-                                            <div class="flex flex-col gap-y-1 py-2">
-                                                <div class="font-bold">
-                                                    {{item.products[0]?.productNumber}}:
-                                                    {{item.products[0]?.productName}}
-                                                </div>
-                                                <div>
-                                                    PO: 84806-155516
-                                                </div>
-                                                <div>
-                                                    Status: New Order
-                                                </div>
-                                                <div>
-                                                    Quantity: {{item?.totalQuantity}}
-                                                </div>
-                                                <div class="flex flex-col h-full justify-between">
-                                                    {{getTotal(item)}}
-                                                </div>
-                                            </div>
-                                        </mat-panel-title>
-                                        <!-- <mat-panel-description>
-                                           
-
-                                        </mat-panel-description> -->
-                                    </mat-expansion-panel-header>
-                                    <div class="grid grid-cols-12 gap-x-1 mb-5 mt-15">
-
-                                        <div class="col-span-9 font-medium font-bold text-md">
-                                            <p>COLOR/SIZE BREAKDOWN</p>
-                                        </div>
-                                        <div
-                                            class="font-bold font-medium col-span-1  text-md text-center text-secondary">
-                                            <p>QTY</p>
-                                        </div>
-                                        <div
-                                            class="font-bold font-medium col-span-1  text-md text-center text-secondary">
-                                            <p>Unit</p>
-                                        </div>
-                                        <div
-                                            class="font-bold font-medium col-span-1  text-md text-center text-secondary">
-                                            <p>Total</p>
-                                        </div>
-
-                                        <div class="col-span-12 my-2" *ngFor="let colors of item.products">
-                                            <div class="grid grid-cols-12">
-                                                <div class="col-span-9 font-medium text-md text-secondary">
-                                                    <p>{{colors.colorName}} <span *ngIf="colors.sizeName"> &
-                                                            {{colors.sizeName}}</span></p>
-                                                </div>
-                                                <div class="font-medium col-span-1  text-md text-center text-secondary">
-                                                    {{colors.quantity}}
-                                                </div>
-                                                <div class="font-medium col-span-1  text-md text-center text-secondary">
-                                                    <p>{{colors.cost}}</p>
-                                                </div>
-                                                <div class="font-medium col-span-1  text-md text-center text-secondary">
-                                                    {{(colors.cost * colors.quantity).toFixed(2) }}
-                                                </div>
-                                            </div>
-                                        </div>
-
-
-
-
-                                        <!-- Imprints -->
-                                        <div class="mt-2 col-span-9 font-medium font-bold text-md">
-                                            <p>IMPRINTS</p>
-                                        </div>
-                                        <div
-                                            class="font-bold font-medium col-span-1  text-md text-center text-secondary">
-                                            <p>QTY</p>
-                                        </div>
-                                        <div
-                                            class="font-bold font-medium col-span-1  text-md text-center text-secondary">
-                                            <p>Unit</p>
-                                        </div>
-                                        <div
-                                            class="font-bold font-medium col-span-1  text-md text-center text-secondary">
-                                            <p>Total</p>
-                                        </div>
-                                        <div class="col-span-12 my-2" *ngFor="let imprint of item.imprints">
-                                            <div class="grid grid-cols-12">
-
-                                                <div class="col-span-9 font-medium text-md text-secondary">
-                                                    <p>{{imprint?.locationName}} | {{imprint?.methodName}} |
-                                                        Processes: {{imprint?.processQuantity}}</p>
-                                                </div>
-                                                <div class="col-span-1 font-medium text-md  text-center text-secondary">
-                                                    {{imprint?.quantity}}
-                                                </div>
-                                                <div
-                                                    class=" col-span-1 text-center font-medium text-md  text-secondary">
-                                                    {{(imprint?.runCost * imprint?.quantity).toFixed(2)}}
-                                                </div>
-                                                <div
-                                                    class=" col-span-1 text-center font-medium text-md  text-secondary">
-                                                    {{(imprint?.setupCost)}}
-                                                </div>
-
-                                                <!-- Setups -->
-                                                <div class="mt-2 col-span-11 font-medium  text-md text-secondary">
-                                                    <p>Setup(s)</p>
-                                                </div>
-
-                                                <div
-                                                    class="mt-2 col-span-1 text-center font-medium text-md  text-secondary">
-                                                    {{(imprint?.setupCost)}}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!-- ACCESSORIES -->
-                                        <div *ngIf="item.accessories > 0"
-                                            class="mt-2 col-span-9 font-medium font-bold text-md ">
-                                            <p>ACCESSORIES</p>
-                                        </div>
-                                        <div *ngIf="item.accessories > 0"
-                                            class="font-bold font-medium col-span-1  text-md text-center text-secondary">
-                                            <p>QTY</p>
-                                        </div>
-                                        <div *ngIf="item.accessories > 0"
-                                            class="font-bold font-medium col-span-1  text-md text-center text-secondary">
-                                            <p>Unit</p>
-                                        </div>
-                                        <div *ngIf="item.accessories > 0"
-                                            class="font-bold font-medium col-span-1  text-md text-center text-secondary">
-                                            <p>Total</p>
-                                        </div>
-                                        <div class="col-span-12 my-2" *ngFor="let access of item.accessories">
-                                            <div class="grid grid-cols-12">
-                                                <div class=" col-span-9 font-medium text-md text-secondary">
-                                                    <p>{{access.packagingName}}</p>
-                                                </div>
-                                                <div class="col-span-1 font-medium text-md  text-center text-secondary">
-                                                    {{access.quantity}}</div>
-                                                <div class="font-medium text-md text-secondary col-span-1 text-center">
-                                                    {{access?.runCost}}</div>
-                                                <div class="font-medium text-md text-secondary col-span-1 text-center">
-                                                    {{(access?.runCost * access.quantity).toFixed(2)}}</div>
-
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </mat-expansion-panel>
-                            </mat-accordion>
-
-                        </div>
-
-                    </div>
-                    <div class="my-5">
-                        <div class="grid grid-cols-12 gap-x-1 mt-8" *ngIf="orderProducts?.length > 0">
-
-                            <div class="col-span-11 self-center my-2 font-medium tracking-tight text-secondary">
-                                ACTUAL COST
-                            </div>
-                            <div class="col-span-1 text-center my-2  font-medium text-md">
-                                {{calculateGrandTotal()}}
-                            </div>
-
-
-                            <div class="col-span-11 self-center my-2 font-medium tracking-tight text-secondary">
-                                ORDER PRICE
-                            </div>
-
-                            <div class="col-span-1 text-center my-2 font-medium text-md">
-                                {{this.orderDetail.orderPrice.toFixed(2)}}
-                            </div>
-
-
-                            <div class="col-span-11 self-center my-2 font-medium tracking-tight text-secondary">
-                                DIFF
-                            </div>
-
-                            <div class="col-span-1  text-center my-2  font-medium text-md">
-                                {{(this.orderDetail.orderPrice.toFixed(2) - grandTotal.toFixed(2)).toFixed(2)}}
-                            </div>
-
-
-                            <div class="col-span-11 self-center my-2 font-medium tracking-tight text-secondary">
-                                MARGIN
-                            </div>
-
-                            <div class="col-span-1 my-2 text-center  font-medium text-md font-bold">
-                                {{(((this.orderDetail.orderPrice.toFixed(2) -
-                                grandTotal.toFixed(2)).toFixed(2)/this.orderDetail.orderPrice.toFixed(2))*100).toFixed(3)}}%
-                            </div>
-                        </div>
-
-
-
-
-                        <div class="mt-10">
-                            <div style="text-align: -webkit-center;">
-                                <img class="w-40" src="assets/images/logo/consolidus-logo.jpeg">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                <td align="center">
+                    {{((orderDetail.orderPrice+orderDetail.royalties) - (orderDetail.orderCost+orderDetail.royalties)) |
+                    currency: 'USD': 'symbol':'1.3-3'}}
+                </td>
+                <td align="center">
+                    <span>
+                        {{(orderDetail.orderPrice ? (1 - (orderDetail.orderCost)/(orderDetail.orderPrice)) *100 : 0.00)
+                        | number:'1.2-2'}} %
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td>TOTAL TAX</td>
+                <td align="center"></td>
+                <td align="center"></td>
+                <td align="center"></td>
+                <td align="center"></td>
+                <td align="center">{{orderDetail.orderTax | currency: 'USD': 'symbol':'1.3-3'}}</td>
+                <td align="center"></td>
+                <td align="center"></td>
+            </tr>
+            <tr>
+                <td><b>GRAND TOTAL</b></td>
+                <td align="center"></td>
+                <td align="center"></td>
+                <td align="center">
+                    <b>
+                        {{(orderDetail.blnRoyaltyStore ? (orderDetail.orderCost + orderDetail.royalties) :
+                        (orderDetail.orderCost)) | currency: 'USD': 'symbol':'1.3-3'}}
+                    </b>
+                </td>
+                <td align="center"></td>
+                <td align="center"><b>
+                        {{(orderDetail.blnRoyaltyStore ? orderDetail.orderPrice + orderDetail.royalties +
+                        orderDetail.orderTax : orderDetail.orderPrice + orderDetail.orderTax ) | currency: 'USD':
+                        'symbol':'1.3-3'}}</b>
+                </td>
+                <td align="center"></td>
+                <td align="center"></td>
+            </tr>
+        </table>
     </div>
 </div>

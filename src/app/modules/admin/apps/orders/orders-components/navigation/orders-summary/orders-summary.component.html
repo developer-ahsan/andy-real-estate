@@ -429,10 +429,13 @@
                                         +orderDetail?.billingZip) || not_available}}
                                     </h2>
                                 </span>
-                                <span class="flex  mt-1">
-                                    <h2 class="font-bold">
-                                        Account Charge Code:
-                                    </h2>
+                                <span class="mt-1">
+                                    <div class="flex font-bold mt-1">
+                                        <span>Account Charge Code:</span>
+                                        <mat-icon class="icon-size-4 ml-1"
+                                            matTooltip="This is the account/charge code on the customer's account, and not representative of whether there is an account/charge code entered for the order.  For the order, see below."
+                                            [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                    </div>
                                     <h2 class="ml-2">{{orderDetail?.accountChargeCode || not_available}}
                                     </h2>
                                 </span>
@@ -537,7 +540,12 @@
                                 <div class="col-lg-6 col-md-6 col-12 my-1">
                                     <div class="row">
                                         <div class="col-12">
-                                            <b>Account/charge Code</b>
+                                            <div class="flex font-bold mt-1">
+                                                <span>Account Charge Code:</span>
+                                                <mat-icon class="icon-size-4 ml-1"
+                                                    matTooltip="This is the account/charge code on the customer's account, and not representative of whether there is an account/charge code entered for the order.  For the order, see below."
+                                                    [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                                            </div>
                                         </div>
                                         <div class="col-12">
                                             N/A
@@ -594,7 +602,7 @@
                     <div class=" flex flex-col lg:flex-row w-full">
                         <div class="p-4 w-full">
                             <div class="text-lg font-medium tracking-tight leading-6 truncate ">
-                                Modify comments
+                                Modify Order Comments
                             </div>
                             <div *ngIf="!htmlComment">
                                 <fuse-alert [appearance]="'border'" [type]="'warning'">

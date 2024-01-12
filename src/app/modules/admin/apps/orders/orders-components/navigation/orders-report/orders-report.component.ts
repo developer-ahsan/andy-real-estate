@@ -96,9 +96,8 @@ export class OrdersReportComponent implements OnInit {
       var height = positionInfo.height;
       var width = positionInfo.width;
       var top_left_margin = 15;
-      var padding_bottom = 15;
       let PDF_Width = width + (top_left_margin * 2);
-      var PDF_Height = (PDF_Width * 1.5) + (top_left_margin * 2) + padding_bottom;
+      var PDF_Height = (PDF_Width * 1.5) + (top_left_margin * 2);
       var canvas_image_width = width;
       var canvas_image_height = height;
 
