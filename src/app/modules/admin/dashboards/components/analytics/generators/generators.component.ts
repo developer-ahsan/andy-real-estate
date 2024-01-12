@@ -783,7 +783,7 @@ export class GeneratorsComponent implements OnInit {
             }
           });
         }
-        this.emailModalContent.body = `${greeting} , ${message}`;
+        this.emailModalContent.body = `${greeting} ${message}`;
         this.emailModalContent.qryOrderLines = res["qryOrderLines"];
         this.emailModalContent.footer = footer;
       } else if (type == 'quotes') {
@@ -824,7 +824,7 @@ export class GeneratorsComponent implements OnInit {
               this.emailModalContent.surveys.push({ id, name });
               this._changeDetectorRef.markForCheck();
             });
-            this.emailModalContent.body = `${greeting} ,<br /><br />${message}`;
+            this.emailModalContent.body = `${greeting},<br /><br />${message}`;
             this.emailModalContent.footer = footer;
           } else {
             this.emailModalContent.surveys = [];

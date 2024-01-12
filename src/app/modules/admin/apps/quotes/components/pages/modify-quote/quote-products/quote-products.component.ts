@@ -3,7 +3,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { QuotesService } from '../../../quotes.service';
 import { Subject } from 'rxjs';
-import { updateCartInfo, updateCartShipping } from '../../../quotes.types';
+import { addAccessory, updateCartInfo, updateCartShipping } from '../../../quotes.types';
 import moment from 'moment';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
@@ -23,48 +23,27 @@ export class QuoteProductsComponent implements OnInit {
   isSearchingProduct: boolean = false;
   selectedProduct: any;
 
-  ngSelectedProduct: any = {
-    royaltyPrice: '',
-    shippingCost: '',
-    shippingPrice: '',
-    blnOverride: '',
-    // Initialize the structure according to your data model
-    products: [
-      {
-        cost: 0, // Provide initial values as per your application logic
-        price: 0,
-        blnOverride: false,
-        blnSample: false,
-        blnTaxable: false
-        // Add more properties if needed
-      }
-    ],
-    color_sizes: [],
-    colors: [], // Initialize with available colors
-    sizes: [], // Initialize with available sizes
-    totalQuantity: 0,
-    totalRunintCost: 0,
-    totalRunintPrice: 0,
-    // Add more properties as per your application's data structure
-  };
-  quillModules: any = {
-    toolbar: [
-      ["bold", "italic", "underline", "strike"],
-      ["blockquote", "code-block"],
-      [{ color: [] }, { background: [] }],
-      [{ font: [] }],
-      [{ align: [] }],
-      ["clean"],
-    ],
-  };
+
   // Add new Product
   newProductQuantity: any = '';
   newProductColor: any = '';
   newProductSize: any = '';
+  ngNewProduct: any;
+  ngSelectedProduct: any;
   newBlnOverride: boolean = true;
   newBlnSample: boolean = false;
   newBlnTax: boolean = true;
   newBlnRoyalty: boolean = true;
+  dropdownSettings = {
+    singleSelection: false,
+    idField: 'fk_productID',
+    textField: 'productName',
+    selectAllText: 'Select All',
+    unSelectAllText: 'UnSelect All',
+    itemsShowLimit: 1,
+    allowSearchFilter: true,
+    limitSelection: 1
+  };
 
   // Add New Product Option
   ngColor = 0;
@@ -238,6 +217,11 @@ export class QuoteProductsComponent implements OnInit {
       }
     });
   }
+  onItemSelect(item: any) {
+    this.ngNewProduct = [this.allProducts.find(product => product.fk_productID == item.fk_productID)];
+    this._changeDetectorRef.markForCheck();
+    console.log(this.ngNewProduct);
+  };
   changeCartLine(cartLine) {
     this.currentSelectedProduct = cartLine;
     this.selectedCartLine = cartLine;
@@ -270,6 +254,8 @@ export class QuoteProductsComponent implements OnInit {
     this._quoteService.getQuoteData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.allProducts = res["data"];
       this.selectedProduct = this.allProducts[0];
+      this.ngNewProduct = [this.allProducts[0]];
+      console.log(this.ngNewProduct);
       // this.currentSelectedProduct = this.allProducts[0];
       this.searchProductCtrl.setValue(this.selectedProduct)
       this.isLoading = false;
@@ -585,5 +571,41 @@ export class QuoteProductsComponent implements OnInit {
     //   this.isUpdateOptionLoader = false;
     //   this._changeDetectorRef.markForCheck();
     // });
+  }
+  // addAccoryOptionOptions
+  addAccoryOptionOptions() {
+    const user = JSON.parse(localStorage.getItem('userDetails'));
+
+    const { fk_cartID, pk_cartLineID, fk_productID, orderQuantity, productName, warehouseDeliveryOption, cartLineCost, cartLinePrice } = this.selectedCartLine;
+    const { fk_packagingID, packagingName, unitsPerPackage, setup, run, blnOverrideShippingNewAccessory } = this.selectedCartLine.ngSelectedAccessory;
+    let paylaod: addAccessory = {
+      cartID: fk_cartID,
+      loggedInUserID: user.pk_userID,
+      cartLineID: pk_cartLineID,
+      cartline_fkProductID: fk_productID,
+      orderQuantity: orderQuantity,
+      packagingID: fk_packagingID,
+      packagingName: packagingName,
+      productName: productName,
+      quantityPerPackage: unitsPerPackage,
+      setup,
+      run,
+      blnOverrideShippingNewAccessory,
+      isFulfillmentCart: this.selectedQuoteDetail.isFulfillmentCart,
+      warehouse_delivery_option: warehouseDeliveryOption,
+      cartLineGroundCost: cartLineCost,
+      cartLineGroundPrice: cartLinePrice,
+      add_modify_quote_accessory: true
+    }
+    this.selectedCartLine.isAddAccessoryLoader = true;
+    this._quoteService.AddQuoteData(paylaod).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.selectedCartLine.isAddAccessoryLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      if (res["success"]) {
+        this._quoteService.snackBar(res["message"]);
+        this.getQuoteFromAPI();
+      }
+    })
   }
 }

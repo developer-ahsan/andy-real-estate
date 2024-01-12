@@ -93,3 +93,23 @@ export interface AddCartArtworkComment {
     comment: string;
     add_cartLine_artwork_comment: boolean;
 };
+
+export interface addAccessory {
+    cartID: number;
+    loggedInUserID: number;
+    cartLineID: number;
+    cartline_fkProductID: number;
+    orderQuantity: number;
+    packagingID: number;
+    packagingName: string;
+    productName: string;
+    quantityPerPackage: number;
+    setup: number;
+    run: number;
+    blnOverrideShippingNewAccessory: boolean;
+    isFulfillmentCart: boolean;
+    warehouse_delivery_option: number;
+    cartLineGroundCost: number;
+    cartLineGroundPrice: number;
+    add_modify_quote_accessory: boolean;
+};
