@@ -19,6 +19,9 @@ export class OrdersReportComponent implements OnInit {
   managerDetails: any;
   qryOrderLines: any;
   isGeneratePDFLoader: boolean = false;
+  // Group Order
+  orderParticipants: any;
+  ngSelectedParticipant: any;
   constructor(
     private _orderService: OrdersService,
     private _changeDetectorRef: ChangeDetectorRef
@@ -29,10 +32,13 @@ export class OrdersReportComponent implements OnInit {
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["data"].length) {
         this.orderDetail = res["data"][0];
+        if (this.orderDetail.fk_groupOrderID) {
+          this.getOrderParticapants();
+        }
         this.setOrderData();
         this.getOrderProducts();
       }
-    })
+    });
   }
   setOrderData() {
     this.managerDetails = this.orderDetail.managerDetails?.split('::');
@@ -86,7 +92,14 @@ export class OrdersReportComponent implements OnInit {
     const matchingAccessories = items.filter(item => item.fk_orderLineID === orderLine.pk_orderLineID);
     orderLine.accessoriesData.push(...matchingAccessories);
   }
-
+  // Group Order
+  getOrderParticapants() {
+    this._orderService.groupOrderParticipants$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res) {
+        this.orderParticipants = res["data"];
+      }
+    });
+  }
   public exportHtmlToPDF() {
     this.isGeneratePDFLoader = true;
     this._changeDetectorRef.markForCheck();

@@ -20,6 +20,8 @@ export class OrdersService {
     private _orderLineProducts: BehaviorSubject<OrdersList[] | null> = new BehaviorSubject(null);
     private _stores: BehaviorSubject<OrdersList[] | null> = new BehaviorSubject(null);
     private _group_order_detail: BehaviorSubject<OrdersList[] | null> = new BehaviorSubject(null);
+    private _group_order_particpants: BehaviorSubject<any | null> = new BehaviorSubject(null);
+    private _group_order_options: BehaviorSubject<any | null> = new BehaviorSubject(null);
     public OrderCancelled: boolean = false;
 
     public navigationLabels = [
@@ -235,6 +237,12 @@ export class OrdersService {
     get groupOrderDetail$(): Observable<any> {
         return this._group_order_detail.asObservable();
     }
+    get groupOrderParticipants$(): Observable<any> {
+        return this._group_order_particpants.asObservable();
+    }
+    get groupOrderOptions$(): Observable<any> {
+        return this._group_order_options.asObservable();
+    }
 
     // Orders List
     getOrders(params): Observable<OrdersList[]> {
@@ -299,6 +307,35 @@ export class OrdersService {
                 order_id: id
             }
         })
+    }
+    // Group Order Participants 
+    getGroupOrderParticipants(id) {
+        return this._httpClient.get(environment.orders, {
+            params: {
+                group_order_participants: true,
+                is_participating: true,
+                group_order_id: id
+            }
+        }).pipe(
+            tap((participants) => {
+                this._group_order_particpants.next(participants);
+            })
+        );
+    }
+    // Group Order Options 
+    getGroupOrderOptions(id, store_id) {
+        return this._httpClient.get(environment.orders, {
+            params: {
+                group_orderline_options: true,
+                order_id: id,
+                store_id: store_id
+            }
+        }).pipe(
+            tap((options) => {
+                this._group_order_options.next(options);
+            }),
+            retry(3)
+        );
     }
     // Order Total
     getOrderTotals(id) {

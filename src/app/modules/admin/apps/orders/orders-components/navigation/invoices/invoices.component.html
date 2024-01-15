@@ -1,8 +1,8 @@
 <div class="w-full">
-    <ngx-skeleton-loader count="15" appearance="line" animation="pulse" *ngIf="isLoading">
+    <ngx-skeleton-loader count="15" appearance="line" animation="pulse" *ngIf="isLoading || isGroupLoader">
     </ngx-skeleton-loader>
 
-    <div class="row" *ngIf="!isLoading && orderDetail">
+    <div class="row" *ngIf="!isLoading && !isGroupLoader && orderDetail">
         <div class="col-12 my-2">
             <div class="text-right">
                 <button (click)="exportHtmlToPDF()" mat-stroked-button [matTooltip]="'Save report as PDF'">
@@ -12,7 +12,7 @@
             </div>
             <div #htmltable id="htmltable">
                 <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-                    <div class="p-6 sm:p-8 lg:p-10 w-full">
+                    <div class="p-6 sm:p-8 lg:p-10 w-full" *ngIf="!orderDetail.fk_groupOrderID">
                         <div class="text-2xl font-bold ">
                             Invoice
                         </div>
@@ -258,6 +258,507 @@
                                         <br />
                                     </ng-container>
                                     <hr />
+                                    <table class="p-1 w-full" width="100%">
+                                        <tr height="1">
+                                            <td width="70%"></td>
+                                            <td width="10%"></td>
+                                            <td width="10%"></td>
+                                            <td width="10%"></td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td align="center">QTY</td>
+                                            <td colspan="2" align="center">PRICE</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2"></td>
+                                            <td align="center">unit</td>
+                                            <td align="center">total</td>
+                                        </tr>
+                                        <!--- ITEM & OPTIONS --->
+                                        <tr>
+                                            <td colspan="6"><i>COLOR/SIZE BREAKDOWN</i></td>
+                                        </tr>
+                                        <ng-container *ngFor="let item of qryOrderLine.colorSizesData">
+                                            <tr>
+                                                <td>{{item.colorName}} <span *ngIf="item.sizeName">&amp;
+                                                        {{item.sizeName}}</span></td>
+                                                <td align="center">{{item.quantity}}</td>
+                                                <td align="center">{{item.runPrice | currency: 'USD': 'symbol':'1.3-3'}}
+                                                </td>
+                                                <td align="center">{{item.runPrice * item.quantity | currency: 'USD':
+                                                    'symbol':'1.3-3'}}</td>
+                                            </tr>
+                                            <ng-container *ngIf="item.setupCost || item.setupPrice">
+                                                <tr>
+                                                    <td align="right">Color/Size Setup</td>
+                                                    <td align="center"></td>
+                                                    <td align="center"></td>
+                                                    <td align="center">{{item.setupPrice | currency: 'USD':
+                                                        'symbol':'1.3-3'}}</td>
+                                                </tr>
+                                            </ng-container>
+                                        </ng-container>
+                                        <!--- IMPRINTS --->
+                                        <ng-container *ngIf="qryOrderLine.imprintsData.length">
+                                            <!--- IMPRINTS --->
+                                            <tr>
+                                                <td colspan="4"><br /><i>IMPRINTS</i></td>
+                                            </tr>
+                                            <ng-container *ngFor="let item of qryOrderLine.imprintsData">
+                                                <tr>
+                                                    <td>{{item.locationName}} ({{item.methodName}})
+                                                        <span *ngIf="item.reorderNumber"><br /><span
+                                                                color="#FF0000"><b>Reorder
+                                                                    #:&nbsp; {{item.reorderNumber}}</b></span></span>
+                                                    </td>
+                                                    <td align="center">{{item.quantity}}</td>
+                                                    <td align="center">{{item.runPrice | currency: 'USD':
+                                                        'symbol':'1.3-3'}}
+                                                    </td>
+                                                    <td align="center">{{item.runPrice*item.quantity | currency: 'USD':
+                                                        'symbol':'1.3-3'}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td align="right"><span>{{item.blnStitchProcess ? 'Digitization(s)'
+                                                            :
+                                                            'Setup(s)'}}</span></td>
+                                                    <td align="center"></td>
+                                                    <td align="center"></td>
+                                                    <td align="center">{{item.setupPrice | currency: 'USD':
+                                                        'symbol':'1.3-3'}}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td align="right">
+                                                        <span *ngIf="item.blnColorProcess">{{item.blnColorProcess ?
+                                                            'Total
+                                                            Colors: ' + item.processQuantity : 'Stitch Count: ' +
+                                                            item.processQuantity}}</span>
+                                                        <span *ngIf="item.imprintColors">/ Colors:
+                                                            {{item.imprintColors}}</span>
+                                                    </td>
+                                                    <td colspan="3"></td>
+                                                </tr>
+                                            </ng-container>
+                                        </ng-container>
+                                        <ng-container *ngIf="qryOrderLine.accessoriesData.length">
+                                            <!--- ACCESSORIES --->
+                                            <tr>
+                                                <td colspan="6"><br /><i>ACCESSORIES</i></td>
+                                            </tr>
+                                            <ng-container *ngFor="let item of qryOrderLine.accessoriesData">
+                                                <tr>
+                                                    <td>{{item.packagingName}}</td>
+                                                    <td align="center">{{item.quantity}}</td>
+                                                    <td align="center">{{item.runPrice | currency: 'USD':
+                                                        'symbol':'1.3-3'}}
+                                                    </td>
+                                                    <td align="center">{{item.runPrice * item.quantity | currency:
+                                                        'USD':
+                                                        'symbol':'1.3-3'}}</td>
+                                                </tr>
+                                                <ng-container *ngIf="item.setupCost || item.setupPrice">
+                                                    <tr>
+                                                        <td align="right">Accessory Setup</td>
+                                                        <td align="center"></td>
+                                                        <td align="center"></td>
+                                                        <td align="center">{{item.setupPrice | currency: 'USD':
+                                                            'symbol':'1.3-3'}}</td>
+                                                    </tr>
+                                                </ng-container>
+                                            </ng-container>
+                                        </ng-container>
+                                        <!--- SHIPPING --->
+                                        <tr height="10">
+                                            <td colspan="4"></td>
+                                        </tr>
+                                        <tr>
+                                            <td><i>SHIPPING &amp; HANDLING</i></td>
+                                            <td align="center"></td>
+                                            <td align="center"></td>
+                                            <td align="center">{{qryOrderLine.shippingPrice | currency: 'USD':
+                                                'symbol':'1.3-3'}}</td>
+                                        </tr>
+                                        <ng-container *ngIf="orderDetail.blnRoyaltyStore">
+                                            <tr height="10">
+                                                <td colspan="6"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <i>
+                                                        {{orderDetail.royaltyName}}
+                                                    </i>
+                                                </td>
+                                                <td align="center"></td>
+                                                <td align="center"></td>
+                                                <td align="center">{{qryOrderLine.royaltyPrice | currency: 'USD':
+                                                    'symbol':'1.3-3'}}</td>
+                                            </tr>
+                                        </ng-container>
+                                        <!--- SUB-TOTAL --->
+                                        <tr>
+                                            <td><i>MERCHANDISE SUB-TOTAL</i></td>
+                                            <td align="center"></td>
+                                            <td align="center"></td>
+                                            <td align="center"><b>{{(qryOrderLine?.getOrderLineTotalsPrice +
+                                                    qryOrderLine.royaltyPrice) | currency:
+                                                    'USD':
+                                                    'symbol':'1.3-3'}}</b></td>
+                                        </tr>
+                                    </table>
+                                </ng-container>
+                                <!--- ORDER TOTALS --->
+                                <hr class="my-2">
+                                <table class="p-1 w-full" width="100%">
+                                    <tr height="1">
+                                        <td width="70%"></td>
+                                        <td width="10%"></td>
+                                        <td width="10%"></td>
+                                        <td width="10%"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>TOTAL MERCHANDISE</td>
+                                        <td align="center"></td>
+                                        <td align="center"></td>
+                                        <td align="center">
+                                            <b>{{(orderDetail?.blnRoyaltyStore ? orderDetail?.orderPrice +
+                                                orderDetail?.royalties: orderDetail?.orderPrice) | currency: 'USD':
+                                                'symbol':'1.3-3'}}</b>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>TOTAL <span>{{orderDetail.discount < 0 ? 'ADJUSTMENT' : 'DISCOUNT' }}</span>
+                                        </td>
+                                        <td align="center"></td>
+                                        <td align="center"></td>
+                                        <td align="center"><b>{{orderDetail.discount | currency: 'USD':
+                                                'symbol':'1.3-3'}}</b></td>
+                                    </tr>
+                                    <ng-container *ngIf="orderDetail.cashbackDiscount">
+                                        <tr>
+                                            <td>CASH BACK DISCOUNT</td>
+                                            <td align="center"></td>
+                                            <td align="center"></td>
+                                            <td align="center"><b>{{orderDetail.cashbackDiscount | currency: 'USD':
+                                                    'symbol':'1.3-3'}}</b></td>
+                                        </tr>
+                                    </ng-container>
+                                    <tr>
+                                        <td>TOTAL TAX</td>
+                                        <td align="center"></td>
+                                        <td align="center"></td>
+                                        <td align="center"><b>{{orderDetail.orderTax | currency: 'USD':
+                                                'symbol':'1.3-3'}}</b></td>
+                                    </tr>
+                                    <ng-container *ngIf="orderDetail.qryOrderAdjustments">
+                                        <tr>
+                                            <td>ADJUSTMENTS</td>
+                                            <td align="center"></td>
+                                            <td align="center"></td>
+                                            <td align="center"></td>
+                                        </tr>
+                                        <ng-container *ngIf="orderDetail.qryOrderAdjustments">
+                                            <tr *ngFor="let item of orderDetail.adjustmentsData">
+                                                <td align="right">{{item.description}}</td>
+                                                <td align="center"></td>
+                                                <td align="center"></td>
+                                                <td align="center"><b>{{item.price | currency}}</b></td>
+                                            </tr>
+                                        </ng-container>
+                                    </ng-container>
+                                </table>
+                                <hr class="my-2">
+                                <table class="p-1" width="100%">
+                                    <tr height="1">
+                                        <td width="70%"></td>
+                                        <td width="10%"></td>
+                                        <td width="10%"></td>
+                                        <td width="10%"></td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>GRAND TOTAL</b></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td align="center">
+                                            <b>{{(orderDetail?.blnRoyaltyStore ? orderDetail?.orderTotal :
+                                                orderDetail?.orderPrice + orderDetail?.orderTax) | currency: 'USD':
+                                                'symbol':'1.3-3'}}</b>
+                                        </td>
+                                    </tr>
+                                    <!-- <ng-container *ngIf="orderDetail?.currentTotal"> -->
+                                    <tr style="color:#FF0000;">
+                                        <td><b>BALANCE DUE</b></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td align="center">
+                                            <b>{{(orderDetail.orderTotal - orderDetail?.currentTotal) | currency: 'USD':
+                                                'symbol':'1.3-3'}}</b>
+                                        </td>
+                                    </tr>
+                                    <!-- </ng-container> -->
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Group Order -->
+                    <div class="p-6 sm:p-8 lg:p-10 w-full" *ngIf="orderDetail.fk_groupOrderID">
+                        <ng-container *ngIf="!groupOrderDetails.blnInitiatorPays">
+                            <mat-form-field class="w-full" *ngIf="orderParticipants">
+                                <mat-label>Select a participant</mat-label>
+                                <mat-select matInput [(ngModel)]="ngSelectedParticipant">
+                                    <mat-option value="0">COMBINED ORDER REPORT</mat-option>
+                                    <mat-option value="1">*INITIATOR* - {{orderDetail.billingFirstName}}
+                                        {{orderDetail.billingLastName}} ({{orderDetail.billingEmail}}) </mat-option>
+                                    <ng-container *ngFor="let item of orderParticipants">
+                                        <mat-option *ngIf="item.shippingFirstName"
+                                            value="item.email">{{item.shippingFirstName
+                                            +' '+ item.shippingLastName + ' (' +
+                                            item.email + ')'}}</mat-option>
+                                    </ng-container>
+
+                                </mat-select>
+                            </mat-form-field>
+                        </ng-container>
+                        <div class="text-2xl font-bold ">
+                            Invoice
+                        </div>
+                        <div class="row w-full">
+                            <div class="col-12 my-5">
+                                <table class="p-1 w-full" width="100%">
+                                    <tr>
+                                        <td valign="top">
+                                        </td>
+                                        <td valign="top" align="right">
+                                            <b>INVOICE #{{orderDetail?.pk_orderID}}</b><br />
+                                        </td>
+                                    </tr>
+                                </table>
+                                <hr class="my-2">
+                                <table class="p-1 w-full" width="100%">
+                                    <tr>
+                                        <td>Order ID#</td>
+                                        <td>{{orderDetail?.pk_orderID}}</td>
+                                    </tr>
+                                    <ng-container *ngIf="orderDetail.purchaseOrderNum">
+                                        <tr>
+                                            <td>Purchase Order</td>
+                                            <td>{{orderDetail.purchaseOrderNum}}</td>
+                                        </tr>
+                                    </ng-container>
+
+                                    <ng-container *ngIf="orderDetail.CNumber">
+                                        <tr>
+                                            <td>C# Number</td>
+                                            <td>{{orderDetail.CNumber}}</td>
+                                        </tr>
+                                    </ng-container>
+                                    <tr>
+                                        <td>Order Date</td>
+                                        <td>{{orderDetail.formattedCompleteOrderDate | date: 'medium'}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Store</td>
+                                        <td>{{orderDetail.storeName}}</td>
+                                    </tr>
+                                    <ng-container *ngIf="orderDetail.costCenterCode">
+                                        <tr>
+                                            <td>Cost Center Code</td>
+                                            <td>{{orderDetail.costCenterCode}}</td>
+                                        </tr>
+                                    </ng-container>
+                                </table>
+                                <hr class="my-2">
+                                <table class="p-1 w-full" width="100%">
+                                    <tr>
+                                        <td>ORDER PLACED BY:</td>
+                                        <td>BILL TO:</td>
+                                        <td>SHIP TO:</td>
+                                    </tr>
+                                    <tr>
+                                        <td valign="top">
+                                            {{orderDetail?.storeUserCompanyName}}<br />
+                                            {{orderDetail?.userFirstName}} {{orderDetail?.userLastName}},
+                                            {{orderDetail?.title}}<br />
+                                            {{orderDetail?.address1}} {{orderDetail?.address2}}<br />
+                                            {{orderDetail?.city}} {{orderDetail?.state}}, {{orderDetail?.zipCode}}<br />
+                                            {{orderDetail?.dayPhone}}<br />
+                                            <a
+                                                href="mailto:{{orderDetail.userEmail}}?subject=Order {{orderDetail.pk_orderID}} on {{orderDetail?.storeName}}">{{orderDetail?.userEmail}}</a>
+                                            <span *ngIf="orderDetail?.dayFax"><br />F: {{orderDetail?.dayFax}}</span>
+                                        </td>
+                                        <td valign="top">
+                                            {{orderDetail?.billingCompanyName}}<br />
+                                            {{orderDetail?.billingFirstName}} {{orderDetail?.billingLastName}}<br />
+                                            <span *ngIf="orderDetail?.billingLocation">
+                                                {{orderDetail?.billingLocation}}<br />
+                                            </span>
+                                            {{orderDetail?.billingAddress}}<br />
+                                            <span *ngIf="orderDetail?.billToDeliverTo">
+                                                {{orderDetail?.billToDeliverTo}}<br />
+                                            </span>
+                                            {{orderDetail?.billingCity}}, {{orderDetail?.billingState}}
+                                            {{orderDetail?.billingZip}}<br />
+                                            {{orderDetail?.billingCountry}}<br />
+                                            {{orderDetail?.billingPhone}}<br />
+                                            {{orderDetail?.billingEmail}}<br />
+                                        </td>
+                                        <td valign="top">
+                                            <ng-container
+                                                *ngIf="groupOrderDetails.blnShipToOneLocation;else notblnShipToOneLocation">
+                                                {{groupOrderDetails.groupOrderShippingCompanyName}}<br />
+                                                {{groupOrderDetails.groupOrderShippingName}}<br />
+                                                <span *ngIf="orderDetail?.purchaseOrderNum">
+                                                    Purchase Order: {{orderDetail?.purchaseOrderNum}}<br />
+                                                </span>
+                                                {{groupOrderDetails.groupOrderShippingAddress}}<br />
+                                                <span *ngIf="orderDgroupOrderDetailsetail?.groupOrderShippingAddress2">
+                                                    {{groupOrderDetails.groupOrderShippingAddress2}}<br />
+                                                </span>
+                                                {{groupOrderDetails.groupOrderShippingCity}},
+                                                {{groupOrderDetails.groupOrderShippingState}}
+                                                {{groupOrderDetails.groupOrderShippingZip}}<br />
+                                            </ng-container>
+                                            <ng-template #blnShipToOneLocation>
+                                                {{orderDetail?.shippingCompanyName}}<br />
+                                                {{orderDetail?.shippingFirstName}}
+                                                {{orderDetail?.shippingLastName}}<br />
+                                                <span *ngIf="orderDetail?.shippingLocation">
+                                                    {{orderDetail?.shippingLocation}}<br />
+                                                </span>
+                                                <span *ngIf="orderDetail?.purchaseOrderNum">
+                                                    Purchase Order: {{orderDetail?.purchaseOrderNum}}<br />
+                                                </span>
+                                                {{orderDetail?.shippingAddress}}<br />
+                                                <span *ngIf="orderDetail?.shipToDeliverTo">
+                                                    {{orderDetail?.shipToDeliverTo}}<br />
+                                                </span>
+                                                {{orderDetail?.shippingCity}}, {{orderDetail?.shippingState}}
+                                                {{orderDetail?.shippingZip}}
+                                                <span
+                                                    *ngIf="orderDetail?.shippingZipExt">-{{orderDetail?.shippingZipExt}}</span><br />
+                                                {{orderDetail?.shippingCountry}}<br />
+                                                {{orderDetail?.shippingPhone}}<br />
+                                                {{orderDetail?.shippingEmail}}<br />
+                                            </ng-template>
+
+                                        </td>
+                                    </tr>
+                                </table>
+                                <hr class="my-2">
+                                <table class="p-1 w-full" width="100%">
+                                    <tr>
+                                        <td valign="top">Delivery Date (expected, in business days)</td>
+                                        <td>
+                                            <ng-container *ngIf="orderDetail?.inHandsDate;else notInhandsDate">
+                                                {{orderDetail.formattedInHandsDate}} at the latest
+                                            </ng-container>
+                                            <ng-template #notInhandsDate>
+                                                <div *ngIf="orderDetail?.paymentDate">
+                                                    <!-- <cfset
+                                                    local.strTimeline=local.objOrder.getOrderTimeLine(arguments.orderID,
+                                                    local.qryOrder.paymentDate, arguments.DSN, arguments.COM)>
+                                                    #dateFormat(local.strTimeline.deliveryDate.low, 'dddd, mmmm dd')#
+                                                    <cfif local.strTimeline.deliveryDate.low NEQ
+                                                        local.strTimeline.deliveryDate.high> -
+                                                        #dateFormat(local.strTimeline.deliveryDate.high, 'dddd, mmmm dd,
+                                                        yyyy')# -->
+                                                </div>
+                                                <div *ngIf="!orderDetail?.paymentDate">
+                                                    <!-- <cfset
+                                                local.strTimeline=local.objOrder.getOrderTimeLine(arguments.orderID,
+                                                now(), arguments.DSN, arguments.COM)>
+                                                #local.strTimeline.totalBusiness.low#<cfif
+                                                    local.strTimeline.totalBusiness.low NEQ
+                                                    local.strTimeline.totalBusiness.high>
+                                                    -#local.strTimeline.totalBusiness.high#</cfif> business
+                                                days after approval -->
+                                                </div>
+                                            </ng-template>
+                                        </td>
+                                    </tr>
+                                    <ng-container *ngIf="orderDetail?.invoiceDueDate">
+                                        <tr>
+                                            <td valign="top">Due Date:</td>
+                                            <td>{{orderDetail?.invoiceDueDate | date: 'MM/DD/YYYY'}}</td>
+                                        </tr>
+                                    </ng-container>
+                                    <tr>
+                                        <td>Shipping Method</td>
+                                        <td>{{orderDetail?.shippingCarrierName}}, {{orderDetail?.shippingServiceName}}
+                                            <span *ngIf="orderDetail?.shippingCustomerAccountNumber"> Acct#:
+                                                {{orderDetail?.shippingCustomerAccountNumber}}</span>
+                                        </td>
+                                    </tr>
+                                    <span *ngIf="orderDetail?.blnWarehouse && orderDetail?.warehouseDeliveryOption">
+                                        <tr style="color:#FF0000;">
+                                            <td>Fulfillment Shipping Option</td>
+                                            <td>{{orderDetail?.warehouseDeliveryOption}}</td>
+                                        </tr>
+                                    </span>
+                                </table>
+                                <hr class="my-2">
+                                <table class="p-1 w-full" width="100%">
+                                    <ng-container *ngIf="orderDetail.paymentDate;else notpaymentDate">
+                                        <tr>
+                                            <td>Payment Status</td>
+                                            <td>
+                                                ACTIVE : Approved on {{orderDetail?.formattedPaymentDate}}
+                                            </td>
+                                        </tr>
+                                    </ng-container>
+                                    <ng-template #notpaymentDate
+                                        *ngIf="orderDetail.fk_storeID == 60 || orderDetail.fk_storeID == 64">
+                                        <tr>
+                                            <td>Payment Status</td>
+                                            <td>
+                                                ON HOLD: Pending payment method approval
+                                            </td>
+                                        </tr>
+                                    </ng-template>
+                                    <tr>
+                                        <td valign="top">Payment Method</td>
+                                        <td>
+                                            {{orderDetail?.paymentMethodName}}
+                                            <span *ngIf="orderDetail?.fk_creditTermID">
+                                                {{orderDetail?.creditTermName}}
+                                            </span>
+                                            <span *ngIf="orderDetail?.gatewayTrxID">
+                                                , Transaction ID : {{orderDetail?.gatewayTrxID}}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td>
+                                            <span style="font-weight:bold;">If paying by check please address payment
+                                                to:
+                                                <br />
+                                                Consolidus(our parent
+                                                company) <br />
+                                                526 S. Main Street, Suite #804 <br />
+                                                Akron, Ohio 44311-4401</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td valign="top">Account/Charge Code</td>
+                                        <td>
+                                            <span *ngIf="orderDetail?.billingStudentOrgCode">{{'SABO: '+
+                                                orderDetail?.billingStudentOrgCode +','
+                                                +orderDetail?.billingStudentOrgName}}</span>
+                                            <span
+                                                *ngIf="!orderDetail?.billingStudentOrgCode && orderDetail?.accountChargeCode">{{orderDetail?.accountChargeCode}}</span>
+                                            <span
+                                                *ngIf="!orderDetail?.billingStudentOrgCode && !orderDetail?.accountChargeCode">NONE</span>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <!--- ORDER LINES --->
+                                <ng-container *ngFor="let qryOrderLine of qryOrderLines">
+                                    <br /><br />
+                                    <h1 class="font-bold text-xl">(ID: {{qryOrderLine.pk_storeProductID}}) <span
+                                            [innerHTML]="qryOrderLine.productName"></span></h1>
+                                    <hr class="my-2" />
                                     <table class="p-1 w-full" width="100%">
                                         <tr height="1">
                                             <td width="70%"></td>

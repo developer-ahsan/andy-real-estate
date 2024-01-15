@@ -14,10 +14,15 @@ export class InvoicesComponent implements OnInit {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   isLoading: boolean = false;
+  isGroupLoader: boolean = false;
   // selectedOrder: OrdersList = null;
   orderDetail: any;
   managerDetails: any;
   qryOrderLines: any;
+  // Group Order
+  groupOrderDetails: any;
+  orderParticipants: any;
+  ngSelectedParticipant: any;
   constructor(
     private _orderService: OrdersService,
     private _changeDetectorRef: ChangeDetectorRef
@@ -28,10 +33,14 @@ export class InvoicesComponent implements OnInit {
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["data"].length) {
         this.orderDetail = res["data"][0];
+        if (this.orderDetail.fk_groupOrderID) {
+          this.isGroupLoader = true;
+          this.getGroupOrderDetails();
+        }
         this.setOrderData();
         this.getOrderProducts();
       }
-    })
+    });
   }
   setOrderData() {
     this.managerDetails = this.orderDetail.managerDetails?.split('::');
@@ -53,8 +62,22 @@ export class InvoicesComponent implements OnInit {
     }
   }
   getOrderProducts() {
+    // orderDetail.fk_groupOrderID
+    if (this.orderDetail.fk_groupOrderID) {
+      this.orderDetail.groupTotalPrice = 0;
+      this.orderDetail.groupTotalRoyalty = 0;
+    }
+
+
     this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       res["data"].forEach((orderLine) => {
+        // orderDetail.fk_groupOrderID
+        if (this.orderDetail.fk_groupOrderID) {
+          orderLine.orderLineTotalPrice = 0;
+          orderLine.optionQuantity = 0;
+          this.orderDetail.groupTotalRoyalty += orderLine.royaltyPrice;
+          orderLine.merchandiseTotal += orderLine.price;
+        }
         orderLine.imprintsData = [];
         orderLine.colorSizesData = [];
         orderLine.accessoriesData = [];
@@ -84,6 +107,29 @@ export class InvoicesComponent implements OnInit {
   setAccessoriesToOrderline(orderLine, items) {
     const matchingAccessories = items.filter(item => item.fk_orderLineID === orderLine.pk_orderLineID);
     orderLine.accessoriesData.push(...matchingAccessories);
+  }
+  // Group Order
+  getGroupOrderDetails() {
+    this._orderService.groupOrderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res) {
+        this.groupOrderDetails = res["data"][0];
+        if (!this.groupOrderDetails.blnInitiatorPays) {
+          this.getOrderParticapants();
+        } else {
+          this.isGroupLoader = false;
+          this._changeDetectorRef.markForCheck();
+        }
+      }
+    });
+  }
+  getOrderParticapants() {
+    this._orderService.groupOrderParticipants$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res) {
+        this.orderParticipants = res["data"];
+        this.isGroupLoader = false;
+        this._changeDetectorRef.markForCheck();
+      }
+    });
   }
   public exportHtmlToPDF() {
     let element = document.getElementById('htmltable');

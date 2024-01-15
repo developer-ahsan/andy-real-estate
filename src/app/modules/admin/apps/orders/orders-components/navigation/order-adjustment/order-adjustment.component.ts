@@ -46,6 +46,9 @@ export class OrderAdjustmentComponent implements OnInit, OnDestroy {
   getOrderDetail() {
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.orderDetail = res["data"][0];
+      if (this.orderDetail.blnTaxable) {
+        this.addAdjsutmentForm.taxable = true;
+      }
     });
   }
   getAdjustments(type) {
@@ -98,6 +101,8 @@ export class OrderAdjustmentComponent implements OnInit, OnDestroy {
         this.totalAdjustmentCost += element.cost;
         this.totalAdjustmentPrice += element.price;
       });
+      this._orderService.getOrderMainDetail(params);
+      this._changeDetectorRef.markForCheck();
       this._changeDetectorRef.markForCheck();
     }, err => {
       item.deleteLoader = false;
@@ -110,7 +115,7 @@ export class OrderAdjustmentComponent implements OnInit, OnDestroy {
       this._orderService.snackBar('Description is required');
       return;
     }
-    if(cost < 0 || price < 0) {
+    if (cost < 0 || price < 0) {
       this._orderService.snackBar('Please enter positive number');
       return;
     }
@@ -128,6 +133,12 @@ export class OrderAdjustmentComponent implements OnInit, OnDestroy {
     this.isAddLoader = true;
     this._orderService.orderPostCalls(this.replaceSingleQuotesWithDoubleSingleQuotes(payload)).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.getAdjustments('add');
+      let params = {
+        main: true,
+        order_id: this.orderDetail.pk_orderID
+      }
+      this._orderService.getOrderMainDetail(params);
+      this._changeDetectorRef.markForCheck();
     }, err => {
       this.isAddLoader = false;
       this._changeDetectorRef.markForCheck();
@@ -144,12 +155,12 @@ export class OrderAdjustmentComponent implements OnInit, OnDestroy {
 
   replaceSingleQuotesWithDoubleSingleQuotes(obj: { [key: string]: any }): any {
     for (const key in obj) {
-        if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
-            obj[key] = obj[key]?.replace(/'/g, "''");
-        }
+      if (obj.hasOwnProperty(key) && typeof obj[key] === 'string') {
+        obj[key] = obj[key]?.replace(/'/g, "''");
+      }
     }
     return obj;
-}
+  }
 
 
 

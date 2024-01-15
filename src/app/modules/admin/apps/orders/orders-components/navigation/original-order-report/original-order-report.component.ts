@@ -23,6 +23,10 @@ export class OriginalOrderComponent implements OnInit {
   orderDetail: any;
   managerDetails: any;
   qryOrderLines: any;
+  // Totals
+  orderTotalPrice = 0;
+  orderTotalCost = 0;
+  groupOrderOptions: any;
   constructor(
     private _orderService: OrdersService,
     private _changeDetectorRef: ChangeDetectorRef
@@ -36,9 +40,16 @@ export class OriginalOrderComponent implements OnInit {
         this.setOrderData();
         this.getOrderProducts();
       }
-    })
+    });
+
   }
   setOrderData() {
+    if (!this.orderDetail.fk_groupOrderID) {
+      this.orderTotalCost = this.orderDetail.orderCost;
+      this.orderTotalPrice = this.orderDetail.orderTotal;
+    } else {
+      // this.getGroupOrderOptions();
+    }
     this.managerDetails = this.orderDetail.managerDetails?.split('::');
     if (this.orderDetail.qryUserLocations) {
       this.orderDetail.locationName = this.orderDetail.qryUserLocations?.split('::')[1];
@@ -64,8 +75,14 @@ export class OriginalOrderComponent implements OnInit {
         orderLine.colorSizesData = [];
         orderLine.accessoriesData = [];
         this.setImprintsToOrderline(orderLine, res["qryImprintsReport"]);
-        this.setColoSizesToOrderline(orderLine, res["qryItemReport"]);
         this.setAccessoriesToOrderline(orderLine, res["qryAccessoriesReport"]);
+        this.setColoSizesToOrderline(orderLine, res["qryItemReport"]);
+        if (this.orderDetail.fk_groupOrderID) {
+          this.orderTotalCost += orderLine.getOrderLineTotalsCost;
+          this.orderTotalPrice += orderLine.getOrderLineTotalsPrice;
+          // this.setColoSizesToOrderlineGroup(orderLine, res["qryItemReport"]);
+        } else {
+        }
       });
       this.qryOrderLines = res["data"];
       this.isLoading = false;
@@ -85,9 +102,28 @@ export class OriginalOrderComponent implements OnInit {
     const matchingSizes = items.filter(item => item.fk_orderLineID === orderLine.pk_orderLineID);
     orderLine.colorSizesData.push(...matchingSizes);
   }
+  // Set Group Order Color/Sizes
+  setColoSizesToOrderlineGroup(orderLine, items) {
+    if (this.groupOrderOptions) {
+      if (this.groupOrderOptions.length) {
+        orderLine.warehouseCode = items.warehouseCode;
+      }
+      const matchingSizes = this.groupOrderOptions.filter(item => item.fk_orderLineID === orderLine.pk_orderLineID);
+      orderLine.colorSizesData.push(...matchingSizes);
+    }
+    console.log(orderLine);
+  }
   // Set Accessories Data
   setAccessoriesToOrderline(orderLine, items) {
     const matchingAccessories = items.filter(item => item.fk_orderLineID === orderLine.pk_orderLineID);
     orderLine.accessoriesData.push(...matchingAccessories);
+  }
+  getGroupOrderOptions() {
+    this._orderService.groupOrderOptions$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res) {
+        this.groupOrderOptions = res["data"];
+        this.getOrderProducts();
+      }
+    });
   }
 }
