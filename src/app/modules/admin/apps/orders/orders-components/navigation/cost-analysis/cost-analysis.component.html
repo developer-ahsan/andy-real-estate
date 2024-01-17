@@ -13,9 +13,15 @@
                     ACTUAL COST
                 </mat-button-toggle>
             </mat-button-toggle-group>
+            <div class="text-right mb-2">
+                <button (click)="exportHtmlToPDF()" mat-stroked-button [matTooltip]="'Save report as PDF'">
+                    <mat-icon svgIcon="mat_outline:picture_as_pdf"></mat-icon>
+                    <span class="ml-2 mr-1">PDF</span>
+                </button>
+            </div>
             <!-- CONFIDENTIAL COST ANALYSIS REPORT - PROJECTED -->
             <ng-container *ngIf="mainScreen == 'PROJECTED'">
-                <div class="card rounded-2xl p-5">
+                <div class="card rounded-2xl p-5" id="htmltable">
                     <table class="p-2 w-full">
                         <tr>
                             <td valign="top" align="left">
@@ -29,9 +35,9 @@
                     <ng-container *ngFor="let qryOrderLine of qryOrderLines">
                         <hr>
                         <mat-accordion>
-                            <mat-expansion-panel>
+                            <mat-expansion-panel [expanded]="true" hideToggle (click)="$event.preventDefault()">
                                 <mat-expansion-panel-header class="my-10">
-                                    <table class="p-2 w-full">
+                                    <table class="p-2 w-full mb-2">
                                         <tr>
                                             <td width="70%" valign="top" align="left">
                                                 <b>({{qryOrderLine.fk_productID}}) {{qryOrderLine.productNumber}}: <span
@@ -123,7 +129,7 @@
                                                 <td align="center">
                                                     <span *ngIf="qryItemReport.runPrice">{{ (((1 -
                                                         (qryItemReport.runCost)/(qryItemReport.runPrice))) * 100) |
-                                                        number:'1.2-2'}}%</span>
+                                                        number:'1.4-4'}}%</span>
                                                 </td>
                                             </tr>
                                             <ng-container *ngIf="qryItemReport.setupCost || qryItemReport.setupPrice">
@@ -146,7 +152,7 @@
                                                         'USD': 'symbol':'1.4-4' }}</td>
                                                     <td align="center"><span
                                                             *ngIf="qryItemReport.setupPrice">{{((1-(qryItemReport.setupCost)/(qryItemReport.setupPrice))*100)
-                                                            | number:'1.2-2'}}%</span>
+                                                            | number:'1.4-4'}}%</span>
                                                     </td>
                                                 </tr>
                                             </ng-container>
@@ -185,7 +191,7 @@
                                                     <cfif runPrice>
                                                         {{((1-(qryImprintsReport.runCost)/(qryImprintsReport.runPrice))*100)
                                                         |
-                                                        number:'1.2-2'}}%
+                                                        number:'1.4-4'}}%
                                                     </cfif>
                                                 </td>
                                             </tr>
@@ -210,7 +216,7 @@
                                                     'USD': 'symbol':'1.4-4'}}</td>
                                                 <td align="center"><span
                                                         *ngIf="qryImprintsReport.setupPrice">{{((1-(qryImprintsReport.setupCost)/(qryImprintsReport.setupPrice))*100)
-                                                        | number:'1.2-2'}}%</span>
+                                                        | number:'1.4-4'}}%</span>
                                                 </td>
                                             </tr>
                                         </ng-container>
@@ -245,7 +251,7 @@
                                                     'symbol':'1.4-4'}}</td>
                                                 <td align="center"><span
                                                         *ngIf="qryAccessoriesReport.runPrice">{{((1-(qryAccessoriesReport.runCost)/(qryAccessoriesReport.runPrice))*100)
-                                                        | number:'1.2-2'
+                                                        | number:'1.4-4'
                                                         }} %</span></td>
                                             </tr>
                                             <ng-container
@@ -266,7 +272,7 @@
                                                         | currency: 'USD': 'symbol':'1.4-4'}}</td>
                                                     <td align="center"><span
                                                             *ngIf="qryAccessoriesReport.setupPrice">{{((1-(qryAccessoriesReport.setupCost)/(qryAccessoriesReport.setupPrice))*100)
-                                                            | number:'1.2-2'}}%</span>
+                                                            | number:'1.4-4'}}%</span>
                                                     </td>
                                                 </tr>
                                             </ng-container>
@@ -293,7 +299,7 @@
                                                     {{(qryOrderLine.blnSample ? 0.00 :
                                                     ((1-(qryOrderLine.shippingCost)/(qryOrderLine.shippingPrice))*100))
                                                     |
-                                                    number:'1.2-2'}}%
+                                                    number:'1.4-4'}}%
                                                 </span>
                                             </td>
                                         </tr>
@@ -349,7 +355,7 @@
                                                         {{(qryOrderLine.blnSample ? 0.00 : (1 -
                                                         (qryOrderLine.getOrderLineTotalsCost)/(qryOrderLine.getOrderLineTotalsPrice))
                                                         *100)
-                                                        | number:'1.2-2'}} %
+                                                        | number:'1.4-4'}} %
                                                     </span>
                                                 </span>
                                             </td>
@@ -452,7 +458,7 @@
                                     *100
                                     :
                                     0.00)
-                                    | number:'1.2-2'}} %
+                                    | number:'1.4-4'}} %
                                 </span>
                             </td>
                         </tr>
@@ -491,7 +497,7 @@
             </ng-container>
             <!-- CONFIDENTIAL COST ANALYSIS REPORT - ACTUAL -->
             <ng-container *ngIf="mainScreen == 'ACTUAL'">
-                <div class=" card rounded-2xl p-5">
+                <div class=" card rounded-2xl p-5" id="htmltable">
                     <table class="p-2 w-full">
                         <tr>
                             <td valign="top" align="left">
@@ -704,7 +710,7 @@
                             </td>
                             <td>
                                 {{(orderDetail.orderPrice ?
-                                (1-(purchaseOrderTotal)/(orderDetail.orderPrice))*100 : 0) | number:'1.2-2'}} %
+                                (1-(purchaseOrderTotal)/(orderDetail.orderPrice))*100 : 0) | number:'1.4-4'}} %
                             </td>
                         </tr>
                     </table>
@@ -713,7 +719,7 @@
         </ng-container>
         <!-- Group Order -->
         <ng-container *ngIf="orderDetail.fk_groupOrderID">
-            <table class="p-2 w-full">
+            <table class="p-2 w-full" id="htmltable">
                 <tr>
                     <td valign="top" align="right">
                         <b>CONFIDENTIAL COST ANALYSIS REPORT <br>#{{orderDetail.pk_orderID}}</b><br>
@@ -792,7 +798,7 @@
                             </td>
                             <td align="center">
                                 <span *ngIf="item.runPrice;">
-                                    {{ (1 - (item.runCost / item.runPrice) * 100) | number: '1.2-2' }}%
+                                    {{ (1 - (item.runCost / item.runPrice) * 100) | number: '1.4-4' }}%
                                 </span>
                             </td>
                         </tr>
@@ -807,7 +813,7 @@
                                 <td align="center">{{ (item.setupPrice - item.setupCost) | currency: 'USD':
                                     'symbol':'1.4-4' }}</td>
                                 <td align="center" *ngIf="item.setupPrice">
-                                    {{ ((1 - item.setupCost / item.setupPrice) * 100) | number: '1.2-2' }}%
+                                    {{ ((1 - item.setupCost / item.setupPrice) * 100) | number: '1.4-4' }}%
                                 </td>
                             </tr>
                         </ng-container>
@@ -836,7 +842,7 @@
                                 qryOrderLine.sumOfQuantity)) | currency: 'USD':
                                 'symbol':'1.4-4'}}</td>
                             <td align="center"><span *ngIf="item.runPrice">{{((1 - (item.runCost)/(item.runPrice)) *
-                                    100) | number: '1.2-2'}}%</span></td>
+                                    100) | number: '1.4-4'}}%</span></td>
                         </tr>
                         <tr>
                             <td align="right"><span>{{item.blnStitchProcess ? 'Digitization(s)' : 'Setup(s)'}}</span>
@@ -850,7 +856,7 @@
                             </td>
                             <td align="center"><span *ngIf="item.setupPrice"
                                     item.setupPrice>{{((1-(item.setupCost)/(item.setupPrice))*100) | number:
-                                    '1.2-2'}}%</span></td>
+                                    '1.4-4'}}%</span></td>
                         </tr>
                     </ng-container>
                     <!--- ACCESSORIES --->
@@ -871,7 +877,7 @@
                                 currency: 'USD': 'symbol':'1.4-4'}}</td>
                             <td align="center">
                                 <span *ngIf="item.runPrice;">
-                                    {{ (1 - (item.runCost / item.runPrice) * 100) | number: '1.2-2' }}%
+                                    {{ (1 - (item.runCost / item.runPrice) * 100) | number: '1.4-4' }}%
                                 </span>
                             </td>
                         </tr>
@@ -886,7 +892,7 @@
                                 <td align="center">{{ (item.setupPrice - item.setupCost) | currency: 'USD':
                                     'symbol':'1.4-4' }}</td>
                                 <td align="center" *ngIf="item.setupPrice">
-                                    {{ ((1 - item.setupCost / item.setupPrice) * 100) | number: '1.2-2' }}%
+                                    {{ ((1 - item.setupCost / item.setupPrice) * 100) | number: '1.4-4' }}%
                                 </td>
                             </tr>
                         </ng-container>
@@ -917,12 +923,12 @@
                         <td align="center">
                             <ng-container *ngIf="qryOrderLine.orderLineTotalShippingPrice">
                                 <ng-container *ngIf="qryOrderLine.blnSample; else calculatePercentage">
-                                    {{ 0.00 | number: '1.2-2' }}%
+                                    {{ 0.00 | number: '1.4-4' }}%
                                 </ng-container>
                                 <ng-template #calculatePercentage>
                                     {{ ((1 - qryOrderLine.orderLineTotalShippingCost /
                                     qryOrderLine.orderLineTotalShippingPrice) * 100) | number:
-                                    '1.2-2' }}%
+                                    '1.4-4' }}%
                                 </ng-template>
                             </ng-container>
                         </td>
@@ -973,11 +979,11 @@
                         <td align="center">
                             <ng-container *ngIf="qryOrderLine.orderLineTotalPrice">
                                 <ng-container *ngIf="qryOrderLine.blnSample; else calculateMargin">
-                                    {{ 0.00 | number: '1.2-2' }}%
+                                    {{ 0.00 | number: '1.4-4' }}%
                                 </ng-container>
                                 <ng-template #calculateMargin>
                                     {{ ((1 - qryOrderLine.orderLineTotalCost /
-                                    qryOrderLine.orderLineTotalPrice) * 100) | number: '1.2-2' }}%
+                                    qryOrderLine.orderLineTotalPrice) * 100) | number: '1.4-4' }}%
                                 </ng-template>
                             </ng-container>
                         </td>
@@ -1023,7 +1029,7 @@
                         <td align="center"><b>{{item.price | currency: 'USD': 'symbol':'1.4-4'}}</b></td>
                         <td align="center">{{(item.price - item.cost) | currency: 'USD': 'symbol':'1.4-4'}}</td>
                         <td align="center"><span *ngIf="item.price">{{((1 - (item.cost)/(item.price)) * 100) | number:
-                                '1.2-2' }}%</span></td>
+                                '1.4-4' }}%</span></td>
                     </tr>
                 </ng-container>
                 <!-- <ng-container *ngIf="orderDetail.blnRoyaltyStore">
@@ -1054,7 +1060,7 @@
                     </td>
                     <td align="center">
                         <span *ngIf="orderDetail.orderPrice">
-                            {{((1 - (orderDetail.orderCost/orderDetail.orderPrice)) * 100) | number: '1.2-2' }} %
+                            {{((1 - (orderDetail.orderCost/orderDetail.orderPrice)) * 100) | number: '1.4-4' }} %
                         </span>
                     </td>
                 </tr>

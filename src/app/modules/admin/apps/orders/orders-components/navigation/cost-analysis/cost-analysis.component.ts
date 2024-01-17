@@ -275,4 +275,36 @@ export class CostAnalysisComponent implements OnInit {
       }
     });
   }
+  // exportHtmlToPDF
+  public exportHtmlToPDF() {
+    let element = document.getElementById('htmltable');
+    var positionInfo = element.getBoundingClientRect();
+    var height = positionInfo.height;
+    var width = positionInfo.width;
+    var top_left_margin = 15;
+    let PDF_Width = width + (top_left_margin * 2);
+    var PDF_Height = (PDF_Width * 1.5) + (top_left_margin * 2);
+    var canvas_image_width = width;
+    var canvas_image_height = height;
+
+    var totalPDFPages = Math.ceil(height / PDF_Height) - 1;
+    const { pk_orderID } = this.orderDetail;
+    let data = document.getElementById('htmltable');
+    const file_name = `CostAnalysis_${pk_orderID}.pdf`;
+
+    // Adjust html2canvas options for better quality
+    html2canvas(data, { useCORS: true, scale: 2, logging: false }).then(canvas => {
+      var imgData = canvas.toDataURL("image/jpeg", 0.7); // Adjust quality here (0.7 is just an example)
+
+      var pdf = new jsPDF('p', 'pt', [PDF_Width, PDF_Height]);
+      pdf.addImage(imgData, 'jpeg', top_left_margin, top_left_margin, canvas_image_width, canvas_image_height);
+
+      for (var i = 1; i <= totalPDFPages; i++) {
+        pdf.addPage([PDF_Width, PDF_Height]);
+        pdf.addImage(imgData, 'jpeg', top_left_margin, -(PDF_Height * i) + (top_left_margin * 4), canvas_image_width, canvas_image_height);
+      }
+
+      pdf.save(file_name);
+    });
+  }
 }

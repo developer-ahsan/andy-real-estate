@@ -114,7 +114,8 @@
                                     <tr>
                                         <td valign="top" width="80%">
                                             <b>(<a [routerLink]="['/apps/ecommerce/inventory',qryOrderLine.fk_productID]"
-                                                    target="_blank">{{qryOrderLine.fk_productID}}</a>){{qryOrderLine.productNumber}}:
+                                                    target="_blank">{{qryOrderLine.fk_productID}}</a>)
+                                                {{qryOrderLine.productNumber}}:
                                                 <span [innerHTML]="qryOrderLine.productName"></span></b><br />
                                             <span style="color:#333; font-weight:bold;">PO:
                                                 {{orderDetail.pk_orderID}}-{{qryOrderLine.pk_orderLineID}}</span><br />
