@@ -48,6 +48,7 @@ export class OriginalOrderComponent implements OnInit {
       this.orderTotalCost = this.orderDetail.orderCost;
       this.orderTotalPrice = this.orderDetail.orderTotal;
     } else {
+      this.orderTotalPrice = this.orderDetail.orderPrice;
       // this.getGroupOrderOptions();
     }
     this.managerDetails = this.orderDetail.managerDetails?.split('::');
@@ -79,12 +80,17 @@ export class OriginalOrderComponent implements OnInit {
         this.setColoSizesToOrderline(orderLine, res["qryItemReport"]);
         if (this.orderDetail.fk_groupOrderID) {
           this.orderTotalCost += orderLine.getOrderLineTotalsCost;
-          this.orderTotalPrice += orderLine.getOrderLineTotalsPrice;
+          // this.orderTotalPrice += orderLine.royaltyPrice;
           // this.setColoSizesToOrderlineGroup(orderLine, res["qryItemReport"]);
         } else {
         }
       });
       this.qryOrderLines = res["data"];
+      if (this.orderDetail.fk_groupOrderID) {
+        this.orderTotalPrice += this.orderDetail.orderTax;
+        // this.setColoSizesToOrderlineGroup(orderLine, res["qryItemReport"]);
+      }
+      console.log(this.qryOrderLines);
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     })
@@ -111,7 +117,6 @@ export class OriginalOrderComponent implements OnInit {
       const matchingSizes = this.groupOrderOptions.filter(item => item.fk_orderLineID === orderLine.pk_orderLineID);
       orderLine.colorSizesData.push(...matchingSizes);
     }
-    console.log(orderLine);
   }
   // Set Accessories Data
   setAccessoriesToOrderline(orderLine, items) {

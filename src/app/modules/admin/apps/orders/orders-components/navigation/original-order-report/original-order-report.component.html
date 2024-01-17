@@ -240,9 +240,10 @@
                                         </tr>
                                         <tr>
                                             <td align="right">
-                                                <span *ngIf="item.blnColorProcess">{{item.blnColorProcess ? 'Total
-                                                    Colors: ' + item.processQuantity : 'Stitch Count: ' +
-                                                    item.processQuantity}}</span>
+                                                <span *ngIf="item.blnColorProcess">Total Colors
+                                                    {{item.processQuantity}}</span>
+                                                <span *ngIf="!item.blnColorProcess && item.blnStitchProcess">Stitch
+                                                    Count {{item.processQuantity}}</span>
                                                 <span *ngIf="item.imprintColors">/ Colors: {{item.imprintColors}}</span>
                                             </td>
                                             <td colspan="5"></td>

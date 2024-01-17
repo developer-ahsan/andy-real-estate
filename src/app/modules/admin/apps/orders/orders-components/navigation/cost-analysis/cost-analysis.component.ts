@@ -169,8 +169,8 @@ export class CostAnalysisComponent implements OnInit {
     const matchingShippings = this.shippingData.filter(item => item.fk_orderLineID === orderLine.pk_orderLineID);
     orderLine.shippingData.push(...matchingShippings);
     shippingData.forEach(shipping => {
-      orderLine.TotalShippingCost += shipping.shippingCost;
-      orderLine.TotalShippingPrice += shipping.shippingPrice;
+      orderLine.TotalShippingCost = shipping.shippingCost;
+      orderLine.TotalShippingPrice = shipping.shippingPrice;
     });
   }
   setIntiatorOptions(orderLine) {
@@ -189,8 +189,8 @@ export class CostAnalysisComponent implements OnInit {
       orderLine.orderLineTotalShippingPrice = 0;
 
       orderLine.colorSizesData.forEach(color => {
-        orderLine.orderLineTotalCost += (color.baseCost + color.runCost) * color.quantity;
-        orderLine.orderLineTotalPrice += (color.basePrice + color.runPrice) * color.quantity;
+        orderLine.orderLineTotalCost += ((color.baseCost + color.runCost) * color.quantity) + color.setupCost;
+        orderLine.orderLineTotalPrice += ((color.basePrice + color.runPrice) * color.quantity) + color.setupPrice;
       });
 
       orderLine.imprintsData.forEach(imprint => {
@@ -199,8 +199,8 @@ export class CostAnalysisComponent implements OnInit {
       });
 
       orderLine.accessoriesData.forEach(accessory => {
-        orderLine.orderLineTotalCost += (accessory.runCost * accessory.sumOfQuantity) + accessory.setupCost;
-        orderLine.orderLineTotalPrice += (accessory.runPrice * accessory.sumOfQuantity) + accessory.setupPrice;
+        orderLine.orderLineTotalCost += (accessory.runCost * orderLine.sumOfQuantity) + accessory.setupCost;
+        orderLine.orderLineTotalPrice += (accessory.runPrice * orderLine.sumOfQuantity) + accessory.setupPrice;
       });
 
       if (this.orderDetail.blnRoyaltyStore && orderLine.blnRoyalty) {

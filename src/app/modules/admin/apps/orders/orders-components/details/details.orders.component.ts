@@ -69,7 +69,7 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
                 this.selectedScreeen = this.route.children[0].snapshot.data.title;
                 this.selectedRoute = this.route.children[0].snapshot.data.url;
             }
-        })
+        });
         this.selectedScreeen = this.route.children[0].snapshot.data.title;
         this.selectedRoute = this.route.children[0].snapshot.data.url;
 
@@ -184,7 +184,7 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
         });
         this._orderService.getGroupOrderDetails(pk_orderID).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         });
-        this._orderService.getGroupOrderOptions(pk_orderID, this.selectedOrderDetail.fk_storeID).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+        this._orderService.getGroupOrderOptions(pk_orderID, this.selectedOrderDetail.fk_storeID, '').pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         });
     }
     /**

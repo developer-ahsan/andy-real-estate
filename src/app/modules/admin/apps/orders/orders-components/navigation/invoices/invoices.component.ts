@@ -23,6 +23,9 @@ export class InvoicesComponent implements OnInit {
   groupOrderDetails: any;
   orderParticipants: any;
   ngSelectedParticipant: any;
+  groupOrderOptions: any;
+  shippingData: any;
+  qryInitiatorOptions: any;
   constructor(
     private _orderService: OrdersService,
     private _changeDetectorRef: ChangeDetectorRef
@@ -33,12 +36,13 @@ export class InvoicesComponent implements OnInit {
     this._orderService.orderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["data"].length) {
         this.orderDetail = res["data"][0];
+        this.setOrderData();
         if (this.orderDetail.fk_groupOrderID) {
           this.isGroupLoader = true;
           this.getGroupOrderDetails();
+        } else {
+          this.getOrderProducts();
         }
-        this.setOrderData();
-        this.getOrderProducts();
       }
     });
   }
@@ -81,11 +85,21 @@ export class InvoicesComponent implements OnInit {
         orderLine.imprintsData = [];
         orderLine.colorSizesData = [];
         orderLine.accessoriesData = [];
+        if (this.orderDetail.fk_groupOrderID) {
+          this.setColoSizesToOrderlineGroup(orderLine, res["qryItemReport"]);
+          this.setShippingDataToOrderLine(orderLine);
+          this.setIntiatorOptions(orderLine);
+        } else {
+          this.setColoSizesToOrderline(orderLine, res["qryItemReport"]);
+        }
         this.setImprintsToOrderline(orderLine, res["qryImprintsReport"]);
-        this.setColoSizesToOrderline(orderLine, res["qryItemReport"]);
         this.setAccessoriesToOrderline(orderLine, res["qryAccessoriesReport"]);
       });
       this.qryOrderLines = res["data"];
+      if (this.orderDetail.fk_groupOrderID) {
+        this.setOrderTotals();
+      }
+      console.log(this.qryOrderLines);
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     })
@@ -108,11 +122,102 @@ export class InvoicesComponent implements OnInit {
     const matchingAccessories = items.filter(item => item.fk_orderLineID === orderLine.pk_orderLineID);
     orderLine.accessoriesData.push(...matchingAccessories);
   }
+  // Set Group Order Color/Sizes
+  setColoSizesToOrderlineGroup(orderLine, items) {
+    if (this.groupOrderOptions) {
+      if (this.groupOrderOptions.length) {
+        orderLine.warehouseCode = items.warehouseCode;
+      }
+      const matchingSizes = this.groupOrderOptions.filter(item => item.fk_orderLineID === orderLine.pk_orderLineID);
+      orderLine.colorSizesData.push(...matchingSizes);
+      orderLine.sumOfQuantity = orderLine.colorSizesData.reduce((sum, item) => sum + item.quantity, 0);
+    }
+  }
+  setShippingDataToOrderLine(orderLine) {
+    let shippingData = [];
+    orderLine.shippingData = [];
+    orderLine.TotalShippingCost = 0;
+    orderLine.TotalShippingPrice = 0;
+    const matchingShippings = this.shippingData.filter(item => item.fk_orderLineID === orderLine.pk_orderLineID);
+    orderLine.shippingData.push(...matchingShippings);
+    shippingData.forEach(shipping => {
+      orderLine.TotalShippingCost = shipping.shippingCost;
+      orderLine.TotalShippingPrice = shipping.shippingPrice;
+    });
+  }
+  setIntiatorOptions(orderLine) {
+    orderLine.sumOfInitiatorQuantity = 0;
+    let initiatorData = [];
+    const matchingInitators = this.qryInitiatorOptions.filter(item => item.fk_orderLineID === orderLine.pk_orderLineID);
+    initiatorData.push(...matchingInitators);
+    orderLine.sumOfInitiatorQuantity = initiatorData.reduce((sum, item) => sum + item.quantity, 0);
+  }
+  // Calculate Totals
+  setOrderTotals() {
+    this.qryOrderLines.forEach(orderLine => {
+      orderLine.orderLineTotalPrice = orderLine.price;
+      this.orderDetail.totalRoyalty += orderLine.royaltyPrice;
+
+      orderLine.colorSizesData.forEach(color => {
+        orderLine.orderLineTotalPrice += (color.basePrice + color.runPrice) * color.quantity;
+        if (color.setupPrice) {
+          orderLine.orderLineTotalPrice += color.setupPrice;
+        }
+      });
+
+      orderLine.imprintsData.forEach(imprint => {
+        orderLine.orderLineTotalPrice += (imprint.runPrice * orderLine.sumOfQuantity) + imprint.setupPrice;
+      });
+
+      orderLine.accessoriesData.forEach(accessory => {
+        orderLine.orderLineTotalPrice += (accessory.runPrice * orderLine.sumOfQuantity);
+        if (accessory.setupPrice) {
+          let blnInitator = 0;
+          for (let imprint of orderLine.imprintsData) {
+            if (imprint.quantity) {
+              blnInitator = 1;
+            }
+          }
+          orderLine.orderLineTotalPrice += accessory.setupPrice * (blnInitator + orderLine.qryOrderLineParticipantsCount);
+        }
+      });
+
+      if (this.orderDetail.blnRoyaltyStore && orderLine.blnRoyalty) {
+        orderLine.orderLineTotalPrice += orderLine.royaltyPrice;
+      }
+      // Add shipping Values
+      if (orderLine.colorSizesData.length && orderLine.sumOfQuantity > 0) {
+        if (orderLine.shippingData.length) {
+          orderLine.orderLineTotalShippingCost = orderLine.TotalShippingCost + orderLine.shippingCost;
+          orderLine.orderLineTotalShippingPrice = orderLine.TotalShippingPrice + orderLine.shippingPrice;
+          if (!this.groupOrderDetails.blnShipToOneLocation && this.groupOrderDetails.blnDropShipCharges) {
+            orderLine.orderLineTotalShippingPrice += 5 * orderLine.qryOrderLineParticipantsCount;
+          }
+        } else {
+          orderLine.orderLineTotalShippingCost = orderLine.shippingCost;
+          orderLine.orderLineTotalShippingPrice = orderLine.shippingPrice;
+          if (!this.groupOrderDetails.blnShipToOneLocation && this.groupOrderDetails.blnDropShipCharges) {
+            orderLine.orderLineTotalShippingPrice += 5 * orderLine.qryOrderLineParticipantsCount;
+          }
+        }
+        if (orderLine.sumOfInitiatorQuantity > 0) {
+          // missing
+          if (this.groupOrderDetails.blnDropShipCharges) {
+            orderLine.orderLineTotalShippingPrice += 5
+          }
+        }
+        orderLine.orderLineTotalPrice += orderLine.orderLineTotalShippingPrice;
+      }
+
+    });
+    this._changeDetectorRef.markForCheck();
+  }
   // Group Order
   getGroupOrderDetails() {
     this._orderService.groupOrderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res) {
         this.groupOrderDetails = res["data"][0];
+        this.getGroupOrderOptions();
         if (!this.groupOrderDetails.blnInitiatorPays) {
           this.getOrderParticapants();
         } else {
@@ -128,6 +233,16 @@ export class InvoicesComponent implements OnInit {
         this.orderParticipants = res["data"];
         this.isGroupLoader = false;
         this._changeDetectorRef.markForCheck();
+      }
+    });
+  }
+  getGroupOrderOptions() {
+    this._orderService.groupOrderOptions$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res) {
+        this.groupOrderOptions = res["data"];
+        this.shippingData = res["strOrderLineShipping"];
+        this.qryInitiatorOptions = res["qryInitiator"];
+        this.getOrderProducts();
       }
     });
   }
