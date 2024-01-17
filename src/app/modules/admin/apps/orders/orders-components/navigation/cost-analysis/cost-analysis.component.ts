@@ -104,7 +104,6 @@ export class CostAnalysisComponent implements OnInit {
       this.getOrderProducts();
     } else {
       this.getGroupOrderDetails();
-      this.getGroupOrderOptions();
     }
   }
   getOrderProducts() {
@@ -262,6 +261,7 @@ export class CostAnalysisComponent implements OnInit {
     this._orderService.groupOrderDetail$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res) {
         this.groupOrderDetails = res["data"][0];
+        this.getGroupOrderOptions();
       }
     });
   }

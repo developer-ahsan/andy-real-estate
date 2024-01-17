@@ -121,6 +121,8 @@ export class OrdersReportComponent implements OnInit {
       const matchingSizes = this.groupOrderOptions.filter(item => item.fk_orderLineID === orderLine.pk_orderLineID);
       orderLine.colorSizesData.push(...matchingSizes);
       orderLine.sumOfQuantity = orderLine.colorSizesData.reduce((sum, item) => sum + item.quantity, 0);
+      orderLine.optionsPrice = orderLine.colorSizesData.reduce((sum, item) => sum + (item.basePrice * item.quantity) + (item.runPrice * item.quantity) + item.setupPrice, 0);
+
     }
   }
   setShippingDataToOrderLine(orderLine) {
@@ -162,7 +164,17 @@ export class OrdersReportComponent implements OnInit {
       orderLine.orderLineTotalShippingCost = 0;
       orderLine.orderLineTotalShippingPrice = 0;
       if (orderLine.sumOfQuantity > 0) {
-        this.orderDetail.totalRoyalties += orderLine.royaltyPrice;
+        // Set Royalties
+        if (this.orderDetail.blnRoyaltyStore && orderLine.blnRoyalty) {
+          if (orderLine.blnApparel) {
+            orderLine.royaltyPrice = orderLine.optionsPrice * this.orderDetail.apparelRoyaltyAmount;
+            this.orderDetail.totalRoyalties += orderLine.optionsPrice * this.orderDetail.apparelRoyaltyAmount;
+          } else {
+            orderLine.royaltyPrice = orderLine.optionsPrice * this.orderDetail.royalties;
+            this.orderDetail.totalRoyalties += orderLine.optionsPrice * this.orderDetail.royalties;
+          }
+        }
+        // this.orderDetail.totalRoyalties += orderLine.royaltyPrice;
 
         orderLine.colorSizesData.forEach(color => {
           orderLine.orderLineTotalCost += ((color.baseCost + color.runCost) * color.quantity) + color.setupCost;

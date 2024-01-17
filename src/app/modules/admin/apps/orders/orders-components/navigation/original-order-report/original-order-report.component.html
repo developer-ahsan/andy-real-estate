@@ -26,7 +26,7 @@
                             <p class="font-bold" *ngIf="orderDetail.fk_groupOrderID">GROUP ORDER</p>
                         </div>
                         <div class="col-12">
-                            <b>Total: </b> {{orderTotalPrice | currency: 'USD': 'symbol':'1.3-3'}}<br />
+                            <b>Total: </b> {{orderTotalPrice | currency: 'USD': 'symbol':'1.4-4'}}<br />
                             <b>Total Final Margin: </b> <span
                                 *ngIf="orderDetail.orderPrice">{{orderDetail?.margin?.toFixed(3)}}%</span><br />
                             <b>Store: </b>{{orderDetail.storeName}}<br />
@@ -53,7 +53,7 @@
                             {{orderDetail?.fk_storeUserID}})<br />
                             <b>Payment Method: </b> {{orderDetail?.paymentMethodName}} <br />
                             <b>Payment Date: </b> <span
-                                *ngIf="orderDetail?.paymentDate">{{orderDetail.paymentDate}}</span><span
+                                *ngIf="orderDetail?.paymentDate">{{orderDetail.formattedPaymentDateWithDay}}</span><span
                                 *ngIf="!orderDetail?.paymentDate">PENDING</span><br />
                             <b>Purchase Order:</b> <span
                                 *ngIf="orderDetail?.purchaseOrderNum">{{orderDetail.purchaseOrderNum}}</span><span
@@ -187,13 +187,13 @@
                                             <td>{{item.colorName}} <span *ngIf="item.sizeName">&amp;
                                                     {{item.sizeName}}</span></td>
                                             <td align="center">{{item.quantity}}</td>
-                                            <td align="center">{{item.runCost | currency: 'USD': 'symbol':'1.3-3'}}</td>
+                                            <td align="center">{{item.runCost | currency: 'USD': 'symbol':'1.4-4'}}</td>
                                             <td align="center">{{item.runCost * item.quantity | currency: 'USD':
-                                                'symbol':'1.3-3'}}</td>
-                                            <td align="center">{{item.runPrice | currency: 'USD': 'symbol':'1.3-3'}}
+                                                'symbol':'1.4-4'}}</td>
+                                            <td align="center">{{item.runPrice | currency: 'USD': 'symbol':'1.4-4'}}
                                             </td>
                                             <td align="center">{{item.runPrice * item.quantity | currency: 'USD':
-                                                'symbol':'1.3-3'}}</td>
+                                                'symbol':'1.4-4'}}</td>
                                         </tr>
                                         <ng-container *ngIf="item.setupCost || item.setupPrice">
                                             <tr>
@@ -201,10 +201,10 @@
                                                 <td align="center"></td>
                                                 <td align="center"></td>
                                                 <td align="center">{{item.setupCost | currency: 'USD':
-                                                    'symbol':'1.3-3'}}</td>
+                                                    'symbol':'1.4-4'}}</td>
                                                 <td align="center"></td>
                                                 <td align="center">{{item.setupPrice | currency: 'USD':
-                                                    'symbol':'1.3-3'}}</td>
+                                                    'symbol':'1.4-4'}}</td>
                                             </tr>
                                         </ng-container>
                                     </ng-container>
@@ -219,23 +219,23 @@
                                                             #:&nbsp; {{item.reorderNumber}}</b></span></span>
                                             </td>
                                             <td align="center">{{item.quantity}}</td>
-                                            <td align="center">{{item.runCost | currency: 'USD': 'symbol':'1.3-3'}}</td>
+                                            <td align="center">{{item.runCost | currency: 'USD': 'symbol':'1.4-4'}}</td>
                                             <td align="center">{{item.runCost*item.quantity | currency: 'USD':
-                                                'symbol':'1.3-3'}}</td>
-                                            <td align="center">{{item.runPrice | currency: 'USD': 'symbol':'1.3-3'}}
+                                                'symbol':'1.4-4'}}</td>
+                                            <td align="center">{{item.runPrice | currency: 'USD': 'symbol':'1.4-4'}}
                                             </td>
                                             <td align="center">{{item.runPrice*item.quantity | currency: 'USD':
-                                                'symbol':'1.3-3'}}</td>
+                                                'symbol':'1.4-4'}}</td>
                                         </tr>
                                         <tr>
                                             <td align="right"><span>{{item.blnStitchProcess ? 'Digitization(s)' :
                                                     'Setup(s)'}}</span></td>
                                             <td align="center"></td>
                                             <td align="center"></td>
-                                            <td align="center">{{item.setupCost | currency: 'USD': 'symbol':'1.3-3'}}
+                                            <td align="center">{{item.setupCost | currency: 'USD': 'symbol':'1.4-4'}}
                                             </td>
                                             <td align="center"></td>
-                                            <td align="center">{{item.setupPrice | currency: 'USD': 'symbol':'1.3-3'}}
+                                            <td align="center">{{item.setupPrice | currency: 'USD': 'symbol':'1.4-4'}}
                                             </td>
                                         </tr>
                                         <tr>
@@ -260,14 +260,14 @@
                                             <tr>
                                                 <td>{{item.packagingName}}</td>
                                                 <td align="center">{{item.quantity}}</td>
-                                                <td align="center">{{item.runCost | currency: 'USD': 'symbol':'1.3-3'}}
+                                                <td align="center">{{item.runCost | currency: 'USD': 'symbol':'1.4-4'}}
                                                 </td>
                                                 <td align="center">{{item.runCost * item.quantity | currency: 'USD':
-                                                    'symbol':'1.3-3'}}</td>
-                                                <td align="center">{{item.runPrice | currency: 'USD': 'symbol':'1.3-3'}}
+                                                    'symbol':'1.4-4'}}</td>
+                                                <td align="center">{{item.runPrice | currency: 'USD': 'symbol':'1.4-4'}}
                                                 </td>
                                                 <td align="center">{{item.runPrice * item.quantity | currency: 'USD':
-                                                    'symbol':'1.3-3'}}</td>
+                                                    'symbol':'1.4-4'}}</td>
                                             </tr>
                                             <ng-container *ngIf="item.setupCost || item.setupPrice">
                                                 <tr>
@@ -275,10 +275,10 @@
                                                     <td align="center"></td>
                                                     <td align="center"></td>
                                                     <td align="center">{{item.setupCost | currency: 'USD':
-                                                        'symbol':'1.3-3'}}</td>
+                                                        'symbol':'1.4-4'}}</td>
                                                     <td align="center"></td>
                                                     <td align="center">{{item.setupPrice | currency: 'USD':
-                                                        'symbol':'1.3-3'}}</td>
+                                                        'symbol':'1.4-4'}}</td>
                                                 </tr>
                                             </ng-container>
                                         </ng-container>
@@ -293,10 +293,10 @@
                                         <td align="center"></td>
                                         <td align="center"></td>
                                         <td align="center">{{qryOrderLine.shippingCost | currency: 'USD':
-                                            'symbol':'1.3-3'}}</td>
+                                            'symbol':'1.4-4'}}</td>
                                         <td align="center"></td>
                                         <td align="center">{{qryOrderLine.shippingPrice | currency: 'USD':
-                                            'symbol':'1.3-3'}}</td>
+                                            'symbol':'1.4-4'}}</td>
                                     </tr>
                                     <ng-container
                                         *ngIf="qryOrderLine.blnWarehouse && qryOrderLine.warehouseDeliveryOption">
@@ -321,7 +321,7 @@
                                             <td align="center"></td>
                                             <td align="center"></td>
                                             <td align="center">{{qryOrderLine.royaltyPrice | currency: 'USD':
-                                                'symbol':'1.3-3'}}</td>
+                                                'symbol':'1.4-4'}}</td>
                                         </tr>
                                     </ng-container>
 
@@ -334,12 +334,12 @@
                                         <td align="center"></td>
                                         <td align="center"></td>
                                         <td align="center"><b>{{qryOrderLine?.getOrderLineTotalsCost | currency: 'USD':
-                                                'symbol':'1.3-3'}}</b>
+                                                'symbol':'1.4-4'}}</b>
                                         </td>
                                         <td align="center"></td>
                                         <td align="center"><b>{{(qryOrderLine?.getOrderLineTotalsPrice ) | currency:
                                                 'USD':
-                                                'symbol':'1.3-3'}}</b>
+                                                'symbol':'1.4-4'}}</b>
                                         </td>
                                     </tr>
                                 </table>
@@ -363,7 +363,7 @@
                                     <td align="center"></td>
                                     <td align="center"></td>
                                     <td align="center"><b>{{(-1 * (orderDetail.discount)) | currency: 'USD':
-                                            'symbol':'1.3-3'}}</b></td>
+                                            'symbol':'1.4-4'}}</b></td>
                                 </tr>
                                 <ng-container *ngIf="orderDetail.cashbackDiscount">
                                     <tr>
@@ -373,7 +373,7 @@
                                         <td align="center"></td>
                                         <td align="center"></td>
                                         <td align="center"><b>{{(1 * (orderDetail.cashbackDiscount)) | currency: 'USD':
-                                                'symbol':'1.3-3'}}</b></td>
+                                                'symbol':'1.4-4'}}</b></td>
                                     </tr>
                                 </ng-container>
                                 <tr>
@@ -383,7 +383,7 @@
                                     <td align="center"></td>
                                     <td align="center"></td>
                                     <td align="center"><b>{{orderDetail.orderTax | currency: 'USD':
-                                            'symbol':'1.3-3'}}</b></td>
+                                            'symbol':'1.4-4'}}</b></td>
                                 </tr>
                                 <tr>
                                     <td>ADJUSTMENTS</td>
@@ -418,10 +418,10 @@
                                     <td><b>GRAND TOTAL</b></td>
                                     <td></td>
                                     <td></td>
-                                    <td><b>{{orderTotalCost | currency: 'USD': 'symbol':'1.3-3'}}</b></td>
+                                    <td><b>{{orderTotalCost | currency: 'USD': 'symbol':'1.4-4'}}</b></td>
                                     <td></td>
                                     <td align="center"><b>{{orderTotalPrice | currency: 'USD':
-                                            'symbol':'1.3-3'}}</b></td>
+                                            'symbol':'1.4-4'}}</b></td>
                                 </tr>
                             </table>
                         </div>

@@ -69,6 +69,7 @@ export class QuoteProductsComponent implements OnInit {
   cartLines: any;
   selectedCartLine: any;
   ngCurrentProduct: any;
+  ngCurrentGroupProduct: any;
   constructor(
     private _quoteService: QuotesService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -94,6 +95,9 @@ export class QuoteProductsComponent implements OnInit {
         this.ngCurrentProduct = [this.cartLines[0]];
         this.ngCurrentProduct[0].displayText = this.ngCurrentProduct[0].pk_storeProductID + ' - ' + this.ngCurrentProduct[0].productNumber + ': ' + this.ngCurrentProduct[0].productName;
         this.currentSearchProductCtrl.setValue(this.cartLines[0]);
+        // Group Run Master
+        this.ngCurrentGroupProduct = [this.cartLines[0]];
+        this.ngCurrentGroupProduct[0].displayText = this.ngCurrentGroupProduct[0].pk_storeProductID + ' - ' + this.ngCurrentGroupProduct[0].productNumber + ': ' + this.ngCurrentGroupProduct[0].productName;
 
         // this.getSelectedProducts();
         this._changeDetectorRef.markForCheck();
@@ -240,12 +244,21 @@ export class QuoteProductsComponent implements OnInit {
     this.ngCurrentProduct = [this.allProducts.find(product => product.fk_productID == item.fk_productID)];
     this._changeDetectorRef.markForCheck();
   };
+  OnItemSelectUpdateGroup(item: any) {
+    // Group Run Master
+    this.ngCurrentGroupProduct = [this.allProducts.find(product => product.fk_productID == item.fk_productID)];
+    this._changeDetectorRef.markForCheck();
+  }
   changeCartLine(cartLine) {
     this.selectedCartLine = cartLine;
     this.currentSelectedProduct = cartLine;
     this.currentSearchProductCtrl.setValue(cartLine);
     this.ngCurrentProduct = cartLine;
     this.ngCurrentProduct[0].displayText = this.ngCurrentProduct[0].pk_storeProductID + ' - ' + this.ngCurrentProduct[0].productNumber + ': ' + this.ngCurrentProduct[0].productName
+
+    // Group Run Master
+    this.ngCurrentGroupProduct = cartLine;
+    this.ngCurrentGroupProduct[0].displayText = this.ngCurrentGroupProduct[0].pk_storeProductID + ' - ' + this.ngCurrentGroupProduct[0].productNumber + ': ' + this.ngCurrentGroupProduct[0].productName
     this._changeDetectorRef.markForCheck();
   }
   getSelectedProducts() {
@@ -456,11 +469,20 @@ export class QuoteProductsComponent implements OnInit {
       }
     });
   }
+  makeGroupRunMaster(check) {
+    let msg;
+    if (check) {
+      msg = 'This will convert the selected product to a group run master, and then allow you to add products to that group run.';
+    } else {
+      msg = 'This will clear the selected product of a group run master, converting it to just a regular product.  This will also convert all sub-products in this group run to regular products.  This cannot be undone.  Are you sure you want to continue?';
+    }
+  }
   removeCartProduct() {
     if (this.cartLines.length == 1) {
       this._quoteService.snackBar('You cannot remove the last item on a quote. Please add another item first and then remove this one.');
       return;
     }
+    // blnGroupRun
     this._commonService.showConfirmation('NOTE:  Removing an item removes all of the imprints for that item, as well as the attached artwork files and customer comments for said imprints.  If you still need these files or comments, please save them before removing the item.  Are you sure you want to remove this item from this order?  This action cannot be undone.', (confirmed) => {
       if (confirmed) {
         let paylaod = {
