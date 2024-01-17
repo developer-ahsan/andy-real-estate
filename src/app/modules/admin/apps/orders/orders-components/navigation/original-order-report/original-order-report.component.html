@@ -80,8 +80,8 @@
                             </span>
                             <b>Instructions: </b> <br />{{orderDetail?.instructions}}<br />
                             <b>Internal Comments:</b> <br />
-                            <div class="border p-2">
-                                <div [innerHtml]="orderDetail?.internalComments" class="h-60 overflow-auto"></div>
+                            <div class="border p-2" *ngIf="orderDetail?.internalComments">
+                                <div [innerHtml]="orderDetail?.internalComments" class="max-h-60 overflow-auto"></div>
                             </div>
                             <br />
                             <b>PromoCode:</b> {{orderDetail?.discountCode || 'NONE'}}
@@ -337,7 +337,8 @@
                                                 'symbol':'1.4-4'}}</b>
                                         </td>
                                         <td align="center"></td>
-                                        <td align="center"><b>{{(qryOrderLine?.getOrderLineTotalsPrice ) | currency:
+                                        <td align="center"><b>{{(qryOrderLine?.getOrderLineTotalsPrice +
+                                                qryOrderLine?.royaltyPrice ) | currency:
                                                 'USD':
                                                 'symbol':'1.4-4'}}</b>
                                         </td>

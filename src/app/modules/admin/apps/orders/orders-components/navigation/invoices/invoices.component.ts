@@ -72,9 +72,10 @@ export class InvoicesComponent implements OnInit {
       this.orderDetail.groupTotalRoyalty = 0;
     }
 
-
+    this.orderDetail.merchandiseTotal = 0;
     this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       res["data"].forEach((orderLine) => {
+        this.orderDetail.merchandiseTotal += orderLine.getOrderLineTotalsMerchandiseTotalPrice;
         // orderDetail.fk_groupOrderID
         if (this.orderDetail.fk_groupOrderID) {
           orderLine.orderLineTotalPrice = 0;
@@ -99,7 +100,6 @@ export class InvoicesComponent implements OnInit {
       if (this.orderDetail.fk_groupOrderID) {
         this.setOrderTotals();
       }
-      console.log(this.qryOrderLines);
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     })

@@ -19,13 +19,21 @@
                     <div class="text-2xl font-bold ">
                         Order Report
                     </div>
+                    <div>
+                        <a [routerLink]="['/apps/orders',orderDetail.pk_orderID]" target="_blank"
+                            class="font-bold underline">View this order in admin</a>
+                    </div>
                     <div class="row w-full">
                         <div class="col-12 text-right">
                             <p class="font-bold">CONFIDENTIAL ORDER REPORT</p>
                             <p class="font-bold">#{{orderDetail.pk_orderID}}</p>
                             <p class="font-bold" *ngIf="orderDetail.fk_groupOrderID">{{orderDetail.fk_groupOrderID}}</p>
                         </div>
+
                         <div class="col-12">
+                            <b>Total: </b> {{orderDetail.orderTotal | currency: 'USD': 'symbol':'1.4-4'}}<br />
+                            <b>Total Final Margin: </b> <span
+                                *ngIf="orderDetail.orderPrice">{{orderDetail?.margin?.toFixed(3)}}%</span><br />
                             <b>Store: </b>{{orderDetail.storeName}}<br />
                             <b>Program manager: </b>
                             <span *ngIf="managerDetails">{{managerDetails[0] + ' ' + managerDetails[1]}}</span>

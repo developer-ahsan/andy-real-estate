@@ -424,8 +424,9 @@
                                         <td align="center"></td>
                                         <td align="center"></td>
                                         <td align="center">
-                                            <b>{{(orderDetail?.blnRoyaltyStore ? orderDetail?.orderPrice +
-                                                orderDetail?.royalties: orderDetail?.orderPrice) | currency: 'USD':
+                                            <b>{{(orderDetail?.blnRoyaltyStore ? orderDetail.merchandiseTotal:
+                                                orderDetail.merchandiseTotal - orderDetail?.royalties) | currency:
+                                                'USD':
                                                 'symbol':'1.4-4'}}</b>
                                         </td>
                                     </tr>
