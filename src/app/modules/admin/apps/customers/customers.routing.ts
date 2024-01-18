@@ -23,6 +23,7 @@ import { GetCustomer, GetCustomersList } from './customers-components/customers.
 import { CustomerFlpsUsersComponent } from './customers-components/navigation/flps-users/flps-users.component';
 import { SavedCartsDetailComponent } from './customers-components/navigation/saved-carts-detail/saved-carts-detail.component';
 import { CreditApplicationsComponent } from './customers-components/navigation/credit-applications/credit-applications.component';
+import { UserSettingsComponent } from './customers-components/navigation/user-settings/user-settings.component';
 
 export const customersRoutes: Route[] = [
     {
@@ -50,6 +51,14 @@ export const customersRoutes: Route[] = [
                 data: {
                     title: 'User Info',
                     url: 'user-info'
+                }
+            },
+            {
+                path: 'viewStoreUserSettings',
+                component: UserSettingsComponent,
+                data: {
+                    title: 'User Settings',
+                    url: 'viewStoreUserSettings'
                 }
             },
             {

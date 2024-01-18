@@ -59,6 +59,7 @@ import { CKEditorModule } from 'ckeditor4-angular';
 import { CustomerFlpsUsersComponent } from './customers-components/navigation/flps-users/flps-users.component';
 import { CurrencyPipe } from '@angular/common';
 import { SavedCartsDetailComponent } from './customers-components/navigation/saved-carts-detail/saved-carts-detail.component';
+import { UserSettingsComponent } from './customers-components/navigation/user-settings/user-settings.component';
 
 @NgModule({
     declarations: [
@@ -83,7 +84,8 @@ import { SavedCartsDetailComponent } from './customers-components/navigation/sav
         UserInfoComponent,
         UserLocationsComponent,
         UserMetricsComponent,
-        CustomerFlpsUsersComponent
+        CustomerFlpsUsersComponent,
+        UserSettingsComponent
     ],
     imports: [
         RouterModule.forChild(customersRoutes),

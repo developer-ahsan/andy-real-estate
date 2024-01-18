@@ -8,6 +8,13 @@ export const navigations = [
     },
     {
         id: 2,
+        title: 'User Settings',
+        icon: 'mat_outline:settings',
+        route: 'viewStoreUserSettings',
+        children: []
+    },
+    {
+        id: 2,
         title: 'User Addresses',
         icon: 'mat_outline:location_city',
         route: 'addresses',

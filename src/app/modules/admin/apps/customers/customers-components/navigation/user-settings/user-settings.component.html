@@ -1,0 +1,43 @@
+<div class="w-full" *ngIf="isLoading">
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+    </ngx-skeleton-loader>
+</div>
+<div class="row w-full m-2" *ngIf="!isLoading">
+    <div class="col-12 bg-card rounded-2xl my-2 p-6 sm:p-8 lg:p-10 w-full shadow-md">
+        <div class="text-3xl font-bold">Store User Settings</div>
+        <div class="mt-3">
+            <div class="flex align-items-center font-bold">
+                <mat-label>Send quote reminder emails?</mat-label>
+                <mat-icon class="icon-size-4 ml-1"
+                    matTooltip="Determines whether this user will receive quote reminder emails for quotes waiting for their finalization.  This settings applies to all stores this user may shop on."
+                    [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+            </div>
+            <mat-form-field class="min-w-100">
+                <mat-select matInput [(ngModel)]="blnQuoteReminders">
+                    <mat-option [value]="true">Yes</mat-option>
+                    <mat-option [value]="false">No</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <br>
+            <div class="flex align-items-center font-bold">
+                <mat-label>Send survey emails?</mat-label>
+                <mat-icon class="icon-size-4 ml-1"
+                    matTooltip="Determines whether this user will receive emails regarding any automated surveys for post-sale activity."
+                    [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+            </div>
+            <mat-form-field class="min-w-100">
+                <mat-select matInput [(ngModel)]="blnSurveyEmails">
+                    <mat-option [value]="true">Yes</mat-option>
+                    <mat-option [value]="false">No</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <br>
+            <button class="min-w-40" (click)="updateUserSettings()" mat-button mat-flat-button color="primary"
+                [disabled]="updateLoader">
+                <mat-progress-spinner *ngIf="updateLoader" [diameter]="24" [mode]="'indeterminate'">
+                </mat-progress-spinner>
+                <span *ngIf="!updateLoader">Update</span>
+            </button>
+        </div>
+    </div>
+</div>

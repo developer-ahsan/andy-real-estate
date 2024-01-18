@@ -172,3 +172,10 @@ export interface userComment {
     emails: string[];
     user_comment: boolean;
 };
+
+export interface updateStoreUserSettings {
+    blnQuoteReminders: boolean;
+    blnSurveyEmails: boolean;
+    userID: number;
+    updateStoreUserSettings: boolean;
+};
