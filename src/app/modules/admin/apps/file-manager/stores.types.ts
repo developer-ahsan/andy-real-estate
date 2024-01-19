@@ -748,3 +748,68 @@ export interface updateStoreRoyalty {
     storeID: number;
     update_royality: boolean;
 };
+
+// Surveys
+export interface addSurvey {
+    storeID: number;
+    newSurveyName: string;
+    add_survey: boolean;
+};
+export interface deleteSurvey {
+    surveyID: number;
+    delete_survey: boolean;
+};
+
+export interface automateSurvey {
+    surveyID: number;
+    blnAutomate: boolean;
+    automate_survey: boolean;
+};
+
+export interface finalizeSurvey {
+    surveyID: number;
+    finalize_survey: boolean;
+};
+
+export interface UpdateSurveyHiddenStatus {
+    blnHidden: number;
+    surveyID: number;
+    update_survey_hidden_status: boolean;
+};
+export interface updateSurveyBody {
+    surveyID: number;
+    surveyBody: string;
+    update_survey_body: boolean;
+};
+export interface addQuestion {
+    surveyID: number;
+    question: string;
+    questionType: number;
+    add_survey_question: boolean;
+};
+export interface updateQuestion {
+    surveyQuestionID: number;
+    question: string;
+    listOrder: number;
+    is_delete: boolean;
+    update_survey_question: boolean;
+};
+export interface addAnswer {
+    surveyQuestionID: number;
+    answer: string;
+    add_survey_answer: boolean;
+};
+
+export interface updateScaleRating {
+    questionID: number;
+    scaleRatingMin: string;
+    scaleRatingMax: string;
+    update_scale_rating: boolean;
+};
+
+export interface updateAnswer {
+    answerID: number;
+    answer: string;
+    is_delete: boolean;
+    update_survey_answer: boolean;
+};

@@ -1,0 +1,430 @@
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+</ngx-skeleton-loader>
+
+<div class="row m-0" *ngIf="!isLoading">
+    <div>
+        <button mat-button mat-stroked-button (click)="backToList()" class="min-w-40">Back to list</button>
+    </div>
+    <ng-container *ngIf="!surveysList.blnFinalized; else finalizedSurvey">
+        <div class="col-12 p-10 my-2 bg-card rounded-2xl shadow">
+            <div class="flex align-items-center font-bold">
+                <mat-label>Survey text/body (optional)</mat-label>
+                <span class="fa fa-question-circle"
+                    matTooltip="This is additional text that will show up on the survey page above the survey."></span>
+            </div>
+            <ckeditor [config]="editorConfig" [(ngModel)]="surveysList.surveyBody"></ckeditor>
+            <br>
+            <button class="min-w-40" mat-flat-button color="primary" [matTooltip]="'Update survey body/text'"
+                (click)="updateSurvey()" [disabled]="isUpdateBodyLoader">
+                <mat-progress-spinner *ngIf="isUpdateBodyLoader" [diameter]="24" [mode]="'indeterminate'">
+                </mat-progress-spinner>
+                <span *ngIf="!isUpdateBodyLoader">Update survey body/text</span>
+            </button>
+            <hr>
+            <ng-container *ngIf="isQuestionAnswerLoader">
+                <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+                </ngx-skeleton-loader>
+            </ng-container>
+            <ng-container *ngIf="!isQuestionAnswerLoader">
+                <!-- Add New Question -->
+                <div>
+                    <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+                        Add new survey question
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-12 col-md-6">
+                            <mat-form-field appearance="fill" class="w-full">
+                                <mat-label>New survey question</mat-label>
+                                <input [(ngModel)]="addQuestions.question" matInput maxlength="50"
+                                    placeholder="New survey question">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <mat-form-field appearance="fill" class="w-full">
+                                <mat-label>Question Type</mat-label>
+                                <mat-select [(ngModel)]="addQuestions.type" matInput>
+                                    <mat-option [value]="1">Multiple choice (single answer)</mat-option>
+                                    <mat-option [value]="2">Checkbox (multiple answers)</mat-option>
+                                    <mat-option [value]="3">Star rating</mat-option>
+                                    <mat-option [value]="4">Text box</mat-option>
+                                    <mat-option [value]="5">Scale Rating</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 flex justify-end">
+                            <button class="min-w-40" mat-stroked-button [matTooltip]="'Add new survey'"
+                                (click)="addQuestion()" [disabled]="isAddQuestionLoader">
+                                <mat-progress-spinner *ngIf="isAddQuestionLoader" [diameter]="24"
+                                    [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                                <mat-icon *ngIf="!isAddQuestionLoader" svgIcon="heroicons_outline:plus"></mat-icon>
+                                <span *ngIf="!isAddQuestionLoader" class="ml-1 mr-1">Add Question</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <!-- Questions List -->
+                <ng-container *ngIf="questionsList.length;else noQuestions">
+                    <ng-container *ngFor="let question of questionsList; let l=last;let i=index">
+                        <!-- Questions -->
+                        <div class="row">
+                            <div class="col-2 p-2">
+                                <b>Question Type:</b><br />
+                                <h2 class="text-xl font-bold">
+                                    {{question.typeName}}
+                                </h2>
+                            </div>
+
+                            <div class="col-6 p-2">
+                                <b>Question:</b><br />
+                                <mat-form-field class="w-full">
+                                    <input matInput [(ngModel)]="question.question" maxlength="500"
+                                        placeholder="Question">
+                                </mat-form-field>
+                            </div>
+
+                            <div class="col-2 p-2">
+                                <b>Display order:</b><br />
+                                <mat-form-field class="w-full">
+                                    <input matInput type="number" [(ngModel)]="question.listOrder" maxlength="10"
+                                        placeholder="Display order">
+                                </mat-form-field>
+                            </div>
+
+                            <div class="col-2 p-2 text-right">
+                                <br />
+                                <button (click)="updateSurveyQuestion(question,false)" mat-button mat-flat-button
+                                    color="primary" class="mr-1 rounded-md" [disabled]="question.isUpdateLoader"
+                                    matTooltip="Update question">
+                                    <span class="fa fa-check fa-lg" *ngIf="!question.isUpdateLoader"></span>
+                                    <mat-progress-spinner *ngIf="question.isUpdateLoader" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
+                                </button>
+                                <button (click)="updateSurveyQuestion(question,true)" mat-button mat-flat-button
+                                    color="warn" class="rounded-md" [disabled]="question.isDelLoader"
+                                    matTooltip="Remove question">
+                                    <span class="fa fa-trash fa-lg" *ngIf="!question.isDelLoader"></span>
+                                    <mat-progress-spinner *ngIf="question.isDelLoader" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Answers -->
+                        <ng-container *ngIf="question.questionType == 1 || question.questionType == 2">
+                            <!-- Add New Answer -->
+                            <div class="row">
+                                <div class="col-2 p-2"></div>
+                                <div class="col-8 p-2">
+                                    <mat-form-field class="w-full">
+                                        <mat-label> <b>Add new answer:</b></mat-label>
+                                        <input [(ngModel)]="question.newAnswerValue" type="text" matInput
+                                            placeholder="New answer" maxlength="500" />
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-2 p-2 text-right">
+                                    <br />
+                                    <button mat-flat-button mat-button color="primary"
+                                        (click)="addQuestionAnswer(question)" class="min-w-30 rounded-md"
+                                        [disabled]="question.isAddAnswerLoader">
+                                        <span class="fa fa-plus fa-lg" *ngIf="!question.isAddAnswerLoader"></span>
+                                        <mat-progress-spinner *ngIf="question.isAddAnswerLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                    </button>
+                                </div>
+                            </div>
+                            <ng-container *ngIf="question.answersList.length; else noAnswer">
+                                <ng-container *ngFor="let answer of question.answersList">
+                                    <div class="row">
+                                        <div class="col-2 p-2"></div>
+
+                                        <div class="col-8 p-2">
+                                            <mat-form-field class="w-full">
+                                                <input matInput placeholder="Answer" maxlength="500"
+                                                    [(ngModel)]="answer.answer">
+                                            </mat-form-field>
+                                        </div>
+                                        <div class="col-2 p-2 text-right">
+                                            <button (click)="updateSurveyQuestionAnswer(answer,answer,i,false)"
+                                                mat-button mat-flat-button color="primary" class="mr-1 rounded-md"
+                                                [disabled]="answer.isUpdateLoader" matTooltip="Update Answer">
+                                                <span class="fa fa-check fa-lg" *ngIf="!answer.isUpdateLoader"></span>
+                                                <mat-progress-spinner *ngIf="answer.isUpdateLoader" [diameter]="24"
+                                                    [mode]="'indeterminate'">
+                                                </mat-progress-spinner>
+                                            </button>
+                                            <button (click)="updateSurveyQuestionAnswer(question,answer,i,true)"
+                                                mat-button mat-flat-button color="warn" class="rounded-md"
+                                                [disabled]="answer.isDelLoader" matTooltip="Remove Answer">
+                                                <span class="fa fa-trash fa-lg" *ngIf="!answer.isDelLoader"></span>
+                                                <mat-progress-spinner *ngIf="answer.isDelLoader" [diameter]="24"
+                                                    [mode]="'indeterminate'">
+                                                </mat-progress-spinner>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </ng-container>
+                            </ng-container>
+                            <ng-template #noAnswer>
+                                <div class="row">
+                                    <div class="col-2 p-2"></div>
+                                    <div class="col-9 p-2">
+                                        <div class="alert alert-warning p-2 small sm">
+                                            There are no answers defined for this question.
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-template>
+                        </ng-container>
+
+                        <ng-container *ngIf="question.questionType == 3">
+                            <div class="row">
+                                <div class="col-12 p-2">
+                                    <div class="alert alert-info p-2">
+                                        This question will present the user with a choice of zero to five stars.
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-container>
+                        <ng-container *ngIf="question.questionType == 4">
+                            <div class="row">
+                                <div class="col-12 p-2">
+                                    <div class="alert alert-info p-2">
+                                        This question will present the user with a text box to enter an answer.
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-container>
+                        <ng-container *ngIf="question.questionType == 5">
+                            <div class="row spacer">
+                                <div class="col-2 p-2"></div>
+
+                                <div class="col-9 p-2">
+                                    <b>Label ends of 1-10 scale</b>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-2 p-2"></div>
+                                <div class="col-5 p-2">
+                                    <mat-form-field class="w-full">
+                                        <mat-label>Extreme left:</mat-label>
+                                        <input type="number" matInput maxlength="50"
+                                            [(ngModel)]="question.scaleRatingMin">
+                                    </mat-form-field>
+                                </div>
+
+                                <div class="col-5 p-2">
+                                    <mat-form-field class="w-full">
+                                        <mat-label>Extreme right:</mat-label>
+                                        <input type="number" matInput maxlength="50"
+                                            [(ngModel)]="question.scaleRatingMax">
+                                    </mat-form-field>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-2 p-2"></div>
+                                <div class="col-10 p-2">
+                                    <button mat-flat-button mat-button color="primary" (click)="updateScaling(question)"
+                                        class="min-w-30 rounded-md" [disabled]="question.isUpdateScaling">
+                                        <span class="fa fa-check fa-lg" *ngIf="!question.isUpdateScaling"></span>
+                                        <span *ngIf="!question.isUpdateScaling">Update scale rating</span>
+                                        <mat-progress-spinner *ngIf="question.isUpdateScaling" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                    </button>
+                                </div>
+                            </div>
+                        </ng-container>
+                        <hr *ngIf="!l">
+                    </ng-container>
+                    <br>
+                    <button mat-button mat-flat-button color="primary" class="rounded-md w-full"
+                        (click)="finalizeSurvey()" [disabled]="surveysList.isFinalizeLoader">
+                        <span *ngIf="!surveysList.isFinalizeLoader">Finalize Survey</span>
+                        <mat-progress-spinner *ngIf="surveysList.isFinalizeLoader" [diameter]="24"
+                            [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                    </button>
+                </ng-container>
+                <ng-template #noQuestions>
+                    <div class="alert alert-warning ">
+                        There are currently no questions assigned to this survey.
+                    </div>
+                </ng-template>
+            </ng-container>
+        </div>
+    </ng-container>
+    <ng-template #finalizedSurvey>
+        <div class="p-10 my-2 bg-card rounded-2xl shadow">
+            <div class="panel1">
+                <b>Web URL:</b><br />
+                <span class="text-info"><span class="fa fa-exclamation-circle"></span> You can use this URL to manually
+                    send
+                    this survey to someone outside of the automated process that goes out nightly. Just replace the
+                    [ENTER-ORDER-ID-HERE] (including the brackets) in the URL below with the order ID number that you
+                    want
+                    to send the survey for.</span>
+                <br /><br />
+                {{selectedStore.protocol}}{{selectedStore.storeName}}/survey?s={{surveysList.pk_surveyID}}&o=[ENTER-ORDER-ID-HERE]<br />
+                <span class="text-danger">Do not include brackets around the order ID number.</span>
+            </div>
+
+            <div class="my-2">
+                <h2 class="text-2xl font-bold">Survey text/body (optional)</h2>
+                <ng-container *ngIf="surveysList.surveyBody; else noSurveyBody">
+                    <p [innerHTML]="surveysList.surveyBody"></p>
+                </ng-container>
+                <ng-template #noSurveyBody>
+                    <div class="alert alert-warning no-bottom-margin">
+                        There is no survey body defined for this survey.
+                    </div>
+                </ng-template>
+            </div>
+            <ng-container *ngIf="isQuestionAnswerLoader">
+                <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+                </ngx-skeleton-loader>
+            </ng-container>
+            <ng-container *ngIf="!isQuestionAnswerLoader">
+                <ng-container *ngFor="let question of questionsList">
+                    <hr>
+                    <div class="panel1">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-2 p-2">
+                                    <b>Question type:</b><br />
+                                    <h2 class="text-xl font-bold">
+                                        <ng-container *ngIf="question.questionType === 1; else condition2">
+                                            Multiple choice
+                                        </ng-container>
+                                        <ng-template #condition2>
+                                            <ng-container *ngIf="question.questionType === 2; else condition3">
+                                                Checkbox
+                                            </ng-container>
+                                            <ng-template #condition3>
+                                                <ng-container *ngIf="question.questionType === 3; else condition4">
+                                                    Star rating
+                                                </ng-container>
+                                                <ng-template #condition4>
+                                                    <ng-container *ngIf="question.questionType === 4; else condition5">
+                                                        Text box
+                                                    </ng-container>
+                                                    <ng-template #condition5>
+                                                        <ng-container *ngIf="question.questionType === 5">
+                                                            Scale rating
+                                                        </ng-container>
+                                                    </ng-template>
+                                                </ng-template>
+                                            </ng-template>
+                                        </ng-template>
+                                    </h2>
+                                </div>
+
+                                <div class="col-8 p-2">
+                                    <b>Question:</b><br />
+                                    <b>{{question.question}}</b>
+                                </div>
+
+                                <div class="col-2 p-2">
+                                    <b>Display order:</b><br />
+                                    {{question.listOrder}}
+                                </div>
+                            </div>
+
+                            <div *ngIf="question.questionType === 1; else type2">
+                                <ng-container *ngIf="question.answersList?.length; else noAnswers">
+                                    <div *ngFor="let answer of question.answersList">
+                                        <div class="row">
+                                            <div class="col-2 p-2"></div>
+                                            <div class="col-10 p-2">
+                                                {{ answer.answer }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ng-container>
+                                <ng-template #noAnswers>
+                                    <div class="row">
+                                        <div class="col-2 p-2"></div>
+                                        <div class="col-10 p-2">
+                                            <div class="alert alert-warning p-2 small sm">
+                                                There are no answers defined for this question.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ng-template>
+                            </div>
+                            <ng-template #type2>
+                                <div *ngIf="question.questionType === 2; else type3">
+                                    <ng-container *ngIf="question.answersList?.length; else noAnswers">
+                                        <div *ngFor="let answer of question.answersList">
+                                            <div class="row">
+                                                <div class="col-2 p-2"></div>
+                                                <div class="col-10 p-2">
+                                                    {{ answer.answer }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                    <ng-template #noAnswersType2>
+                                        <div class="row">
+                                            <div class="col-2 p-2"></div>
+                                            <div class="col-9 p-2">
+                                                <div class="alert alert-warning p-2 small sm">
+                                                    There are no answers defined for this question.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                </div>
+                                <ng-template #type3>
+                                    <div *ngIf="question.questionType === 3;else type4">
+                                        <div class="row">
+                                            <div class="col-12 p-2">
+                                                <div class="alert alert-info no-bottom-margin p-2">
+                                                    This question will present the user with a choice of zero to five
+                                                    stars.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <ng-template #type4>
+                                        <div *ngIf="question.questionType === 4;else type5">
+                                            <div class="row">
+                                                <div class="col-12 p-2">
+                                                    <div class="alert alert-info no-bottom-margin p-2">
+                                                        This question will present the user with a text box to enter an
+                                                        answer.
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <ng-template #type5>
+                                            <div *ngIf="question.questionType === 5">
+                                                <div class="row">
+                                                    <div class="col-2 p-2"></div>
+                                                    <div class="col-10 p-2">
+                                                        <b>Extreme left:</b><br />
+                                                        {{ question.scaleRatingMin }}
+                                                        <br /><br />
+                                                        <b>Extreme right:</b><br />
+                                                        {{ question.scaleRatingMax }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ng-template>
+                                    </ng-template>
+                                </ng-template>
+                            </ng-template>
+                        </div>
+                    </div>
+                </ng-container>
+            </ng-container>
+        </div>
+
+
+    </ng-template>
+</div>

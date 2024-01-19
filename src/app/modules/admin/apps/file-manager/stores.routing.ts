@@ -91,7 +91,8 @@ export const storeRoutes: Route[] = [
             },
             {
                 path: 'surveys',
-                component: SurveysComponent,
+                // component: SurveysComponent,
+                loadChildren: () => import('./navigation/surveys/surveys.module').then(m => m.SurveysModule),
                 data: {
                     title: 'Surveys',
                     url: 'surveys'

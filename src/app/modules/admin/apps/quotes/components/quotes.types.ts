@@ -209,3 +209,38 @@ export interface AddImprints {
     setupPrice: number;
     add_modify_quote_imprint: boolean;
 };
+export interface UpdateCartShipping {
+    shippingGroundPrice: number;
+    shippingGroundCost: number;
+    cartLine_id: number;
+    blnOverrideShippingNewAccessory: boolean;
+    orderQuantity: number;
+    isFulfillmentCart: boolean;
+    warehouse_delivery_option: number;
+    cartLineGroundCost: number;
+    cartLineGroundPrice: number;
+    update_cart_shipping: boolean;
+};
+
+export interface RemoveCartProduct {
+    blnGroupRun: boolean;
+    groupRunCartLineID: number;
+    cartLine_id: number;
+    cart_id: number;
+    loggedInUserID: number;
+    delete_cart_product: boolean;
+};
+export interface RemoveCartProduct {
+    blnGroupRun: boolean;
+    groupRunCartLineID: number;
+    cartLine_id: number;
+    cart_id: number;
+    loggedInUserID: number;
+    delete_cart_product: boolean;
+};
+export interface updateGroupRun {
+    blnGroupRun: boolean;
+    quantity: number;
+    cartLineID: number;
+    update_group_run: boolean;
+};

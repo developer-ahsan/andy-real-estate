@@ -37,7 +37,6 @@ import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { MatExpansionModule } from "@angular/material/expansion";
 import { ShippingNotificaitonComponent } from "./navigation/shipping-notificaiton/shipping-notificaiton.component";
 import { ResetTopTenComponent } from "./navigation/reset-top-ten/reset-top-ten.component";
-import { SurveysComponent } from "./navigation/surveys/surveys.component";
 import { JaggaerSettingsComponent } from "./navigation/jaggaer-settings/jaggaer-settings.component";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
@@ -120,7 +119,6 @@ import { SurveysAnalyticsComponent } from "./navigation/surveys/Analytics/analyt
     EmailBlastComponent,
     ShippingNotificaitonComponent,
     ResetTopTenComponent,
-    SurveysComponent,
     EmailBlastComponent,
     JaggaerSettingsComponent,
     StoreSuppliersComponent,
@@ -161,8 +159,7 @@ import { SurveysAnalyticsComponent } from "./navigation/surveys/Analytics/analyt
     SimpleEmailBlastComponent,
     ProductMainCategoriesComponent,
     ProductSubCategoriesComponent,
-    StoreProcurementSettingsComponent,
-    SurveysAnalyticsComponent
+    StoreProcurementSettingsComponent
   ],
   imports: [
     RouterModule.forChild(storeRoutes),

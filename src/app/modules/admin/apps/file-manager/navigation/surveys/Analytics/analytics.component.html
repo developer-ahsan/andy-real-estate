@@ -1,8 +1,12 @@
-<div class="flex flex-col gap-y-3">
+<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+</ngx-skeleton-loader>
+<div class="flex flex-col gap-y-3" *ngIf="!isLoading">
+    <div>
+        <button mat-button mat-stroked-button (click)="backToList()" class="min-w-40">Back to list</button>
+    </div>
 
-
-    <div class="shadow bg-card p-5 mb-5">
-        <div class="font-bold border-b">Survey Analytics for {{ qrySurvey.name }}</div>
+    <div class="shadow bg-card rounded-md p-5 mb-5">
+        <div class="font-bold border-b">Survey Analytics for {{ surveysList.name }}</div>
 
         <div class="p-4">
 
@@ -63,71 +67,225 @@
 
     </div>
 
-
-    <div class="shadow bg-card p-5">
-        <div class="font-bold mb-5 border-b">
-            How about this test question
-        </div>
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isQuestionAnswerLoader">
+    </ngx-skeleton-loader>
+    <ng-container *ngIf="!isQuestionAnswerLoader">
 
 
-        <div id="chart">
-            <apx-chart [series]="chartOptions.series" [chart]="chartOptions.chart"
-                [dataLabels]="chartOptions.dataLabels" [plotOptions]="chartOptions.plotOptions"
-                [xaxis]="chartOptions.xaxis"></apx-chart>
-        </div>
+        <!-- <cfloop query="qrySurveyQuestions">
+			<cfset qryAnswers = objStoreSurvey.getCustomerAnswer(qrySurveyQuestions.pk_surveyQuestionID) />
+			<cfset qryTotalAnswerQuestions = objStoreSurvey.getQuestionAnswers(surveyID=attributes.surveyID, questionID=qrySurveyQuestions.pk_surveyQuestionID, params=attributes) />
+
+			<div class="panel1">
+				<h2>#qrySurveyQuestions.question#</h2>
+
+				<cfif qrySurveyQuestions.questionType EQ 1 OR qrySurveyQuestions.questionType EQ 2>
+					<cfscript>
+						chartData = {
+							"type": "hbar",
+							"plotarea": {
+								"adjust-layout": true,
+								"margin": "dynamic"
+
+							},
+							"scaleX": {
+								"values": listToArray(valueList(qryAnswers.answer))
+							},
+							"series": [{"values": [], "background-color": "##cc0033"}]
+						};
+					</cfscript>
+
+					<div id="chartData_#qrySurveyQuestions.pk_surveyQuestionID#" style="height: 200px;"></div>
+
+					<cfif qryAnswers.recordcount>
+						<table class="table table-striped table-hover padding-1x wide no-bottom-margin">
+							<thead>
+								<tr class="columnHeader2">
+									<td width="50%">Answer Choices</td>
+									<td width="45%">Responses</td>
+									<td width="1%">##</td>
+								</tr>
+							</thead>
+
+							<tbody>
+								<cfloop query="qryAnswers">
+									<cfset qryAnswerResults = objStoreSurvey.getAnswerResults(surveyID=attributes.surveyID, questionType=qrySurveyQuestions.questionType, answerID=qryAnswers.pk_surveyQuestionAnswerID, params=attributes) />
+									<tr>
+										<td>#qryAnswers.answer#</td>
+										<td>
+											<cfif qryTotalAnswerQuestions.recordcount>
+												#numberFormat((qryAnswerResults.answerCount/qryTotalAnswerQuestions.recordcount)*100, "99.99")#%
+											<cfelse>
+												#numberFormat(0, "99.99")#%
+											</cfif>
+										</td>
+										<td>#qryAnswerResults.answerCount#</td>
+									</tr>
+
+									<cfscript>
+										arrayAppend(chartData.series[1].values, qryAnswerResults.answerCount);
+									</cfscript>
+								</cfloop>
+
+								<script>
+									zingchart.render({
+										id: 'chartData_#qrySurveyQuestions.pk_surveyQuestionID#',
+										data: #replace(serializeJSON(chartData), "//", "", "All")#,
+										height: 200
+									});
+								</script>
+
+								<tr class="columnHeader2">
+									<td colspan="2">TOTAL</td>
+									<td>#qryTotalAnswerQuestions.recordcount#</td>
+								</tr>
+							</tbody>
+						</table>
+					<cfelse>
+						<div class="alert alert-warning">
+							There are no answers for this question or your filter range returned no results.
+						</div>
+					</cfif>
+				<cfelseif qrySurveyQuestions.questionType EQ 3>
+					<cfset qryAnswerResults = objStoreSurvey.getAnswerResults(surveyID=attributes.surveyID, questionType=qrySurveyQuestions.questionType, params=attributes) />
+
+					<cfif qryAnswerResults.recordcount AND qryAnswerResults.starCount>
+						<cfset average = numberFormat(qryAnswerResults.starRating/qryAnswerResults.starCount, "99.9") />
+
+						<cfset wholeStars = int(average) />
+						<cfif wholeStars LT average>
+							<cfset blnHalfStar = 1 />
+						<cfelse>
+							<cfset blnHalfStar = 0 />
+						</cfif>
+
+						<h2 class="no-underline inline">Average rating: #average#</h2><br />
+						<cfloop index="i" from="1" to="#wholeStars#">
+							<span class="fa fa-star fa-2x gold"></span>
+						</cfloop>
+						<cfif blnHalfStar>
+							<span class="fa fa-star-half-o fa-2x gold"></span>
+						</cfif>
+					<cfelse>
+						<div class="alert alert-warning no-bottom-margin">
+							There are no answers for this question or your filter range returned no results.
+						</div>
+					</cfif>
+				<cfelseif qrySurveyQuestions.questionType EQ 4>
+					<cfset qryAnswerResults = objStoreSurvey.getAnswerResults(surveyID=attributes.surveyID, questionType=qrySurveyQuestions.questionType, questionID=qrySurveyQuestions.pk_surveyQuestionID, params=attributes) />
+
+					<div class="scroll-box wide tall-3x">
+						<div class="container-fluid">
+							<cfif qryAnswerResults.recordcount>
+								<cfloop query="qryAnswerResults">
+									<div class="row">
+										<div class="col-xs-12 add-padding-sm">
+											#qryAnswerResults.textAnswer#<br /><br />
+											<span style="color: ##999;">Submitted by #qryAnswerResults.firstName# #qryAnswerResults.lastName#<cfif len(qryAnswerResults.billingStudentOrgName)> (from #qryAnswerResults.billingStudentOrgName#)</cfif> on #dateFormat(dateSubmitted, "mm/dd/yyyy")# #timeFormat(dateSubmitted, "hh:mm tt")#
+											</span>
+										</div>
+									</div>
+									<cfif qryAnswerResults.currentRow NEQ qryAnswerResults.recordcount>
+										<div class="row">
+											<div class="col-xs-12 add-padding-sm">
+												<hr />
+											</div>
+										</div>
+									</cfif>
+								</cfloop>
+							<cfelse>
+								<div class="row">
+									<div class="col-xs-12 add-padding-sm">
+										<div class="alert alert-warning no-bottom-margin">
+											There are no results for this answer or your filter range did not return any results.
+										</div>
+									</div>
+								</div>
+							</cfif>
+						</div>
+					</div>
+				<cfelseif qrySurveyQuestions.questionType EQ 5>
+					<cfset qryAnswerResults = objStoreSurvey.getAnswerResults(surveyID=attributes.surveyID, questionType=qrySurveyQuestions.questionType, params=attributes) />
+
+					<cfif qryAnswerResults.recordcount AND qryAnswerResults.scaleCount>
+						<cfset average = numberFormat(qryAnswerResults.scaleRating/qryAnswerResults.scaleCount, "99.9") />
+
+						<h2 class="no-underline inline">Average: #average#/10</h2><br />
+					<cfelse>
+						<div class="alert alert-warning no-bottom-margin">
+							There are no answers for this question or your filter range returned no results.
+						</div>
+					</cfif>
+				</cfif>
+			</div>
+		</cfloop> -->
+
+
+
+        <div class="shadow bg-card rounded-md p-5">
+            <div class="font-bold mb-5 border-b">
+                How about this test question
+            </div>
+
+
+            <div id="chart">
+                <apx-chart [series]="chartOptions.series" [chart]="chartOptions.chart"
+                    [dataLabels]="chartOptions.dataLabels" [plotOptions]="chartOptions.plotOptions"
+                    [xaxis]="chartOptions.xaxis"></apx-chart>
+            </div>
 
 
 
 
 
-        <div>
-            <table class="table table-striped table-hover padding-1x wide no-bottom-margin">
-                <thead>
-                    <tr class="columnHeader2">
-                        <td width="50%">Answer Choices</td>
-                        <td width="45%">Responses</td>
-                        <td width="1%">##</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    <ng-container>
-                        <tr>
-                            <td>Answer 1</td>
-                            <td>
-                                <ng-container>
-                                    0.00%
-                                </ng-container>
+            <div>
+                <table class="table table-striped table-hover padding-1x wide no-bottom-margin">
+                    <thead>
+                        <tr class="columnHeader2">
+                            <td width="50%">Answer Choices</td>
+                            <td width="45%">Responses</td>
+                            <td width="1%">##</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ng-container>
+                            <tr>
+                                <td>Answer 1</td>
+                                <td>
+                                    <ng-container>
+                                        0.00%
+                                    </ng-container>
 
-                            </td>
+                                </td>
+                                <td>0</td>
+                            </tr>
+                        </ng-container>
+                        <tr class="columnHeader2">
+                            <td colspan="2">TOTAL</td>
                             <td>0</td>
                         </tr>
-                    </ng-container>
-                    <tr class="columnHeader2">
-                        <td colspan="2">TOTAL</td>
-                        <td>0</td>
-                    </tr>
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
+
+
         </div>
 
 
-    </div>
 
 
 
 
-
-
-    <div class="shadow bg-card p-5">
-        <div class="font-bold mb-5 border-b">
-            How about this test question
-        </div>
-        <!-- *ngIf="qrySurveyQuestions.questionType === 3" -->
-        <ng-container>
-            <!-- *ngIf="qryAnswerResults = objStoreSurvey.getAnswerResults(surveyID=attributes.surveyID, questionType=qrySurveyQuestions.questionType, params=attributes); qryAnswerResults.recordcount && qryAnswerResults.starCount" -->
+        <div class="shadow rounded-md bg-card p-5">
+            <div class="font-bold mb-5 border-b">
+                How about this test question
+            </div>
+            <!-- *ngIf="qrySurveyQuestions.questionType === 3" -->
             <ng-container>
-                <!-- *ngIf="average = (qryAnswerResults.starRating / qryAnswerResults.starCount) | number: '99.9'" -->
-                <!-- <ng-container>
+                <!-- *ngIf="qryAnswerResults = objStoreSurvey.getAnswerResults(surveyID=attributes.surveyID, questionType=qrySurveyQuestions.questionType, params=attributes); qryAnswerResults.recordcount && qryAnswerResults.starCount" -->
+                <ng-container>
+                    <!-- *ngIf="average = (qryAnswerResults.starRating / qryAnswerResults.starCount) | number: '99.9'" -->
+                    <!-- <ng-container>
                     *ngIf="wholeStars = average | number: '1.0-0'; blnHalfStar = wholeStars < average"
                     <ng-container>
                         <h2 class="no-underline inline">Average rating: average </h2><br />
@@ -139,33 +297,33 @@
                         </ng-container>
                     </ng-container>
                 </ng-container> -->
-                <!-- *ngIf="!average" -->
-                <ng-container>
-                    <div class="alert alert-warning no-bottom-margin">
-                        There are no answers for this question or your filter range returned no results.
-                    </div>
+                    <!-- *ngIf="!average" -->
+                    <ng-container>
+                        <div class="alert alert-warning no-bottom-margin">
+                            There are no answers for this question or your filter range returned no results.
+                        </div>
+                    </ng-container>
                 </ng-container>
             </ng-container>
-        </ng-container>
 
 
-    </div>
-
-
-
-
-    <div class="shadow bg-card p-5">
-        <div class="font-bold mb-5 border-b">
-            How about this test question
         </div>
 
-        <!-- *ngIf="qrySurveyQuestions.questionType === 4" -->
-        <ng-container>
-            <!-- *ngIf="qryAnswerResults = objStoreSurvey.getAnswerResults(surveyID=attributes.surveyID, questionType=qrySurveyQuestions.questionType, questionID=qrySurveyQuestions.pk_surveyQuestionID, params=attributes); qryAnswerResults.recordcount" -->
+
+
+
+        <div class="shadow rounded-md bg-card p-5">
+            <div class="font-bold mb-5 border-b">
+                How about this test question
+            </div>
+
+            <!-- *ngIf="qrySurveyQuestions.questionType === 4" -->
             <ng-container>
-                <div class="scroll-box wide tall-3x">
-                    <div class="container-fluid">
-                        <!-- <ng-container *ngFor="let answerResult of qryAnswerResults">
+                <!-- *ngIf="qryAnswerResults = objStoreSurvey.getAnswerResults(surveyID=attributes.surveyID, questionType=qrySurveyQuestions.questionType, questionID=qrySurveyQuestions.pk_surveyQuestionID, params=attributes); qryAnswerResults.recordcount" -->
+                <ng-container>
+                    <div class="scroll-box wide tall-3x">
+                        <div class="container-fluid">
+                            <!-- <ng-container *ngFor="let answerResult of qryAnswerResults">
                         <div class="row">
                             <div class="col-xs-12 add-padding-sm">
                                 {{ answerResult.textAnswer }}<br /><br />
@@ -184,42 +342,43 @@
                             </div>
                         </div>
                     </ng-container> -->
+                        </div>
+                    </div>
+                </ng-container>
+                <!-- *ngIf="!qryAnswerResults || qryAnswerResults.length === 0" -->
+                <div class="row ml-1">
+                    <div class="col-xs-12 add-padding-sm">
+                        <div class="alert alert-warning no-bottom-margin">
+                            There are no results for this answer or your filter range did not return any results.
+                        </div>
                     </div>
                 </div>
             </ng-container>
-            <!-- *ngIf="!qryAnswerResults || qryAnswerResults.length === 0" -->
-            <div class="row ml-1">
-                <div class="col-xs-12 add-padding-sm">
-                    <div class="alert alert-warning no-bottom-margin">
-                        There are no results for this answer or your filter range did not return any results.
-                    </div>
-                </div>
-            </div>
-        </ng-container>
 
-    </div>
-
-
-
-    <div class="shadow bg-card p-5">
-        <div class="font-bold mb-5 border-b">
-            Give this a star rating
         </div>
-        <!-- *ngIf="qrySurveyQuestions.questionType === 5" -->
-        <ng-container>
-            <!-- *ngIf="qryAnswerResults = objStoreSurvey.getAnswerResults(surveyID=attributes.surveyID, questionType=qrySurveyQuestions.questionType, params=attributes); qryAnswerResults.recordcount && qryAnswerResults.scaleCount" -->
+
+
+
+        <div class="shadow rounded-md bg-card p-5">
+            <div class="font-bold mb-5 border-b">
+                Give this a star rating
+            </div>
+            <!-- *ngIf="qrySurveyQuestions.questionType === 5" -->
             <ng-container>
-                <!-- *ngIf="average = (qryAnswerResults.scaleRating / qryAnswerResults.scaleCount) | number: '99.9'" -->
+                <!-- *ngIf="qryAnswerResults = objStoreSurvey.getAnswerResults(surveyID=attributes.surveyID, questionType=qrySurveyQuestions.questionType, params=attributes); qryAnswerResults.recordcount && qryAnswerResults.scaleCount" -->
                 <ng-container>
-                    <h2 class="no-underline inline">Average: 100/10</h2><br />
-                </ng-container>
-                <!-- *ngIf="!average" -->
-                <ng-container>
-                    <div class="alert alert-warning no-bottom-margin">
-                        There are no answers for this question or your filter range returned no results.
-                    </div>
+                    <!-- *ngIf="average = (qryAnswerResults.scaleRating / qryAnswerResults.scaleCount) | number: '99.9'" -->
+                    <ng-container>
+                        <h2 class="no-underline inline">Average: 100/10</h2><br />
+                    </ng-container>
+                    <!-- *ngIf="!average" -->
+                    <ng-container>
+                        <div class="alert alert-warning no-bottom-margin">
+                            There are no answers for this question or your filter range returned no results.
+                        </div>
+                    </ng-container>
                 </ng-container>
             </ng-container>
-        </ng-container>
-    </div>
+        </div>
+    </ng-container>
 </div>

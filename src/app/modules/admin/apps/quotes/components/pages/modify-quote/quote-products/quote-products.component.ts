@@ -3,7 +3,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { QuotesService } from '../../../quotes.service';
 import { Subject } from 'rxjs';
-import { AddImprints, addAccessory, deleteImprints, updateAccessories, updateCartInfo, updateCartShipping, updateImprints } from '../../../quotes.types';
+import { AddImprints, RemoveCartProduct, UpdateCartShipping, addAccessory, deleteImprints, updateAccessories, updateCartInfo, updateCartShipping, updateGroupRun, updateImprints } from '../../../quotes.types';
 import moment from 'moment';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
@@ -391,15 +391,21 @@ export class QuoteProductsComponent implements OnInit {
   }
 
   updateShipping() {
-    const { shippingGroundCost, shippingGroundPrice } = this.selectedCartLine;
+    const { shippingGroundCost, shippingGroundPrice, isFulfillmentCart, pk_cartLineID, warehouseDeliveryOption, cartLineCost, cartLinePrice, orderQuantity, blnOverrideShippingShipping } = this.selectedCartLine;
     if (shippingGroundCost < 0 || shippingGroundPrice < 0) {
       this._quoteService.snackBar('Shipping Price should be 0 or positive value');
       return;
     }
-    let paylaod = {
+    let paylaod: UpdateCartShipping = {
       shippingGroundPrice,
       shippingGroundCost,
-      cartLine_id: this.selectedCartLine.pk_cartLineID,
+      cartLine_id: pk_cartLineID,
+      blnOverrideShippingNewAccessory: blnOverrideShippingShipping,
+      orderQuantity: orderQuantity,
+      isFulfillmentCart,
+      warehouse_delivery_option: warehouseDeliveryOption ? warehouseDeliveryOption : 0,
+      cartLineGroundCost: cartLineCost,
+      cartLineGroundPrice: cartLinePrice,
       update_cart_shipping: true
     }
     this.selectedCartLine.isShippingLoader = true;
@@ -476,8 +482,21 @@ export class QuoteProductsComponent implements OnInit {
     } else {
       msg = 'This will clear the selected product of a group run master, converting it to just a regular product.  This will also convert all sub-products in this group run to regular products.  This cannot be undone.  Are you sure you want to continue?';
     }
+    this._commonService.showConfirmation('Changing the item on this quote line will remove all options and imprints, including any artwork comments and attached artwork.  If you need this information, please save it first before changing the product.  Are you sure you want to continue?  This action cannot be undone.', (confirmed) => {
+      if (confirmed) {
+        //     let payload: updateGroupRun = {
+        //       blnGroupRun: boolean;
+        // quantity: number;
+        // cartLineID: number;
+        // update_group_run: boolean;
+        //     }
+        this.selectedCartLine.isUpdateGrouoRunLoader = true;
+      }
+    });
   }
   removeCartProduct() {
+    const user = JSON.parse(localStorage.getItem('userDetails'));
+
     if (this.cartLines.length == 1) {
       this._quoteService.snackBar('You cannot remove the last item on a quote. Please add another item first and then remove this one.');
       return;
@@ -485,11 +504,12 @@ export class QuoteProductsComponent implements OnInit {
     // blnGroupRun
     this._commonService.showConfirmation('NOTE:  Removing an item removes all of the imprints for that item, as well as the attached artwork files and customer comments for said imprints.  If you still need these files or comments, please save them before removing the item.  Are you sure you want to remove this item from this order?  This action cannot be undone.', (confirmed) => {
       if (confirmed) {
-        let paylaod = {
+        let paylaod: RemoveCartProduct = {
           blnGroupRun: this.selectedCartLine.blnGroupRun,
           groupRunCartLineID: this.selectedCartLine.groupRunCartLineID,
           cartLine_id: this.selectedCartLine.pk_cartLineID,
           cart_id: this.selectedCartLine.fk_cartID,
+          loggedInUserID: user.pk_userID,
           delete_cart_product: true
         }
         this.selectedCartLine.removeCartLoader = true;
