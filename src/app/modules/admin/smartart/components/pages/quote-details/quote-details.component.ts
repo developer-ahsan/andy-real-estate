@@ -8,7 +8,7 @@ import moment from 'moment';
 import { Subject, forkJoin, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { SmartArtService } from '../../smartart.service';
-import { sendAutoRequest, UpdateArtworkTgas, UpdateQuoteClaim, UpdateQuoteOptions, updateQuoteProofContact, updateQuotePurchaseOrderComment, updateReorderNumber } from '../../smartart.types';
+import { sendAutoRequest, UpdateArtworkTgas, UpdateQuoteClaim, updateQuoteImprintTime, UpdateQuoteOptions, updateQuoteProofContact, updateQuotePurchaseOrderComment, updateReorderNumber } from '../../smartart.types';
 @Component({
   selector: 'app-quote-details',
   templateUrl: './quote-details.component.html',
@@ -81,11 +81,6 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
   approvalHistoryData: any;
   // Purchase Comments
   selectedPurchaseImprint: any;
-  // Timer
-  hours: number = 0;
-  minutes: number = 0;
-  seconds: number = 0;
-  intervalId: any;
 
   // Updates
   updateQuoteInfoLoader: boolean = false;
@@ -101,6 +96,13 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
   smartArtUser: any;
   userDetails: any = JSON.parse(localStorage.getItem('userDetails'));
   brandGuideExist: boolean = false;
+  // Timer
+  selectedImprintForTimer: any;
+  isTimerRunning: boolean = false;
+  hours: number = 0;
+  minutes: number = 0;
+  seconds: number = 0;
+  intervalId: any;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -147,6 +149,16 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
           this.selectedMultipleTags.push(tag[0]);
         });
       }
+      // Quote Comments
+      this.quoteData.quoteComments = [];
+      if (this.quoteData.qryComments) {
+        let comments = this.quoteData.qryComments.split(',,');
+        comments.forEach(comment => {
+          const [name, date, text] = comment.split('::');
+          let htmlComment = `<b>${name}</b> said on ${date} <br /> ${text}`
+          this.quoteData.quoteComments.push(htmlComment);
+        });
+      }
 
       // this.isLoading = false;
       this.getQuoteImpritData();
@@ -171,18 +183,33 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
         this.selectedImprint = this.quoteImprintdata[0].imprintID;
         this.selectedProofImprint = this.quoteImprintdata[0].imprintID;
         this.selectedPurchaseImprint = this.quoteImprintdata[0];
+        this.selectedImprintForTimer = this.quoteImprintdata[0];
 
-        //   if (this.imprintdata[0].allColors) {
-        //     let colors = this.imprintdata[0].allColors;
-        //     let colorsArr = colors.split(',');
-        //     let finalColor = [];
-        //     colorsArr.forEach(element => {
-        //       let color = element.split(':');
-        //       finalColor.push({ id: color[0], name: color[1], hex: color[2] });
-        //     });
-        //     this.allColors = finalColor;
-        //     this.selectedImprintColor = this.imprintdata[0].imprintColors;
-        //   }
+        this.quoteImprintdata.forEach(imprint => {
+          imprint.timerValues = '00:00:00';
+          // if (imprint.allColors) {
+          //   let colors = imprint.allColors;
+          //   let colorsArr = colors.split(',');
+          //   let finalColor = [];
+          //   colorsArr.forEach(element => {
+          //     let color = element.split(':');
+          //     finalColor.push({ id: color[0], name: color[1], hex: color[2] });
+          //   });
+          //   imprint.allColorsData = finalColor;
+          //   imprint.selectedImprintColors = imprint.imprintColors;
+          // }
+        });
+        if (this.quoteImprintdata[0].allColors) {
+          let colors = this.quoteImprintdata[0].allColors;
+          let colorsArr = colors.split(',');
+          let finalColor = [];
+          colorsArr.forEach(element => {
+            let color = element.split(':');
+            finalColor.push({ id: color[0], name: color[1], hex: color[2] });
+          });
+          this.allColors = finalColor;
+          this.selectedMultipleColors = this.quoteImprintdata[0].imprintColors;
+        }
       }
       // this.getArtworkOther();
       const getArtworkOtherObservable = of(this.getArtworkOther());
@@ -351,8 +378,9 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
     // }
   }
   // Timer
+  // Timer
   startTimer() {
-    this.resetTimer();
+    this.isTimerRunning = true;
     this.intervalId = setInterval(() => {
       this.seconds++;
       if (this.seconds === 60) {
@@ -363,16 +391,82 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
         this.minutes = 0;
         this.hours++;
       }
+      this.selectedImprintForTimer.timerValues = `${this.formattedHours}:${this.formattedMinutes}:${this.formattedSeconds}`;
       this._changeDetectorRef.markForCheck();
     }, 1000);
+  }
+  formatNumber(value: number): string {
+    return value < 10 ? `0${value}` : value.toString();
+  }
+
+  // Getter methods to get formatted minutes and seconds
+  get formattedHours(): string {
+    return this.formatNumber(this.hours);
+  }
+
+  get formattedMinutes(): string {
+    return this.formatNumber(this.minutes);
+  }
+
+  get formattedSeconds(): string {
+    return this.formatNumber(this.seconds);
+  }
+  stopTimer() {
+    clearInterval(this.intervalId);
+    this.isTimerRunning = false;
+    this._changeDetectorRef.markForCheck();
   }
   resetTimer() {
     this.hours = 0;
     this.minutes = 0;
     this.seconds = 0;
-    clearInterval(this.intervalId);
+    this.selectedImprintForTimer.timerValues = `${this.formattedHours}:${this.formattedMinutes}:${this.formattedSeconds}`;
     this._changeDetectorRef.markForCheck();
   }
+  changeTimerImprints() {
+    this.resetTimer();
+  }
+  saveImprintTimerValue() {
+    this.selectedImprintForTimer.timerLoader = true;
+    this._changeDetectorRef.markForCheck();
+    let totalSeconds =
+      parseInt(this.selectedImprintForTimer.time.slice(0, 2), 10) * 3600 +
+      parseInt(this.selectedImprintForTimer.time.slice(3, 5), 10) * 60 +
+      parseInt(this.selectedImprintForTimer.time.slice(6), 10);
+
+    totalSeconds += this.hours * 3600 + this.minutes * 60 + this.seconds;
+
+    // Ensure that values do not exceed 60 for minutes and seconds
+    const newHours = Math.floor(totalSeconds / 3600);
+    const remainingSeconds = totalSeconds % 3600;
+    const newMinutes = Math.floor(remainingSeconds / 60);
+    const newSeconds = remainingSeconds % 60;
+
+    const timerValue =
+      this.formatNumber(newHours) + ':' +
+      this.formatNumber(newMinutes) + ':' +
+      this.formatNumber(newSeconds);
+
+    // Reset the timer values
+    this.stopTimer();
+    let payload: updateQuoteImprintTime = {
+      newTime: timerValue,
+      imprintID: this.selectedImprintForTimer.imprintID,
+      cartLineID: Number(this.paramData.pk_cartLineID),
+      update_quote_imprint_time: true
+    }
+    this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.selectedImprintForTimer.timerLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      if (res["success"]) {
+        this._smartartService.snackBar(res["message"]);
+        this.selectedImprintForTimer.time = timerValue;
+      }
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  // End Timer
   // Update Reorder
   updateReorder(imprint) {
     imprint.reorderLoader = true;

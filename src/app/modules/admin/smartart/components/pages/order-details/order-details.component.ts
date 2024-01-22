@@ -242,7 +242,6 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
             });
             this.allColors = finalColor;
             this.selectedImprintColor = imprint.imprintColors;
-
           }
           imprint.poSent = null;
           if (res["poSent"]) {

@@ -345,18 +345,17 @@
                         <mat-expansion-panel [expanded]="true">
                             <mat-expansion-panel-header>
                                 <mat-panel-title>
-                                    Quote comments
+                                    Quote Comments
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                             <div>
-                                <fuse-alert *ngIf="!quoteData.internalComments" class="my-2" [appearance]="'soft'"
+                                <fuse-alert *ngIf="!quoteData.quoteComments.length" class="my-2" [appearance]="'soft'"
                                     [type]="'warning'" [showIcon]="false">
                                     There are no comments on this order.
                                 </fuse-alert>
-                                <div *ngIf="quoteData.internalComments"
+                                <div *ngIf="quoteData.quoteComments.length"
                                     class="mb-2 max-h-40 overflow-y-auto border p-2">
-                                    <p [innerHTML]="quoteData.internalComments"></p>
-                                    <p id="scrollBottomComment" #scrollBottomComment></p>
+                                    <p *ngFor="let comment of quoteData.quoteComments" [innerHTML]="comment"></p>
                                 </div>
                                 <mat-form-field class="w-full">
                                     <mat-label>Leave a comment</mat-label>
@@ -500,7 +499,7 @@
                                 <mat-form-field appearance="fill" class="w-full" *ngIf="allColors">
                                     <mat-select [(ngModel)]="selectedMultipleColors" multiple>
                                         <mat-option *ngFor="let color of allColors"
-                                            [value]="color.id">{{color.name}}</mat-option>
+                                            [value]="color.name">{{color.name}}</mat-option>
                                     </mat-select>
                                 </mat-form-field>
                                 <div *ngIf="!allColors">
@@ -512,7 +511,8 @@
                                     </fuse-alert>
                                 </div>
                                 <mat-form-field class="w-full" *ngIf="allColors">
-                                    <input matInput [(ngModel)]="selectedImprintColor">
+                                    <mat-label>Or enter PMS colors:</mat-label>
+                                    <input matInput [(ngModel)]="selectedImprint.pmsColors">
                                 </mat-form-field>
                                 <div>
                                     <button class="min-w-40 btn buttonComment hover:bg-gray-200">Update imprint
@@ -556,24 +556,39 @@
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                             <div>
-                                <div class="text-center">{{ hours | number: '2.0' }}:{{ minutes | number: '2.0' }}:{{
-                                    seconds | number:
-                                    '2.0' }}</div>
-                                <mat-form-field class="w-full mt-2">
-                                    <mat-select [(ngModel)]="selectedImprint">
-                                        <mat-option *ngFor="let imprint of quoteImprintdata"
-                                            [value]="imprint.imprintID">({{imprint.imprintID}})
-                                            {{imprint.locationName}}/{{imprint.methodName}}</mat-option>
+                                <div class="text-center font-bold my-2">Total time so far:
+                                    {{selectedImprintForTimer?.time}}</div>
+                                <mat-form-field class="w-full font-bold">
+                                    <input matInput readonly [(ngModel)]="selectedImprintForTimer.timerValues">
+                                </mat-form-field>
+                                <mat-form-field class="w-full">
+                                    <mat-select [(ngModel)]="selectedImprintForTimer"
+                                        (selectionChange)="changeTimerImprints()">
+                                        <mat-option *ngFor="let imprint of imprintdata"
+                                            [value]="imprint">({{imprint.imprintID}})
+                                            <span
+                                                [innerHTML]="imprint.locationName"></span>/{{imprint.decorationName}}</mat-option>
                                     </mat-select>
                                 </mat-form-field>
 
                                 <div class="flex justify-center space-x-2">
-                                    <button class="min-w-20 btn buttonComment hover:bg-gray-200"
-                                        (click)="startTimer()">Start</button>
+                                    <button class="min-w-20 btn buttonComment hover:bg-gray-200" (click)="startTimer()"
+                                        *ngIf="!isTimerRunning"
+                                        [disabled]="selectedImprintForTimer.timerLoader">Start</button>
+                                    <button class="min-w-20 btn buttonComment hover:bg-gray-200" (click)="stopTimer()"
+                                        *ngIf="isTimerRunning"
+                                        [disabled]="selectedImprintForTimer.timerLoader">Stop</button>
                                     <button class="min-w-20 btn buttonComment buttonDanger hover:bg-red-900"
-                                        (click)="resetTimer()">Reset</button>
-                                    <button
-                                        class="min-w-20 btn buttonComment buttonSave hover:bg-green-500">Save</button>
+                                        (click)="resetTimer()"
+                                        [disabled]="selectedImprintForTimer.timerLoader">Reset</button>
+                                    <button class="min-w-20 btn buttonComment buttonSave hover:bg-green-500"
+                                        (click)="saveImprintTimerValue()"
+                                        [disabled]="selectedImprintForTimer.timerLoader">
+                                        <mat-progress-spinner *ngIf="selectedImprintForTimer.timerLoader"
+                                            [diameter]="24" [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                        <span *ngIf="!selectedImprintForTimer.timerLoader">Save</span>
+                                    </button>
                                 </div>
                             </div>
                         </mat-expansion-panel>
