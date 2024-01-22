@@ -152,6 +152,7 @@ export class SurveysComponent implements OnInit, OnDestroy {
         this.surveyPage = 1;
         this.dataSourceLoading = true;
         this.setAddSurveyText = '';
+        this.mainScreen = 'Surveys';
         this._changeDetectorRef.markForCheck();
         this.getSurveys(1);
       }

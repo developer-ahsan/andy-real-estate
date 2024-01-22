@@ -43,10 +43,10 @@
                                     <th width="5%">ID</th>
                                     <th width="10%">Date created</th>
                                     <th width="65%">Name</th>
-                                    <th width="10%" align="center">Finalized <span class="fa fa-question-circle"
+                                    <th width="10%" class="text-center">Finalized <span class="fa fa-question-circle"
                                             matTooltip="Finalized surveys can no longer be modified and are made available to be sent to customers."></span>
                                     </th>
-                                    <th width="15%" align="center">Automated <span class="fa fa-question-circle"
+                                    <th width="15%" class="text-center">Automated <span class="fa fa-question-circle"
                                             matTooltip="Automated surveys will go out automatically to customers 7 days after payment, and again after 14 days."></span>
                                     </th>
                                     <th width="1%"></th>
@@ -62,11 +62,11 @@
                                     <td>{{survey.pk_surveyID}}</td>
                                     <td>{{survey.FormattedCreatedDate}}</td>
                                     <td>{{survey.name}}</td>
-                                    <td align="center">
+                                    <td class="text-center">
                                         <span class="fa fa-check fa-lg text-success" *ngIf="survey.blnFinalized"></span>
                                         <span class="fa fa-times fa-lg text-danger" *ngIf="!survey.blnFinalized"></span>
                                     </td>
-                                    <td align="center">
+                                    <td class="text-center">
                                         <span class="fa fa-check fa-lg text-success" *ngIf="survey.blnAutomate"></span>
                                         <span class="fa fa-times fa-lg text-danger" *ngIf="!survey.blnAutomate"></span>
                                     </td>
@@ -204,7 +204,7 @@
                                     <th width="5%">ID</th>
                                     <th width="10%">Date created</th>
                                     <th width="65%">Name</th>
-                                    <th width="10%" align="center">Finalized <span class="fa fa-question-circle"
+                                    <th width="10%" class="text-center">Finalized <span class="fa fa-question-circle"
                                             matTooltip="Finalized surveys can no longer be modified and are made available to be sent to customers."></span>
                                     </th>
                                     <th width="1%"></th>
@@ -215,7 +215,7 @@
                                     <td>{{survey.pk_surveyID}}</td>
                                     <td>{{survey.FormattedCreatedDate}}</td>
                                     <td>{{survey.name}}</td>
-                                    <td align="center">
+                                    <td class="text-center">
                                         <span class="fa fa-check fa-lg text-success" *ngIf="survey.blnFinalized"></span>
                                         <span class="fa fa-times fa-lg text-danger" *ngIf="!survey.blnFinalized"></span>
                                     </td>

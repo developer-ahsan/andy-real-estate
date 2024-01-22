@@ -425,3 +425,15 @@ export interface sendOrderCustomerFollowUpEmail {
     blnStoreUserApprovalDone: boolean;
     send_order_customer_followUp_email: boolean;
 };
+export interface updateImprintTime {
+    newTime: string;
+    imprintID: number;
+    orderLineID: number;
+    update_order_imprint_time: boolean;
+};
+export interface updateQuoteImprintTime {
+    newTime: string;
+    imprintID: number;
+    cartLineID: number;
+    update_quote_imprint_time: boolean;
+};

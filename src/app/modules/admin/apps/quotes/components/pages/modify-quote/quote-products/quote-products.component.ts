@@ -3,7 +3,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { QuotesService } from '../../../quotes.service';
 import { Subject } from 'rxjs';
-import { AddImprints, RemoveCartProduct, UpdateCartShipping, addAccessory, deleteImprints, updateAccessories, updateCartInfo, updateCartShipping, updateGroupRun, updateImprints } from '../../../quotes.types';
+import { AddImprints, RemoveCartProduct, UpdateCartShipping, addAccessory, addGroupRunProduct, addNewProduct, deleteImprints, updateAccessories, updateCartInfo, updateCartShipping, updateGroupRun, updateImprints } from '../../../quotes.types';
 import moment from 'moment';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
@@ -69,7 +69,16 @@ export class QuoteProductsComponent implements OnInit {
   cartLines: any;
   selectedCartLine: any;
   ngCurrentProduct: any;
+  isAddNewProdLoader: boolean = false;
+
+  // Add New Group Run Product
   ngCurrentGroupProduct: any;
+  newGroupProductQuantity: any = '';
+  newGroupBlnOverride: boolean = true;
+  newGroupBlnSample: boolean = false;
+  newGroupBlnTax: boolean = true;
+  newGroupBlnRoyalty: boolean = true;
+  isAddNewGroupProdLoader: boolean = false;
   constructor(
     private _quoteService: QuotesService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -174,9 +183,12 @@ export class QuoteProductsComponent implements OnInit {
       cartLine.ColorsListData = [];
       if (cartLine.colorsList) {
         const colorsData = cartLine.colorsList.split(',,');
-        colorsData.forEach(colors => {
+        colorsData.forEach((colors, index) => {
           const [pk_colorID, colorName, setup, run] = colors.split(':');
           cartLine.ColorsListData.push({ pk_colorID: Number(pk_colorID), colorName, setup, run });
+          if (index == 0) {
+            this.newProductColor = Number(pk_colorID);
+          }
         });
       }
       // imprintColors
@@ -206,6 +218,7 @@ export class QuoteProductsComponent implements OnInit {
           cartLine.sizesListData.push({ pk_sizeID: Number(pk_sizeID), sizeName, setup, run, weight, unitsPerWeight });
           if (index == 0) {
             this.ngSize = Number(pk_sizeID);
+            this.newProductSize = Number(pk_sizeID);
           }
         });
       }
@@ -484,13 +497,25 @@ export class QuoteProductsComponent implements OnInit {
     }
     this._commonService.showConfirmation('Changing the item on this quote line will remove all options and imprints, including any artwork comments and attached artwork.  If you need this information, please save it first before changing the product.  Are you sure you want to continue?  This action cannot be undone.', (confirmed) => {
       if (confirmed) {
-        //     let payload: updateGroupRun = {
-        //       blnGroupRun: boolean;
-        // quantity: number;
-        // cartLineID: number;
-        // update_group_run: boolean;
-        //     }
-        this.selectedCartLine.isUpdateGrouoRunLoader = true;
+        let payload: updateGroupRun = {
+          blnGroupRun: check,
+          quantity: this.ngCurrentProduct[0]?.minQuantity,
+          cartLineID: this.selectedCartLine.pk_cartLineID,
+          update_group_run: true
+        }
+        this.selectedCartLine.isUpdateGroupRunLoader = true;
+        this._quoteService.UpdateQuoteData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+          if (res["success"]) {
+            this.selectedCartLine.blnGroupRun = check;
+            this._quoteService.snackBar(res["message"]);
+            this.getQuoteFromAPI();
+          }
+          this.selectedCartLine.isUpdateGroupRunLoader = false;
+          this._changeDetectorRef.markForCheck();
+        }, err => {
+          this.selectedCartLine.isUpdateGroupRunLoader = false;
+          this._changeDetectorRef.markForCheck();
+        });
       }
     });
   }
@@ -882,6 +907,94 @@ export class QuoteProductsComponent implements OnInit {
     }, err => {
       this.selectedCartLine.isUpdateImprintsLoader = false;
       this._changeDetectorRef.markForCheck();
+    });
+  }
+  // addNewProduct
+  addNewProduct() {
+    const user = JSON.parse(localStorage.getItem('userDetails'));
+    const { pk_cartID, storeID } = this.selectedQuoteDetail;
+    const { pk_cartLineID } = this.selectedCartLine;
+    const { minQuantity, pk_productID, productName, productNumber } = this.ngNewProduct[0];
+    const prodQty = this.newProductQuantity;
+    const colorID = this.newProductColor;
+    const sizeID = this.newProductSize;
+    const blnOverRide = this.newBlnOverride;
+    const blnSample = this.newBlnSample;
+    const blnTaxable = this.newBlnTax;
+    const blnRoyalty = this.newBlnRoyalty;
+    if (prodQty < minQuantity) {
+      this._quoteService.snackBar(`Quantity must be greater than or equal to ${minQuantity}`);
+      return;
+    }
+    let payload: addNewProduct = {
+      newProductSizeID: sizeID,
+      newProductColorID: colorID,
+      blnTaxable,
+      blnSample,
+      blnRoyalty,
+      blnOverRide,
+      cartID: pk_cartID,
+      cartLineID: pk_cartLineID,
+      quantity: prodQty,
+      storeID,
+      productID: pk_productID,
+      productNumber,
+      productName,
+      loggedInUserID: user.pk_userID,
+      add_new_product: true
+    }
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
+    this.isAddNewProdLoader = true;
+    this._quoteService.AddQuoteData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.isAddNewProdLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      if (res["success"]) {
+        this._quoteService.snackBar(res["message"]);
+        this.getQuoteFromAPI();
+      }
+    });
+  }
+  // addGroupRunProduct
+  addGroupRunProduct() {
+    const user = JSON.parse(localStorage.getItem('userDetails'));
+    const { pk_cartID, storeID } = this.selectedQuoteDetail;
+    const { pk_cartLineID } = this.selectedCartLine;
+    const { minQuantity, pk_productID, productName, productNumber } = this.ngCurrentGroupProduct[0];
+    const prodQty = this.newGroupProductQuantity;
+    const blnOverRide = this.newGroupBlnOverride;
+    const blnSample = this.newGroupBlnSample;
+    const blnTaxable = this.newGroupBlnTax;
+    const blnRoyalty = this.newGroupBlnRoyalty;
+    if (prodQty < minQuantity) {
+      this._quoteService.snackBar(`Quantity must be greater than or equal to ${minQuantity}`);
+      return;
+    }
+    let payload: addGroupRunProduct = {
+      blnTaxable,
+      blnRoyalty,
+      blnSample,
+      blnOverRide,
+      cartID: pk_cartID,
+      cartLineID: pk_cartLineID,
+      quantity: prodQty,
+      storeID,
+      productID: pk_productID,
+      productNumber,
+      productName,
+      loggedInUserID: user.pk_userID,
+      add_group_run_product: true
+    }
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
+    this.isAddNewGroupProdLoader = true;
+    this._quoteService.AddQuoteData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.isAddNewGroupProdLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      if (res["success"]) {
+        this._quoteService.snackBar(res["message"]);
+        this.getQuoteFromAPI();
+      }
     });
   }
 

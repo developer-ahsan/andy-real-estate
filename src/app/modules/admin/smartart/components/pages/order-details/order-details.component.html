@@ -626,13 +626,13 @@
                             </mat-expansion-panel-header>
                             <div>
                                 <div class="text-center font-bold my-2">Total time so far:
-                                    {{selectedImprintForTimer.qryOrderLineImprintTime}}</div>
+                                    {{selectedImprintForTimer?.qryOrderLineImprintTime}}</div>
                                 <mat-form-field class="w-full font-bold">
-                                    <input matInput readonly
-                                        [(ngModel)]="selectedImprintForTimer.qryOrderLineImprintTime">
+                                    <input matInput readonly [(ngModel)]="selectedImprintForTimer.timerValues">
                                 </mat-form-field>
                                 <mat-form-field class="w-full">
-                                    <mat-select [(ngModel)]="selectedImprintForTimer">
+                                    <mat-select [(ngModel)]="selectedImprintForTimer"
+                                        (selectionChange)="changeTimerImprints()">
                                         <mat-option *ngFor="let imprint of imprintdata"
                                             [value]="imprint">({{imprint.pk_imprintID}})
                                             <span
@@ -641,12 +641,23 @@
                                 </mat-form-field>
 
                                 <div class="flex justify-center space-x-2">
-                                    <button class="min-w-20 btn buttonComment hover:bg-gray-200"
-                                        (click)="startTimer()">Start</button>
+                                    <button class="min-w-20 btn buttonComment hover:bg-gray-200" (click)="startTimer()"
+                                        *ngIf="!isTimerRunning"
+                                        [disabled]="selectedImprintForTimer.timerLoader">Start</button>
+                                    <button class="min-w-20 btn buttonComment hover:bg-gray-200" (click)="stopTimer()"
+                                        *ngIf="isTimerRunning"
+                                        [disabled]="selectedImprintForTimer.timerLoader">Stop</button>
                                     <button class="min-w-20 btn buttonComment buttonDanger hover:bg-red-900"
-                                        (click)="resetTimer()">Reset</button>
-                                    <button
-                                        class="min-w-20 btn buttonComment buttonSave hover:bg-green-500">Save</button>
+                                        (click)="resetTimer()"
+                                        [disabled]="selectedImprintForTimer.timerLoader">Reset</button>
+                                    <button class="min-w-20 btn buttonComment buttonSave hover:bg-green-500"
+                                        (click)="saveImprintTimerValue()"
+                                        [disabled]="selectedImprintForTimer.timerLoader">
+                                        <mat-progress-spinner *ngIf="selectedImprintForTimer.timerLoader"
+                                            [diameter]="24" [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                        <span *ngIf="!selectedImprintForTimer.timerLoader">Save</span>
+                                    </button>
                                 </div>
                             </div>
                         </mat-expansion-panel>

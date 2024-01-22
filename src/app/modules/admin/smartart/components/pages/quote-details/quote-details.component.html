@@ -88,29 +88,50 @@
                         </mat-expansion-panel>
                         <mat-expansion-panel [expanded]="true">
                             <mat-expansion-panel-header>
-                                <mat-panel-title *ngIf="smartArtUser.blnMaster">
-                                    Company Information
-                                </mat-panel-title>
-                                <mat-panel-title *ngIf="!smartArtUser.blnMaster">
-                                    Contact Information
+                                <mat-panel-title>
+                                    {{smartArtUser.blnMaster ? 'Company Information' : 'Contact Information'}}
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                             <div *ngIf="smartArtUser.blnMaster">
-                                <div><b>Company name:</b> {{quoteData?.companyName}}</div>
-                                <div><b>Location:</b> {{quoteData?.locationName}}</div>
-                                <div *ngIf="quoteData?.billingStudentOrgCode"><b>SABO:</b>
-                                    {{quoteData?.billingStudentOrgCode}}</div>
-                                <div *ngIf="quoteData?.rutgersStudentType"><b>Campus:</b>
-                                    {{quoteData?.rutgersStudentType}}</div>
-                                <div><b>Name:</b> {{quoteData?.firstName + ' ' + quoteData?.lastName}}</div>
-                                <div><b>Company:</b> {{quoteData?.companyName}}</div>
-                                <div><b>Address:</b> {{quoteData?.address}}</div>
-                                <div><b>Phone:</b> {{quoteData?.dayPhone}}</div>
-                                <div><b>Fax:</b> {{quoteData?.dayFax}}</div>
-                                <div><b>Email:</b> {{quoteData?.email}}</div>
-                                <div><b>Designer notes:</b>
-                                    <span *ngIf="quoteData.designerNotes" [innerHTML]="quoteData.designerNotes"></span>
-                                    <span *ngIf="!quoteData.designerNotes">NONE</span>
+                                <div><b>Company:</b> {{quoteData?.sessionArtworkCompanyName}}</div>
+                                <div *ngIf="quoteData?.storeUserDepartmentsLocationName"><b>Location:</b>
+                                    {{quoteData?.storeUserDepartmentsLocationName}} <br>
+                                    {{quoteData?.storeUserDepartmentsAttributeName}}</div>
+                                <div *ngIf="quoteData.sessionArtworkBillingStudentOrgCode">
+                                    <b>SABO: </b>
+                                    {{quoteData?.sessionArtworkBillingStudentOrgName}}
+                                    ({{quoteData?.sessionArtworkBillingStudentOrgCode}})<br />
+                                </div>
+                                <div *ngIf="quoteData.sessionArtworkrutgersStudentType">
+                                    <b>Campus:</b>
+                                    {{quoteData.sessionArtworkrutgersStudentType}}<br />
+                                </div>
+                                <div><b>Name:</b> {{quoteData.firstName + ' ' + quoteData.lastName}}</div>
+                                <div><b>Company:</b> {{quoteData.companyInformationName}}</div>
+                                <div><b>Address:</b>
+                                    {{quoteData.sessionArtworkAddress1[0]}}
+                                    <span *ngIf="quoteData.sessionArtworkAddress1[1]">
+                                        {{quoteData.sessionArtworkAddress1[1]}}<br />
+                                    </span>
+                                    {{quoteData.sessionArtworkCity}}, {{quoteData.sessionArtworkState}}
+                                    {{quoteData.sessionArtworkZipCode}}<br />
+                                </div>
+                                <div><b>Phone:</b> {{quoteData.sessionArtworkDayPhone}}</div>
+                                <div *ngIf="quoteData.sessionArtworkDayFax"><b>Fax:</b>
+                                    {{quoteData.sessionArtworkDayFax}}</div>
+                                <div><b>Email:</b>
+                                    <!-- <div *ngIf="quoteData.sessionProofEmails.length > 0">
+                                        <p *ngFor="let email of quoteData.sessionProofEmails">{{email}}</p>
+                                    </div> -->
+                                    <!-- *ngIf="quoteData.sessionProofEmails.length == 0" -->
+                                    <span>
+                                        {{quoteData.sessionArtworkEmail}}</span>
+                                </div>
+                                <div><b>Designer notes: </b>
+                                    <a target="_blank" *ngIf="quoteData.sessionArtworkDesignerNotes"
+                                        [routerLink]="['/apps/customers',quoteData.pfk_userID,'user-info']">Designer
+                                        Notes</a>
+                                    <span *ngIf="!quoteData.sessionArtworkDesignerNotes">None</span>
                                 </div>
                                 <div class="space-y-1">
                                     <button class="min-w-60 btn buttonComment hover:bg-gray-200"
@@ -124,7 +145,10 @@
                                         </mat-progress-spinner>
                                     </button>
                                     <br>
-                                    <button class="min-w-60 btn buttonComment hover:bg-gray-200">Order History</button>
+                                    <a class="min-w-60 btn buttonComment hover:bg-gray-200"
+                                        [routerLink]="['/apps/customers', quoteData.pfk_userID, 'order-history']"
+                                        target="_blank">Order
+                                        History</a>
                                 </div>
                             </div>
                             <div *ngIf="!smartArtUser.blnMaster">
@@ -135,12 +159,12 @@
                                 <div class="space-y-1">
                                     <button class="min-w-60 btn buttonComment hover:bg-gray-200">Email designer</button>
                                     <br>
-                                    <button [disabled]="isAutoRequestLoader"
+                                    <button [disabled]="isAutoRequestLoader" (click)="senAutoArtRequest()"
                                         class="min-w-60 btn buttonComment hover:bg-gray-200">
                                         <span *ngIf="!isAutoRequestLoader">Auto Art Request</span>
-                                        <!-- <mat-progress-spinner *ngIf="isAutoRequestLoader" [diameter]="24"
+                                        <mat-progress-spinner *ngIf="isAutoRequestLoader" [diameter]="24"
                                             [mode]="'indeterminate'">
-                                        </mat-progress-spinner> -->
+                                        </mat-progress-spinner>
                                     </button>
                                 </div>
                             </div>
@@ -153,18 +177,24 @@
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                             <div *ngIf="smartArtUser.blnMaster">
-                                <div><b>Quote ID:</b>
+                                <div><b>Quote ID: </b>
                                     <a [routerLink]="['/apps/quotes',paramData.fk_cartID,'summary']"
                                         target="_blank">{{paramData.fk_cartID}}-{{paramData?.pk_cartLineID}}
                                     </a>
                                 </div>
-                                <div><b>Created:</b> {{quoteData.dateCreated | date: 'MM/dd/yyyy'}}</div>
-                                <div><b>Store:</b> <a href="{{quoteData?.storeURL}}" target="_blank">
-                                        {{quoteData?.storeName}}</a></div>
-                                <div><b>Brand Guide:</b> <a
-                                        href="https://assets.consolidus.com/globalAssets/Stores/BrandGuide/{{quoteData?.pk_storeID}}.pdf">Click
-                                        here</a></div>
-                                <div><b>Rush:</b> {{quoteData.blnRushFlexibility? 'YES' : 'NO'}}</div>
+                                <div><b>Created: </b> {{quoteData.formattedDateCreated | date: 'MM/dd/yyyy'}}</div>
+                                <div><b>Store: </b>
+                                    <a href="{{quoteData?.protocol}}{{quoteData?.storeURL}}/{{quoteData?.categoryPermalink}}/{{quoteData?.subCategoryPermalink}}/{{quoteData?.productPermaLink}}"
+                                        target="_blank"> {{quoteData.storeName}}</a>
+                                </div>
+                                <div><b>Brand Guide: </b>
+                                    <a *ngIf="brandGuideExist" target="_blank"
+                                        href="https://assets.consolidus.com/globalAssets/Stores/BrandGuide/{{orderData.pk_storeID}}.pdf">
+                                        Click
+                                        here</a>
+                                    <span *ngIf="!brandGuideExist"> N/A</span>
+                                </div>
+                                <div><b>Rush:</b> {{quoteData.sessionArtworkBlnRushOrder? 'YES' : 'NO'}}</div>
                                 <div>
                                     <b>In-Hands:</b> (mm/dd/yyyy)
                                     <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full min-w-50">
@@ -186,14 +216,15 @@
                                 </div>
                                 <div>
                                     <mat-checkbox [(ngModel)]="quoteData.blnIgnoreAdditionalArtEmails"><b>Ignore
-                                            additional proof emails</b></mat-checkbox>
+                                            additional proof emails </b> <span class="fa fa-info-circle fa-lg"
+                                            matTooltip="i.e. licensing forms, etc."></span></mat-checkbox>
                                 </div>
                                 <div>
                                     <b>Additional Contacts:</b>
                                     <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full min-w-50">
                                         <mat-select [(ngModel)]="quoteData.blnAdditionalApprovalOverride" matInput>
-                                            <mat-option [value]="true">Enabled</mat-option>
-                                            <mat-option [value]="false">Disabled</mat-option>
+                                            <mat-option [value]="false">Enabled</mat-option>
+                                            <mat-option [value]="true">Disabled</mat-option>
                                         </mat-select>
                                     </mat-form-field>
                                 </div>
@@ -208,18 +239,19 @@
                                 </div>
                             </div>
                             <div *ngIf="!smartArtUser.blnMaster">
-                                <b>Cart ID:</b> {{paramData.fk_cartID}}<br />
-                                <b>Company:</b> {{quoteData.companyName}}<br />
-                                <div *ngIf="quoteData.locationName">
-                                    <b>Location:</b>
-                                    {{quoteData.locationName}}<br />
+                                <b>Cart ID: </b> {{paramData.fk_cartID}}<br />
+                                <b>Company: </b> {{quoteData.sessionArtworkCompanyName}}<br />
+                                <div *ngIf="quoteData.storeUserDepartmentsLocationName">
+                                    <b>Location: </b>
+                                    {{quoteData.storeUserDepartmentsLocationName}}<br />
+                                    {{quoteData.storeUserDepartmentsAttributeName}}
                                 </div>
-                                <b>Customer name:</b> {{quoteData.firstName + ' ' + quoteData.lastName}}<br />
-                                <b>Date created:</b> {{quoteData.dateCreated | date: 'MM/dd/yyyy'}}<br />
-                                <b>Store:</b> <a href="{{quoteData?.storeURL}}" target="_blank">
+                                <b>Customer name: </b> {{quoteData.firstName + ' ' + quoteData.lastName}}<br />
+                                <b>Date created: </b> {{quoteData.formattedDateCreated | date: 'MM/dd/yyyy'}}<br />
+                                <b>Store: </b> <a href="{{quoteData?.storeURL}}" target="_blank">
                                     {{quoteData?.storeName}}</a><br />
-                                <div><b>In-Hands:</b> {{quoteData.inHandsDate | date: 'MM/dd/yyyy'}}</div>
-                                <div><b>Rush:</b> {{quoteData.blnRushFlexibility? 'YES' : 'NO'}}</div>
+                                <div><b>In-Hands: </b> {{quoteData.inHandsDate | date: 'MM/dd/yyyy'}}</div>
+                                <div><b>Rush: </b> {{quoteData.sessionArtworkBlnRushOrder? 'YES' : 'NO'}}</div>
 
                             </div>
                         </mat-expansion-panel>
@@ -231,36 +263,64 @@
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
                             <div>
-                                <div><b>SKU:</b>{{quoteData?.supplierSku}}
+                                <div><b>SKU: </b>{{quoteData?.supplierSku}}
                                     <p>{{quoteData?.companyName}}</p>
-                                    <p>{{quoteData.dayPhone}}</p>
+                                    <p>{{quoteData.sessionArtwork_sessionSupplierPhone}}</p>
                                 </div>
-                                <div><b>ASI:</b>{{quoteData.ASI}}</div>
-                                <div><b>PPAI:</b> {{quoteData.PPAI}}</div>
+                                <div><b>ASI: </b>{{quoteData.sessionArtwork_sessionSupplierASI}}</div>
+                                <div><b>PPAI: </b> {{quoteData.sessionArtwork_sessionSupplierPPAI}}</div>
                                 <div>
-                                    <a href="{{quoteData?.websiteURL}}" target="_blank">{{quoteData?.websiteURL}}</a>
+                                    <a href="{{quoteData?.sessionArtwork_sessionSupplierSite}}"
+                                        target="_blank">{{quoteData?.sessionArtwork_sessionSupplierSite}}</a>
                                 </div>
+                                <!-- Email Addresses -->
+                                <!-- <ng-container
+                                    *ngIf="quoteData?.supplierInformationScreenprintEmail && quoteData?.decorationName.toLowerCase().includes('screen');else seconCondition">
+                                    <div *ngIf="quoteData.supplierInformationScreenprintEmail">
+                                        {{ quoteData.supplierInformationScreenprintEmail }}<br />
+                                    </div>
+                                </ng-container>
+
+                                <ng-template #seconCondition
+                                    *ngIf="quoteData.supplierInformationEmbroideryEmail && quoteData.decorationName.toLowerCase().includes('embroid');else thirdCondition">
+                                    {{ quoteData.supplierInformationEmbroideryEmail }}
+                                </ng-template>
+
+                                <ng-template #thirdCondition
+                                    *ngIf="quoteData.supplierInformationArtworkEmail;else noEmail">
+                                    {{ qryCompany.supplierInformationArtworkEmail }}<br />
+                                </ng-template>
+
+                                <ng-template #noEmail>
+                                    NONE PROVIDED<br />
+                                </ng-template> -->
+
                                 <div>
-                                    <span *ngIf="quoteData.artworkEmail">{{quoteData.artworkEmail}}</span>
-                                    <span *ngIf="!quoteData.artworkEmail">None Provided</span>
+                                    <span
+                                        *ngIf="quoteData.sessionArtwork_sessionSupplierEmail">{{quoteData.sessionArtwork_sessionSupplierEmail}}</span>
+                                    <span *ngIf="!quoteData.sessionArtwork_sessionSupplierEmail">None Provided</span>
                                 </div>
-                                <div><b>Product Link:</b> <a href="{{quoteData.supplierLink}}">Click here</a></div>
+                                <div><b>Product Link: </b> <a href="{{quoteData.supplierLink}}">Click here</a></div>
                                 <div>
                                     <div *ngIf="artWorkLoader">
                                         <mat-progress-spinner [diameter]="24" [mode]="'indeterminate'">
                                         </mat-progress-spinner>
                                     </div>
                                     <div *ngIf="!artWorkLoader">
-                                        <b>Artwork Templates:</b>
-                                        <span *ngIf="artworktemplatesData.length == 0">None</span>
-                                        <br>
-                                        <div *ngFor="let item of artworktemplatesData">
-                                            <a target="_blank"
-                                                href="https://assets.consolidus.com/globalAssets/Products/ArtworkTemplates/{{item.fk_productID}}/{{item.pk_artworkTemplateID}}.{{item.extension}}">ArtworkTemplate</a>
-                                        </div>
-
+                                        <ng-container *ngIf="artworktemplatesData.length">
+                                            <b>Artwork Templates: </b>
+                                            <span *ngIf="artworktemplatesData.length == 0">None</span>
+                                            <br>
+                                            <div *ngFor="let item of artworktemplatesData">
+                                                <a target="_blank"
+                                                    href="https://assets.consolidus.com/globalAssets/Products/ArtworkTemplates/{{item.fk_productID}}/{{item.pk_artworkTemplateID}}.{{item.extension}}">ArtworkTemplate</a>
+                                            </div>
+                                        </ng-container>
                                     </div>
                                 </div>
+                                <a class="min-w-60 btn buttonComment hover:bg-gray-200"
+                                    [routerLink]="['/apps/ecommerce/inventory', quoteData.pk_productID, 'order-history']"
+                                    target="_blank">Product Order History</a>
                             </div>
                         </mat-expansion-panel>
                         <!-- Decorator Complete-->

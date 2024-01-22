@@ -244,3 +244,37 @@ export interface updateGroupRun {
     cartLineID: number;
     update_group_run: boolean;
 };
+
+export interface addNewProduct {
+    newProductSizeID: number;
+    newProductColorID: number;
+    blnTaxable: boolean;
+    blnSample: boolean;
+    blnRoyalty: boolean;
+    blnOverRide: boolean;
+    cartID: number;
+    cartLineID: number;
+    quantity: number;
+    storeID: number;
+    productID: number;
+    productNumber: string;
+    productName: string;
+    loggedInUserID: number;
+    add_new_product: boolean;
+};
+
+export interface addGroupRunProduct {
+    blnTaxable: boolean;
+    blnRoyalty: boolean;
+    blnSample: boolean;
+    blnOverRide: boolean;
+    cartID: number;
+    cartLineID: number;
+    quantity: number;
+    storeID: number;
+    productID: number;
+    productNumber: string;
+    productName: string;
+    loggedInUserID: number;
+    add_group_run_product: boolean;
+};

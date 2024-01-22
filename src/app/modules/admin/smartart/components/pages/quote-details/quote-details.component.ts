@@ -100,6 +100,7 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
   contactProofs = [];
   smartArtUser: any;
   userDetails: any = JSON.parse(localStorage.getItem('userDetails'));
+  brandGuideExist: boolean = false;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -185,7 +186,9 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
       }
       // this.getArtworkOther();
       const getArtworkOtherObservable = of(this.getArtworkOther());
+      const checkFileExistObservable = of(this.checkFileExist(`https://assets.consolidus.com/globalAssets/Stores/BrandGuide/${this.quoteData.pk_storeID}.pdf`, 'brand', 0));
       forkJoin([
+        checkFileExistObservable,
         getArtworkOtherObservable,
       ])
 
@@ -599,6 +602,17 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
   }
   backToListBySearch() {
     this.router.navigateByUrl(`/smartart/quotes-dashboard?search=${this.paramData.fk_cartID}&customer=`);
+  }
+  checkFileExist(url, type, index) {
+    let params = {
+      file_check: true,
+      url: url
+    }
+    this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (type == 'brand') {
+        this.brandGuideExist = res["isFileExist"];
+      }
+    });
   }
   /**
      * On destroy

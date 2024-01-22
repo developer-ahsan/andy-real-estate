@@ -207,7 +207,8 @@
                         <mat-checkbox class="mr-1" [(ngModel)]="newBlnRoyalty">Royalty</mat-checkbox>
                     </div>
                     <div class="col-12 text-right">
-                        <button mat-button mat-stroked-button (click)="addNewProduct()" [disabled]="isAddNewProdLoader">
+                        <button class="min-w-40" mat-button mat-stroked-button (click)="addNewProduct()"
+                            [disabled]="isAddNewProdLoader">
                             <span *ngIf="!isAddNewProdLoader">Add new product</span>
                             <mat-progress-spinner *ngIf="isAddNewProdLoader" [diameter]="24" [mode]="'indeterminate'">
                             </mat-progress-spinner>
@@ -255,18 +256,18 @@
                         <button
                             *ngIf="selectedQuoteDetail.blnGroupOrder && !selectedCartLine.blnGroupRun && !selectedCartLine.groupRunCartLineID && selectedCartLine.blnApparel"
                             class="mr-2 min-w-40" mat-button mat-flat-button color="primary"
-                            (click)="makeGroupRunMaster(true)" [disabled]="selectedCartLine.removeCartLoader">
-                            <span *ngIf="!selectedCartLine.removeCartLoader">Make group run master</span>
-                            <mat-progress-spinner *ngIf="selectedCartLine.removeCartLoader" [diameter]="24"
+                            (click)="makeGroupRunMaster(true)" [disabled]="selectedCartLine.isUpdateGroupRunLoader">
+                            <span *ngIf="!selectedCartLine.isUpdateGroupRunLoader">Make group run master</span>
+                            <mat-progress-spinner *ngIf="selectedCartLine.isUpdateGroupRunLoader" [diameter]="24"
                                 [mode]="'indeterminate'">
                             </mat-progress-spinner>
                         </button>
                         <button
                             *ngIf="!selectedQuoteDetail.blnGroupOrder && !selectedCartLine.blnGroupRun && !selectedCartLine.groupRunCartLineID && selectedCartLine.blnApparel"
                             class="mr-2 min-w-40" mat-button mat-flat-button color="primary"
-                            (click)="makeGroupRunMaster(false)" [disabled]="selectedCartLine.removeCartLoader">
-                            <span *ngIf="!selectedCartLine.removeCartLoader">Clear group run master</span>
-                            <mat-progress-spinner *ngIf="selectedCartLine.removeCartLoader" [diameter]="24"
+                            (click)="makeGroupRunMaster(false)" [disabled]="selectedCartLine.isUpdateGroupRunLoader">
+                            <span *ngIf="!selectedCartLine.isUpdateGroupRunLoader">Clear group run master</span>
+                            <mat-progress-spinner *ngIf="selectedCartLine.isUpdateGroupRunLoader" [diameter]="24"
                                 [mode]="'indeterminate'">
                             </mat-progress-spinner>
                         </button>
@@ -293,7 +294,6 @@
                 <ng-container
                     *ngIf="selectedCartLine?.selectedImprints?.length && (selectedCartLine.groupRunCartLineID || selectedQuoteDetail.blnGroupOrder);else notGroupOrder">
                     <mat-expansion-panel [expanded]="true">
-
                         <mat-expansion-panel-header>
                             <mat-panel-title class="text-lg font-bold flex align-items-center">
                                 Add Group Run Item
@@ -317,27 +317,25 @@
                             <div class="col-12 col-md-6">
                                 <mat-form-field class="w-full">
                                     <mat-label>Quantity</mat-label>
-                                    <input type="number" min="0" matInput>
+                                    <input type="number" [(ngModel)]="newGroupProductQuantity" min="0" matInput>
                                 </mat-form-field>
                             </div>
                             <div class="col-12">
                                 <div class="flex flex-row gap-x-3 ml-3">
-                                    <mat-checkbox class="mr-1"
-                                        [(ngModel)]="selectedCartLine.blnOverrideShippingProductInfo">Override
+                                    <mat-checkbox class="mr-1" [(ngModel)]="newGroupBlnOverride">Override
                                         Shipping</mat-checkbox>
                                     <mat-checkbox class="mr-1"
-                                        [(ngModel)]="selectedCartLine.blnSample">Sample</mat-checkbox>
-                                    <mat-checkbox class="mr-1"
-                                        [(ngModel)]="selectedCartLine.blnTaxable">Taxable</mat-checkbox>
+                                        [(ngModel)]="selectedCartLine.newGroupBlnSample">Sample</mat-checkbox>
+                                    <mat-checkbox class="mr-1" [(ngModel)]="newGroupBlnTax">Taxable</mat-checkbox>
                                     <mat-checkbox class="mr-1" *ngIf="selectedQuoteDetail.blnRoyaltyStore"
-                                        [(ngModel)]="selectedCartLine.blnRoyalty">Royalty</mat-checkbox>
+                                        [(ngModel)]="newGroupBlnRoyalty">Royalty</mat-checkbox>
                                 </div>
                             </div>
                             <div class="col-12 text-right">
                                 <button mat-button mat-flat-button color="primary" class="min-w-40"
-                                    (click)="updateProduct()" [disabled]="selectedCartLine.updateProductLoader">
-                                    <span *ngIf="!selectedCartLine.updateProductLoader">Add group run product</span>
-                                    <mat-progress-spinner *ngIf="selectedCartLine.updateProductLoader" [diameter]="24"
+                                    (click)="addGroupRunProduct()" [disabled]="isAddNewGroupProdLoader">
+                                    <span *ngIf="!isAddNewGroupProdLoader">Add group run product</span>
+                                    <mat-progress-spinner *ngIf="isAddNewGroupProdLoader" [diameter]="24"
                                         [mode]="'indeterminate'">
                                     </mat-progress-spinner>
                                 </button>

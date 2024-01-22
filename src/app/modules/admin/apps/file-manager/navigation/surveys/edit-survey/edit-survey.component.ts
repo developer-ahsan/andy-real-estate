@@ -300,7 +300,7 @@ export class EditSurveysComponent implements OnInit, OnDestroy {
   }
   // Udpdate Scating
   updateScaling(question) {
-    if (question.scaleRatingMin <= 0 || question.scaleRatingMax <= 0) {
+    if (question.scaleRatingMin <= 0 || question.scaleRatingMax <= 0 || question.scaleRatingMin > 10 || question.scaleRatingMax > 10) {
       this._storeManagerService.snackBar('Question scaling should be between 1-10');
       return;
     }

@@ -9,7 +9,7 @@ import { Subject, forkJoin, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { SmartArtService } from '../../smartart.service';
 import { interval } from 'rxjs';
-import { AddOrderComment, UpdateOrderLineArtworkTags, UpdateArtworkTgas, UpdateOrderInformation, sendAutoRequest, updateOrderLineImprintColors, updateReorderNumberOrder, UpdateOrderLineClaim, updateOrderProofContact, SmartartImprintStatusUpdate, sendAutoRequestOrder, updateAttentionFlagOrder, sendOrderProofUpdate, UploadOrderArtProof, UploadOrderFinalArt, updateOrderPurchaseOrderComment, uploadVirtualProof, removeVirtualProof, sendOrderCustomerFollowUpEmail } from '../../smartart.types';
+import { AddOrderComment, UpdateOrderLineArtworkTags, UpdateArtworkTgas, UpdateOrderInformation, sendAutoRequest, updateOrderLineImprintColors, updateReorderNumberOrder, UpdateOrderLineClaim, updateOrderProofContact, SmartartImprintStatusUpdate, sendAutoRequestOrder, updateAttentionFlagOrder, sendOrderProofUpdate, UploadOrderArtProof, UploadOrderFinalArt, updateOrderPurchaseOrderComment, uploadVirtualProof, removeVirtualProof, sendOrderCustomerFollowUpEmail, updateImprintTime } from '../../smartart.types';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 import { environment } from 'environments/environment';
 
@@ -145,6 +145,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
 
   activeTooltip = '';
   activeTooltipGroup = '';
+  isTimerRunning: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _authService: AuthService,
@@ -230,6 +231,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
           imprint.artworkPOFiles = null;
           imprint.artworkFinalartFiles = [];
           imprint.viewFinalArtworkCheck = null;
+          imprint.timerValues = '00:00:00';
           if (imprint.allColors) {
             let colors = imprint.allColors;
             let colorsArr = colors.split(',');
@@ -783,7 +785,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   }
   // Timer
   startTimer() {
-    this.resetTimer();
+    this.isTimerRunning = true;
     this.intervalId = setInterval(() => {
       this.seconds++;
       if (this.seconds === 60) {
@@ -794,16 +796,82 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
         this.minutes = 0;
         this.hours++;
       }
+      this.selectedImprintForTimer.timerValues = `${this.formattedHours}:${this.formattedMinutes}:${this.formattedSeconds}`;
       this._changeDetectorRef.markForCheck();
     }, 1000);
+  }
+  formatNumber(value: number): string {
+    return value < 10 ? `0${value}` : value.toString();
+  }
+
+  // Getter methods to get formatted minutes and seconds
+  get formattedHours(): string {
+    return this.formatNumber(this.hours);
+  }
+
+  get formattedMinutes(): string {
+    return this.formatNumber(this.minutes);
+  }
+
+  get formattedSeconds(): string {
+    return this.formatNumber(this.seconds);
+  }
+  stopTimer() {
+    clearInterval(this.intervalId);
+    this.isTimerRunning = false;
+    this._changeDetectorRef.markForCheck();
   }
   resetTimer() {
     this.hours = 0;
     this.minutes = 0;
     this.seconds = 0;
-    clearInterval(this.intervalId);
+    this.selectedImprintForTimer.timerValues = `${this.formattedHours}:${this.formattedMinutes}:${this.formattedSeconds}`;
     this._changeDetectorRef.markForCheck();
   }
+  changeTimerImprints() {
+    this.resetTimer();
+  }
+  saveImprintTimerValue() {
+    this.selectedImprintForTimer.timerLoader = true;
+    this._changeDetectorRef.markForCheck();
+    let totalSeconds =
+      parseInt(this.selectedImprintForTimer.qryOrderLineImprintTime.slice(0, 2), 10) * 3600 +
+      parseInt(this.selectedImprintForTimer.qryOrderLineImprintTime.slice(3, 5), 10) * 60 +
+      parseInt(this.selectedImprintForTimer.qryOrderLineImprintTime.slice(6), 10);
+
+    totalSeconds += this.hours * 3600 + this.minutes * 60 + this.seconds;
+
+    // Ensure that values do not exceed 60 for minutes and seconds
+    const newHours = Math.floor(totalSeconds / 3600);
+    const remainingSeconds = totalSeconds % 3600;
+    const newMinutes = Math.floor(remainingSeconds / 60);
+    const newSeconds = remainingSeconds % 60;
+
+    const timerValue =
+      this.formatNumber(newHours) + ':' +
+      this.formatNumber(newMinutes) + ':' +
+      this.formatNumber(newSeconds);
+
+    // Reset the timer values
+    this.stopTimer();
+    let payload: updateImprintTime = {
+      newTime: timerValue,
+      imprintID: this.selectedImprintForTimer.pk_imprintID,
+      orderLineID: Number(this.paramData.pk_orderLineID),
+      update_order_imprint_time: true
+    }
+    this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+      this.selectedImprintForTimer.timerLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe(res => {
+      if (res["success"]) {
+        this._smartartService.snackBar(res["message"]);
+        this.selectedImprintForTimer.qryOrderLineImprintTime = timerValue;
+      }
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+
 
   // Put Calls
   // Auto Art Request
@@ -1061,7 +1129,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       } else if (type == 'finalArtwork') {
         this.imprintdata[index].viewFinalArtworkCheck = res["isFileExist"];
       }
-    })
+    });
   }
   // // Update Claim
   updateClaim(item, check) {
@@ -1240,6 +1308,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
         fk_storeUserApprovalContactID: imprint.fk_storeUserApprovalContactID,
         update_smart_imprint_status: true
       }
+      payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
       this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         if (res["success"]) {
           this._smartartService.snackBar(res["message"]);
