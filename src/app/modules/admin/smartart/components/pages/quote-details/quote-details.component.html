@@ -184,12 +184,12 @@
                                 </div>
                                 <div><b>Created: </b> {{quoteData.formattedDateCreated | date: 'MM/dd/yyyy'}}</div>
                                 <div><b>Store: </b>
-                                    <a href="{{quoteData?.protocol}}{{quoteData?.storeURL}}/{{quoteData?.categoryPermalink}}/{{quoteData?.subCategoryPermalink}}/{{quoteData?.productPermaLink}}"
-                                        target="_blank"> {{quoteData.storeName}}</a>
+                                    <a href="{{quoteData?.sessionArtworkStoreProtocol}}{{quoteData?.sessionArtworkStoreURL}}/{{quoteData?.categoryPermalink}}/{{quoteData?.subCategoryPermalink}}/{{quoteData?.productPermaLink}}"
+                                        target="_blank"> {{quoteData.sessionArtworkStoreName}}</a>
                                 </div>
                                 <div><b>Brand Guide: </b>
                                     <a *ngIf="brandGuideExist" target="_blank"
-                                        href="https://assets.consolidus.com/globalAssets/Stores/BrandGuide/{{orderData.pk_storeID}}.pdf">
+                                        href="https://assets.consolidus.com/globalAssets/Stores/BrandGuide/{{quoteData.pk_storeID}}.pdf">
                                         Click
                                         here</a>
                                     <span *ngIf="!brandGuideExist"> N/A</span>
@@ -275,25 +275,27 @@
                                 </div>
                                 <!-- Email Addresses -->
                                 <!-- <ng-container
-                                    *ngIf="quoteData?.supplierInformationScreenprintEmail && quoteData?.decorationName.toLowerCase().includes('screen');else seconCondition">
+                                    *ngIf="quoteData?.supplierInformationScreenprintEmail && quoteData?.sessionArtwork_decoratorName.toLowerCase().includes('screen');else seconCondition">
                                     <div *ngIf="quoteData.supplierInformationScreenprintEmail">
                                         {{ quoteData.supplierInformationScreenprintEmail }}<br />
                                     </div>
                                 </ng-container>
 
                                 <ng-template #seconCondition
-                                    *ngIf="quoteData.supplierInformationEmbroideryEmail && quoteData.decorationName.toLowerCase().includes('embroid');else thirdCondition">
+                                    *ngIf="quoteData.supplierInformationEmbroideryEmail && quoteData.sessionArtwork_decoratorName.toLowerCase().includes('embroid');else thirdCondition">
                                     {{ quoteData.supplierInformationEmbroideryEmail }}
                                 </ng-template>
 
-                                <ng-template #thirdCondition
-                                    *ngIf="quoteData.supplierInformationArtworkEmail;else noEmail">
-                                    {{ qryCompany.supplierInformationArtworkEmail }}<br />
-                                </ng-template>
-
-                                <ng-template #noEmail>
-                                    NONE PROVIDED<br />
+                                <ng-template #thirdCondition>
+                                    <ng-container *ngIf="quoteData.supplierInformationArtworkEmail;else noEmail">
+                                        {{ qryCompany.supplierInformationArtworkEmail }}<br />
+                                    </ng-container>
+                                    <ng-template #noEmail>
+                                        NONE PROVIDED<br />
+                                    </ng-template>
                                 </ng-template> -->
+
+
 
                                 <div>
                                     <span
