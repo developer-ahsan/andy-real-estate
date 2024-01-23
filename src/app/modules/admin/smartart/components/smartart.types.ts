@@ -437,3 +437,17 @@ export interface updateQuoteImprintTime {
     cartLineID: number;
     update_quote_imprint_time: boolean;
 };
+
+export interface AddSmartArtCartComment {
+    cartID: number;
+    comment: string;
+    fk_adminUserID: number;
+    add_smartart_cart_comment: boolean;
+};
+export interface updateImprintColors {
+    colorNameList: string;
+    pmsColors: string;
+    fk_cartLineID: number;
+    imprint_id: number;
+    update_quote_imprint_colors: boolean;
+};

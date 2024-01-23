@@ -361,8 +361,13 @@
                                     <mat-label>Leave a comment</mat-label>
                                     <textarea matInput [(ngModel)]="ngComment"></textarea>
                                 </mat-form-field>
-                                <button class="min-w-40 btn buttonComment hover:bg-gray-200" (click)="addComment()">Add
-                                    Comment</button>
+                                <button [disabled]="isAddCommentLoader" (click)="addComment()"
+                                    class="min-w-40 btn buttonComment hover:bg-gray-200">
+                                    <span *ngIf="!isAddCommentLoader">Add Comment</span>
+                                    <mat-progress-spinner *ngIf="isAddCommentLoader" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
+                                </button>
                             </div>
                         </mat-expansion-panel>
                         <!-- Purchase Comments -->
@@ -497,7 +502,7 @@
                                     </mat-select>
                                 </mat-form-field>
                                 <mat-form-field appearance="fill" class="w-full" *ngIf="allColors">
-                                    <mat-select [(ngModel)]="selectedMultipleColors" multiple>
+                                    <mat-select multiple [(ngModel)]="selectedMultipleColors">
                                         <mat-option *ngFor="let color of allColors"
                                             [value]="color.name">{{color.name}}</mat-option>
                                     </mat-select>
@@ -512,11 +517,17 @@
                                 </div>
                                 <mat-form-field class="w-full" *ngIf="allColors">
                                     <mat-label>Or enter PMS colors:</mat-label>
-                                    <input matInput [(ngModel)]="selectedImprint.pmsColors">
+                                    <input matInput [(ngModel)]="selectedImprintPmsColor">
                                 </mat-form-field>
                                 <div>
-                                    <button class="min-w-40 btn buttonComment hover:bg-gray-200">Update imprint
-                                        colors</button>
+                                    <button [disabled]="imprintColorsLoader" (click)="updateOrderLineImprintColors()"
+                                        class="min-w-40 btn buttonComment hover:bg-gray-200">
+                                        <span *ngIf="!imprintColorsLoader">Update imprint
+                                            colors</span>
+                                        <mat-progress-spinner *ngIf="imprintColorsLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                    </button>
                                 </div>
                             </div>
                         </mat-expansion-panel>

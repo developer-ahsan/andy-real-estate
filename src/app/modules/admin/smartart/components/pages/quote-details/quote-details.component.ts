@@ -8,7 +8,8 @@ import moment from 'moment';
 import { Subject, forkJoin, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { SmartArtService } from '../../smartart.service';
-import { sendAutoRequest, UpdateArtworkTgas, UpdateQuoteClaim, updateQuoteImprintTime, UpdateQuoteOptions, updateQuoteProofContact, updateQuotePurchaseOrderComment, updateReorderNumber } from '../../smartart.types';
+import { AddSmartArtCartComment, sendAutoRequest, UpdateArtworkTgas, updateImprintColors, UpdateQuoteClaim, updateQuoteImprintTime, UpdateQuoteOptions, updateQuoteProofContact, updateQuotePurchaseOrderComment, updateReorderNumber } from '../../smartart.types';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 @Component({
   selector: 'app-quote-details',
   templateUrl: './quote-details.component.html',
@@ -49,7 +50,7 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
 
   // Comment Toggle
   isCommentToggle: boolean = false;
-
+  isAddCommentLoader: boolean = false;
   // loader
   isDetailLoader: boolean = false;
 
@@ -68,9 +69,10 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
   ngComment = '';
   allColors: any;
   selectedImprint: any;
+  selectedImprintPmsColor: any;
   selectedProofImprint: any;
   selectedImprintColor = '';
-  selectedMultipleColors: any;
+  selectedMultipleColors: any = [];
   // Artwork templates
   artWorkLoader: boolean = false;
   artworktemplatesData: any = [];
@@ -103,18 +105,21 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
   minutes: number = 0;
   seconds: number = 0;
   intervalId: any;
+  // Colors
+  imprintColorsLoader: boolean = false;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _authService: AuthService,
     private _smartartService: SmartArtService,
     private router: Router,
-    private _activeRoute: ActivatedRoute
+    private _activeRoute: ActivatedRoute,
+    private _commonService: DashboardsService
   ) { }
 
   ngOnInit(): void {
     this.smartArtUser = JSON.parse(sessionStorage.getItem('smartArt'));
-    this.userData = this._authService.parseJwt(this._authService.accessToken);
+    this.userData = JSON.parse(localStorage.getItem('userDetails'));
     this._activeRoute.queryParams.subscribe(res => {
       this.paramData = res;
       this.getQuoteDetails();
@@ -181,6 +186,7 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
       this.artWorkLoader = false;
       if (this.quoteImprintdata.length > 0) {
         this.selectedImprint = this.quoteImprintdata[0].imprintID;
+        this.selectedImprintPmsColor = this.quoteImprintdata[0].pmsColors;
         this.selectedProofImprint = this.quoteImprintdata[0].imprintID;
         this.selectedPurchaseImprint = this.quoteImprintdata[0];
         this.selectedImprintForTimer = this.quoteImprintdata[0];
@@ -208,7 +214,7 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
             finalColor.push({ id: color[0], name: color[1], hex: color[2] });
           });
           this.allColors = finalColor;
-          this.selectedMultipleColors = this.quoteImprintdata[0].imprintColors;
+          this.selectedMultipleColors = this.quoteImprintdata[0].colorNameList.split(',');
         }
       }
       // this.getArtworkOther();
@@ -318,6 +324,7 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
+      console.error('Error fetching SmartArt data', err);
       this.isLoading = false;
       this.artWorkLoader = false;
       this._changeDetectorRef.markForCheck();
@@ -349,13 +356,29 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
   }
   // Add Comment
   addComment() {
-    let comment = `<b><span class="fa fa-circle disabled"></span> ${this.userData.name}</b> said on ${moment().format('MMM DD YYYY')} | ${moment().format('h:mm:ss')}<br>${this.ngComment}<br><br>`;
-    // this.orderData.internalComments = this.orderData.internalComments + comment;
-    setTimeout(() => {
-      const element = document.getElementById('scrollBottomComment');
-      element.scrollIntoView({ behavior: 'smooth' });
+    if (this.ngComment.trim() == '') {
+      this._smartartService.snackBar('Comment is required');
+      return;
+    }
+    this.isAddCommentLoader = true;
+    let payload: AddSmartArtCartComment = {
+      cartID: Number(this.paramData.fk_cartID),
+      comment: this.ngComment.replace(/'/g, "''"),
+      fk_adminUserID: Number(this.userData.pk_userID),
+      add_smartart_cart_comment: true
+    }
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
+    this._smartartService.AddSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      let htmlComment = [`<b>${this.userData.firstName + ' ' + this.userData.lastName}</b> said on ${moment().format('MM/DD/YYYY')} @  ${moment().format('h:mm:ss')} <br /> ${this.ngComment}`];
+      this.quoteData.quoteComments = htmlComment.concat(this.quoteData.quoteComments);
+      this.ngComment = ''
+      this._smartartService.snackBar(res["message"]);
+      this.isAddCommentLoader = false;
       this._changeDetectorRef.markForCheck();
-    }, 100);
+    }, err => {
+      this.isAddCommentLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
   }
   // Purchase Order COmment
   purchaseOrderComment(event) {
@@ -363,21 +386,50 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
   }
   // Imprint Colors
   onChangeColor(event) {
-    // let imprint = this.imprintdata.filter(item => item.pk_imprintID == event.value);
-    // this.selectedImprint = imprint[0].pk_imprintID;
-    // if (imprint[0].allColors) {
-    //   let colors = imprint[0].allColors;
-    //   let colorsArr = colors.split(',');
-    //   let finalColor = [];
-    //   colorsArr.forEach(element => {
-    //     let color = element.split(':');
-    //     finalColor.push({ id: color[0], name: color[1], hex: color[2] });
-    //   });
-    //   this.allColors = finalColor;
-    //   this.selectedImprintColor = imprint[0].imprintColors;
-    // }
+    let imprint = this.quoteImprintdata.filter(item => item.imprintID == event.value);
+    this.selectedImprint = imprint[0].imprintID;
+    this.selectedImprintPmsColor = imprint[0].pmsColors;
+    if (imprint[0].allColors) {
+      let colors = imprint[0].allColors;
+      let colorsArr = colors.split(',');
+      let finalColor = [];
+      colorsArr.forEach(element => {
+        let color = element.split(':');
+        finalColor.push({ id: color[0], name: color[1], hex: color[2] });
+      });
+      this.allColors = finalColor;
+      this.selectedMultipleColors = imprint[0].colorNameList.split(',');
+    }
+    this._changeDetectorRef.markForCheck();
   }
-  // Timer
+  // Imprint Colors
+  updateOrderLineImprintColors() {
+    let colors = this.selectedMultipleColors;
+    this.imprintColorsLoader = true;
+    this._changeDetectorRef.markForCheck();
+    let payload: updateImprintColors = {
+      colorNameList: this.selectedMultipleColors.toString(),
+      pmsColors: this.selectedImprintPmsColor,
+      fk_cartLineID: Number(this.paramData.pk_cartLineID),
+      imprint_id: Number(this.selectedImprint),
+      update_quote_imprint_colors: true
+    }
+    this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        const index = this.quoteImprintdata.findIndex(item => item.imprintID == this.selectedImprint);
+        this.quoteImprintdata[index].colorNameList = this.selectedMultipleColors.toString();
+        this.quoteImprintdata[index].pmsColors = this.selectedImprintPmsColor;
+        // this.orderData.internalComments = this.orderData.internalComments + res["comment"];
+        // this.ngComment = '';
+        this._smartartService.snackBar(res["message"]);
+      }
+      this.imprintColorsLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.imprintColorsLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
   // Timer
   startTimer() {
     this.isTimerRunning = true;
