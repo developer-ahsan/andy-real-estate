@@ -451,3 +451,59 @@ export interface updateImprintColors {
     imprint_id: number;
     update_quote_imprint_colors: boolean;
 };
+
+export interface UploadQuoteArtProof {
+    blnIncludeApproveByDate: boolean;
+    approveByDate: string;
+    cartID: number;
+    pk_userID: number; //main login id
+    emailRecipients: string; // comma separated
+    cartLineID: number;
+    approvingStoreUserID: number;
+    fk_artApprovalContactID: number;
+    fk_storeUserApprovalContactID: number;
+    storeUserID: number;
+    firstName: string;
+    lastName: string;
+    email: string;
+    companyName: string;
+    storePrimaryHighlight: string;
+    storeID: number;
+    storeName: string;
+    storeURL: string;
+    storeCode: string;
+    protocol: string;
+    customerRutgersEmployeeType: string;
+    customerRutgersStudentType: string;
+    blnGroupRun: boolean;
+    productImageURL: string;
+    productName: string;
+    productNumber: string;
+    productID: number;
+    cartLineQuantity: number;
+    decorationName: string;
+    locationName: string;
+    colorNameList: string;
+    upload_quote_art_proof: boolean;
+
+
+    imprintColors: string;
+
+    orderID: number;
+    orderLineID: number;
+    orderLineImprintID: number;
+    imprintID: number;
+    statusID: number;
+    thumbnailImage: string;
+    smartArtAdminEmail: string;
+    inHandsDate: string;
+    storeProductID: number;
+    orderLineQuantity: number;
+    blnIgnoreAdditionalArtEmails: boolean;
+    blnProofSent: boolean;
+    comment: string;
+    blnRespond: boolean;
+    loggedInUserID: number;
+    groupOrderID: number;
+    isFileExist: boolean;
+};

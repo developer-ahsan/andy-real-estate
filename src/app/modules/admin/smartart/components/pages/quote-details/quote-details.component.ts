@@ -108,6 +108,8 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
   // Colors
   imprintColorsLoader: boolean = false;
 
+  dataForNewComponent: any;
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _authService: AuthService,
@@ -166,6 +168,7 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
       }
 
       // this.isLoading = false;
+      // this.checkFileExist(`https://assets.consolidus.com/globalAssets/Stores/BrandGuide/${this.quoteData.pk_storeID}.pdf`, 'brand', 0);
       this.getQuoteImpritData();
       this._changeDetectorRef.markForCheck();
     }, err => {
@@ -193,17 +196,11 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
 
         this.quoteImprintdata.forEach(imprint => {
           imprint.timerValues = '00:00:00';
-          // if (imprint.allColors) {
-          //   let colors = imprint.allColors;
-          //   let colorsArr = colors.split(',');
-          //   let finalColor = [];
-          //   colorsArr.forEach(element => {
-          //     let color = element.split(':');
-          //     finalColor.push({ id: color[0], name: color[1], hex: color[2] });
-          //   });
-          //   imprint.allColorsData = finalColor;
-          //   imprint.selectedImprintColors = imprint.imprintColors;
-          // }
+          imprint.artworkFiles = [];
+          imprint.packAccessories = [];
+          this.setPackAndAccessories(imprint);
+          this.setitemColorsWithIDs(imprint);
+
         });
         if (this.quoteImprintdata[0].allColors) {
           let colors = this.quoteImprintdata[0].allColors;
@@ -219,15 +216,80 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
       }
       // this.getArtworkOther();
       const getArtworkOtherObservable = of(this.getArtworkOther());
-      const checkFileExistObservable = of(this.checkFileExist(`https://assets.consolidus.com/globalAssets/Stores/BrandGuide/${this.quoteData.pk_storeID}.pdf`, 'brand', 0));
+      const getArtworkFiles = of(this.getArtworkFiles());
+
       forkJoin([
-        checkFileExistObservable,
+        // checkFileExistObservable,
         getArtworkOtherObservable,
+        getArtworkFiles,
       ])
 
     }, err => {
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
+    });
+  }
+  setPackAndAccessories(imprint) {
+    if (imprint.accessories_packaging) {
+      const accessories = imprint.accessories_packaging.split(',,');
+      accessories.forEach(packs => {
+        const [quantity, packagingName] = packs.split('::');
+        imprint.packAccessories.push({ quantity, packagingName });
+      });
+    }
+  }
+
+  getArtworkFiles() {
+    let payload = {
+      files_fetch: true,
+      path: `/artwork/quotes/${this.quoteData.pk_storeID}/${this.paramData.pfk_userID}/${this.paramData.fk_cartID}/${this.paramData.pk_cartLineID}/`
+    }
+    this._changeDetectorRef.markForCheck();
+    this._smartartService.getFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(files => {
+      this.quoteImprintdata.forEach(element => {
+        files["data"].forEach(file => {
+          if (file.ID.includes(element.imprintID)) {
+            element.artworkFiles.push(file);
+          }
+        });
+      });
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  setitemColorsWithIDs(imprint) {
+    imprint.itemColorsWithIDsData = [];
+    if (imprint.Item_Colors) {
+      let colors = imprint.Item_Colors.split(',,');
+      colors.forEach(color => {
+        const [quantity, sizeID, sizeName, id, name] = color.split('::');
+        let image = false;
+        this.checkImageExist(`https://assets.consolidus.com/globalAssets/Products/Colors/${this.quoteData.pk_productID}/${id}.jpg`).then(res => {
+          if (res) {
+            image = true;
+          }
+          imprint.itemColorsWithIDsData.push({ quantity, sizeID, sizeName, id, name, image });
+        })
+      });
+    }
+  }
+  checkImageExist(url) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.src = url;
+
+      if (img.complete) {
+        resolve(true);
+      } else {
+        img.onload = () => {
+          resolve(true);
+        };
+
+        img.onerror = () => {
+          resolve(false);
+        };
+      }
     });
   }
   getArtworkOther() {
@@ -320,6 +382,16 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
         });
         this.contactProofs = res["contactProofs"];
       }
+
+      this.dataForNewComponent = {
+        quoteData: this.quoteData,
+        quoteImprintdata: this.quoteImprintdata,
+        paramData: this.paramData,
+        smartArtUser: this.smartArtUser,
+        artworktemplatesData: this.artworktemplatesData,
+        contactProofs: this.contactProofs
+      }
+
       this.artWorkLoader = false;
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();

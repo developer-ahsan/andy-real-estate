@@ -1,0 +1,1089 @@
+<mat-accordion multi>
+    <mat-expansion-panel [expanded]="true" *ngFor="let imprint of quoteImprintdata;let i=index">
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                Imprint {{i+1}} of {{quoteImprintdata.length}} for <span [innerHTML]="quoteData.productName[0]"></span>
+                -
+                ({{imprint.locationName}}/{{imprint.methodName}})
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-container>
+            <div class="alert alert-success p-3 my-2 text-center" *ngIf="!quoteData.blnGroupRun">
+                GROUP RUN ITEM
+            </div>
+            <div class="w-full font-medium text-md">Quote:
+                {{paramData.fk_cartID}}-{{paramData.pk_cartLineID}}
+            </div>
+            <div class="row w-full">
+                <div class="col-12 col-md-6">
+                    <mat-form-field class="w-full">
+                        <mat-label>Reorder</mat-label>
+                        <input matInput [(ngModel)]="imprint.reorderNumber">
+                    </mat-form-field>
+                    <button (click)="updateReorder(imprint)" [disabled]="imprint?.reorderLoader"
+                        class="min-w-30 btn buttonComment hover:bg-gray-200">
+                        <span *ngIf="!imprint?.reorderLoader">Apply</span>
+                        <mat-progress-spinner *ngIf="imprint.reorderLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                    </button>
+                </div>
+                <div class="col-12 col-md-6" *ngIf="smartArtUser.blnMaster && quoteData.blnAdditionalArtApproval">
+                    <mat-form-field class="w-full">
+                        <mat-label>Proof Contact</mat-label>
+                        <mat-select matInput [(ngModel)]="imprint.selectedContact">
+                            <mat-option [value]="0">{{quoteData.firstName + ' ' +
+                                quoteData.lastName}}</mat-option>
+                            <mat-option *ngFor="let contact of contactProofs" [value]="contact"
+                                [attr.data-blnStoreUserApproval]="contact.blnStoreUserApproval">{{contact.firstName
+                                + ' ' +
+                                contact.lastName}}
+                                <span *ngIf="contact.studentOrgCode"> - SABO:
+                                    {{contact.studentOrgCode}}</span>
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <button class="min-w-30 btn buttonComment hover:bg-gray-200" (click)="updateProofContact(imprint)"
+                        [disabled]="imprint?.isProofLoader">
+                        <span *ngIf="!imprint?.isProofLoader">Update</span>
+                        <mat-progress-spinner *ngIf="imprint?.isProofLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                    </button>
+                    <!-- <button class="min-w-30" mat-button mat-stroked-button>Update</button> -->
+                </div>
+                <div class="col-md-8 col-12 mt-3">
+                    <div class="row">
+                        <ng-container *ngIf="quoteData.blnReorder">
+                            <div class="col-6 font-bold">Reorder signed off by:</div>
+                            <div class="col-6">{{quoteData.reorderConfirmationName}}</div>
+                        </ng-container>
+                        <div class="col-6 font-bold">Quantity:</div>
+                        <div class="col-6">
+                            <span *ngIf="!quoteData.blnApparel">{{imprint.orderQuantity}}</span>
+                            <div class="relative" *ngIf="quoteData.blnApparel" [id]="'tooltip-' + i +'imprint'"
+                                (mouseenter)="mouseEnter($event)" (mouseleave)="activeTooltip = ''">
+                                <div class="cursor-pointer">{{imprint.orderQuantity}}</div>
+
+                                <div *ngIf="activeTooltip === 'tooltip-' + i +'imprint'">
+                                    <div class="absolute bg-yellow-100  top-5 left-0 right-0 p-2 z-10 rounded-lg shadow-md"
+                                        style="max-width: max-content; ">
+                                        <div class="font-medium text-xs">
+                                            <p *ngFor="let qtyData of imprint.itemColorsWithIDsData">
+                                                ({{qtyData.quantity}}x) {{qtyData.name}} &
+                                                {{qtyData.sizeName}}</p>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6 font-bold">Imprint Colors:</div>
+                        <div class="col-6">
+                            <div class="max-h-20  overflow-y-auto ">
+                                {{imprint?.colorNameList || 'NONE'}}
+                            </div>
+                        </div>
+                        <div class="col-6 font-bold">Imprint Location:</div>
+                        <div class="col-6">{{imprint.locationName}}</div>
+                        <div class="col-6 font-bold">Item Colors:</div>
+                        <div class="col-6">
+                            <span *ngFor="let color of imprint.itemColorsWithIDsData;let last=last">
+                                <a *ngIf="color.image"
+                                    href="https://assets.consolidus.com/globalAssets/Products/Colors/{{quoteData.pk_productID}}/{{color.id}}.jpg"
+                                    target="_blank">{{color.name}}</a>
+                                <span *ngIf="!color.image">{{color.name}}</span>
+                                <span *ngIf="!last">, </span></span>
+                        </div>
+                        <div class="col-6 font-bold">Imprint Size:</div>
+                        <div class="col-6">{{imprint.imprintSize}}</div>
+                        <div class="col-6 font-bold">Item Dimensions:</div>
+                        <div class="col-6">{{quoteData.dimensions || 'N/A'}}</div>
+                        <div class="col-6 font-bold">Imprint Method:</div>
+                        <div class="col-6">{{imprint.methodName}}</div>
+                        <div class="col-6 font-bold">Artwork File Types:</div>
+                        <div class="col-6">
+                            <div *ngIf="!artWorkLoader">
+                                <span *ngIf="artworktemplatesData.length == 0">NONE</span>
+                                <span *ngFor="let item of artworktemplatesData;let last=last">{{item.extension}}<span
+                                        *ngIf="!last">, </span></span>
+                            </div>
+                        </div>
+                        <div class="col-6 font-bold">Digitizer:</div>
+                        <div class="col-6">{{imprint.fk_digitizerID ? imprint.digitizerName : 'NONE'}}</div>
+                        <div class="col-6 font-bold">Royalty-bearing:</div>
+                        <div class="col-6">{{imprint.blnRoyalty ? 'YES' : 'NONE'}}</div>
+
+                        <ng-container *ngIf="imprint?.packAccessories?.length > 0">
+                            <div class="col-6 font-bold">Accessories/packaging: </div>
+                            <div class="col-6">
+                                <p *ngFor="let accessories of imprint?.packAccessories; let a_i=index">
+                                    <b>{{a_i+1 + '.)'}}</b> ({{accessories.quantity}}) x
+                                    {{accessories.packagingName}}
+                                </p>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+                <div class="col-md-4 col-12">
+                    <div class="text-right">
+                        <div class="flex justify-end">
+                            <img class="w-40"
+                                onError="this.src='https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'"
+                                src="https://assets.consolidus.com/globalAssets/Products/HiRes/{{imprint.pk_storeProductID}}.jpg">
+                        </div>
+                        <button (click)="isCommentToggle = !isCommentToggle"
+                            class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">Customer
+                            Comments</button>
+                        <button *ngIf="imprint.personalization"
+                            class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">Personalization Info</button>
+                    </div>
+                </div>
+                <div class="col-12" *ngIf="isCommentToggle">
+                    <div class="font-bold">Customer Comments</div>
+                    <div class="h-40 border overflow-y-auto p-2">
+                        <p *ngIf="!imprint.customerComments">No Comments</p>
+                        <p *ngIf="imprint.customerComments" [innerHtml]="imprint.customerComments">
+                        </p>
+                    </div>
+                </div>
+                <!-- Arwork Templates -->
+                <div class="col-12" *ngIf="imprint.artworkFiles.length == 0">
+                    <p class="text-red-500">No artwork supplied for this order</p>
+                </div>
+                <div class="col-12" *ngIf="imprint.artworkFiles.length">
+                    <div *ngFor="let artwork of imprint.artworkFiles; let i=index" class="text-blue-500">
+                        <div class="flex  py-1">
+                            <a href="https://assets.consolidus.com/artwork/{{orderData.pk_storeID}}/{{paramData.pfk_userID}}/{{paramData.fk_orderID}}/{{imprint.fk_orderLineID[0]}}/{{artwork.ID}}.{{artwork.EXTENSION}}"
+                                target="_blank" matTooltip="Download Artwork File">Download Artwork
+                                {{artwork.FILENAME}}
+                            </a>
+                            <mat-icon svgIcon="mat_outline:download"></mat-icon>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Statuses -->
+            <div class="row w-full">
+                <div class="col-12 mt-2">
+                    <!-- Imprint Status -->
+                    <div [ngStyle]="{'background-color': imprint.bgColor}"
+                        class="p-2 mb-2 rounded-md text-center text-dark" [showIcon]="false">
+                        As of {{imprint.statusDate}} the status of this
+                        item
+                        is <b>{{imprint.statusName}}</b>
+                        <ng-container *ngIf="imprint.fk_statusID == 9">
+                            <span *ngIf="imprint.approvalName">{{imprint.approvalName}} </span>
+                            <span *ngIf="imprint.approvalEmail">({{imprint.approvalEmail}})</span>
+                        </ng-container>.
+                    </div>
+                </div>
+                <div class="col-12" [ngSwitch]="imprint.fk_statusID">
+                    <!-- New Pending -->
+                    <ng-container *ngSwitchCase="2"> <!-- fk_statusID equals 2 -->
+                        <!-- Your content for New Pending -->
+                        <div class="w-full rounded-2xl shadow bg-card p-4 ">
+                            <div class="row">
+                                <div class="col-md-8 col-12">
+                                    <div class="flex space-x-1">
+                                        <p>Upload Artwork Proof</p>
+                                        <br>
+                                        <a *ngIf="imprint.viewProofCheck"
+                                            href="https://assets.consolidus.com/artwork/Proof/Quotes/{{this.paramData.pfk_userID}}/{{this.paramData.fk_cartID}}/{{this.paramData.pk_cartLineID}}/{{imprint.imprintID}}.jpg?{{tempValue}}"
+                                            target="_blank">(Click here to view proof)</a>
+                                    </div>
+                                    <mat-form-field class="w-full">
+                                        <mat-label>Email recipients (comma-separated)</mat-label>
+                                        <input matInput [(ngModel)]="imprint.emailRecipients"
+                                            id="email-{{imprint.pk_imprintID}}">
+                                    </mat-form-field>
+                                    <mat-form-field class="w-full">
+                                        <mat-label>Please enter any comments relating to this artwork:
+                                        </mat-label>
+                                        <textarea matInput [(ngModel)]="imprint.recipientsComment"
+                                            id="comment-{{imprint.pk_imprintID}}"
+                                            placeholder="Please double check all details of this proof for accuracy.  (ie. phone numbers, email/addresses, websites)."></textarea>
+                                    </mat-form-field>
+                                    <div class="flex justify-between">
+                                        <div>
+                                            <label>Select File</label>
+                                            <br>
+                                            <input type="file" accept=".jpg" #artworkFileInput
+                                                (change)="uploadArtworkFile($event)">
+                                        </div>
+                                        <mat-checkbox
+                                            matTooltip="Requires that the customer respond to the graphics team.  This removes the option for the customer to simply approve the artwork until this option is unchecked."
+                                            [(ngModel)]="imprint.blnRespond">Respond to
+                                            designer</mat-checkbox>
+                                    </div>
+                                    <div *ngIf="quoteData.inHandsDate">
+                                        <div>
+                                            <label for="">Approve-By Date (mm/dd/yyyy)</label>
+                                            <div class="flex space-x-1">
+                                                <!-- <input type="checkbox"> -->
+                                                <mat-checkbox class="mt-2"
+                                                    [(ngModel)]="imprint.blnIncludeApproveByDate"></mat-checkbox>
+                                                <input class="form-control" type="date"
+                                                    [(ngModel)]="imprint.artworkDate"
+                                                    [disabled]="!imprint.blnIncludeApproveByDate">
+                                                <input class="form-control" type="time"
+                                                    [(ngModel)]="imprint.artworkTime"
+                                                    [disabled]="!imprint.blnIncludeApproveByDate">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <button class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">Upload artwork
+                                            proof</button>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-12">
+                                    <p class="text-lg font-bold">Make Manual Updates to this Imprint
+                                        Status</p>
+                                    <div class="space-y-1">
+                                        <button type="button"
+                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                            [disabled]="imprint.pendingStatusLoader">
+                                            <span *ngIf="!imprint?.pendingStatusLoader">New
+                                                pending</span>
+                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.pendingStatusLoader"
+                                                [diameter]="24" [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                        <br>
+                                        <button type="button"
+                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                            [disabled]="imprint.pendingStatusLoader">
+                                            <span *ngIf="!imprint?.pendingStatusLoader">Awaiting artwork approval</span>
+                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.pendingStatusLoader"
+                                                [diameter]="24" [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                        <ng-container
+                                            *ngIf="imprint.fk_artApprovalContactID || (imprint.fk_storeUserApprovalContactID && !imprint.blnStoreUserApprovalDone)">
+                                            <br>
+                                            <button type="button"
+                                                class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                [disabled]="imprint.awaitingStatusLoader">
+                                                <span *ngIf="!imprint?.awaitingStatusLoader">Send proof
+                                                    update</span>
+                                                <mat-progress-spinner [color]="'light'"
+                                                    *ngIf="imprint?.awaitingStatusLoader" [diameter]="24"
+                                                    [mode]="'indeterminate'">
+                                                </mat-progress-spinner>
+                                            </button>
+                                        </ng-container>
+                                        <br>
+                                        <button type="button"
+                                            class="min-w-30 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
+                                            [disabled]="imprint.proofStatusLoader">
+                                            <span *ngIf="!imprint?.proofStatusLoader">No
+                                                proof needed</span>
+                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.proofStatusLoader"
+                                                [diameter]="24" [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                        <br>
+                                        <button *ngIf="imprint.blnAttention" type="button"
+                                            class="min-w-30 rounded-md bg-green-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                                            [diabled]="imprint.isFlagLoader">
+                                            <span *ngIf="!imprint?.isFlagLoader">Unflag
+                                                as awaiting info</span>
+                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.isFlagLoader"
+                                                [diameter]="24" [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                        <button *ngIf="!imprint.blnAttention" type="button"
+                                            class="min-w-30 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
+                                            [diabled]="imprint.isFlagLoader">
+                                            <span *ngIf="!imprint?.isFlagLoader">
+                                                <Form:post></Form:post>Flag
+                                                as awaiting info
+                                            </span>
+                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.isFlagLoader"
+                                                [diameter]="24" [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                    </div>
+                                    <div class="mt-3">
+                                        <p class="text-md font-bold">Designer Notes:</p>
+                                        <fuse-alert *ngIf="!imprint?.designerNotes || imprint?.designerNotes == 'NONE'"
+                                            class="my-2" [appearance]="'soft'" [type]="'warning'" [showIcon]="false">
+                                            No design notes defined for this decorator.
+                                        </fuse-alert>
+                                        <div class="h-40 border overflow-y-auto p-2"
+                                            *ngIf="imprint?.designerNotes && imprint?.designerNotes != 'NONE'"
+                                            [innerHTML]="imprint?.designerNotes"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-lg font-bold">Make Manual Updates to this Imprint Status</p>
+                            <div class="row">
+                                <div class="col-md-6 col-12">
+                                    <p class="text-md font-bold">Offline Customer Communication:</p>
+                                    <mat-radio-group class="example-radio-group" [(ngModel)]="imprint.statusID">
+                                        <mat-radio-button class="example-radio-button" value="approve" checked
+                                            [value]="9">Customer Approved
+                                            Artwork with comments</mat-radio-button>
+                                        <mat-radio-button class="example-radio-button" value="request"
+                                            [value]="2">Customer
+                                            Requested Artwork Change</mat-radio-button>
+                                    </mat-radio-group>
+                                    <mat-checkbox
+                                        matTooltip="Requires that the customer respond to the graphics team.  This removes the option for the customer to simply approve the artwork until this option is unchecked.">Respond
+                                        to designer</mat-checkbox>
+                                </div>
+                                <div class="col-md-6 col-12">
+                                    <mat-form-field class="w-full">
+                                        <mat-label>Please enter comments regarding this
+                                            communication:</mat-label>
+                                        <textarea matInput [(ngModel)]="imprint.proofComments"></textarea>
+                                    </mat-form-field>
+                                    <div class="tex-right">
+                                        <button class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200"
+                                            [disabled]="imprint.applyStatusLoader">
+                                            <span *ngIf="!imprint?.applyStatusLoader">Apply Status
+                                                Change</span>
+                                            <mat-progress-spinner *ngIf="imprint?.applyStatusLoader" [diameter]="24"
+                                                [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+
+                    <!-- AWAITING ARTWORK APPROVAL -->
+                    <ng-container *ngSwitchCase="3"> <!-- fk_statusID equals 3 -->
+                        <!-- Your content for Awaiting Artwork Approval -->
+                        <div class="w-full rounded-2xl shadow bg-card p-4 ">
+                            <div class="row">
+                                <div class="col-md-8 col-12">
+                                    <div class="flex space-x-1">
+                                        <p>Send Follow-Up</p>
+                                        <br>
+                                        <a *ngIf="imprint.viewProofCheck"
+                                            href="https://assets.consolidus.com/artwork/Proof/Quotes/{{this.paramData.pfk_userID}}/{{this.paramData.fk_cartID}}/{{this.paramData.pk_cartLineID}}/{{imprint.imprintID}}.jpg?{{tempValue}}"
+                                            target="_blank">(Click here to view proof)</a>
+                                    </div>
+                                    <mat-form-field class="w-full">
+                                        <mat-label>Email recipients (comma-separated)</mat-label>
+                                        <input matInput [(ngModel)]="imprint.emailRecipients"
+                                            id="email-{{imprint.pk_imprintID}}">
+                                    </mat-form-field>
+                                    <div *ngIf="quoteData.inHandsDate">
+                                        <div>
+                                            <mat-checkbox [(ngModel)]="imprint.blnRespond"
+                                                matTooltip="Requires that the customer respond to the graphics team.  This removes the option for the customer to simply approve the artwork until this option is unchecked.">Respond
+                                                to designer </mat-checkbox>
+                                        </div>
+                                        <div>
+                                            <label for="">Approve-By Date (mm/dd/yyyy)</label>
+                                            <div class="flex space-x-1">
+                                                <!-- <input type="checkbox"> -->
+                                                <mat-checkbox class="mt-2"
+                                                    [(ngModel)]="imprint.blnIncludeApproveByDate"></mat-checkbox>
+                                                <input class="form-control" type="date">
+                                                <input class="form-control" type="time">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <button class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">Send
+                                            follow up for email</button>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-12">
+                                    <p class="text-lg font-bold">Make Manual Updates to this Imprint
+                                        Status</p>
+                                    <div class="space-y-1">
+                                        <button type="button"
+                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                            [disabled]="imprint.pendingStatusLoader">
+                                            <span *ngIf="!imprint?.pendingStatusLoader">New
+                                                pending</span>
+                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.pendingStatusLoader"
+                                                [diameter]="24" [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                        <br>
+                                        <button type="button"
+                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                            [disabled]="imprint.pendingStatusLoader">
+                                            <span *ngIf="!imprint?.pendingStatusLoader">Follow up for approval</span>
+                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.pendingStatusLoader"
+                                                [diameter]="24" [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                        <ng-container
+                                            *ngIf="imprint.fk_artApprovalContactID || (imprint.fk_storeUserApprovalContactID && !imprint.blnStoreUserApprovalDone)">
+                                            <br>
+                                            <button type="button"
+                                                class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                [disabled]="imprint.awaitingStatusLoader">
+                                                <span *ngIf="!imprint?.awaitingStatusLoader">Send proof
+                                                    update</span>
+                                                <mat-progress-spinner [color]="'light'"
+                                                    *ngIf="imprint?.awaitingStatusLoader" [diameter]="24"
+                                                    [mode]="'indeterminate'">
+                                                </mat-progress-spinner>
+                                            </button>
+                                        </ng-container>
+                                        <br>
+                                        <button type="button"
+                                            class="min-w-30 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
+                                            [disabled]="imprint.proofStatusLoader">
+                                            <span *ngIf="!imprint?.proofStatusLoader">No
+                                                proof needed</span>
+                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.proofStatusLoader"
+                                                [diameter]="24" [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                        <br>
+                                        <button *ngIf="imprint.blnAttention" type="button"
+                                            class="min-w-30 rounded-md bg-green-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                                            [diabled]="imprint.isFlagLoader">
+                                            <span *ngIf="!imprint?.isFlagLoader">Unflag
+                                                as awaiting info</span>
+                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.isFlagLoader"
+                                                [diameter]="24" [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                        <button *ngIf="!imprint.blnAttention" type="button"
+                                            class="min-w-30 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
+                                            [diabled]="imprint.isFlagLoader">
+                                            <span *ngIf="!imprint?.isFlagLoader">
+                                                <Form:post></Form:post>Flag
+                                                as awaiting info
+                                            </span>
+                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.isFlagLoader"
+                                                [diameter]="24" [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                    </div>
+                                    <div class="mt-3">
+                                        <p class="text-md font-bold">Designer Notes:</p>
+                                        <fuse-alert *ngIf="!imprint?.designerNotes || imprint?.designerNotes == 'NONE'"
+                                            class="my-2" [appearance]="'soft'" [type]="'warning'" [showIcon]="false">
+                                            No design notes defined for this decorator.
+                                        </fuse-alert>
+                                        <div class="h-40 border overflow-y-auto p-2"
+                                            *ngIf="imprint?.designerNotes && imprint?.designerNotes != 'NONE'"
+                                            [innerHTML]="imprint?.designerNotes"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-lg font-bold">Make Manual Updates to this Imprint Status</p>
+                            <div class="row">
+                                <div class="col-md-6 col-12">
+                                    <p class="text-md font-bold">Offline Customer Communication:</p>
+                                    <mat-radio-group class="example-radio-group" [(ngModel)]="imprint.statusID">
+                                        <mat-radio-button class="example-radio-button" value="approve" checked
+                                            [value]="9">Customer Approved
+                                            Artwork with comments</mat-radio-button>
+                                        <mat-radio-button class="example-radio-button" value="request"
+                                            [value]="2">Customer
+                                            Requested Artwork Change</mat-radio-button>
+                                    </mat-radio-group>
+                                    <mat-checkbox
+                                        matTooltip="Requires that the customer respond to the graphics team.  This removes the option for the customer to simply approve the artwork until this option is unchecked.">Respond
+                                        to designer</mat-checkbox>
+                                </div>
+                                <div class="col-md-6 col-12">
+                                    <mat-form-field class="w-full">
+                                        <mat-label>Please enter comments regarding this
+                                            communication:</mat-label>
+                                        <textarea matInput [(ngModel)]="imprint.proofComments"></textarea>
+                                    </mat-form-field>
+                                    <div class="tex-right">
+                                        <button class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200"
+                                            [disabled]="imprint.applyStatusLoader">
+                                            <span *ngIf="!imprint?.applyStatusLoader">Apply Status
+                                                Change</span>
+                                            <mat-progress-spinner *ngIf="imprint?.applyStatusLoader" [diameter]="24"
+                                                [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+
+                    <!-- ON HOLD -->
+                    <ng-container *ngSwitchCase="12"> <!-- fk_statusID equals 12 -->
+                        <!-- Your content for On Hold -->
+                        <div class="w-full rounded-2xl shadow bg-card p-4 ">
+                            <div class="row">
+                                <div class="col-md-8 col-12">
+                                    <div class="flex space-x-1">
+                                        <p>Send Follow-Up</p>
+                                        <br>
+                                        <a *ngIf="imprint.viewProofCheck"
+                                            href="https://assets.consolidus.com/artwork/Proof/Quotes/{{this.paramData.pfk_userID}}/{{this.paramData.fk_cartID}}/{{this.paramData.pk_cartLineID}}/{{imprint.imprintID}}.jpg?{{tempValue}}"
+                                            target="_blank">(Click here to view proof)</a>
+                                    </div>
+                                    <mat-form-field class="w-full">
+                                        <mat-label>Email recipients (comma-separated)</mat-label>
+                                        <input matInput [(ngModel)]="imprint.emailRecipients"
+                                            id="email-{{imprint.pk_imprintID}}">
+                                    </mat-form-field>
+                                    <div *ngIf="quoteData.inHandsDate">
+                                        <div>
+                                            <mat-checkbox [(ngModel)]="imprint.blnRespond"
+                                                matTooltip="Requires that the customer respond to the graphics team.  This removes the option for the customer to simply approve the artwork until this option is unchecked.">Respond
+                                                to designer </mat-checkbox>
+                                        </div>
+                                        <div>
+                                            <label for="">Approve-By Date (mm/dd/yyyy)</label>
+                                            <div class="flex space-x-1">
+                                                <!-- <input type="checkbox"> -->
+                                                <mat-checkbox class="mt-2"
+                                                    [(ngModel)]="imprint.blnIncludeApproveByDate"></mat-checkbox>
+                                                <input class="form-control" type="date">
+                                                <input class="form-control" type="time">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <button class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">Send
+                                            follow up for email</button>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-12">
+                                    <p class="text-lg font-bold">Make Manual Updates to this Imprint
+                                        Status</p>
+                                    <div class="space-y-1">
+                                        <button type="button"
+                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                            [disabled]="imprint.pendingStatusLoader">
+                                            <span *ngIf="!imprint?.pendingStatusLoader">New
+                                                pending</span>
+                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.pendingStatusLoader"
+                                                [diameter]="24" [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                        <br>
+                                        <button type="button"
+                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                            [disabled]="imprint.pendingStatusLoader">
+                                            <span *ngIf="!imprint?.pendingStatusLoader">Awaiting artwork approval</span>
+                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.pendingStatusLoader"
+                                                [diameter]="24" [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                        <br>
+                                        <button type="button"
+                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                            [disabled]="imprint.pendingStatusLoader">
+                                            <span *ngIf="!imprint?.pendingStatusLoader">Follow up for approval</span>
+                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.pendingStatusLoader"
+                                                [diameter]="24" [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                        <ng-container
+                                            *ngIf="imprint.fk_artApprovalContactID || (imprint.fk_storeUserApprovalContactID && !imprint.blnStoreUserApprovalDone)">
+                                            <br>
+                                            <button type="button"
+                                                class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                [disabled]="imprint.awaitingStatusLoader">
+                                                <span *ngIf="!imprint?.awaitingStatusLoader">Send proof
+                                                    update</span>
+                                                <mat-progress-spinner [color]="'light'"
+                                                    *ngIf="imprint?.awaitingStatusLoader" [diameter]="24"
+                                                    [mode]="'indeterminate'">
+                                                </mat-progress-spinner>
+                                            </button>
+                                        </ng-container>
+                                        <br>
+                                        <button type="button"
+                                            class="min-w-30 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
+                                            [disabled]="imprint.proofStatusLoader">
+                                            <span *ngIf="!imprint?.proofStatusLoader">No
+                                                proof needed</span>
+                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.proofStatusLoader"
+                                                [diameter]="24" [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                        <br>
+                                        <button *ngIf="imprint.blnAttention" type="button"
+                                            class="min-w-30 rounded-md bg-green-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                                            [diabled]="imprint.isFlagLoader">
+                                            <span *ngIf="!imprint?.isFlagLoader">Unflag
+                                                as awaiting info</span>
+                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.isFlagLoader"
+                                                [diameter]="24" [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                        <button *ngIf="!imprint.blnAttention" type="button"
+                                            class="min-w-30 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
+                                            [diabled]="imprint.isFlagLoader">
+                                            <span *ngIf="!imprint?.isFlagLoader">
+                                                <Form:post></Form:post>Flag
+                                                as awaiting info
+                                            </span>
+                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.isFlagLoader"
+                                                [diameter]="24" [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                    </div>
+                                    <div class="mt-3">
+                                        <p class="text-md font-bold">Designer Notes:</p>
+                                        <fuse-alert *ngIf="!imprint?.designerNotes || imprint?.designerNotes == 'NONE'"
+                                            class="my-2" [appearance]="'soft'" [type]="'warning'" [showIcon]="false">
+                                            No design notes defined for this decorator.
+                                        </fuse-alert>
+                                        <div class="h-40 border overflow-y-auto p-2"
+                                            *ngIf="imprint?.designerNotes && imprint?.designerNotes != 'NONE'"
+                                            [innerHTML]="imprint?.designerNotes"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-lg font-bold">Make Manual Updates to this Imprint Status</p>
+                            <div class="row">
+                                <div class="col-md-6 col-12">
+                                    <p class="text-md font-bold">Offline Customer Communication:</p>
+                                    <mat-radio-group class="example-radio-group" [(ngModel)]="imprint.statusID">
+                                        <mat-radio-button class="example-radio-button" value="approve" checked
+                                            [value]="9">Customer Approved
+                                            Artwork with comments</mat-radio-button>
+                                        <mat-radio-button class="example-radio-button" value="request"
+                                            [value]="2">Customer
+                                            Requested Artwork Change</mat-radio-button>
+                                    </mat-radio-group>
+                                    <mat-checkbox
+                                        matTooltip="Requires that the customer respond to the graphics team.  This removes the option for the customer to simply approve the artwork until this option is unchecked.">Respond
+                                        to designer</mat-checkbox>
+                                </div>
+                                <div class="col-md-6 col-12">
+                                    <mat-form-field class="w-full">
+                                        <mat-label>Please enter comments regarding this
+                                            communication:</mat-label>
+                                        <textarea matInput [(ngModel)]="imprint.proofComments"></textarea>
+                                    </mat-form-field>
+                                    <div class="tex-right">
+                                        <button class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200"
+                                            [disabled]="imprint.applyStatusLoader">
+                                            <span *ngIf="!imprint?.applyStatusLoader">Apply Status
+                                                Change</span>
+                                            <mat-progress-spinner *ngIf="imprint?.applyStatusLoader" [diameter]="24"
+                                                [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+
+                    <!-- ARTWORK REVISION -->
+                    <ng-container *ngSwitchCase="4"> <!-- fk_statusID equals 4 -->
+                        <!-- Your content for Artwork Revision -->
+                        <div class="w-full rounded-2xl shadow bg-card p-4 ">
+                            <div class="row">
+                                <div class="col-md-6 col-12">
+                                    <div>
+                                        <a *ngIf="imprint.viewProofCheck"
+                                            href="https://assets.consolidus.com/artwork/Proof/Quotes/{{this.paramData.pfk_userID}}/{{this.paramData.fk_cartID}}/{{this.paramData.pk_cartLineID}}/{{imprint.imprintID}}.jpg?{{tempValue}}"
+                                            target="_blank">(Click here to view proof)</a>
+                                    </div>
+                                    <button type="button"
+                                        class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                        [disabled]="imprint.pendingStatusLoader">
+                                        <span *ngIf="!imprint?.pendingStatusLoader">Acknowledge
+                                            changes requested</span>
+                                        <mat-progress-spinner [color]="'light'" *ngIf="imprint?.pendingStatusLoader"
+                                            [diameter]="24" [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                    </button>
+                                </div>
+                                <div class="col-md-4 col-12">
+                                    <p class="text-lg font-bold">Make Manual Updates to this Imprint
+                                        Status</p>
+                                    <div class="space-y-1">
+                                        <button type="button"
+                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                            [disabled]="imprint.pendingStatusLoader">
+                                            <span *ngIf="!imprint?.pendingStatusLoader">New
+                                                pending</span>
+                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.pendingStatusLoader"
+                                                [diameter]="24" [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                        <br>
+                                        <button type="button"
+                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                            [disabled]="imprint.awaitingStatusLoader">
+                                            <span *ngIf="!imprint?.awaitingStatusLoader">Awaiting
+                                                artwork approval</span>
+                                            <mat-progress-spinner [color]="'light'"
+                                                *ngIf="imprint?.awaitingStatusLoader" [diameter]="24"
+                                                [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                        <ng-container
+                                            *ngIf="imprint.fk_artApprovalContactID || (imprint.fk_storeUserApprovalContactID && !imprint.blnStoreUserApprovalDone)">
+                                            <br>
+                                            <button type="button"
+                                                class="min-w-30 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
+                                                [disabled]="imprint.proofStatusLoader">
+                                                <span *ngIf="!imprint?.proofStatusLoader">No
+                                                    proof needed</span>
+                                                <mat-progress-spinner [color]="'light'"
+                                                    *ngIf="imprint?.proofStatusLoader" [diameter]="24"
+                                                    [mode]="'indeterminate'">
+                                                </mat-progress-spinner>
+                                            </button>
+                                        </ng-container>
+                                        <br>
+                                        <button type="button"
+                                            class="min-w-30 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
+                                            [disabled]="imprint.proofStatusLoader">
+                                            <span *ngIf="!imprint?.proofStatusLoader">No
+                                                proof needed</span>
+                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.proofStatusLoader"
+                                                [diameter]="24" [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                        <br>
+                                        <button *ngIf="imprint.blnAttention" type="button"
+                                            class="min-w-30 rounded-md bg-green-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                                            [diabled]="imprint.isFlagLoader">
+                                            <span *ngIf="!imprint?.isFlagLoader">Unflag
+                                                as awaiting info</span>
+                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.isFlagLoader"
+                                                [diameter]="24" [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                        <button *ngIf="!imprint.blnAttention" type="button"
+                                            class="min-w-30 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
+                                            [diabled]="imprint.isFlagLoader">
+                                            <span *ngIf="!imprint?.isFlagLoader">
+                                                <Form:post></Form:post>Flag
+                                                as awaiting info
+                                            </span>
+                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.isFlagLoader"
+                                                [diameter]="24" [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                    </div>
+                                    <div class="mt-3">
+                                        <p class="text-md font-bold">Designer Notes:</p>
+                                        <fuse-alert *ngIf="!imprint?.designerNotes || imprint?.designerNotes == 'NONE'"
+                                            class="my-2" [appearance]="'soft'" [type]="'warning'" [showIcon]="false">
+                                            No design notes defined for this decorator.
+                                        </fuse-alert>
+                                        <div class="h-40 border overflow-y-auto p-2"
+                                            *ngIf="imprint?.designerNotes && imprint?.designerNotes != 'NONE'"
+                                            [innerHTML]="imprint?.designerNotes"></div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </ng-container>
+
+                    <!-- NO PROOF NEEDED -->
+                    <ng-container *ngSwitchCase="7"> <!-- fk_statusID equals 7 -->
+                        <!-- Your content for No Proof Needed -->
+                        <div class="w-full rounded-2xl shadow bg-card p-4 ">
+                            <div class="row">
+                                <div class="col-md-8 col-12">
+                                    <p class="text-lg font-bold">No Proof Needed</p>
+                                </div>
+                                <div class="col-md-4 col-12">
+                                    <p class="text-lg font-bold">Make Manual Updates to this Imprint
+                                        Status</p>
+                                    <div class="space-y-2">
+                                        <button type="button"
+                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                            [disabled]="imprint.pendingStatusLoader">
+                                            <span *ngIf="!imprint?.pendingStatusLoader">New
+                                                pending</span>
+                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.pendingStatusLoader"
+                                                [diameter]="24" [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                        <br>
+                                        <button type="button"
+                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                            [disabled]="imprint.awaitingStatusLoader">
+                                            <span *ngIf="!imprint?.awaitingStatusLoader">Awaiting
+                                                artwork approval</span>
+                                            <mat-progress-spinner [color]="'light'"
+                                                *ngIf="imprint?.awaitingStatusLoader" [diameter]="24"
+                                                [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                        <br>
+                                        <button type="button"
+                                            *ngIf="imprint.fk_artApprovalContactID || (imprint.fk_storeUserApprovalContactID && !imprint.blnStoreUserApprovalDone)"
+                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                            [disabled]="imprint.awaitingStatusLoader">
+                                            <span *ngIf="!imprint?.awaitingStatusLoader">Send proof
+                                                update</span>
+                                            <mat-progress-spinner [color]="'light'"
+                                                *ngIf="imprint?.awaitingStatusLoader" [diameter]="24"
+                                                [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                    </div>
+                                    <div class="mt-3">
+                                        <p class="text-md font-bold">Designer Notes:</p>
+                                        <fuse-alert *ngIf="!imprint?.designerNotes || imprint?.designerNotes == 'NONE'"
+                                            class="my-2" [appearance]="'soft'" [type]="'warning'" [showIcon]="false">
+                                            No design notes defined for this decorator.
+                                        </fuse-alert>
+                                        <div class="h-40 border overflow-y-auto p-2"
+                                            *ngIf="imprint?.designerNotes && imprint?.designerNotes != 'NONE'"
+                                            [innerHTML]="imprint?.designerNotes"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+
+                    <!-- ARTWORK APPROVED -->
+                    <ng-container *ngSwitchCase="9"> <!-- fk_statusID equals 9 -->
+                        <!-- Your content for Artwork Approved -->
+                        <div class="w-full rounded-2xl shadow bg-card p-4 ">
+                            <div class="row">
+                                <div class="col-md-6 col-12">
+                                    <div>
+                                        <a *ngIf="imprint.viewProofCheck"
+                                            href="https://assets.consolidus.com/artwork/Proof/Quotes/{{this.paramData.pfk_userID}}/{{this.paramData.fk_cartID}}/{{this.paramData.pk_cartLineID}}/{{imprint.imprintID}}.jpg?{{tempValue}}"
+                                            target="_blank">(Click here to view proof)</a>
+                                    </div>
+                                    <div class="alert alert-warning no-bottom-margin active">
+                                        <span class="fa fa-check active fa-lg"></span> The artwork for this imprint has
+                                        been
+                                        approved. This imprint will move directly to "in production" if this order is
+                                        finalized
+                                        by the customer.
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-12">
+                                    <p class="text-lg font-bold">Make Manual Updates to this Imprint
+                                        Status</p>
+                                    <div class="space-y-1">
+                                        <button type="button"
+                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                            [disabled]="imprint.pendingStatusLoader">
+                                            <span *ngIf="!imprint?.pendingStatusLoader">New
+                                                pending</span>
+                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.pendingStatusLoader"
+                                                [diameter]="24" [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                        <br>
+                                        <button type="button"
+                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                            [disabled]="imprint.awaitingStatusLoader">
+                                            <span *ngIf="!imprint?.awaitingStatusLoader">Awaiting
+                                                artwork approval</span>
+                                            <mat-progress-spinner [color]="'light'"
+                                                *ngIf="imprint?.awaitingStatusLoader" [diameter]="24"
+                                                [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                        <ng-container
+                                            *ngIf="imprint.fk_artApprovalContactID || (imprint.fk_storeUserApprovalContactID && !imprint.blnStoreUserApprovalDone)">
+                                            <br>
+                                            <button type="button"
+                                                class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                [disabled]="imprint.awaitingStatusLoader">
+                                                <span *ngIf="!imprint?.awaitingStatusLoader">Send proof
+                                                    update</span>
+                                                <mat-progress-spinner [color]="'light'"
+                                                    *ngIf="imprint?.awaitingStatusLoader" [diameter]="24"
+                                                    [mode]="'indeterminate'">
+                                                </mat-progress-spinner>
+                                            </button>
+                                        </ng-container>
+                                        <br>
+                                        <button type="button"
+                                            class="min-w-30 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
+                                            [disabled]="imprint.proofStatusLoader">
+                                            <span *ngIf="!imprint?.proofStatusLoader">No
+                                                proof needed</span>
+                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.proofStatusLoader"
+                                                [diameter]="24" [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                        <ng-container>
+                                            <br>
+                                            <button *ngIf="imprint.blnAttention" type="button"
+                                                class="min-w-30 rounded-md bg-green-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                                                [diabled]="imprint.isFlagLoader">
+                                                <span *ngIf="!imprint?.isFlagLoader">Unflag
+                                                    as awaiting info</span>
+                                                <mat-progress-spinner [color]="'light'" *ngIf="imprint?.isFlagLoader"
+                                                    [diameter]="24" [mode]="'indeterminate'">
+                                                </mat-progress-spinner>
+                                            </button>
+                                            <button *ngIf="!imprint.blnAttention" type="button"
+                                                class="min-w-30 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
+                                                [diabled]="imprint.isFlagLoader">
+                                                <span *ngIf="!imprint?.isFlagLoader">
+                                                    <Form:post></Form:post>Flag
+                                                    as awaiting info
+                                                </span>
+                                                <mat-progress-spinner [color]="'light'" *ngIf="imprint?.isFlagLoader"
+                                                    [diameter]="24" [mode]="'indeterminate'">
+                                                </mat-progress-spinner>
+                                            </button>
+                                        </ng-container>
+                                    </div>
+                                    <div class="mt-3">
+                                        <p class="text-md font-bold">Designer Notes:</p>
+                                        <fuse-alert *ngIf="!imprint?.designerNotes || imprint?.designerNotes == 'NONE'"
+                                            class="my-2" [appearance]="'soft'" [type]="'warning'" [showIcon]="false">
+                                            No design notes defined for this decorator.
+                                        </fuse-alert>
+                                        <div class="h-40 border overflow-y-auto p-2"
+                                            *ngIf="imprint?.designerNotes && imprint?.designerNotes != 'NONE'"
+                                            [innerHTML]="imprint?.designerNotes"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+
+                    <!-- FOLLOW UP FOR APPROVAL -->
+                    <ng-container *ngSwitchCase="13"> <!-- fk_statusID equals 13 -->
+                        <!-- Your content for Follow Up for Approval -->
+                        <div class="w-full rounded-2xl shadow bg-card p-4 ">
+                            <div class="row">
+                                <div class="col-md-8 col-12">
+                                    <a *ngIf="imprint.viewProofCheck"
+                                        href="https://assets.consolidus.com/artwork/Proof/Quotes/{{this.paramData.pfk_userID}}/{{this.paramData.fk_cartID}}/{{this.paramData.pk_cartLineID}}/{{imprint.imprintID}}.jpg?{{tempValue}}"
+                                        target="_blank">(Click here to view proof)</a>
+                                    <mat-form-field class="w-full">
+                                        <mat-label>Email recipients (comma-separated)</mat-label>
+                                        <input matInput [(ngModel)]="imprint.emailRecipients"
+                                            id="email-{{imprint.pk_imprintID}}">
+                                    </mat-form-field>
+                                    <div>
+                                        <button class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">Send
+                                            follow up email</button>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-12">
+                                    <p class="text-lg font-bold">Make Manual Updates to this Imprint
+                                        Status</p>
+                                    <div class="space-y-1">
+                                        <button type="button"
+                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                            [disabled]="imprint.pendingStatusLoader">
+                                            <span *ngIf="!imprint?.pendingStatusLoader">New
+                                                pending</span>
+                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.pendingStatusLoader"
+                                                [diameter]="24" [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                        <ng-container
+                                            *ngIf="imprint.fk_artApprovalContactID || (imprint.fk_storeUserApprovalContactID && !imprint.blnStoreUserApprovalDone)">
+                                            <br>
+                                            <button type="button"
+                                                class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                [disabled]="imprint.awaitingStatusLoader">
+                                                <span *ngIf="!imprint?.awaitingStatusLoader">Send proof
+                                                    update</span>
+                                                <mat-progress-spinner [color]="'light'"
+                                                    *ngIf="imprint?.awaitingStatusLoader" [diameter]="24"
+                                                    [mode]="'indeterminate'">
+                                                </mat-progress-spinner>
+                                            </button>
+                                        </ng-container>
+                                        <br>
+                                        <button type="button"
+                                            class="min-w-30 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
+                                            [disabled]="imprint.proofStatusLoader">
+                                            <span *ngIf="!imprint?.proofStatusLoader">No
+                                                proof needed</span>
+                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.proofStatusLoader"
+                                                [diameter]="24" [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                        <br>
+                                        <button *ngIf="imprint.blnAttention" type="button"
+                                            class="min-w-30 rounded-md bg-green-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                                            [diabled]="imprint.isFlagLoader">
+                                            <span *ngIf="!imprint?.isFlagLoader">Unflag
+                                                as awaiting info</span>
+                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.isFlagLoader"
+                                                [diameter]="24" [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                        <button *ngIf="!imprint.blnAttention" type="button"
+                                            class="min-w-30 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
+                                            [diabled]="imprint.isFlagLoader">
+                                            <span *ngIf="!imprint?.isFlagLoader">
+                                                <Form:post></Form:post>Flag
+                                                as awaiting info
+                                            </span>
+                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.isFlagLoader"
+                                                [diameter]="24" [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                    </div>
+                                    <div class="mt-3">
+                                        <p class="text-md font-bold">Designer Notes:</p>
+                                        <fuse-alert *ngIf="!imprint?.designerNotes || imprint?.designerNotes == 'NONE'"
+                                            class="my-2" [appearance]="'soft'" [type]="'warning'" [showIcon]="false">
+                                            No design notes defined for this decorator.
+                                        </fuse-alert>
+                                        <div class="h-40 border overflow-y-auto p-2"
+                                            *ngIf="imprint?.designerNotes && imprint?.designerNotes != 'NONE'"
+                                            [innerHTML]="imprint?.designerNotes"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-lg font-bold">Make Manual Updates to this Imprint Status</p>
+                            <div class="row">
+                                <div class="col-md-6 col-12">
+                                    <p class="text-md font-bold">Offline Customer Communication:</p>
+                                    <mat-radio-group class="example-radio-group" [(ngModel)]="imprint.statusID">
+                                        <mat-radio-button class="example-radio-button" value="approve" checked
+                                            [value]="9">Customer Approved
+                                            Artwork with comments</mat-radio-button>
+                                        <mat-radio-button class="example-radio-button" value="request"
+                                            [value]="2">Customer
+                                            Requested Artwork Change</mat-radio-button>
+                                    </mat-radio-group>
+                                    <mat-checkbox
+                                        matTooltip="Requires that the customer respond to the graphics team.  This removes the option for the customer to simply approve the artwork until this option is unchecked.">Respond
+                                        to designer</mat-checkbox>
+                                </div>
+                                <div class="col-md-6 col-12">
+                                    <mat-form-field class="w-full">
+                                        <mat-label>Please enter comments regarding this
+                                            communication:</mat-label>
+                                        <textarea matInput [(ngModel)]="imprint.proofComments"></textarea>
+                                    </mat-form-field>
+                                    <div class="tex-right">
+                                        <button class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200"
+                                            (click)="applyStatusChangeImprint(imprint, imprint.statusID,'apply')"
+                                            [disabled]="imprint.applyStatusLoader">
+                                            <span *ngIf="!imprint?.applyStatusLoader">Apply Status
+                                                Change</span>
+                                            <mat-progress-spinner *ngIf="imprint?.applyStatusLoader" [diameter]="24"
+                                                [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+
+                    <!-- Default case, handle if none of the above cases match -->
+                    <ng-container *ngSwitchDefault>
+                        <!-- Your default content -->
+                    </ng-container>
+                </div>
+
+            </div>
+        </ng-container>
+    </mat-expansion-panel>
+</mat-accordion>

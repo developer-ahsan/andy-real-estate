@@ -197,36 +197,36 @@
                                     </td>
                                 </ng-container>
                                 <ng-container matColumnDef="age">
-                                    <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 text-center">
+                                    <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10 ">
                                         Age
                                     </th>
-                                    <td mat-cell *matCellDef="let element" class="text-xs pr-1 text-center"
-                                        (click)="quoteDetails(element)">10
+                                    <td (click)="quoteDetails(element)" mat-cell *matCellDef="let element"
+                                        class="text-xs pr-1">
+                                        {{element?.ageInHours}} hrs
                                     </td>
                                 </ng-container>
                                 <ng-container matColumnDef="store">
-                                    <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30">
+                                    <th mat-header-cell *matHeaderCellDef class="w-15 min-w-15">
                                         Store
                                     </th>
                                     <td mat-cell *matCellDef="let element" class="text-xs pr-1"
                                         (click)="quoteDetails(element)">{{element.storeCode}}
                                     </td>
                                 </ng-container>
-                                <ng-container matColumnDef="proof">
+                                <ng-container matColumnDef="proofContact">
                                     <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30 ">
-                                        Proof
+                                        Proof Contact
                                     </th>
                                     <td mat-cell *matCellDef="let element" class="text-xs pr-1">
-                                        <span *ngIf="!element.lastProof" class="cursor-pointer">
-                                            <div class="flex">
-                                                <span *ngIf="!element.proofLoader"
-                                                    (click)="getSmartArtListProof(element)">View Proof</span>
-                                                <mat-progress-spinner *ngIf="element.proofLoader" [diameter]="24"
-                                                    [mode]="'indeterminate'">
-                                                </mat-progress-spinner>
-                                            </div>
-                                        </span>
-                                        <span *ngIf="element.lastProof">{{element.lastProof}}</span>
+                                        {{element.proofContact || 'N/A'}}
+                                    </td>
+                                </ng-container>
+                                <ng-container matColumnDef="proof">
+                                    <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30 ">
+                                        Last Proof
+                                    </th>
+                                    <td mat-cell *matCellDef="let element" class="text-xs pr-1">
+                                        <span [innerHTML]="element.proof"></span>
                                     </td>
                                 </ng-container>
                                 <ng-container matColumnDef="action">

@@ -20,7 +20,7 @@ export class QuoteDashboardComponent implements OnInit, OnDestroy {
 
   dataSource = [];
   tempDataSource = [];
-  displayedColumns: string[] = ['check', 'date', 'inhands', 'order', 'line', 'customer', 'product', 'supplier', 'status', 'store', 'proof', 'action'];
+  displayedColumns: string[] = ['check', 'date', 'inhands', 'order', 'line', 'customer', 'product', 'supplier', 'status', 'age', 'store', 'proofContact', 'proof', 'action'];
   totalRecords = 0;
   tempRecords = 0;
   page = 1;
@@ -77,64 +77,6 @@ export class QuoteDashboardComponent implements OnInit, OnDestroy {
       this.allDesigners.push({ firstName: 'All', lastName: " Designers", pk_userID: null });
       this.allDesigners = this.allDesigners.concat(res['data']);
     });
-    let params;
-    this.searchStoreCtrl.valueChanges.pipe(
-      filter((res: any) => {
-        params = {
-          stores: true,
-          bln_active: 1,
-          keyword: res
-        }
-        return res !== null && res.length >= 3
-      }),
-      distinctUntilChanged(),
-      debounceTime(300),
-      tap(() => {
-        this.allStores = [];
-        this.isSearchingStore = true;
-        this._changeDetectorRef.markForCheck();
-      }),
-      switchMap(value => this._smartartService.getSmartArtData(params)
-        .pipe(
-          finalize(() => {
-            this.isSearchingStore = false
-            this._changeDetectorRef.markForCheck();
-          }),
-        )
-      )
-    ).subscribe((data: any) => {
-      this.allStores.push({ storeName: 'All Stores', pk_storeID: null });
-      this.allStores = this.allStores.concat(data['data']);
-    });
-    let params1;
-    this.searchDesignerCtrl.valueChanges.pipe(
-      filter((res: any) => {
-        params1 = {
-          smart_art_users: true,
-          keyword: res
-        }
-        return res !== null && res.length >= 3
-      }),
-      distinctUntilChanged(),
-      debounceTime(300),
-      tap(() => {
-        this.allDesigners = [];
-        this.isSearchingDesigner = true;
-        this._changeDetectorRef.markForCheck();
-      }),
-      switchMap(value => this._smartartService.getSmartArtData(params1)
-        .pipe(
-          finalize(() => {
-            this.isSearchingDesigner = false
-            this._changeDetectorRef.markForCheck();
-          }),
-        )
-      )
-    ).subscribe((data: any) => {
-      this.allDesigners.push({ firstName: 'All', lastName: " Designers", pk_userID: null });
-      this.allDesigners = this.allDesigners.concat(data['data']);
-    });
-
   }
   onSelected(ev) {
     this.selectedStore = ev.option.value;
@@ -173,6 +115,14 @@ export class QuoteDashboardComponent implements OnInit, OnDestroy {
       if (this.isFilterLoader) {
         this.drawer.toggle();
       }
+      res["data"].forEach(quote => {
+        quote.ageInHours = Math.floor(quote.age / 60);
+        quote.proof = 'N/A';
+        if (quote.qryLatestProof) {
+          const [name, date] = quote.qryLatestProof.split('::');
+          quote.proof = `${name} <br> ${date}`
+        }
+      });
       this.dataSource = res["data"];
       this.totalRecords = res["totalRecords"];
       if (this.tempDataSource.length == 0) {

@@ -49,13 +49,14 @@ import { OrderDashboardDetailsComponent } from './components/pages/order-details
 import { QuoteDashboardDetailsComponent } from './components/pages/quote-details/quote-details.component';
 import { QuoteOrderEmailComponent } from './components/pages/quote-order-emails/quote-order-emails.component';
 import { SmartartOrderEmailComponent } from './components/pages/order-emails/order-emails.component';
+import { QuoteImprintStatusComponent } from './components/pages/quote-details/quote-imprint-status/quote-imprint-status.component';
 
 @NgModule({
     declarations: [
         SmartArtComponent,
         OrderDashboardComponent,
         QuoteDashboardComponent, OrderSchedulerComponent, QuoteSchedulerComponent, OrderDashboardDetailsComponent, QuoteDashboardDetailsComponent,
-        QuoteOrderEmailComponent, SmartartOrderEmailComponent
+        QuoteOrderEmailComponent, SmartartOrderEmailComponent, QuoteImprintStatusComponent
     ],
     imports: [
         RouterModule.forChild(smartartRoutes),
