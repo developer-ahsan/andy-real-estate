@@ -232,8 +232,14 @@
                                         </div>
                                     </div>
                                     <div>
-                                        <button class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">Upload artwork
-                                            proof</button>
+                                        <button (click)="uploadArtworkFileToServer(imprint)"
+                                            class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">
+                                            <span *ngIf="!imprint?.artworkProofLoader">Update Artwork
+                                                Proof</span>
+                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.artworkProofLoader"
+                                                [diameter]="24" [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="col-md-4 col-12">

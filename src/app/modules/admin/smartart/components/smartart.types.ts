@@ -3,6 +3,7 @@ export interface UpdateQuoteOptions {
     blnAdditionalProofContacts: boolean;
     blnIgnoreAdditionalArtEmails: boolean;
     eventName: string;
+    inHandsDate: string;
     bypassScheduler: boolean;
     pk_cartLineID: number;
     pk_cartID: number;
@@ -484,26 +485,15 @@ export interface UploadQuoteArtProof {
     decorationName: string;
     locationName: string;
     colorNameList: string;
+    proofComment: string;
     upload_quote_art_proof: boolean;
-
-
     imprintColors: string;
-
-    orderID: number;
-    orderLineID: number;
-    orderLineImprintID: number;
     imprintID: number;
     statusID: number;
     thumbnailImage: string;
     smartArtAdminEmail: string;
     inHandsDate: string;
-    storeProductID: number;
-    orderLineQuantity: number;
     blnIgnoreAdditionalArtEmails: boolean;
-    blnProofSent: boolean;
-    comment: string;
     blnRespond: boolean;
-    loggedInUserID: number;
-    groupOrderID: number;
     isFileExist: boolean;
 };

@@ -630,9 +630,22 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
     });
   }
   updateQuote() {
+    let date = this.quoteData.inHandsDateValue;
+    let converDate;
+    if (date) {
+      converDate = moment(date).format('MM/DD/yyyy')
+    }
+
+    if (date && !moment(date).isAfter(moment())) {
+      this._smartartService.snackBar('Please enter an in-hands date in the future.');
+      return;
+    }
+
+
     this.updateQuoteInfoLoader = true;
     this._changeDetectorRef.markForCheck();
     let payload: UpdateQuoteOptions = {
+      inHandsDate: converDate,
       blnAdditionalProofContacts: this.quoteData.blnAdditionalApprovalOverride,
       blnIgnoreAdditionalArtEmails: this.quoteData.blnIgnoreAdditionalArtEmails,
       eventName: this.quoteData.event,

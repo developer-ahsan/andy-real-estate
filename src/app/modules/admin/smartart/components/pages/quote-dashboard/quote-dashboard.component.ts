@@ -7,6 +7,7 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { SmartArtService } from '../../smartart.service';
 import { HideUnhideQuote, UpdateQuoteClaim, updateQuoteAttentionFlag, updateQuoteBulkStatusUpdate } from '../../smartart.types';
+import moment from 'moment';
 @Component({
   selector: 'app-quote-dashboard',
   templateUrl: './quote-dashboard.component.html',
@@ -116,6 +117,7 @@ export class QuoteDashboardComponent implements OnInit, OnDestroy {
         this.drawer.toggle();
       }
       res["data"].forEach(quote => {
+        this.setColor(quote);
         quote.ageInHours = Math.floor(quote.age / 60);
         quote.proof = 'N/A';
         if (quote.qryLatestProof) {
@@ -145,6 +147,25 @@ export class QuoteDashboardComponent implements OnInit, OnDestroy {
       // this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
     });
+  }
+  setColor(quote) {
+    let theInHandsDate = moment(quote.dateCreated).add('days', quote.prodTimeMax[0]);
+    quote.bgColor = '';
+    if (quote.blnAttention) {
+      quote.bgColor = '#75bbf5';
+    } else if (quote.inHandsDate && (moment(quote.inHandsDate).isBefore(theInHandsDate))) {
+      if (quote.blnRushFlexibility) {
+        quote.bgColor = '#F2D1A0';
+      } else {
+        quote.bgColor = '#ffcaca';
+      }
+    } else if (quote.fk_orderGroupOrderID) {
+      quote.bgColor = '#fca769';
+    } else if (quote.blnReorder) {
+      quote.bgColor = '#feee84';
+    } else if (quote.blnGroupRun) {
+      quote.bgColor = '#DBD7FF';
+    }
   }
   getNextData(event) {
     const { previousPageIndex, pageIndex } = event;
