@@ -197,12 +197,16 @@
                                 <div><b>Rush:</b> {{quoteData.sessionArtworkBlnRushOrder? 'YES' : 'NO'}}</div>
                                 <div>
                                     <b>In-Hands:</b> (mm/dd/yyyy)
-                                    <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full min-w-50">
+                                    <input type="date" [(ngModel)]="quoteData.inHandsDateValue"
+                                        class="block w-full rounded-md border-0 p-2.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        aria-describedby="email-optional">
+
+                                    <!-- <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full min-w-50">
                                         <input matInput readonly [matDatepicker]="picker" (click)="picker.open()"
-                                            [(ngModel)]="quoteData.inHandsDate">
+                                            [(ngModel)]="quoteData.inHandsDateValue">
                                         <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                                         <mat-datepicker #picker></mat-datepicker>
-                                    </mat-form-field>
+                                    </mat-form-field> -->
                                 </div>
                                 <div>
                                     <b>Event:</b>

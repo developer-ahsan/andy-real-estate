@@ -129,6 +129,17 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.artWorkLoader = true;
   };
+  formatDate(date): string {
+    const year = date.getFullYear();
+    const month = this.padZero(date.getMonth() + 1);
+    const day = this.padZero(date.getDate());
+
+    // Formatted date in 'yyyy-MM-dd' format
+    return `${year}-${month}-${day}`;
+  }
+  private padZero(value: number): string {
+    return value < 10 ? `0${value}` : `${value}`;
+  }
   getQuoteDetails() {
     let params = {
       quote_details: true,
@@ -138,6 +149,11 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
     }
     this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.quoteData = res["data"][0];
+      this.quoteData.inHandsDateValue = null;
+      if (this.quoteData.formattedInHandsDate) {
+        this.quoteData.inHandsDateValue = this.formatDate(new Date(this.quoteData.formattedInHandsDate));
+      }
+
       this.approvalHistoryData = res["approvalHistory"];
       let tags = [];
       if (this.quoteData.artworkTags) {
@@ -477,10 +493,13 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
   // Imprint Colors
   updateOrderLineImprintColors() {
     let colors = this.selectedMultipleColors;
+    if (this.selectedImprintPmsColor) {
+      colors.push(this.selectedImprintPmsColor);
+    }
     this.imprintColorsLoader = true;
     this._changeDetectorRef.markForCheck();
     let payload: updateImprintColors = {
-      colorNameList: this.selectedMultipleColors.toString(),
+      colorNameList: colors.toString(),
       pmsColors: this.selectedImprintPmsColor,
       fk_cartLineID: Number(this.paramData.pk_cartLineID),
       imprint_id: Number(this.selectedImprint),
@@ -489,7 +508,7 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
     this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         const index = this.quoteImprintdata.findIndex(item => item.imprintID == this.selectedImprint);
-        this.quoteImprintdata[index].colorNameList = this.selectedMultipleColors.toString();
+        this.quoteImprintdata[index].colorNameList = colors.toString();
         this.quoteImprintdata[index].pmsColors = this.selectedImprintPmsColor;
         // this.orderData.internalComments = this.orderData.internalComments + res["comment"];
         // this.ngComment = '';

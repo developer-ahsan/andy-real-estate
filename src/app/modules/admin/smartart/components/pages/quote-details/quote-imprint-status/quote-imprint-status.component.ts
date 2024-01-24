@@ -119,6 +119,54 @@ export class QuoteImprintStatusComponent implements OnInit, OnDestroy {
       };
     }
   };
+  updateReorder(imprint) {
+    imprint.reorderLoader = true;
+    this._changeDetectorRef.markForCheck();
+    let payload: updateReorderNumber = {
+      reorderNumber: imprint.reorderNumber,
+      cartLineID: this.paramData.pk_cartLineID,
+      imprintID: imprint.imprintID,
+      update_reorder_number: true
+    }
+    this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._smartartService.snackBar('Reorder updated successfully');
+      imprint.reorderLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      imprint.reorderLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  updateProofContact(imprint) {
+    let artAprrovalID;
+    if (imprint.selectedContact == 0) {
+      artAprrovalID = 0;
+    } else {
+      artAprrovalID = imprint.selectedContact.pk_artApprovalContactID;
+    }
+    imprint.isProofLoader = true;
+    let payload: updateQuoteProofContact = {
+      artApproval_contact_id: artAprrovalID,
+      cartline_id: Number(this.paramData.pk_cartLineID),
+      imprint_id: Number(imprint.imprintID),
+      update_quote_proof_contact: true
+    }
+    this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this._smartartService.snackBar(res["message"]);
+        if (imprint.selectedContact == 0) {
+          imprint.selectedContactEmail = this.quoteData.email;
+        } else {
+          imprint.selectedContactEmail = imprint.selectedContact.email;
+        }
+      }
+      imprint.isProofLoader = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      imprint.isProofLoader = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
   mouseEnter(ev: any) {
     this.activeTooltip = ev.target.id;
   }
