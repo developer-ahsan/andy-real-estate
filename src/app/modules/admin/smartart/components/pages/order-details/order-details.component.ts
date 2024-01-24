@@ -292,6 +292,9 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
     this.artWorkLoader = true;
     let params = {
       quote_order_common_details: true,
+      billingStudentOrgCode: this.orderData.sessionArtworkBillingStudentOrgCode,
+      rutgersStudentType: this.orderData.sessionArtworkrutgersStudentType,
+      storeUserID: this.orderData.fk_storeUserID,
       // orderLine_id: this.paramData.pk_orderLineID,
       // imprint_id: this.paramData.fk_imprintID,
       product_id: this.orderData.fk_productID,

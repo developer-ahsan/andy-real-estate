@@ -34,9 +34,7 @@
                             <mat-option [value]="0">{{quoteData.firstName + ' ' +
                                 quoteData.lastName}}</mat-option>
                             <mat-option *ngFor="let contact of contactProofs" [value]="contact"
-                                [attr.data-blnStoreUserApproval]="contact.blnStoreUserApproval">{{contact.firstName
-                                + ' ' +
-                                contact.lastName}}
+                                [attr.data-blnStoreUserApproval]="contact.blnStoreUserApproval">{{contact?.contactName}}
                                 <span *ngIf="contact.studentOrgCode"> - SABO:
                                     {{contact.studentOrgCode}}</span>
                             </mat-option>

@@ -319,6 +319,9 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
       quote_order_common_details: true,
       // cartLine_id: this.paramData.pk_cartLineID,
       // imprint_id: this.paramData.fk_imprintID,
+      billingStudentOrgCode: this.quoteData.sessionArtworkBillingStudentOrgCode,
+      rutgersStudentType: this.quoteData.sessionArtworkrutgersStudentType,
+      storeUserID: this.quoteData.storeUserID,
       product_id: this.paramData.fk_productID,
       store_id: this.quoteData.pk_storeID,
       store_product_id: this.quoteData.productID
@@ -357,7 +360,7 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
         if ((imprint?.fk_artApprovalContactID || imprint?.fk_storeUserApprovalContactID) && !imprint?.blnStoreUserApprovalDone) {
           imprint.emailRecipients = this.quoteData.email;
         }
-        if (!imprint?.fk_artApprovalContactID && !imprint?.fk_storeUserApprovalContactID && !imprint?.blnStoreUserApprovalDone) {
+        if (!imprint.fk_artApprovalContactID && (!imprint.fk_storeUserApprovalContactID && !imprint.blnStoreUserApprovalDone)) {
           imprint.selectedContact = 0;
           if (imprint.methodName.toLowerCase().includes('screen')) {
             imprint.selectedContactEmail = this.quoteData.supplierInformationScreenprintEmail;
@@ -384,17 +387,17 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
       if (res["contactProofs"]) {
         res["contactProofs"].forEach(element => {
           if (element.blnStoreUserApprovalContact) {
-            element.value = element.pk_artApprovalContactID;
+            element.value = element.storeUserApprovalID;
           } else {
             element.value = element.pk_artApprovalContactID;
           }
           this.quoteImprintdata.forEach(imprint => {
             if (imprint?.fk_storeUserApprovalContactID && !imprint?.blnStoreUserApprovalDone) {
-              if (imprint?.fk_storeUserApprovalContactID == element.pk_artApprovalContactID) {
+              if (imprint?.fk_storeUserApprovalContactID == element.pk_approvalContactID) {
                 imprint.selectedContact = element;
                 imprint.selectedContactEmail = element.email;
               }
-            } else if (imprint?.fk_artApprovalContactID && imprint?.fk_artApprovalContactID == element.pk_artApprovalContactID) {
+            } else if (imprint?.fk_artApprovalContactID && (imprint?.fk_artApprovalContactID == element.pk_artApprovalContactID)) {
               imprint.selectedContact = element;
               imprint.selectedContactEmail = element.email;
             }
@@ -801,7 +804,7 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
     if (imprint.selectedContact == 0) {
       artAprrovalID = 0;
     } else {
-      artAprrovalID = imprint.selectedContact.pk_artApprovalContactID;
+      artAprrovalID = imprint.selectedContact.pk_approvalContactID;
     }
     imprint.isProofLoader = true;
     let payload: updateQuoteProofContact = {
