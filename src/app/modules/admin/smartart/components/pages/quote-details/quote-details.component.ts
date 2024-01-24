@@ -153,6 +153,11 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
       if (this.quoteData.formattedInHandsDate) {
         this.quoteData.inHandsDateValue = this.formatDate(new Date(this.quoteData.formattedInHandsDate));
       }
+      this.quoteData.proof = 'N/A';
+      if (this.quoteData.qryLatestProof) {
+        const [name, date] = this.quoteData.qryLatestProof.split(',,')[0].split('::');
+        this.quoteData.proof = `${name} @ ${date}`
+      }
 
       this.approvalHistoryData = res["approvalHistory"];
       let tags = [];

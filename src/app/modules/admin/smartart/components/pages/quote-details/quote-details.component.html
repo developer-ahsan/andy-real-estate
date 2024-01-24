@@ -19,7 +19,7 @@
                         (click)="backToListBySearch()" matTooltip="View all items on this order">View all items on this
                         quote</button>
                     <mat-accordion multi>
-                        <mat-expansion-panel (opened)="lastProof()">
+                        <mat-expansion-panel [expanded]="true">
                             <mat-expansion-panel-header>
                                 <mat-panel-title>
                                     Last Proof
@@ -27,18 +27,8 @@
                             </mat-expansion-panel-header>
                             <div>
                                 <div class="mt-2">
-                                    <ngx-skeleton-loader *ngIf="lastProofLoader" count="2" appearance="line"
-                                        animation="pulse" [theme]="{ 
-                                        'background-color': '#dedede'
-                                      }">
-                                    </ngx-skeleton-loader>
-                                    <div *ngIf="!lastProofLoader" class="py-2">
-                                        <p>
-                                            <span *ngIf="lastProofData != 'N/A'">{{lastProofData?.firstName + ' ' +
-                                                lastProofData?.lastName}} @
-                                                {{lastProofData?.proofSentDate | date:
-                                                'MM/dd/yyyy | hh:mm a'}}</span>
-                                            <span *ngIf="lastProofData == 'N/A'">{{lastProofData}}</span>
+                                    <div class="py-2">
+                                        <p [innerHTML]="quoteData.proof">
                                         </p>
                                         <!-- If Not claimed already -->
                                         <div *ngIf="!quoteData.fk_smartArtDesignerClaimID">
