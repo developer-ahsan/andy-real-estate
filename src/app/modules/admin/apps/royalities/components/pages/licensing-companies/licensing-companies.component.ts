@@ -75,7 +75,7 @@ export class LicensingCompaniesComponent implements OnInit, OnDestroy {
   removeModalData: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _RoyaltyService: RoyaltyService,
+    public _RoyaltyService: RoyaltyService,
     private _commonService: DashboardsService
   ) { }
 
@@ -125,6 +125,10 @@ export class LicensingCompaniesComponent implements OnInit, OnDestroy {
   };
 
   toggleUpdateCompanyData(data, check) {
+    if (!this._RoyaltyService.adminUserPermissions.viewLicensingCompany) {
+      this._RoyaltyService.snackBar('You do not have permission to access this section.');
+      return;
+    }
     this.isUpdateLicensing = check;
     if (check) {
       this.companyTermsPage = 1;
@@ -136,6 +140,10 @@ export class LicensingCompaniesComponent implements OnInit, OnDestroy {
   }
 
   addNewLicense() {
+    if (!this._RoyaltyService.adminUserPermissions.addLicensingTerm || !this._RoyaltyService.adminUserPermissions.createLicensingCompany) {
+      this._RoyaltyService.snackBar('You do not have permission to access this section.');
+      return;
+    }
     if (!this.ngAddCompanyName) {
       this._RoyaltyService.snackBar('License company is required');
       return;
@@ -167,6 +175,10 @@ export class LicensingCompaniesComponent implements OnInit, OnDestroy {
     });
   }
   updateLicensingCompany(item) {
+    if (!this._RoyaltyService.adminUserPermissions.updateLicensingCompany || !this._RoyaltyService.adminUserPermissions.updateLicensingTerm) {
+      this._RoyaltyService.snackBar('You do not have permission to access this section.');
+      return;
+    }
     if (!item.name) {
       this._RoyaltyService.snackBar('License company is required');
       return;

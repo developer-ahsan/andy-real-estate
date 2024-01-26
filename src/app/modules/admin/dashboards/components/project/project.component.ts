@@ -102,7 +102,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
      */
 
     constructor(
-        private _analyticsService: DashboardsService,
+        public _analyticsService: DashboardsService,
         private _changeDetectorRef: ChangeDetectorRef,
         private _router: Router
     ) {
@@ -304,7 +304,6 @@ export class ProjectComponent implements OnInit, OnDestroy {
             let employees = res["data"][0].flpsUsers.split(',');
             employees.forEach(element => {
                 const [id, username, name, a, b, c, email] = element.split(':');
-                console.log(email)
                 this.allEmployees.push({ id, username, name, email });
             });
         });

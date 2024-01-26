@@ -8,7 +8,7 @@ import moment from 'moment';
 import { Subject, forkJoin, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { SmartArtService } from '../../../smartart.service';
-import { AddSmartArtCartComment, sendAutoRequest, UpdateArtworkTgas, updateImprintColors, UpdateQuoteClaim, updateQuoteImprintTime, UpdateQuoteOptions, updateQuoteProofContact, updateQuotePurchaseOrderComment, updateReorderNumber, UploadQuoteArtProof } from '../../../smartart.types';
+import { AddSmartArtCartComment, sendAutoRequest, UpdateArtworkTgas, updateImprintColors, UpdateQuoteArtworkStatus, updateQuoteAttentionFlag, UpdateQuoteClaim, updateQuoteImprintTime, UpdateQuoteOptions, updateQuoteProofContact, updateQuotePurchaseOrderComment, updateReorderNumber, UploadQuoteArtProof } from '../../../smartart.types';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 import { environment } from 'environments/environment';
 @Component({
@@ -336,7 +336,150 @@ export class QuoteImprintStatusComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
       });
     });
+  }
+  // update Statuses
+  updateStatuses(imprint, statusID) {
+    this.statusLoader(imprint, statusID, true);
+    const fileUrl = `https://assets.consolidus.com/globalAssets/Stores/quoteExports/${this.quoteData.storeName}/${this.quoteData.fk_cartID}.pdf`;
+    let params = {
+      file_check: true,
+      url: fileUrl
+    }
+    this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(fileRes => {
+      imprint.isFileExist = fileRes["isFileExist"];
+      const url = `${environment.assetsURL}globalAssets/Products/HiRes/${imprint.pk_storeProductID}.jpg`;
+      this._commonService.checkImageExistData(url).then(image => {
+        imprint.thumbnailURL = image ? url : `https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg`;
+        this.applyStatusChange(imprint, statusID);
+      });
+    });
+  }
+  applyStatusChange(imprint, statusID) {
+    const { firstName, lastName, storeUserID, fk_cartID, pk_cartLineID, email, sessionArtworkCompanyName, storePrimaryHighlight, pk_storeID, storeName, storeURL, storeCode, protocol, sessionArtworkrutgersStudentType, blnGroupRun, productName, productNumber, productID, orderQuantity, blnIgnoreAdditionalArtEmails, sessionArtworkrutgersEmployeeType, quoteDate, inHandsDateValue, pfk_userID, blnAdditionalArtApproval, blnAdditionalApprovalOverride, sessionArtworkBillingStudentOrgCode } = this.quoteData;
 
+    const { blnIncludeApproveByDate, emailRecipients, fk_artApprovalContactID, fk_storeUserApprovalContactID, thumbnailURL, methodName, locationName, colorNameList, itemColors, isFileExist, proofComments, imprintID, fk_statusID, blnRespond, blnProofSent } = imprint;
+
+    const { adminUserID } = this.smartArtUser;
+
+    let blnApproved = false;
+    const allowedStatusIDs = [5, 6, 7, 9, 11, 16];
+    if (allowedStatusIDs.includes(statusID)) {
+      blnApproved = true;
+    }
+    let converDate;
+    if (inHandsDateValue) {
+      converDate = moment(inHandsDateValue).format('MM/DD/yyyy')
+    }
+    let payload: UpdateQuoteArtworkStatus = {
+      cartLineID: pk_cartLineID,
+      cartID: fk_cartID,
+      cartDate: quoteDate,
+      imprintID,
+      userID: pfk_userID,
+      inHandsDate: converDate,
+      statusID,
+      storeID: pk_storeID,
+      storeName,
+      storeCode,
+      protocol,
+      storeURL,
+      blnRespond,
+      blnGroupRun,
+      proofComments,
+      blnApproved, // Check fk_statusID for all orderLineImprintID's in the orderline 1 if statusID of imprint is "5,6,7,9,11,16" else 0
+      smartArtLoggedInUserName: this.smartArtUser.firstName + ' ' + this.smartArtUser.lastName,
+      blnAdditionalArtApproval,
+      blnAdditionalApprovalOverride,
+      storePrimaryHighlight,
+      billingStudentOrgCode: sessionArtworkBillingStudentOrgCode,
+      imprintsCount: this.quoteImprintdata.length,
+      storeProductImage: thumbnailURL,
+      blnIgnoreAdditionalArtEmails,
+      blnProofSent,
+      fk_artApprovalContactID,
+      fk_storeUserApprovalContactID,
+      storeUserID,
+      isFileExist,
+      proofComment: proofComments,
+      pk_userID: this.userData.pk_userID,
+      productNumber,
+      productName: productName[0],
+      locationName,
+      methodName,
+      userCompanyName: sessionArtworkCompanyName,
+      firstName,
+      lastName,
+      email,
+      update_quote_artwork_status: true
+    }
+    this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.statusLoader(imprint, statusID, false);
+      if (res) {
+        this._smartartService.snackBar(res["message"]);
+        this.statusNameAndDate(imprint, statusID);
+      }
+    });
+  }
+  statusLoader(imprint, statusID, loader) {
+    const statusMappings = {
+      2: { loader: 'pendingStatusLoader', comment: 'Please double check all details of this proof for accuracy. (ie. phone numbers, email/addresses, websites).' },
+      3: { loader: 'awaitingStatusLoader' },
+      4: { loader: 'artworkStatusLoader', comment: 'Please double check all details of this proof for accuracy. (ie. phone numbers, email/addresses, websites).' },
+      7: { loader: 'proofStatusLoader' },
+      9: { loader: 'approveStatusLoader' },
+      12: { loader: 'holdStatusLoader' },
+      13: { loader: 'followStatusLoader' }
+    };
+
+    const statusMapping = statusMappings[statusID];
+
+    if (statusMapping) {
+      imprint[statusMapping.loader] = loader;
+      imprint.recipientsComment = statusMapping.comment || imprint.recipientsComment;
+    }
+    this._changeDetectorRef.markForCheck();
+  }
+  statusNameAndDate(imprint, statusID) {
+    const statusNameMappings = {
+      2: 'NEW PENDING',
+      3: 'AWAITING ARTWORK APPROVAL',
+      4: 'ARTWORK REVISION',
+      7: 'NO PROOF NEEDED',
+      9: 'ARTWORK APPROVED',
+      12: 'ON HOLD',
+      13: 'FOLLOW UP FOR APPROVAL'
+    };
+
+    const statusName = statusNameMappings[statusID];
+
+    if (statusName) {
+      imprint.statusName = statusName;
+      imprint.fk_statusID = statusID;
+      imprint.statusDate = moment().format('yyyy-MM-DD');
+    }
+
+    imprint.bgColor = this.setImprintColor(statusID);
+    this._changeDetectorRef.markForCheck();
+  }
+  // Update order Attention
+  updateAttentionFlagOrder(imprint, check) {
+    imprint.isFlagLoader = true;
+    this._changeDetectorRef.markForCheck();
+    let payload: updateQuoteAttentionFlag = {
+      bln_attention: check,
+      cartLine_id: Number(this.quoteData.pk_cartLineID),
+      imprint_id: Number(imprint.imprintID),
+      update_quote_attention_flag: true
+    }
+    this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this._smartartService.snackBar(res["message"]);
+      imprint.isFlagLoader = false;
+      imprint.blnAttention = check;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      imprint.isFlagLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
   }
   /**
      * On destroy

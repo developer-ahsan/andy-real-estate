@@ -52,7 +52,7 @@ export class ProductsStatusComponent implements OnInit {
   blank: boolean;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _inventoryService: InventoryService,
+    public _inventoryService: InventoryService,
     private _snackBar: MatSnackBar
   ) { }
 

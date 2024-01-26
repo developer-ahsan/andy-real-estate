@@ -9,6 +9,7 @@ import { FuseTailwindService } from '@fuse/services/tailwind/tailwind.service';
 import { FUSE_VERSION } from '@fuse/version';
 import { Layout } from 'app/layout/layout.types';
 import { AppConfig, Scheme, Theme } from 'app/core/config/app.config';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
     selector: 'layout',
@@ -34,7 +35,8 @@ export class LayoutComponent implements OnInit, OnDestroy {
         private _router: Router,
         private _fuseConfigService: FuseConfigService,
         private _fuseMediaWatcherService: FuseMediaWatcherService,
-        private _fuseTailwindConfigService: FuseTailwindService
+        private _fuseTailwindConfigService: FuseTailwindService,
+        private _commonService: DashboardsService
     ) {
     }
 
@@ -106,6 +108,10 @@ export class LayoutComponent implements OnInit, OnDestroy {
 
         // Set the app version
         this._renderer2.setAttribute(this._document.querySelector('[ng-version]'), 'fuse-version', FUSE_VERSION);
+        this._commonService.userPermssions$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+            this._commonService.allPermissions = res;
+            console.log(this._commonService.allPermissions);
+        });
     }
 
     /**

@@ -5,6 +5,7 @@ import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { UsersService } from '../../users.service';
 import { applyBlanketCustomerPercentage, newFLPSUser, newOrderManageUser, removeFLPSUser, RemoveUser, updateFLPSUser, updateOrderManageUser, updateOrderManageUserStores } from '../../users.types';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 @Component({
   selector: 'app-ordermanage-users',
   templateUrl: './ordermanage-users.component.html',
@@ -43,8 +44,13 @@ export class OrderManageUsersComponent implements OnInit, OnDestroy {
   storeLoader: boolean = false;
   totalStores = 0;
   updateStoreLoader: boolean;
+
+  adminUserPermissions = {
+    selectOrderManageUser: false,
+  }
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
+    private _commonService: DashboardsService,
     private _UsersService: UsersService
   ) { }
 
@@ -70,6 +76,7 @@ export class OrderManageUsersComponent implements OnInit, OnDestroy {
     });
   }
   ngOnInit(): void {
+    this.adminUserPermissions = this._commonService.assignPermissions('orderManageUser', this.adminUserPermissions);
     this.initForm();
     this.isLoading = true;
     this.getAdminOrderUsers(1, 'get');

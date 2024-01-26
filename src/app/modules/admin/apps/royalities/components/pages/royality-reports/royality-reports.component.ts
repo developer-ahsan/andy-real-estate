@@ -102,7 +102,7 @@ export class RoyaltyReportsComponent implements OnInit, OnDestroy {
   downloadFile: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _RoyaltyService: RoyaltyService,
+    public _RoyaltyService: RoyaltyService,
     private _commonService: DashboardsService
   ) { }
 

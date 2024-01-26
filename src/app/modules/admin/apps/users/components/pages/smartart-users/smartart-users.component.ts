@@ -5,6 +5,7 @@ import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { UsersService } from '../../users.service';
 import { AddSmartArtUser, applyBlanketCustomerPercentage, newFLPSUser, removeFLPSUser, RemoveSmartArtUser, updateFLPSUser, updateSmartArtUsers, UpdateSmartUser } from '../../users.types';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 @Component({
   selector: 'app-smartart-users',
   templateUrl: './smartart-users.component.html',
@@ -58,9 +59,13 @@ export class SmartArtUsersComponent implements OnInit, OnDestroy {
   storeLoader: boolean = false;
   totalStores = 0;
   updateStoreLoader: boolean;
+  adminUserPermissions = {
+    selectSmartArtUser: false,
+  }
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _UsersService: UsersService
+    private _UsersService: UsersService,
+    private _commonService: DashboardsService
   ) { }
 
   initForm() {
@@ -86,6 +91,7 @@ export class SmartArtUsersComponent implements OnInit, OnDestroy {
     });
   }
   ngOnInit(): void {
+    this.adminUserPermissions = this._commonService.assignPermissions('smartArtUser', this.adminUserPermissions);
     this.initForm();
     this.isLoading = true;
     this.getAdminSmartArts(1, 'get');

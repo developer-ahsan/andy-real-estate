@@ -1,104 +1,114 @@
 <div class="w-full">
-    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
-    </ngx-skeleton-loader>
-    <div class="row" *ngIf="!isLoading">
-        <div class="col-12 my-2">
-            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-                <div class="p-6 sm:p-8 lg:p-10 w-full">
-                    <div class="text-2xl font-bold">
-                        <button [matTooltip]="'Videos must be free from any vendor branding'">
-                            <i class="fa fa-info-circle"></i>
-                        </button>
-                        Enter the embed URL for the video in the space below.
-                    </div>
-                    <!-- Add Video -->
-                    <div class="gap-y-4 mt-6">
-                        <form [formGroup]="videoUploadForm">
-                            <div class="row p-2 space-y-2">
-                                <div class="col-12 text-red-500 font-bold">
-                                    There are a total of {{videosLength}} videos in our system.
-                                </div>
-                                <div class="col-12 ">
-                                    <div class="alert alert-warning p-3">NOTE: videos must be free from any vendor
-                                        branding.</div>
-                                </div>
-                                <div class="col-12 text-secondary">
-                                    <p>When the video service, such as Vimeo or Youtube, gives you the embed code, you
-                                        will only want to enter the part of the code that is after the "src=" part that
-                                        is in quotes. Entering the entire code below will not work
-                                    </p>
-                                </div>
-                                <div class="col-12 text-red-500">
-                                    <p>DO NOT include any "http://" or "https://" in the URL. Remove these before
-                                        adding.</p>
-                                </div>
-                                <div class="col-12 text-red-500">
-                                    <p>Try to remove any "autorun" variables in the URL. Usually they look like
-                                        "&autorun=1"</p>
-                                </div>
-                                <div class="col-12 font-semibold">
-                                    Usually the video service will give you options for embedding a video. Make sure
-                                    that you select any sort of "autorun" settting.
-                                </div>
-                                <div class="col-12">
-                                    <div class="font-semibold text-secondary mt-2">Video URL</div>
-                                    <mat-form-field class="w-full">
-                                        <input maxlength="300" matInput [formControlName]="'video'">
-                                        <mat-error>Please fill this field</mat-error>
-                                    </mat-form-field>
-                                    <div *ngIf="videoData?.button">
-                                        <div *ngIf="imgLogoExit">
-                                            Current Button Image: <img
-                                                src="{{imgUrl}}/globalAssets/Products/Videos/{{selectedProduct.pk_productID}}/{{selectedProduct.pk_productID}}.jpg?{{randomString}}"
-                                                onError="this.src='https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'"
-                                                style="width:10%; height:auto;" /><br /><br /></div>
-                                        <div *ngIf="!imgLogoExit">
-                                            Current Button Image: NONE
+    <div class="alert m-4 w-full alert-danger p-4 text-lg text-center font-bold"
+        *ngIf="!_inventoryService.adminUserPermissions.viewProductVideo">
+        You do not have permission to access this section.
+    </div>
+    <ng-container *ngIf="_inventoryService.adminUserPermissions.viewProductVideo">
+        <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+        </ngx-skeleton-loader>
+        <div class="row" *ngIf="!isLoading">
+            <div class="col-12 my-2">
+                <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                    <div class="p-6 sm:p-8 lg:p-10 w-full">
+                        <div class="text-2xl font-bold">
+                            <button [matTooltip]="'Videos must be free from any vendor branding'">
+                                <i class="fa fa-info-circle"></i>
+                            </button>
+                            Enter the embed URL for the video in the space below.
+                        </div>
+                        <!-- Add Video -->
+                        <div class="gap-y-4 mt-6">
+                            <form [formGroup]="videoUploadForm">
+                                <div class="row p-2 space-y-2">
+                                    <div class="col-12 text-red-500 font-bold">
+                                        There are a total of {{videosLength}} videos in our system.
+                                    </div>
+                                    <div class="col-12 ">
+                                        <div class="alert alert-warning p-3">NOTE: videos must be free from any vendor
+                                            branding.</div>
+                                    </div>
+                                    <div class="col-12 text-secondary">
+                                        <p>When the video service, such as Vimeo or Youtube, gives you the embed code,
+                                            you
+                                            will only want to enter the part of the code that is after the "src=" part
+                                            that
+                                            is in quotes. Entering the entire code below will not work
+                                        </p>
+                                    </div>
+                                    <div class="col-12 text-red-500">
+                                        <p>DO NOT include any "http://" or "https://" in the URL. Remove these before
+                                            adding.</p>
+                                    </div>
+                                    <div class="col-12 text-red-500">
+                                        <p>Try to remove any "autorun" variables in the URL. Usually they look like
+                                            "&autorun=1"</p>
+                                    </div>
+                                    <div class="col-12 font-semibold">
+                                        Usually the video service will give you options for embedding a video. Make sure
+                                        that you select any sort of "autorun" settting.
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="font-semibold text-secondary mt-2">Video URL</div>
+                                        <mat-form-field class="w-full">
+                                            <input maxlength="300" matInput [formControlName]="'video'">
+                                            <mat-error>Please fill this field</mat-error>
+                                        </mat-form-field>
+                                        <div *ngIf="videoData?.button">
+                                            <div *ngIf="imgLogoExit">
+                                                Current Button Image: <img
+                                                    src="{{imgUrl}}/globalAssets/Products/Videos/{{selectedProduct.pk_productID}}/{{selectedProduct.pk_productID}}.jpg?{{randomString}}"
+                                                    onError="this.src='https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'"
+                                                    style="width:10%; height:auto;" /><br /><br /></div>
+                                            <div *ngIf="!imgLogoExit">
+                                                Current Button Image: NONE
+                                            </div>
                                         </div>
+                                        <div class="font-semibold text-secondary">
+                                            Play Button Image: (355px W by 209px H, JPG ONLY)
+                                        </div>
+                                        <input type="file" accept=".jpg" #videoImg (change)="upload($event)"
+                                            style="line-height: 2.5;" />
                                     </div>
-                                    <div class="font-semibold text-secondary">
-                                        Play Button Image: (355px W by 209px H, JPG ONLY)
+                                    <div class="col-12 mt-2" *ngIf="videoData?.video" style="height: 350px;">
+                                        <iframe [src]="url"
+                                            style="width: -webkit-fill-available; height: -webkit-fill-available;"></iframe>
                                     </div>
-                                    <input type="file" accept=".jpg" #videoImg (change)="upload($event)"
-                                        style="line-height: 2.5;" />
                                 </div>
-                                <div class="col-12 mt-2" *ngIf="videoData?.video" style="height: 350px;">
-                                    <iframe [src]="url"
-                                        style="width: -webkit-fill-available; height: -webkit-fill-available;"></iframe>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="flex items-center justify-end w-full">
-                        <div class="flex items-center my-2">
-                            <button color="primary" class="w-full rounded-md mr-2" mat-button mat-flat-button
-                                (click)="uploadImage()" [disabled]="videoUpdateLoader || !videoUploadForm.valid">
-                                <mat-progress-spinner *ngIf="videoUpdateLoader" [diameter]="24"
-                                    [mode]="'indeterminate'">
-                                </mat-progress-spinner>
-                                <span *ngIf="!videoUpdateLoader" class="ml-1 mr-1">Update</span>
-                            </button>
+                            </form>
+                        </div>
+                        <div class="flex items-center justify-end w-full">
+                            <div class="flex items-center my-2">
+                                <button color="primary" class="w-full rounded-md mr-2" mat-button mat-flat-button
+                                    (click)="uploadImage()" [disabled]="videoUpdateLoader || !videoUploadForm.valid">
+                                    <mat-progress-spinner *ngIf="videoUpdateLoader" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
+                                    <span *ngIf="!videoUpdateLoader" class="ml-1 mr-1">Update</span>
+                                </button>
 
-                            <button *ngIf="videoData?.video" color="danger"
-                                class="w-full rounded-md text-light bg-red-500 mr-1" mat-button mat-flat-button
-                                (click)="removeVideo(true, false)" [disabled]="videoData?.videoLoader">
-                                <mat-progress-spinner *ngIf="videoData?.videoLoader" [diameter]="24"
-                                    [mode]="'indeterminate'">
-                                </mat-progress-spinner>
-                                <span *ngIf="!videoData?.videoLoader" class="ml-1 mr-1">Remove Video</span>
-                            </button>
-                            <button *ngIf="imgLogoExit" color="danger"
-                                class="w-full min-w-50 text-light rounded-md bg-red-500 mr-1" mat-button mat-flat-button
-                                (click)="removeVideo(false, true)" [disabled]="videoData?.buttonLoader">
-                                <mat-progress-spinner *ngIf="videoData?.buttonLoader" [diameter]="24"
-                                    [mode]="'indeterminate'">
-                                </mat-progress-spinner>
-                                <span *ngIf="!videoData?.buttonLoader" class="ml-1 mr-1">Remove play button image</span>
-                            </button>
+                                <button *ngIf="videoData?.video" color="danger"
+                                    class="w-full rounded-md text-light bg-red-500 mr-1" mat-button mat-flat-button
+                                    (click)="removeVideo(true, false)" [disabled]="videoData?.videoLoader">
+                                    <mat-progress-spinner *ngIf="videoData?.videoLoader" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
+                                    <span *ngIf="!videoData?.videoLoader" class="ml-1 mr-1">Remove Video</span>
+                                </button>
+                                <button *ngIf="imgLogoExit" color="danger"
+                                    class="w-full min-w-50 text-light rounded-md bg-red-500 mr-1" mat-button
+                                    mat-flat-button (click)="removeVideo(false, true)"
+                                    [disabled]="videoData?.buttonLoader">
+                                    <mat-progress-spinner *ngIf="videoData?.buttonLoader" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
+                                    <span *ngIf="!videoData?.buttonLoader" class="ml-1 mr-1">Remove play button
+                                        image</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </fuse-card>
+                </fuse-card>
+            </div>
         </div>
-    </div>
+    </ng-container>
 </div>

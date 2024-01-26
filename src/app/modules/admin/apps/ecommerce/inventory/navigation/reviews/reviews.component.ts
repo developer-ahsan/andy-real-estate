@@ -23,13 +23,13 @@ export class ReviewsComponent implements OnInit, OnDestroy {
   reviewsData: Reviews = null;
   reviewsDataLength: number = 0;
   storeDataLoader = false;
-  storeList : any = [];
+  storeList: any = [];
 
   storesData = [];
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _inventoryService: InventoryService,
+    public _inventoryService: InventoryService,
     private _formBuilder: FormBuilder,
     private _commonService: DashboardsService,
   ) { }
@@ -41,15 +41,15 @@ export class ReviewsComponent implements OnInit, OnDestroy {
     });
 
     this._commonService.storesData$
-    .pipe(takeUntil(this._unsubscribeAll))
-    .subscribe((stores: any) => {
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((stores: any) => {
         stores["data"].forEach(element => {
-            if (element.blnActive) {
-              this.storeList.push(element);
-            }
+          if (element.blnActive) {
+            this.storeList.push(element);
+          }
         });
         this._changeDetectorRef.markForCheck();
-    });
+      });
 
 
     this.getProductDetail();

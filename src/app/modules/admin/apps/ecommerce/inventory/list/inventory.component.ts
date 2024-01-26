@@ -569,7 +569,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     constructor(
         private _changeDetectorRef: ChangeDetectorRef,
         private _formBuilder: FormBuilder,
-        private _inventoryService: InventoryService,
+        public _inventoryService: InventoryService,
         private _commponService: DashboardsService,
         private _router: Router,
         breakpointObserver: BreakpointObserver,
@@ -2890,6 +2890,10 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     };
 
     enableProductAddFormFn(): void {
+        if (!this._inventoryService.adminUserPermissions.newProductType || !this._inventoryService.adminUserPermissions.newProductDetails || !this._inventoryService.adminUserPermissions.addProduct) {
+            this._commponService.snackBar('You do not have permission to access this section.');
+            return;
+        }
         this.enableProductAddForm = true;
         this.licensingTermLoader = true;
 
@@ -2935,6 +2939,10 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     };
 
     exportProducts(): void {
+        if (!this._inventoryService.adminUserPermissions.exportProducts) {
+            this._commponService.snackBar('You do not have permission to access this section.');
+            return;
+        }
         const size = this.productsCount;
         this.exportLoaderToggle();
         this._inventoryService.getProductsForExporting(size)

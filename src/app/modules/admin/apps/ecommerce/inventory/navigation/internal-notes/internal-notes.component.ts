@@ -51,7 +51,7 @@ export class InternalNotesComponent implements OnInit, OnDestroy {
   emails = [];
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _inventoryService: InventoryService,
+    public _inventoryService: InventoryService,
     private _userService: UserService,
     private _formBuilder: FormBuilder,
     private _snackBar: MatSnackBar,

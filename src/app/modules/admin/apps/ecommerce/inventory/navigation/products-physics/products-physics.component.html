@@ -1,52 +1,58 @@
 <div class="w-full">
-    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
-    </ngx-skeleton-loader>
+    <div class="alert m-4 w-full alert-danger p-4 text-lg text-center font-bold"
+        *ngIf="!_inventoryService.productDescription.viewPhysics">
+        You do not have permission to access this section.
+    </div>
+    <ng-container *ngIf="_inventoryService.productDescription.viewPhysics">
+        <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+        </ngx-skeleton-loader>
 
-    <div class="row" *ngIf="!isLoading">
-        <div class="col-12 my-2">
-            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-                <div class="p-6 sm:p-8 lg:p-10 w-full">
-                    <div class="text-2xl font-bold">
-                        Physics & Shipping
-                    </div>
+        <div class="row" *ngIf="!isLoading">
+            <div class="col-12 my-2">
+                <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                    <div class="p-6 sm:p-8 lg:p-10 w-full">
+                        <div class="text-2xl font-bold">
+                            Physics & Shipping
+                        </div>
 
-                    <!-- Features -->
-                    <div class="gap-y-4 mt-6">
-                        <form [formGroup]="productPhysicsForm">
-                            <div class="row my-5">
-                                <div class="col-12" *ngIf="!selectedProduct?.blnApparel">
-                                    <p>Weight</p>
-                                </div>
-                                <div class="col-5" *ngIf="!selectedProduct?.blnApparel">
-                                    <mat-form-field class="w-full">
-                                        <input matInput type="number" (mousewheel)="$event.preventDefault()" min="1"
-                                            [formControlName]="'weight'"><small class="text-secondary font-semibold">
-                                            lbs </small>
-                                        <mat-error>This field is required</mat-error>
-                                    </mat-form-field>
-                                </div>
-                                <div class="col-1" *ngIf="!selectedProduct?.blnApparel">
-                                    <span class="text-secondary lineHeihgt-35">per</span>
-                                </div>
-                                <div class="col-5" *ngIf="!selectedProduct?.blnApparel">
-                                    <mat-form-field class="w-full">
-                                        <input matInput type="number" (mousewheel)="$event.preventDefault()" min="1"
-                                            [formControlName]="'unitsInWeight'"><small
-                                            class="text-secondary font-semibold">
-                                            unit(s) </small>
-                                        <mat-error>This field is required</mat-error>
-                                    </mat-form-field>
-                                </div>
-                                <!-- <div class="col-12 mb-2" *ngIf="!selectedProduct?.blnApparel">
+                        <!-- Features -->
+                        <div class="gap-y-4 mt-6">
+                            <form [formGroup]="productPhysicsForm">
+                                <div class="row my-5">
+                                    <div class="col-12" *ngIf="!selectedProduct?.blnApparel">
+                                        <p>Weight</p>
+                                    </div>
+                                    <div class="col-5" *ngIf="!selectedProduct?.blnApparel">
+                                        <mat-form-field class="w-full">
+                                            <input matInput type="number" (mousewheel)="$event.preventDefault()" min="1"
+                                                [formControlName]="'weight'"><small
+                                                class="text-secondary font-semibold">
+                                                lbs </small>
+                                            <mat-error>This field is required</mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col-1" *ngIf="!selectedProduct?.blnApparel">
+                                        <span class="text-secondary lineHeihgt-35">per</span>
+                                    </div>
+                                    <div class="col-5" *ngIf="!selectedProduct?.blnApparel">
+                                        <mat-form-field class="w-full">
+                                            <input matInput type="number" (mousewheel)="$event.preventDefault()" min="1"
+                                                [formControlName]="'unitsInWeight'"><small
+                                                class="text-secondary font-semibold">
+                                                unit(s) </small>
+                                            <mat-error>This field is required</mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                    <!-- <div class="col-12 mb-2" *ngIf="!selectedProduct?.blnApparel">
                                     <div class="font-medium text-secondary">PRODUCT DIMENSIONS</div>
                                 </div> -->
-                                <div class="col-lg-11 col-12" *ngIf="!selectedProduct?.blnApparel">
-                                    <mat-form-field appearance="fill" class="w-full">
-                                        <mat-label>Product Dimensions</mat-label>
-                                        <input matInput type="text" [formControlName]="'dimensions'">
-                                    </mat-form-field>
-                                </div>
-                                <!-- <div class="col-lg-4 col-12" *ngIf="!selectedProduct?.blnApparel">
+                                    <div class="col-lg-11 col-12" *ngIf="!selectedProduct?.blnApparel">
+                                        <mat-form-field appearance="fill" class="w-full">
+                                            <mat-label>Product Dimensions</mat-label>
+                                            <input matInput type="text" [formControlName]="'dimensions'">
+                                        </mat-form-field>
+                                    </div>
+                                    <!-- <div class="col-lg-4 col-12" *ngIf="!selectedProduct?.blnApparel">
                                     <mat-form-field appearance="fill" class="w-full">
                                         <mat-label>Product Width</mat-label>
                                         <input matInput type="number" (mousewheel)="$event.preventDefault()" [formControlName]="'productWidth'">
@@ -64,328 +70,343 @@
                                         <input matInput type="number" (mousewheel)="$event.preventDefault()" [formControlName]="'productLength'">
                                     </mat-form-field>
                                 </div> -->
-                                <div class="col-lg-11 col-12">
-                                    <mat-form-field class="w-full">
-                                        <mat-label> Units per shipping package </mat-label>
-                                        <input matInput type="number" (mousewheel)="$event.preventDefault()" min="1"
-                                            [formControlName]="'unitsInShippingPackage'">
-                                    </mat-form-field>
-                                </div>
-                                <div class="col-12">
-                                    <div class="col-12 mb-2">
-                                        <p class="text-secondary font-semibold">Ships within (Number of Days)</p>
+                                    <div class="col-lg-11 col-12">
+                                        <mat-form-field class="w-full">
+                                            <mat-label> Units per shipping package </mat-label>
+                                            <input matInput type="number" (mousewheel)="$event.preventDefault()" min="1"
+                                                [formControlName]="'unitsInShippingPackage'">
+                                        </mat-form-field>
                                     </div>
-                                    <div class="col-12 custom-slider mb-3">
-                                        <ngx-slider [(value)]="sliderMinValue" [(highValue)]="sliderMaxValue"
-                                            [options]="sliderOptions">
-                                        </ngx-slider>
+                                    <div class="col-12">
+                                        <div class="col-12 mb-2">
+                                            <p class="text-secondary font-semibold">Ships within (Number of Days)</p>
+                                        </div>
+                                        <div class="col-12 custom-slider mb-3">
+                                            <ngx-slider [(value)]="sliderMinValue" [(highValue)]="sliderMaxValue"
+                                                [options]="sliderOptions">
+                                            </ngx-slider>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-lg-6 col-12">
-                                    <small class="text-secondary font-semibold">Do shipping charges apply?</small>
-                                    <mat-form-field class="w-full">
-                                        <mat-select name="order" [value]="blnShipingValue"
-                                            (selectionChange)="onShippingChargesChange($event)">
-                                            <mat-option *ngFor="let option of bln_include_shipping" [value]="option">
-                                                {{option}}
-                                            </mat-option>
-                                        </mat-select>
-                                    </mat-form-field>
-                                </div>
-                                <div class="col-lg-6 col-12">
-                                    <mat-form-field class="w-full">
-                                        <mat-label>Over-Packing Charges</mat-label>
-                                        <input matInput type="number" (mousewheel)="$event.preventDefault()"
-                                            [formControlName]="'overPackCharge'">
-                                    </mat-form-field>
-                                </div>
-                                <div class="col-12" *ngIf="!selectedProduct?.blnApparel">
-                                    <p class="pb-4">Ships from</p>
-                                    <mat-checkbox *ngFor="let item of FOBLocations" class="mr-2"
-                                        [checked]="item.checked"
-                                        (change)="changeFobLocations(item,$event)">{{item.FOBLocationName}}</mat-checkbox>
-                                    <mat-progress-spinner [diameter]="24" [mode]="'indeterminate'"
-                                        *ngIf="fobLocationLoader"></mat-progress-spinner>
-                                    <!-- <mat-checkbox (change)="showOptions($event)" [checked]="true">
+                                    <div class="col-lg-6 col-12">
+                                        <small class="text-secondary font-semibold">Do shipping charges apply?</small>
+                                        <mat-form-field class="w-full">
+                                            <mat-select name="order" [value]="blnShipingValue"
+                                                (selectionChange)="onShippingChargesChange($event)">
+                                                <mat-option *ngFor="let option of bln_include_shipping"
+                                                    [value]="option">
+                                                    {{option}}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col-lg-6 col-12">
+                                        <mat-form-field class="w-full">
+                                            <mat-label>Over-Packing Charges</mat-label>
+                                            <input matInput type="number" (mousewheel)="$event.preventDefault()"
+                                                [formControlName]="'overPackCharge'">
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col-12" *ngIf="!selectedProduct?.blnApparel">
+                                        <p class="pb-4">Ships from</p>
+                                        <mat-checkbox *ngFor="let item of FOBLocations" class="mr-2"
+                                            [checked]="item.checked"
+                                            (change)="changeFobLocations(item,$event)">{{item.FOBLocationName}}</mat-checkbox>
+                                        <mat-progress-spinner [diameter]="24" [mode]="'indeterminate'"
+                                            *ngIf="fobLocationLoader"></mat-progress-spinner>
+                                        <!-- <mat-checkbox (change)="showOptions($event)" [checked]="true">
                                         {{selectedProduct?.companyName}}
                                     </mat-checkbox> -->
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="flex items-center justify-end w-full">
-                        <div class="flex items-center my-2">
-                            <div class="flex items-center mr-4" *ngIf="flashMessage && isPhysicsUpdate">
-                                <ng-container *ngIf="flashMessage === 'success'">
-                                    <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
-                                    <span class="ml-2">Product Physics added successfully</span>
-                                </ng-container>
-                                <ng-container *ngIf="flashMessage === 'error'">
-                                    <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
-                                    <span class="ml-2">An error occurred, try again!</span>
-                                </ng-container>
-                                <ng-container *ngIf="flashMessage === 'errorMessage'">
-                                    <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
-                                    <span class="ml-2"> {{physicsValidationMessage}} </span>
-                                </ng-container>
-                            </div>
-                            <button class="min-w-40" mat-stroked-button [matTooltip]="'Update Physics'"
-                                (click)="updatePhysics()" [disabled]="physicsLoader">
-                                <mat-progress-spinner *ngIf="physicsLoader" [diameter]="24" [mode]="'indeterminate'">
-                                </mat-progress-spinner>
-                                <mat-icon *ngIf="!physicsLoader" svgIcon="mode_edit_outline"></mat-icon>
-                                <span *ngIf="!physicsLoader" class="ml-1 mr-1">Update Physics/Shipping</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </fuse-card>
-        </div>
-    </div>
-
-    <div class="row" *ngIf="!isLoading">
-        <div class="col-12 my-2">
-            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-                <div class="p-6 sm:p-8 lg:p-10 w-full">
-                    <div class="text-2xl font-bold">
-                        Flat rate shipping
-                    </div>
-                    <!-- Features -->
-                    <div class="gap-y-4 mt-6">
-                        <form [formGroup]="flatRateShippingForm">
-                            <div class="row my-5">
-                                <div class="col-12 mb-2">
-                                    <p class="bg-light text-info font-semibold px-5 py-3">
-                                        <i class="fa fa-info-circle"></i>
-                                        Entering a flat rate shipping cost here will override any shipping calculations
-                                        from
-                                        UPS.
-                                        This
-                                        amount is not marked up, so enter the full shipping cost here. Leaving it blank
-                                        will
-                                        remove
-                                        the
-                                        flat rate shipping from this product and calculate UPS rates instead.
-                                    </p>
-                                </div>
-                                <div class="col-12">
-                                    <mat-form-field class="w-full">
-                                        <mat-label>Flat rate shipping</mat-label>
-                                        <input matInput type="number" (mousewheel)="$event.preventDefault()"
-                                            [formControlName]="'flatRateShipping'">
-                                        <mat-icon matSuffix svgIcon="heroicons_outline:currency-dollar"></mat-icon>
-                                    </mat-form-field>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="flex items-center justify-end w-full">
-                        <div class="flex items-center my-2">
-                            <div class="flex items-center mr-4" *ngIf="flashMessage && isFlatUpdate">
-                                <ng-container *ngIf="flashMessage === 'success'">
-                                    <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
-                                    <span class="ml-2">Product flat rate shipping added successfully</span>
-                                </ng-container>
-                                <ng-container *ngIf="flashMessage === 'error'">
-                                    <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
-                                    <span class="ml-2">An error occurred, try again!</span>
-                                </ng-container>
-                            </div>
-                            <button class="min-w-40" mat-stroked-button [matTooltip]="'Update Flat Rate Shipping'"
-                                (click)="updateFlatRateShipping()" [disabled]="flatRateLoader">
-                                <mat-progress-spinner *ngIf="flatRateLoader" [diameter]="24" [mode]="'indeterminate'">
-                                </mat-progress-spinner>
-                                <mat-icon *ngIf="!flatRateLoader" svgIcon="mode_edit_outline"></mat-icon>
-                                <span *ngIf="!flatRateLoader" class="ml-1 mr-1">Update</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </fuse-card>
-        </div>
-    </div>
-
-    <div class="row" *ngIf="selectedProduct">
-        <div class="col-12">
-            <ngx-skeleton-loader count="8" appearance="line" animation="pulse"
-                *ngIf="caseDimensionTabLoader || isLoading">
-            </ngx-skeleton-loader>
-            <div class="row" *ngIf="!caseDimensionTabLoader && !isLoading">
-                <div class="col-12 my-2">
-                    <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-                        <div class="p-6 sm:p-8 lg:p-10 w-full">
-                            <div class="text-2xl font-bold">
-                                Case dimensions
-                            </div>
-                            <!-- Case dimesnions form -->
-                            <div class="gap-y-4 mt-6">
-                                <form [formGroup]="caseDimensionForm">
-                                    <div class="row my-5">
-                                        <div class="col-lg-4 col-12">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>Height</mat-label>
-                                                <input matInput [formControlName]="'caseHeight'"><small
-                                                    class="text-secondary font-semibold">
-                                                    inches </small>
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="col-lg-4 col-12">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>Width</mat-label>
-                                                <input matInput [formControlName]="'caseWidth'"><small
-                                                    class="text-secondary font-semibold">
-                                                    inches </small>
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="col-lg-4 col-12">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>Length</mat-label>
-                                                <input matInput [formControlName]="'caseLength'"><small
-                                                    class="text-secondary font-semibold">
-                                                    inches </small>
-                                            </mat-form-field>
-                                        </div>
                                     </div>
-                                </form>
-                            </div>
-                            <div class="flex items-center justify-end w-full">
-                                <div class="flex items-center my-2">
-                                    <div class="flex items-center mr-4" *ngIf="flashMessage && isDimensionsUpdate">
-                                        <ng-container *ngIf="flashMessage === 'success'">
-                                            <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
-                                            </mat-icon>
-                                            <span class="ml-2">Dimensions are updated successfully</span>
-                                        </ng-container>
-                                        <ng-container *ngIf="flashMessage === 'error'">
-                                            <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
-                                            <span class="ml-2">An error occurred, try again!</span>
-                                        </ng-container>
-                                    </div>
-                                    <button class="min-w-40" mat-stroked-button [matTooltip]="'Update Case Dimension'"
-                                        (click)="updateCaseDimension()" [disabled]="caseDimensionLoader">
-                                        <mat-progress-spinner *ngIf="caseDimensionLoader" [diameter]="24"
-                                            [mode]="'indeterminate'">
-                                        </mat-progress-spinner>
-                                        <mat-icon *ngIf="!caseDimensionLoader" svgIcon="mode_edit_outline"></mat-icon>
-                                        <span *ngIf="!caseDimensionLoader" class="ml-1 mr-1">Update Case
-                                            Dimensions</span>
-                                    </button>
                                 </div>
+                            </form>
+                        </div>
+                        <div class="flex items-center justify-end w-full">
+                            <div class="flex items-center my-2">
+                                <div class="flex items-center mr-4" *ngIf="flashMessage && isPhysicsUpdate">
+                                    <ng-container *ngIf="flashMessage === 'success'">
+                                        <mat-icon class="text-green-500"
+                                            [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                                        <span class="ml-2">Product Physics added successfully</span>
+                                    </ng-container>
+                                    <ng-container *ngIf="flashMessage === 'error'">
+                                        <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                        <span class="ml-2">An error occurred, try again!</span>
+                                    </ng-container>
+                                    <ng-container *ngIf="flashMessage === 'errorMessage'">
+                                        <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                        <span class="ml-2"> {{physicsValidationMessage}} </span>
+                                    </ng-container>
+                                </div>
+                                <button class="min-w-40" mat-stroked-button [matTooltip]="'Update Physics'"
+                                    (click)="updatePhysics()" [disabled]="physicsLoader">
+                                    <mat-progress-spinner *ngIf="physicsLoader" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
+                                    <mat-icon *ngIf="!physicsLoader" svgIcon="mode_edit_outline"></mat-icon>
+                                    <span *ngIf="!physicsLoader" class="ml-1 mr-1">Update Physics/Shipping</span>
+                                </button>
                             </div>
                         </div>
-                    </fuse-card>
+                    </div>
+                </fuse-card>
+            </div>
+        </div>
+
+        <div class="row" *ngIf="!isLoading">
+            <div class="col-12 my-2">
+                <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                    <div class="p-6 sm:p-8 lg:p-10 w-full">
+                        <div class="text-2xl font-bold">
+                            Flat rate shipping
+                        </div>
+                        <!-- Features -->
+                        <div class="gap-y-4 mt-6">
+                            <form [formGroup]="flatRateShippingForm">
+                                <div class="row my-5">
+                                    <div class="col-12 mb-2">
+                                        <p class="bg-light text-info font-semibold px-5 py-3">
+                                            <i class="fa fa-info-circle"></i>
+                                            Entering a flat rate shipping cost here will override any shipping
+                                            calculations
+                                            from
+                                            UPS.
+                                            This
+                                            amount is not marked up, so enter the full shipping cost here. Leaving it
+                                            blank
+                                            will
+                                            remove
+                                            the
+                                            flat rate shipping from this product and calculate UPS rates instead.
+                                        </p>
+                                    </div>
+                                    <div class="col-12">
+                                        <mat-form-field class="w-full">
+                                            <mat-label>Flat rate shipping</mat-label>
+                                            <input matInput type="number" (mousewheel)="$event.preventDefault()"
+                                                [formControlName]="'flatRateShipping'">
+                                            <mat-icon matSuffix svgIcon="heroicons_outline:currency-dollar"></mat-icon>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="flex items-center justify-end w-full">
+                            <div class="flex items-center my-2">
+                                <div class="flex items-center mr-4" *ngIf="flashMessage && isFlatUpdate">
+                                    <ng-container *ngIf="flashMessage === 'success'">
+                                        <mat-icon class="text-green-500"
+                                            [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                                        <span class="ml-2">Product flat rate shipping added successfully</span>
+                                    </ng-container>
+                                    <ng-container *ngIf="flashMessage === 'error'">
+                                        <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                        <span class="ml-2">An error occurred, try again!</span>
+                                    </ng-container>
+                                </div>
+                                <button class="min-w-40" mat-stroked-button [matTooltip]="'Update Flat Rate Shipping'"
+                                    (click)="updateFlatRateShipping()" [disabled]="flatRateLoader">
+                                    <mat-progress-spinner *ngIf="flatRateLoader" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
+                                    <mat-icon *ngIf="!flatRateLoader" svgIcon="mode_edit_outline"></mat-icon>
+                                    <span *ngIf="!flatRateLoader" class="ml-1 mr-1">Update</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </fuse-card>
+            </div>
+        </div>
+
+        <div class="row" *ngIf="selectedProduct">
+            <div class="col-12">
+                <ngx-skeleton-loader count="8" appearance="line" animation="pulse"
+                    *ngIf="caseDimensionTabLoader || isLoading">
+                </ngx-skeleton-loader>
+                <div class="row" *ngIf="!caseDimensionTabLoader && !isLoading">
+                    <div class="col-12 my-2">
+                        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                            <div class="p-6 sm:p-8 lg:p-10 w-full">
+                                <div class="text-2xl font-bold">
+                                    Case dimensions
+                                </div>
+                                <!-- Case dimesnions form -->
+                                <div class="gap-y-4 mt-6">
+                                    <form [formGroup]="caseDimensionForm">
+                                        <div class="row my-5">
+                                            <div class="col-lg-4 col-12">
+                                                <mat-form-field class="w-full">
+                                                    <mat-label>Height</mat-label>
+                                                    <input matInput [formControlName]="'caseHeight'"><small
+                                                        class="text-secondary font-semibold">
+                                                        inches </small>
+                                                </mat-form-field>
+                                            </div>
+                                            <div class="col-lg-4 col-12">
+                                                <mat-form-field class="w-full">
+                                                    <mat-label>Width</mat-label>
+                                                    <input matInput [formControlName]="'caseWidth'"><small
+                                                        class="text-secondary font-semibold">
+                                                        inches </small>
+                                                </mat-form-field>
+                                            </div>
+                                            <div class="col-lg-4 col-12">
+                                                <mat-form-field class="w-full">
+                                                    <mat-label>Length</mat-label>
+                                                    <input matInput [formControlName]="'caseLength'"><small
+                                                        class="text-secondary font-semibold">
+                                                        inches </small>
+                                                </mat-form-field>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="flex items-center justify-end w-full">
+                                    <div class="flex items-center my-2">
+                                        <div class="flex items-center mr-4" *ngIf="flashMessage && isDimensionsUpdate">
+                                            <ng-container *ngIf="flashMessage === 'success'">
+                                                <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
+                                                </mat-icon>
+                                                <span class="ml-2">Dimensions are updated successfully</span>
+                                            </ng-container>
+                                            <ng-container *ngIf="flashMessage === 'error'">
+                                                <mat-icon class="text-red-500"
+                                                    [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                                <span class="ml-2">An error occurred, try again!</span>
+                                            </ng-container>
+                                        </div>
+                                        <button class="min-w-40" mat-stroked-button
+                                            [matTooltip]="'Update Case Dimension'" (click)="updateCaseDimension()"
+                                            [disabled]="caseDimensionLoader">
+                                            <mat-progress-spinner *ngIf="caseDimensionLoader" [diameter]="24"
+                                                [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                            <mat-icon *ngIf="!caseDimensionLoader"
+                                                svgIcon="mode_edit_outline"></mat-icon>
+                                            <span *ngIf="!caseDimensionLoader" class="ml-1 mr-1">Update Case
+                                                Dimensions</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </fuse-card>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="row">
-        <div class="col-12">
-            <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="caseQtyTabLoader || isLoading">
-            </ngx-skeleton-loader>
-            <div class="row" *ngIf="!caseQtyTabLoader && !isLoading">
-                <div class="col-12 my-2">
-                    <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-                        <div class="p-6 sm:p-8 lg:p-10 w-full">
-                            <div class="text-2xl font-bold">
-                                Case Quantities
-                            </div>
+        <div class="row">
+            <div class="col-12">
+                <ngx-skeleton-loader count="8" appearance="line" animation="pulse"
+                    *ngIf="caseQtyTabLoader || isLoading">
+                </ngx-skeleton-loader>
+                <div class="row" *ngIf="!caseQtyTabLoader && !isLoading">
+                    <div class="col-12 my-2">
+                        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                            <div class="p-6 sm:p-8 lg:p-10 w-full">
+                                <div class="text-2xl font-bold">
+                                    Case Quantities
+                                </div>
 
-                            <!-- Case quantities form -->
-                            <div class="gap-y-4 mt-6">
-                                <form [formGroup]="caseQuantitiesForm">
-                                    <div class="row my-5">
-                                        <div class="col-12 mb-2">
-                                            <p class="bg-light text-info font-semibold px-5 py-3">
-                                                <i class="fa fa-info-circle"></i>
-                                                Specify up to 6 case quantities. Leave blank for no case quantities.
-                                                Designate
-                                                how many
-                                                pieces
-                                                there are per case. Doing this forces customers to order certain
-                                                multiples
-                                                of
-                                                product.
-                                                For
-                                                instance, drinkware is usually packaged 36 pieces to a box, so customers
-                                                must
-                                                order in
-                                                multiples
-                                                of 36. Enter quantities in multiples, i.e: 36, 72, 108, etc.
-                                            </p>
+                                <!-- Case quantities form -->
+                                <div class="gap-y-4 mt-6">
+                                    <form [formGroup]="caseQuantitiesForm">
+                                        <div class="row my-5">
+                                            <div class="col-12 mb-2">
+                                                <p class="bg-light text-info font-semibold px-5 py-3">
+                                                    <i class="fa fa-info-circle"></i>
+                                                    Specify up to 6 case quantities. Leave blank for no case quantities.
+                                                    Designate
+                                                    how many
+                                                    pieces
+                                                    there are per case. Doing this forces customers to order certain
+                                                    multiples
+                                                    of
+                                                    product.
+                                                    For
+                                                    instance, drinkware is usually packaged 36 pieces to a box, so
+                                                    customers
+                                                    must
+                                                    order in
+                                                    multiples
+                                                    of 36. Enter quantities in multiples, i.e: 36, 72, 108, etc.
+                                                </p>
+                                            </div>
+                                            <div class="col-4">
+                                                <mat-form-field class="w-full">
+                                                    <input matInput [formControlName]="'quantityOne'" type="number"
+                                                        (mousewheel)="$event.preventDefault()"><small
+                                                        class="text-secondary font-semibold"> 1 </small>
+                                                </mat-form-field>
+                                            </div>
+                                            <div class="col-4">
+                                                <mat-form-field class="w-full">
+                                                    <input matInput [formControlName]="'quantityTwo'" type="number"
+                                                        (mousewheel)="$event.preventDefault()"><small
+                                                        class="text-secondary font-semibold"> 2 </small>
+                                                </mat-form-field>
+                                            </div>
+                                            <div class="col-4">
+                                                <mat-form-field class="w-full">
+                                                    <input matInput [formControlName]="'quantityThree'" type="number"
+                                                        (mousewheel)="$event.preventDefault()"><small
+                                                        class="text-secondary font-semibold"> 3 </small>
+                                                </mat-form-field>
+                                            </div>
+                                            <div class="col-4">
+                                                <mat-form-field class="w-full">
+                                                    <input matInput [formControlName]="'quantityFour'" type="number"
+                                                        (mousewheel)="$event.preventDefault()"><small
+                                                        class="text-secondary font-semibold"> 4 </small>
+                                                </mat-form-field>
+                                            </div>
+                                            <div class="col-4">
+                                                <mat-form-field class="w-full">
+                                                    <input matInput [formControlName]="'quantityFive'" type="number"
+                                                        (mousewheel)="$event.preventDefault()"><small
+                                                        class="text-secondary font-semibold"> 5 </small>
+                                                </mat-form-field>
+                                            </div>
+                                            <div class="col-4">
+                                                <mat-form-field class="w-full">
+                                                    <input matInput [formControlName]="'quantitySix'" type="number"
+                                                        (mousewheel)="$event.preventDefault()"><small
+                                                        class="text-secondary font-semibold"> 6 </small>
+                                                </mat-form-field>
+                                            </div>
                                         </div>
-                                        <div class="col-4">
-                                            <mat-form-field class="w-full">
-                                                <input matInput [formControlName]="'quantityOne'" type="number"
-                                                    (mousewheel)="$event.preventDefault()"><small
-                                                    class="text-secondary font-semibold"> 1 </small>
-                                            </mat-form-field>
+                                    </form>
+                                </div>
+                                <div class="flex items-center justify-end w-full">
+                                    <div class="flex items-center my-2">
+                                        <div class="flex items-center mr-4" *ngIf="flashMessage && isQuantityUpdate">
+                                            <ng-container *ngIf="flashMessage === 'success'">
+                                                <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
+                                                </mat-icon>
+                                                <span class="ml-2">Product Case quantities added successfully</span>
+                                            </ng-container>
+                                            <ng-container *ngIf="flashMessage === 'error'">
+                                                <mat-icon class="text-red-500"
+                                                    [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                                <span class="ml-2">An error occurred, try again!</span>
+                                            </ng-container>
                                         </div>
-                                        <div class="col-4">
-                                            <mat-form-field class="w-full">
-                                                <input matInput [formControlName]="'quantityTwo'" type="number"
-                                                    (mousewheel)="$event.preventDefault()"><small
-                                                    class="text-secondary font-semibold"> 2 </small>
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="col-4">
-                                            <mat-form-field class="w-full">
-                                                <input matInput [formControlName]="'quantityThree'" type="number"
-                                                    (mousewheel)="$event.preventDefault()"><small
-                                                    class="text-secondary font-semibold"> 3 </small>
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="col-4">
-                                            <mat-form-field class="w-full">
-                                                <input matInput [formControlName]="'quantityFour'" type="number"
-                                                    (mousewheel)="$event.preventDefault()"><small
-                                                    class="text-secondary font-semibold"> 4 </small>
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="col-4">
-                                            <mat-form-field class="w-full">
-                                                <input matInput [formControlName]="'quantityFive'" type="number"
-                                                    (mousewheel)="$event.preventDefault()"><small
-                                                    class="text-secondary font-semibold"> 5 </small>
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="col-4">
-                                            <mat-form-field class="w-full">
-                                                <input matInput [formControlName]="'quantitySix'" type="number"
-                                                    (mousewheel)="$event.preventDefault()"><small
-                                                    class="text-secondary font-semibold"> 6 </small>
-                                            </mat-form-field>
-                                        </div>
+                                        <button class="min-w-40" mat-stroked-button
+                                            [matTooltip]="'Update Case Dimension'" (click)="updateCaseQuantities()"
+                                            [disabled]="caseQTYLoader">
+                                            <mat-progress-spinner *ngIf="caseQTYLoader" [diameter]="24"
+                                                [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                            <mat-icon *ngIf="!caseQTYLoader" svgIcon="mode_edit_outline"></mat-icon>
+                                            <span *ngIf="!caseQTYLoader" class="ml-1 mr-1">Update Case Quantities</span>
+                                        </button>
                                     </div>
-                                </form>
-                            </div>
-                            <div class="flex items-center justify-end w-full">
-                                <div class="flex items-center my-2">
-                                    <div class="flex items-center mr-4" *ngIf="flashMessage && isQuantityUpdate">
-                                        <ng-container *ngIf="flashMessage === 'success'">
-                                            <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
-                                            </mat-icon>
-                                            <span class="ml-2">Product Case quantities added successfully</span>
-                                        </ng-container>
-                                        <ng-container *ngIf="flashMessage === 'error'">
-                                            <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
-                                            <span class="ml-2">An error occurred, try again!</span>
-                                        </ng-container>
-                                    </div>
-                                    <button class="min-w-40" mat-stroked-button [matTooltip]="'Update Case Dimension'"
-                                        (click)="updateCaseQuantities()" [disabled]="caseQTYLoader">
-                                        <mat-progress-spinner *ngIf="caseQTYLoader" [diameter]="24"
-                                            [mode]="'indeterminate'">
-                                        </mat-progress-spinner>
-                                        <mat-icon *ngIf="!caseQTYLoader" svgIcon="mode_edit_outline"></mat-icon>
-                                        <span *ngIf="!caseQTYLoader" class="ml-1 mr-1">Update Case Quantities</span>
-                                    </button>
                                 </div>
                             </div>
-                        </div>
-                    </fuse-card>
+                        </fuse-card>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </ng-container>
 </div>

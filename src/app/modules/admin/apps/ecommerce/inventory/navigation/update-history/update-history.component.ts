@@ -26,7 +26,7 @@ export class UpdateHistoryComponent implements OnInit, OnDestroy {
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _inventoryService: InventoryService
+    public _inventoryService: InventoryService
   ) { }
 
   ngOnInit(): void {

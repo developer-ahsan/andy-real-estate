@@ -120,6 +120,34 @@ export class SuppliersResolver implements Resolve<any>
     }
 }
 
+// Get User Permissions 
+@Injectable({
+    providedIn: 'root'
+})
+export class UserPermissionsResolver implements Resolve<any>
+{
+    /**
+     * Constructor
+     */
+    constructor(private _dashboardService: DashboardsService) {
+    }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Public methods
+    // -----------------------------------------------------------------------------------------------------
+
+    /**
+     * Resolver
+     *
+     * @param route
+     * @param state
+     */
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any> {
+        const user = JSON.parse(localStorage.getItem('userDetails'));
+        return this._dashboardService.getUserPermissionsData(user.pk_userID);
+    }
+}
+
 // Get User Roles
 @Injectable({
     providedIn: 'root'

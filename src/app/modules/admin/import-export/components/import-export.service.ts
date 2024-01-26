@@ -23,6 +23,14 @@ export class ImportExportService {
     private _employeeAdmins: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _importExportStores: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _reportUsers: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
+
+    public adminUserPermissions = {
+        export: false,
+        home: false,
+        import: false,
+        selectCategories: false,
+        selectStore: false,
+    }
     /**
      * Constructor
      */

@@ -5,6 +5,7 @@ import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { UsersService } from '../../users.service';
 import { AddAdminCommentator, applyBlanketCustomerPercentage, newFLPSUser, RemoveCommentator, removeFLPSUser, UpdateAdminCommentator, updateFLPSUser } from '../../users.types';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 @Component({
   selector: 'app-admin-commentors',
   templateUrl: './admin-commentors.component.html',
@@ -28,13 +29,18 @@ export class AdminCommentorsComponent implements OnInit, OnDestroy {
   ngEmail = '';
   isAddNewCommentors: boolean = false;
 
+  adminUserPermissions = {
+    viewCommentors: false,
+  }
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _UsersService: UsersService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private _commonService: DashboardsService
   ) { }
 
   ngOnInit(): void {
+    this.adminUserPermissions = this._commonService.assignPermissions('system', this.adminUserPermissions);
     this.isLoading = true;
     this.getAdminCommentors(1, 'get');
     this.emailForm = this.formBuilder.group({

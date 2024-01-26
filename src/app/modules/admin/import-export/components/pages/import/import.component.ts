@@ -27,7 +27,7 @@ export class OrderImportComponent implements OnInit, OnDestroy {
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _authService: AuthService,
-    private _ImportExportService: ImportExportService,
+    public _ImportExportService: ImportExportService,
     private router: Router,
     private _activeRoute: ActivatedRoute
   ) { }

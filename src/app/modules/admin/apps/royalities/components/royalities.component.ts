@@ -9,6 +9,7 @@ import { UserService } from 'app/core/user/user.service';
 import { AuthService } from 'app/core/auth/auth.service';
 import { MatDrawer } from '@angular/material/sidenav';
 import Swal from 'sweetalert2'
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 @Component({
     selector: 'royalty',
     templateUrl: './royalities.component.html',
@@ -38,6 +39,7 @@ export class RoyaltyComponent {
         private _changeDetectorRef: ChangeDetectorRef,
         private _RoyaltyService: RoyaltyService,
         private _router: Router,
+        private _commonService: DashboardsService,
         private route: ActivatedRoute,
         private _authService: AuthService,
         private _fuseMediaWatcherService: FuseMediaWatcherService,
@@ -53,6 +55,7 @@ export class RoyaltyComponent {
      */
 
     ngOnInit(): void {
+        this._RoyaltyService.adminUserPermissions = this._commonService.assignPermissions('royalty', this._RoyaltyService.adminUserPermissions);
         if (this._router.url.includes('reports')) {
             this.selectedPanel = 'reports';
         } else if (this._router.url.includes('licensing')) {

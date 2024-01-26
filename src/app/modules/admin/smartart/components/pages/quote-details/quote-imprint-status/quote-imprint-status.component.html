@@ -244,9 +244,9 @@
                                     <p class="text-lg font-bold">Make Manual Updates to this Imprint
                                         Status</p>
                                     <div class="space-y-1">
-                                        <button type="button"
-                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                            [disabled]="imprint.pendingStatusLoader">
+                                        <button type="button" mat-button mat-flat-button color="primary"
+                                            class="min-w-30 rounded-md" [disabled]="imprint.pendingStatusLoader"
+                                            (click)="updateStatuses(imprint,2)">
                                             <span *ngIf="!imprint?.pendingStatusLoader">New
                                                 pending</span>
                                             <mat-progress-spinner [color]="'light'" *ngIf="imprint?.pendingStatusLoader"
@@ -254,12 +254,14 @@
                                             </mat-progress-spinner>
                                         </button>
                                         <br>
-                                        <button type="button"
-                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                            [disabled]="imprint.pendingStatusLoader">
-                                            <span *ngIf="!imprint?.pendingStatusLoader">Awaiting artwork approval</span>
-                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.pendingStatusLoader"
-                                                [diameter]="24" [mode]="'indeterminate'">
+                                        <button type="button" mat-button mat-flat-button color="accent"
+                                            class="min-w-30 rounded-md" [disabled]="imprint.awaitingStatusLoader"
+                                            (click)="updateStatuses(imprint,3)">
+                                            <span *ngIf="!imprint?.awaitingStatusLoader">Awaiting artwork
+                                                approval</span>
+                                            <mat-progress-spinner [color]="'light'"
+                                                *ngIf="imprint?.awaitingStatusLoader" [diameter]="24"
+                                                [mode]="'indeterminate'">
                                             </mat-progress-spinner>
                                         </button>
                                         <ng-container
@@ -267,28 +269,29 @@
                                             <br>
                                             <button type="button"
                                                 class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                [disabled]="imprint.awaitingStatusLoader">
-                                                <span *ngIf="!imprint?.awaitingStatusLoader">Send proof
+                                                [disabled]="imprint.senOrderProofLoader">
+                                                <span *ngIf="!imprint?.senOrderProofLoader">Send proof
                                                     update</span>
                                                 <mat-progress-spinner [color]="'light'"
-                                                    *ngIf="imprint?.awaitingStatusLoader" [diameter]="24"
+                                                    *ngIf="imprint?.senOrderProofLoader" [diameter]="24"
                                                     [mode]="'indeterminate'">
                                                 </mat-progress-spinner>
                                             </button>
                                         </ng-container>
                                         <br>
-                                        <button type="button"
-                                            class="min-w-30 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
-                                            [disabled]="imprint.proofStatusLoader">
-                                            <span *ngIf="!imprint?.proofStatusLoader">No
+                                        <button type="button" mat-button mat-flat-button color="warn"
+                                            class="min-w-30 rounded-md" [disabled]="imprint.proofStatusLoader">
+                                            <span *ngIf="!imprint?.proofStatusLoader"
+                                                (click)="updateStatuses(imprint,7)">No
                                                 proof needed</span>
                                             <mat-progress-spinner [color]="'light'" *ngIf="imprint?.proofStatusLoader"
                                                 [diameter]="24" [mode]="'indeterminate'">
                                             </mat-progress-spinner>
                                         </button>
                                         <br>
-                                        <button *ngIf="imprint.blnAttention" type="button"
-                                            class="min-w-30 rounded-md bg-green-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                                        <button *ngIf="imprint.blnAttention" type="button" mat-button mat-flat-button
+                                            color="primary" class="min-w-30 rounded-md"
+                                            (click)="updateAttentionFlagOrder(imprint,false)"
                                             [diabled]="imprint.isFlagLoader">
                                             <span *ngIf="!imprint?.isFlagLoader">Unflag
                                                 as awaiting info</span>
@@ -296,9 +299,9 @@
                                                 [diameter]="24" [mode]="'indeterminate'">
                                             </mat-progress-spinner>
                                         </button>
-                                        <button *ngIf="!imprint.blnAttention" type="button"
-                                            class="min-w-30 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
-                                            [diabled]="imprint.isFlagLoader">
+                                        <button *ngIf="!imprint.blnAttention" mat-button mat-flat-button color="warn"
+                                            class="min-w-30 rounded-md" [diabled]="imprint.isFlagLoader"
+                                            (click)="updateAttentionFlagOrder(imprint,true)">
                                             <span *ngIf="!imprint?.isFlagLoader">
                                                 <Form:post></Form:post>Flag
                                                 as awaiting info
@@ -401,9 +404,9 @@
                                     <p class="text-lg font-bold">Make Manual Updates to this Imprint
                                         Status</p>
                                     <div class="space-y-1">
-                                        <button type="button"
-                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                            [disabled]="imprint.pendingStatusLoader">
+                                        <button type="button" mat-button mat-flat-button color="primary"
+                                            class="min-w-30 rounded-md" [disabled]="imprint.pendingStatusLoader"
+                                            (click)="updateStatuses(imprint,2)">
                                             <span *ngIf="!imprint?.pendingStatusLoader">New
                                                 pending</span>
                                             <mat-progress-spinner [color]="'light'" *ngIf="imprint?.pendingStatusLoader"
@@ -411,11 +414,11 @@
                                             </mat-progress-spinner>
                                         </button>
                                         <br>
-                                        <button type="button"
-                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                            [disabled]="imprint.pendingStatusLoader">
-                                            <span *ngIf="!imprint?.pendingStatusLoader">Follow up for approval</span>
-                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.pendingStatusLoader"
+                                        <button type="button" mat-button mat-flat-button color="primary"
+                                            class="min-w-30 rounded-md" [disabled]="imprint.followStatusLoader"
+                                            (click)="updateStatuses(imprint,13)">
+                                            <span *ngIf="!imprint?.followStatusLoader">Follow up for approval</span>
+                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.followStatusLoader"
                                                 [diameter]="24" [mode]="'indeterminate'">
                                             </mat-progress-spinner>
                                         </button>
@@ -434,18 +437,19 @@
                                             </button>
                                         </ng-container>
                                         <br>
-                                        <button type="button"
-                                            class="min-w-30 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
-                                            [disabled]="imprint.proofStatusLoader">
-                                            <span *ngIf="!imprint?.proofStatusLoader">No
+                                        <button type="button" mat-button mat-flat-button color="warn"
+                                            class="min-w-30 rounded-md" [disabled]="imprint.proofStatusLoader">
+                                            <span *ngIf="!imprint?.proofStatusLoader"
+                                                (click)="updateStatuses(imprint,7)">No
                                                 proof needed</span>
                                             <mat-progress-spinner [color]="'light'" *ngIf="imprint?.proofStatusLoader"
                                                 [diameter]="24" [mode]="'indeterminate'">
                                             </mat-progress-spinner>
                                         </button>
                                         <br>
-                                        <button *ngIf="imprint.blnAttention" type="button"
-                                            class="min-w-30 rounded-md bg-green-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                                        <button *ngIf="imprint.blnAttention" type="button" mat-button mat-flat-button
+                                            color="primary" class="min-w-30 rounded-md"
+                                            (click)="updateAttentionFlagOrder(imprint,false)"
                                             [diabled]="imprint.isFlagLoader">
                                             <span *ngIf="!imprint?.isFlagLoader">Unflag
                                                 as awaiting info</span>
@@ -453,9 +457,9 @@
                                                 [diameter]="24" [mode]="'indeterminate'">
                                             </mat-progress-spinner>
                                         </button>
-                                        <button *ngIf="!imprint.blnAttention" type="button"
-                                            class="min-w-30 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
-                                            [diabled]="imprint.isFlagLoader">
+                                        <button *ngIf="!imprint.blnAttention" mat-button mat-flat-button color="warn"
+                                            class="min-w-30 rounded-md" [diabled]="imprint.isFlagLoader"
+                                            (click)="updateAttentionFlagOrder(imprint,true)">
                                             <span *ngIf="!imprint?.isFlagLoader">
                                                 <Form:post></Form:post>Flag
                                                 as awaiting info
@@ -558,9 +562,9 @@
                                     <p class="text-lg font-bold">Make Manual Updates to this Imprint
                                         Status</p>
                                     <div class="space-y-1">
-                                        <button type="button"
-                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                            [disabled]="imprint.pendingStatusLoader">
+                                        <button type="button" mat-button mat-flat-button color="primary"
+                                            class="min-w-30 rounded-md" [disabled]="imprint.pendingStatusLoader"
+                                            (click)="updateStatuses(imprint,2)">
                                             <span *ngIf="!imprint?.pendingStatusLoader">New
                                                 pending</span>
                                             <mat-progress-spinner [color]="'light'" *ngIf="imprint?.pendingStatusLoader"
@@ -568,20 +572,22 @@
                                             </mat-progress-spinner>
                                         </button>
                                         <br>
-                                        <button type="button"
-                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                            [disabled]="imprint.pendingStatusLoader">
-                                            <span *ngIf="!imprint?.pendingStatusLoader">Awaiting artwork approval</span>
-                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.pendingStatusLoader"
-                                                [diameter]="24" [mode]="'indeterminate'">
+                                        <button type="button" mat-button mat-flat-button color="accent"
+                                            class="min-w-30 rounded-md" [disabled]="imprint.awaitingStatusLoader"
+                                            (click)="updateStatuses(imprint,3)">
+                                            <span *ngIf="!imprint?.awaitingStatusLoader">Awaiting artwork
+                                                approval</span>
+                                            <mat-progress-spinner [color]="'light'"
+                                                *ngIf="imprint?.awaitingStatusLoader" [diameter]="24"
+                                                [mode]="'indeterminate'">
                                             </mat-progress-spinner>
                                         </button>
                                         <br>
-                                        <button type="button"
-                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                            [disabled]="imprint.pendingStatusLoader">
-                                            <span *ngIf="!imprint?.pendingStatusLoader">Follow up for approval</span>
-                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.pendingStatusLoader"
+                                        <button type="button" mat-button mat-flat-button color="primary"
+                                            class="min-w-30 rounded-md" [disabled]="imprint.followStatusLoader"
+                                            (click)="updateStatuses(imprint,13)">
+                                            <span *ngIf="!imprint?.followStatusLoader">Follow up for approval</span>
+                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.followStatusLoader"
                                                 [diameter]="24" [mode]="'indeterminate'">
                                             </mat-progress-spinner>
                                         </button>
@@ -600,18 +606,19 @@
                                             </button>
                                         </ng-container>
                                         <br>
-                                        <button type="button"
-                                            class="min-w-30 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
-                                            [disabled]="imprint.proofStatusLoader">
-                                            <span *ngIf="!imprint?.proofStatusLoader">No
+                                        <button type="button" mat-button mat-flat-button color="warn"
+                                            class="min-w-30 rounded-md" [disabled]="imprint.proofStatusLoader">
+                                            <span *ngIf="!imprint?.proofStatusLoader"
+                                                (click)="updateStatuses(imprint,7)">No
                                                 proof needed</span>
                                             <mat-progress-spinner [color]="'light'" *ngIf="imprint?.proofStatusLoader"
                                                 [diameter]="24" [mode]="'indeterminate'">
                                             </mat-progress-spinner>
                                         </button>
                                         <br>
-                                        <button *ngIf="imprint.blnAttention" type="button"
-                                            class="min-w-30 rounded-md bg-green-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                                        <button *ngIf="imprint.blnAttention" type="button" mat-button mat-flat-button
+                                            color="primary" class="min-w-30 rounded-md"
+                                            (click)="updateAttentionFlagOrder(imprint,false)"
                                             [diabled]="imprint.isFlagLoader">
                                             <span *ngIf="!imprint?.isFlagLoader">Unflag
                                                 as awaiting info</span>
@@ -619,9 +626,9 @@
                                                 [diameter]="24" [mode]="'indeterminate'">
                                             </mat-progress-spinner>
                                         </button>
-                                        <button *ngIf="!imprint.blnAttention" type="button"
-                                            class="min-w-30 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
-                                            [diabled]="imprint.isFlagLoader">
+                                        <button *ngIf="!imprint.blnAttention" mat-button mat-flat-button color="warn"
+                                            class="min-w-30 rounded-md" [diabled]="imprint.isFlagLoader"
+                                            (click)="updateAttentionFlagOrder(imprint,true)">
                                             <span *ngIf="!imprint?.isFlagLoader">
                                                 <Form:post></Form:post>Flag
                                                 as awaiting info
@@ -705,9 +712,9 @@
                                     <p class="text-lg font-bold">Make Manual Updates to this Imprint
                                         Status</p>
                                     <div class="space-y-1">
-                                        <button type="button"
-                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                            [disabled]="imprint.pendingStatusLoader">
+                                        <button type="button" mat-button mat-flat-button color="primary"
+                                            class="min-w-30 rounded-md" [disabled]="imprint.pendingStatusLoader"
+                                            (click)="updateStatuses(imprint,2)">
                                             <span *ngIf="!imprint?.pendingStatusLoader">New
                                                 pending</span>
                                             <mat-progress-spinner [color]="'light'" *ngIf="imprint?.pendingStatusLoader"
@@ -715,11 +722,11 @@
                                             </mat-progress-spinner>
                                         </button>
                                         <br>
-                                        <button type="button"
-                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                            [disabled]="imprint.awaitingStatusLoader">
-                                            <span *ngIf="!imprint?.awaitingStatusLoader">Awaiting
-                                                artwork approval</span>
+                                        <button type="button" mat-button mat-flat-button color="accent"
+                                            class="min-w-30 rounded-md" [disabled]="imprint.awaitingStatusLoader"
+                                            (click)="updateStatuses(imprint,3)">
+                                            <span *ngIf="!imprint?.awaitingStatusLoader">Awaiting artwork
+                                                approval</span>
                                             <mat-progress-spinner [color]="'light'"
                                                 *ngIf="imprint?.awaitingStatusLoader" [diameter]="24"
                                                 [mode]="'indeterminate'">
@@ -740,18 +747,19 @@
                                             </button>
                                         </ng-container>
                                         <br>
-                                        <button type="button"
-                                            class="min-w-30 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
-                                            [disabled]="imprint.proofStatusLoader">
-                                            <span *ngIf="!imprint?.proofStatusLoader">No
+                                        <button type="button" mat-button mat-flat-button color="warn"
+                                            class="min-w-30 rounded-md" [disabled]="imprint.proofStatusLoader">
+                                            <span *ngIf="!imprint?.proofStatusLoader"
+                                                (click)="updateStatuses(imprint,7)">No
                                                 proof needed</span>
                                             <mat-progress-spinner [color]="'light'" *ngIf="imprint?.proofStatusLoader"
                                                 [diameter]="24" [mode]="'indeterminate'">
                                             </mat-progress-spinner>
                                         </button>
                                         <br>
-                                        <button *ngIf="imprint.blnAttention" type="button"
-                                            class="min-w-30 rounded-md bg-green-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                                        <button *ngIf="imprint.blnAttention" type="button" mat-button mat-flat-button
+                                            color="primary" class="min-w-30 rounded-md"
+                                            (click)="updateAttentionFlagOrder(imprint,false)"
                                             [diabled]="imprint.isFlagLoader">
                                             <span *ngIf="!imprint?.isFlagLoader">Unflag
                                                 as awaiting info</span>
@@ -759,9 +767,9 @@
                                                 [diameter]="24" [mode]="'indeterminate'">
                                             </mat-progress-spinner>
                                         </button>
-                                        <button *ngIf="!imprint.blnAttention" type="button"
-                                            class="min-w-30 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
-                                            [diabled]="imprint.isFlagLoader">
+                                        <button *ngIf="!imprint.blnAttention" mat-button mat-flat-button color="warn"
+                                            class="min-w-30 rounded-md" [diabled]="imprint.isFlagLoader"
+                                            (click)="updateAttentionFlagOrder(imprint,true)">
                                             <span *ngIf="!imprint?.isFlagLoader">
                                                 <Form:post></Form:post>Flag
                                                 as awaiting info
@@ -799,9 +807,9 @@
                                     <p class="text-lg font-bold">Make Manual Updates to this Imprint
                                         Status</p>
                                     <div class="space-y-2">
-                                        <button type="button"
-                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                            [disabled]="imprint.pendingStatusLoader">
+                                        <button type="button" mat-button mat-flat-button color="primary"
+                                            class="min-w-30 rounded-md" [disabled]="imprint.pendingStatusLoader"
+                                            (click)="updateStatuses(imprint,2)">
                                             <span *ngIf="!imprint?.pendingStatusLoader">New
                                                 pending</span>
                                             <mat-progress-spinner [color]="'light'" *ngIf="imprint?.pendingStatusLoader"
@@ -809,11 +817,11 @@
                                             </mat-progress-spinner>
                                         </button>
                                         <br>
-                                        <button type="button"
-                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                            [disabled]="imprint.awaitingStatusLoader">
-                                            <span *ngIf="!imprint?.awaitingStatusLoader">Awaiting
-                                                artwork approval</span>
+                                        <button type="button" mat-button mat-flat-button color="accent"
+                                            class="min-w-30 rounded-md" [disabled]="imprint.awaitingStatusLoader"
+                                            (click)="updateStatuses(imprint,3)">
+                                            <span *ngIf="!imprint?.awaitingStatusLoader">Awaiting artwork
+                                                approval</span>
                                             <mat-progress-spinner [color]="'light'"
                                                 *ngIf="imprint?.awaitingStatusLoader" [diameter]="24"
                                                 [mode]="'indeterminate'">
@@ -852,7 +860,7 @@
                         <!-- Your content for Artwork Approved -->
                         <div class="w-full rounded-2xl shadow bg-card p-4 ">
                             <div class="row">
-                                <div class="col-md-6 col-12">
+                                <div class="col-md-8 col-12">
                                     <div>
                                         <a *ngIf="imprint.viewProofCheck"
                                             href="https://assets.consolidus.com/artwork/Proof/Quotes/{{this.paramData.pfk_userID}}/{{this.paramData.fk_cartID}}/{{this.paramData.pk_cartLineID}}/{{imprint.imprintID}}.jpg?{{tempValue}}"
@@ -866,13 +874,13 @@
                                         by the customer.
                                     </div>
                                 </div>
-                                <div class="col-md-6 col-12">
+                                <div class="col-md-4 col-12">
                                     <p class="text-lg font-bold">Make Manual Updates to this Imprint
                                         Status</p>
                                     <div class="space-y-1">
-                                        <button type="button"
-                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                            [disabled]="imprint.pendingStatusLoader">
+                                        <button type="button" mat-button mat-flat-button color="primary"
+                                            class="min-w-30 rounded-md" [disabled]="imprint.pendingStatusLoader"
+                                            (click)="updateStatuses(imprint,2)">
                                             <span *ngIf="!imprint?.pendingStatusLoader">New
                                                 pending</span>
                                             <mat-progress-spinner [color]="'light'" *ngIf="imprint?.pendingStatusLoader"
@@ -880,11 +888,11 @@
                                             </mat-progress-spinner>
                                         </button>
                                         <br>
-                                        <button type="button"
-                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                            [disabled]="imprint.awaitingStatusLoader">
-                                            <span *ngIf="!imprint?.awaitingStatusLoader">Awaiting
-                                                artwork approval</span>
+                                        <button type="button" mat-button mat-flat-button color="accent"
+                                            class="min-w-30 rounded-md" [disabled]="imprint.awaitingStatusLoader"
+                                            (click)="updateStatuses(imprint,3)">
+                                            <span *ngIf="!imprint?.awaitingStatusLoader">Awaiting artwork
+                                                approval</span>
                                             <mat-progress-spinner [color]="'light'"
                                                 *ngIf="imprint?.awaitingStatusLoader" [diameter]="24"
                                                 [mode]="'indeterminate'">
@@ -905,10 +913,10 @@
                                             </button>
                                         </ng-container>
                                         <br>
-                                        <button type="button"
-                                            class="min-w-30 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
-                                            [disabled]="imprint.proofStatusLoader">
-                                            <span *ngIf="!imprint?.proofStatusLoader">No
+                                        <button type="button" mat-button mat-flat-button color="warn"
+                                            class="min-w-30 rounded-md" [disabled]="imprint.proofStatusLoader">
+                                            <span *ngIf="!imprint?.proofStatusLoader"
+                                                (click)="updateStatuses(imprint,7)">No
                                                 proof needed</span>
                                             <mat-progress-spinner [color]="'light'" *ngIf="imprint?.proofStatusLoader"
                                                 [diameter]="24" [mode]="'indeterminate'">
@@ -916,8 +924,9 @@
                                         </button>
                                         <ng-container>
                                             <br>
-                                            <button *ngIf="imprint.blnAttention" type="button"
-                                                class="min-w-30 rounded-md bg-green-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                                            <button *ngIf="imprint.blnAttention" type="button" mat-button
+                                                mat-flat-button color="primary" class="min-w-30 rounded-md"
+                                                (click)="updateAttentionFlagOrder(imprint,false)"
                                                 [diabled]="imprint.isFlagLoader">
                                                 <span *ngIf="!imprint?.isFlagLoader">Unflag
                                                     as awaiting info</span>
@@ -925,9 +934,10 @@
                                                     [diameter]="24" [mode]="'indeterminate'">
                                                 </mat-progress-spinner>
                                             </button>
-                                            <button *ngIf="!imprint.blnAttention" type="button"
-                                                class="min-w-30 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
-                                                [diabled]="imprint.isFlagLoader">
+                                            <button *ngIf="!imprint.blnAttention" mat-button mat-flat-button
+                                                color="warn" class="min-w-30 rounded-md"
+                                                [diabled]="imprint.isFlagLoader"
+                                                (click)="updateAttentionFlagOrder(imprint,true)">
                                                 <span *ngIf="!imprint?.isFlagLoader">
                                                     <Form:post></Form:post>Flag
                                                     as awaiting info
@@ -976,9 +986,9 @@
                                     <p class="text-lg font-bold">Make Manual Updates to this Imprint
                                         Status</p>
                                     <div class="space-y-1">
-                                        <button type="button"
-                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                            [disabled]="imprint.pendingStatusLoader">
+                                        <button type="button" mat-button mat-flat-button color="primary"
+                                            class="min-w-30 rounded-md" [disabled]="imprint.pendingStatusLoader"
+                                            (click)="updateStatuses(imprint,2)">
                                             <span *ngIf="!imprint?.pendingStatusLoader">New
                                                 pending</span>
                                             <mat-progress-spinner [color]="'light'" *ngIf="imprint?.pendingStatusLoader"
@@ -1000,18 +1010,19 @@
                                             </button>
                                         </ng-container>
                                         <br>
-                                        <button type="button"
-                                            class="min-w-30 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
-                                            [disabled]="imprint.proofStatusLoader">
-                                            <span *ngIf="!imprint?.proofStatusLoader">No
+                                        <button type="button" mat-button mat-flat-button color="warn"
+                                            class="min-w-30 rounded-md" [disabled]="imprint.proofStatusLoader">
+                                            <span *ngIf="!imprint?.proofStatusLoader"
+                                                (click)="updateStatuses(imprint,7)">No
                                                 proof needed</span>
                                             <mat-progress-spinner [color]="'light'" *ngIf="imprint?.proofStatusLoader"
                                                 [diameter]="24" [mode]="'indeterminate'">
                                             </mat-progress-spinner>
                                         </button>
                                         <br>
-                                        <button *ngIf="imprint.blnAttention" type="button"
-                                            class="min-w-30 rounded-md bg-green-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                                        <button *ngIf="imprint.blnAttention" type="button" mat-button mat-flat-button
+                                            color="primary" class="min-w-30 rounded-md"
+                                            (click)="updateAttentionFlagOrder(imprint,false)"
                                             [diabled]="imprint.isFlagLoader">
                                             <span *ngIf="!imprint?.isFlagLoader">Unflag
                                                 as awaiting info</span>
@@ -1019,9 +1030,9 @@
                                                 [diameter]="24" [mode]="'indeterminate'">
                                             </mat-progress-spinner>
                                         </button>
-                                        <button *ngIf="!imprint.blnAttention" type="button"
-                                            class="min-w-30 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
-                                            [diabled]="imprint.isFlagLoader">
+                                        <button *ngIf="!imprint.blnAttention" mat-button mat-flat-button color="warn"
+                                            class="min-w-30 rounded-md" [diabled]="imprint.isFlagLoader"
+                                            (click)="updateAttentionFlagOrder(imprint,true)">
                                             <span *ngIf="!imprint?.isFlagLoader">
                                                 <Form:post></Form:post>Flag
                                                 as awaiting info

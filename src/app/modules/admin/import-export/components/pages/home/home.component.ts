@@ -18,7 +18,7 @@ export class ImportExportHomeComponent implements OnInit, OnDestroy {
   ngExport = 'export';
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _ImportExportService: ImportExportService,
+    public _ImportExportService: ImportExportService,
     private router: Router,
     private _activeRoute: ActivatedRoute
   ) { }

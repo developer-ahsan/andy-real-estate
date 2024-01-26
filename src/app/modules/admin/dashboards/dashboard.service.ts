@@ -18,8 +18,16 @@ export class DashboardsService {
     public _allSuppliers: BehaviorSubject<any> = new BehaviorSubject(null);
     public _userRole: BehaviorSubject<any> = new BehaviorSubject(null);
     public _allStates: BehaviorSubject<any> = new BehaviorSubject(null);
+    public _allPermissions: BehaviorSubject<any> = new BehaviorSubject(null);
+    public allPermissions: any;
 
-
+    public adminUserPermissions = {
+        home: false,
+        manager: false,
+        reminders: false,
+        viewEmployeeReports: false,
+        rapidBuild: false
+    }
     /**
      * Constructor
      */
@@ -59,6 +67,9 @@ export class DashboardsService {
     }
     get suppliersData$(): Observable<any> {
         return this._allSuppliers.asObservable();
+    }
+    get userPermssions$(): Observable<any> {
+        return this._allPermissions.asObservable();
     }
     get userRole$(): Observable<any> {
         return this._userRole.asObservable();
@@ -161,18 +172,73 @@ export class DashboardsService {
     }
 
     getSuppliersData(): Observable<any> {
-        sessionStorage.removeItem('suppliersdata');
         let params = {
             get_suppliers: true
         }
         return this._httpClient.get(environment.dashboard, { params: params }).pipe(
             retry(3),
             tap((response: any) => {
-                sessionStorage.setItem('suppliersdata', JSON.stringify(response));
                 this._allSuppliers.next(response);
             })
         );
     }
+    // getUserPermissionsData
+    getUserPermissionsData(id): Observable<any> {
+        sessionStorage.removeItem('suppliersdata');
+        let params = {
+            employee_permissions: true,
+            user_id: id
+        }
+        return this._httpClient.get(environment.admins, { params: params }).pipe(
+            retry(3),
+            tap((response: any) => {
+                if (response["data"][0].qryPermissions) {
+                    const permissionsData = response["data"][0].qryPermissions.split('|||').map(permission => {
+                        const [parents, children] = permission.split('#_#');
+                        const [parent_pk_sectionID, name, blnChecked] = parents.split('###');
+
+                        return {
+                            pk_sectionID: Number(parent_pk_sectionID),
+                            name,
+                            blnChecked: blnChecked === '1',
+                            children: children.split(',,').map(child => {
+                                const [pk_sectionID, name, blnChecked] = child.split('::');
+                                return {
+                                    pk_sectionID: Number(pk_sectionID),
+                                    parent_pk_sectionID: Number(parent_pk_sectionID),
+                                    name,
+                                    blnChecked: blnChecked === '1'
+                                };
+                            })
+                        };
+                    });
+                    this._allPermissions.next(permissionsData);
+                }
+            })
+        );
+    }
+    assignPermissions(name, permissionsObject) {
+        const adminUserPermission = this.allPermissions.find(permission => permission.name === name);
+        console.log(adminUserPermission);
+        if (adminUserPermission) {
+            const { blnChecked, children } = adminUserPermission;
+
+            // permissionsObject[name] = blnChecked;
+
+            if (children) {
+                children.forEach(child => {
+                    const childName = child.name;
+                    const childBlnChecked = child.blnChecked;
+
+                    if (permissionsObject.hasOwnProperty(childName)) {
+                        permissionsObject[childName] = childBlnChecked;
+                    }
+                });
+            }
+        }
+        return permissionsObject;
+    }
+
     // Common get Calls
     getDashboardData(params): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.dashboard, {

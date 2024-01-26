@@ -35,7 +35,7 @@ export class SwatchesComponent implements OnInit, OnDestroy {
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _inventoryService: InventoryService,
+    public _inventoryService: InventoryService,
     private _formBuilder: FormBuilder,
     private _snackBar: MatSnackBar,
     private _systemService: SystemService,

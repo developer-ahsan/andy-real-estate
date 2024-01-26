@@ -18,6 +18,7 @@ import { ProductsDetails } from "app/modules/admin/apps/ecommerce/inventory/inve
 import moment from "moment";
 import { MatSlideToggleChange } from "@angular/material/slide-toggle";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { DashboardsService } from "../dashboard.service";
 
 @Component({
   selector: "app-dashboard-details",
@@ -32,6 +33,7 @@ export class DashboardDetailsComponent implements OnInit, OnDestroy {
    * Constructor
    */
   constructor(
+    private _commonService: DashboardsService
   ) { }
 
   // -----------------------------------------------------------------------------------------------------
@@ -43,7 +45,7 @@ export class DashboardDetailsComponent implements OnInit, OnDestroy {
    */
 
   ngOnInit(): void {
-
+    this._commonService.adminUserPermissions = this._commonService.assignPermissions('dashboard', this._commonService.adminUserPermissions);
   }
 
   /**

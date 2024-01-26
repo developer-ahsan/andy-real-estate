@@ -1,67 +1,75 @@
 <div class="w-full">
-    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
-    </ngx-skeleton-loader>
-    <div class="row" *ngIf="!isLoading">
-        <div class="col-12 my-2">
-            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-                <div class="p-6 sm:p-8 lg:p-10 w-full">
-                    <div class="text-2xl font-bold">
-                        Duplicate Product
-                    </div>
-                    <p>Enter the necessary information below to duplicate the product</p>
-                    <!-- Core product -->
-                    <div class="gap-y-4 mt-6">
-                        <form [formGroup]="firstFormGroup">
-                            <div class="row my-3">
-                                <div class="col-12 mt-3">
-                                    <mat-form-field class="w-full">
-                                        <mat-label>New Manufacturer Number</mat-label>
-                                        <input matInput formControlName="number">
-                                        <mat-error>Manufacturer Number is required</mat-error>
+    <div class="alert m-4 w-full alert-danger p-4 text-lg text-center font-bold"
+        *ngIf="!_inventoryService.adminUserPermissions.viewDuplicate">
+        You do not have permission to access this section.
+    </div>
+    <ng-container *ngIf="_inventoryService.adminUserPermissions.viewDuplicate">
+        <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+        </ngx-skeleton-loader>
+        <div class="row" *ngIf="!isLoading">
+            <div class="col-12 my-2">
+                <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                    <div class="p-6 sm:p-8 lg:p-10 w-full">
+                        <div class="text-2xl font-bold">
+                            Duplicate Product
+                        </div>
+                        <p>Enter the necessary information below to duplicate the product</p>
+                        <!-- Core product -->
+                        <div class="gap-y-4 mt-6">
+                            <form [formGroup]="firstFormGroup">
+                                <div class="row my-3">
+                                    <div class="col-12 mt-3">
+                                        <mat-form-field class="w-full">
+                                            <mat-label>New Manufacturer Number</mat-label>
+                                            <input matInput formControlName="number">
+                                            <mat-error>Manufacturer Number is required</mat-error>
 
-                                    </mat-form-field>
-                                    <div class="text-red-500 -mt-4 mb-2">
-                                        Different than : {{this.selectedProduct.productNumber}}
+                                        </mat-form-field>
+                                        <div class="text-red-500 -mt-4 mb-2">
+                                            Different than : {{this.selectedProduct.productNumber}}
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <mat-form-field class="w-full">
+                                            <mat-label>New Name</mat-label>
+                                            <input matInput formControlName="name">
+                                            <mat-error>New Name is required</mat-error>
+                                        </mat-form-field>
                                     </div>
                                 </div>
-                                <div class="col-12">
-                                    <mat-form-field class="w-full">
-                                        <mat-label>New Name</mat-label>
-                                        <input matInput formControlName="name">
-                                        <mat-error>New Name is required</mat-error>
-                                    </mat-form-field>
+                            </form>
+                        </div>
+                        <div class="flex items-center justify-end w-full">
+                            <div class="flex items-center my-2">
+                                <div class="flex items-center mr-4" *ngIf="flashMessage">
+                                    <ng-container *ngIf="flashMessage === 'success'">
+                                        <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
+                                        </mat-icon>
+                                        <span class="ml-2">Duplicate product created successfully</span>
+                                    </ng-container>
+                                    <ng-container *ngIf="flashMessage === 'error'">
+                                        <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                        <span class="ml-2" *ngIf="!emptyValidationCheck">An error occurred, try
+                                            again!</span>
+                                        <span class="ml-2" *ngIf="emptyValidationCheck">Both name and number are
+                                            required
+                                            for duplication
+                                        </span>
+                                    </ng-container>
                                 </div>
+                                <button class="min-w-40" mat-stroked-button [matTooltip]="'Add New Feature'"
+                                    (click)="addDuplicate()" [disabled]="duplicateLoader">
+                                    <mat-progress-spinner *ngIf="duplicateLoader" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
+                                    <mat-icon *ngIf="!duplicateLoader" svgIcon="heroicons_outline:duplicate"></mat-icon>
+                                    <span *ngIf="!duplicateLoader" class="ml-1 mr-1">Duplicate Product</span>
+                                </button>
                             </div>
-                        </form>
-                    </div>
-                    <div class="flex items-center justify-end w-full">
-                        <div class="flex items-center my-2">
-                            <div class="flex items-center mr-4" *ngIf="flashMessage">
-                                <ng-container *ngIf="flashMessage === 'success'">
-                                    <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
-                                    </mat-icon>
-                                    <span class="ml-2">Duplicate product created successfully</span>
-                                </ng-container>
-                                <ng-container *ngIf="flashMessage === 'error'">
-                                    <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
-                                    <span class="ml-2" *ngIf="!emptyValidationCheck">An error occurred, try
-                                        again!</span>
-                                    <span class="ml-2" *ngIf="emptyValidationCheck">Both name and number are required
-                                        for duplication
-                                    </span>
-                                </ng-container>
-                            </div>
-                            <button class="min-w-40" mat-stroked-button [matTooltip]="'Add New Feature'"
-                                (click)="addDuplicate()" [disabled]="duplicateLoader">
-                                <mat-progress-spinner *ngIf="duplicateLoader" [diameter]="24" [mode]="'indeterminate'">
-                                </mat-progress-spinner>
-                                <mat-icon *ngIf="!duplicateLoader" svgIcon="heroicons_outline:duplicate"></mat-icon>
-                                <span *ngIf="!duplicateLoader" class="ml-1 mr-1">Duplicate Product</span>
-                            </button>
                         </div>
                     </div>
-                </div>
-            </fuse-card>
+                </fuse-card>
+            </div>
         </div>
-    </div>
+    </ng-container>
 </div>

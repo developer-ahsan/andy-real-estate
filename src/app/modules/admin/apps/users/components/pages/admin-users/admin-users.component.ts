@@ -87,12 +87,23 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
   sessionUser: any;
   userPassword = '';
   userDetails: any;
+
+  adminUserPermissions = {
+    addAdminUser: true,
+    deleteAdminUser: false,
+    newAdminUser: false,
+    selectAdminUser: false,
+    updateAdminUser: false,
+    updateUserPermissions: false,
+    viewDisabledAdminUsers: false,
+    viewUserPermissions: false
+  }
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _UsersService: UsersService,
     private _commonService: DashboardsService
   ) { }
-
   initForm() {
     this.addNewUserForm = new FormGroup({
       userName: new FormControl('', Validators.required),
@@ -131,6 +142,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
     }
   }
   ngOnInit(): void {
+    this.adminUserPermissions = this._commonService.assignPermissions('adminUser', this.adminUserPermissions);
     this.userDetails = JSON.parse(localStorage.getItem('userDetails'));
     this._UsersService.getIPAddress().subscribe(res => {
       this.ipAddress = res["ip"];

@@ -14,6 +14,7 @@ import { FormControl } from '@angular/forms';
 import { MatDrawer } from '@angular/material/sidenav';
 import { AuthService } from 'app/core/auth/auth.service';
 import { CatalogService } from '../../apps/catalog/components/catalog.service';
+import { DashboardsService } from '../../dashboards/dashboard.service';
 
 
 
@@ -60,8 +61,9 @@ export class ImportExportComponent {
     constructor(
         private _changeDetectorRef: ChangeDetectorRef,
         private _router: Router,
-        public _rapidService: ImportExportService,
+        public _importService: ImportExportService,
         private route: ActivatedRoute,
+        private _commonService: DashboardsService
     ) {
 
     }
@@ -75,6 +77,7 @@ export class ImportExportComponent {
      */
 
     ngOnInit(): void {
+        this._importService.adminUserPermissions = this._commonService.assignPermissions('importExport', this._importService.adminUserPermissions);
         this._router.events.subscribe((event) => {
             if (event instanceof NavigationEnd) {
                 this.selectedScreeen = this.route.children[0].snapshot.data.title;

@@ -497,3 +497,46 @@ export interface UploadQuoteArtProof {
     blnRespond: boolean;
     isFileExist: boolean;
 };
+
+export interface UpdateQuoteArtworkStatus {
+    cartLineID: number;
+    cartID: number;
+    cartDate: string;
+    imprintID: number;
+    userID: number;
+    inHandsDate: string;
+    statusID: number;
+    storeID: number;
+    storeName: string;
+    storeCode: string;
+    protocol: string;
+    storeURL: string;
+    blnRespond: boolean;
+    blnGroupRun: boolean;
+    proofComments: string;
+    blnApproved: boolean; // Check fk_statusID for all orderLineImprintID's in the orderline 1 if statusID of imprint is "5,6,7,9,11,16" else 0
+    smartArtLoggedInUserName: string;
+    blnAdditionalArtApproval: boolean;
+    blnAdditionalApprovalOverride: boolean;
+    storePrimaryHighlight: string;
+    billingStudentOrgCode: string;
+    imprintsCount: number;
+    storeProductImage: string;
+    blnIgnoreAdditionalArtEmails: boolean;
+    blnProofSent: boolean;
+    fk_artApprovalContactID: number;
+    fk_storeUserApprovalContactID: number;
+    storeUserID: number;
+    isFileExist: boolean;
+    proofComment: string;
+    pk_userID: number;
+    productNumber: string;
+    productName: string;
+    locationName: string;
+    methodName: string;
+    userCompanyName: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    update_quote_artwork_status: boolean;
+};

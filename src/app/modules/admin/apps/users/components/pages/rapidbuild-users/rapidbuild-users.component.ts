@@ -6,6 +6,7 @@ import { finalize, takeUntil } from 'rxjs/operators';
 import { UsersService } from '../../users.service';
 import { applyBlanketCustomerPercentage, newFLPSUser, newRapidbuildUser, removeFLPSUser, RemoveRapidUser, updateFLPSUser, updateRapidbuildUser, updateRapidBuildUserStores } from '../../users.types';
 import moment from 'moment';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 declare var $: any;
 @Component({
   selector: 'app-rapidbuild-users',
@@ -68,8 +69,13 @@ export class RapidBuildUsersComponent implements OnInit, OnDestroy {
   ngSPID = '';
 
   tempRemoveData: any;
+
+  adminUserPermissions = {
+    selectRapidBuildUser: false,
+  }
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
+    private _commonService: DashboardsService,
     private _UsersService: UsersService
   ) { }
 
@@ -97,6 +103,7 @@ export class RapidBuildUsersComponent implements OnInit, OnDestroy {
     });
   }
   ngOnInit(): void {
+    this.adminUserPermissions = this._commonService.assignPermissions('rapidBuildUser', this.adminUserPermissions);
     this.initForm();
     this.isLoading = true;
     this.getAdminRapidUsers(1, 'get');

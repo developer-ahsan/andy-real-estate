@@ -38,7 +38,7 @@ export class VideoComponent implements OnInit, OnDestroy {
   randomString = Math.random();
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _inventoryService: InventoryService,
+    public _inventoryService: InventoryService,
     private _commonService: DashboardsService,
     private _formBuilder: FormBuilder,
     private sanitizer: DomSanitizer,

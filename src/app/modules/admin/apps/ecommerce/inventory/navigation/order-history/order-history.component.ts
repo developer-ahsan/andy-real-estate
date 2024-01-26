@@ -36,7 +36,7 @@ export class OrderHistoryComponent implements OnInit, OnDestroy {
   totalAmount = 0;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _inventoryService: InventoryService,
+    public _inventoryService: InventoryService,
     private _snackBar: MatSnackBar
   ) { }
 

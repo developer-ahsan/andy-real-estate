@@ -1,163 +1,172 @@
 <div class="w-full">
-    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
-    </ngx-skeleton-loader>
-    <div class="row" *ngIf="!isLoading">
-        <div class="col-12 my-2">
-            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-                <div class="p-6 sm:p-8 lg:p-10 w-full">
-                    <div class="row" *ngIf="isSupplierFetchingFailed">
-                        <div class="col-12 flex justify-end">
-                            <button class="min-w-40" mat-stroked-button [matTooltip]="'Fetch all suppliers'"
-                                (click)="getAllSuppliersRetry()" [disabled]="isRefetchLoader">
-                                <mat-progress-spinner *ngIf="isRefetchLoader" [diameter]="24" [mode]="'indeterminate'">
-                                </mat-progress-spinner>
-                                <span *ngIf="!isRefetchLoader" class="ml-1 mr-1">Refetch Suppliers</span>
-                            </button>
+    <div class="alert m-4 w-full alert-danger p-4 text-lg text-center font-bold"
+        *ngIf="!_inventoryService.productDescription.viewDescription">
+        You do not have permission to access this section.
+    </div>
+    <ng-container *ngIf="_inventoryService.productDescription.viewDescription">
+        <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+        </ngx-skeleton-loader>
+        <div class="row" *ngIf="!isLoading">
+            <div class="col-12 my-2">
+                <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                    <div class="p-6 sm:p-8 lg:p-10 w-full">
+                        <div class="row" *ngIf="isSupplierFetchingFailed">
+                            <div class="col-12 flex justify-end">
+                                <button class="min-w-40" mat-stroked-button [matTooltip]="'Fetch all suppliers'"
+                                    (click)="getAllSuppliersRetry()" [disabled]="isRefetchLoader">
+                                    <mat-progress-spinner *ngIf="isRefetchLoader" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
+                                    <span *ngIf="!isRefetchLoader" class="ml-1 mr-1">Refetch Suppliers</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Search Products By Supplier -->
+                        <mat-form-field appearance="fill" class="w-full">
+                            <mat-label>Select a supplier</mat-label>
+                            <mat-select [(value)]="supplierSelected" [disabled]="isSupplierNotReceived">
+                                <mat-option (click)="selectBySupplier(supplier)" [value]="supplier"
+                                    *ngFor="let supplier of suppliers">
+                                    {{supplier.companyName}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </fuse-card>
+            </div>
+        </div>
+        <div class="row" *ngIf="!isLoading">
+            <div class="col-12 my-2">
+                <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                    <div class="p-6 sm:p-8 lg:p-10 w-full">
+                        <div class="text-2xl font-bold">
+                            Name & Description
+                        </div>
+
+                        <!-- Form -->
+                        <div class="gap-y-4 mt-6">
+                            <form [formGroup]="productDescriptionForm">
+                                <div class="row my-5">
+                                    <div class="col-lg-6 col-12">
+                                        <mat-form-field class="w-full">
+                                            <mat-label>Name (100) </mat-label>
+                                            <input matInput [formControlName]="'productName'">
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col-lg-6 col-12">
+                                        <mat-form-field class="w-full">
+                                            <mat-label>Product Number (40)</mat-label>
+                                            <input matInput maxlength="40" [formControlName]="'productNumber'">
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col-12">
+                                        <mat-form-field class="w-full">
+                                            <mat-label>Permalink (300)</mat-label>
+                                            <input matInput maxlength="300" [formControlName]="'ProductPermalink'">
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col-lg-8 col-12">
+                                        <mat-form-field class="w-full">
+                                            <mat-label>Supplier Link URL: (200)</mat-label>
+                                            <input matInput maxlength="200" [formControlName]="'supplierLink'">
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col-lg-4 col-12" *ngIf="selectedProduct?.blnApparel">
+                                        <mat-form-field class="w-full">
+                                            <mat-label>Sex</mat-label>
+                                            <mat-select [formControlName]="'sex'" placeholder="Select Sex">
+                                                <mat-option [value]="0">N/A</mat-option>
+                                                <mat-option [value]="1">Men's</mat-option>
+                                                <mat-option [value]="2">Women's</mat-option>
+                                                <mat-option [value]="3">Men's/Women's</mat-option>
+                                                <mat-option [value]="4">Unisex</mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col-12 mb-6">
+                                        <div>Description</div>
+                                        <quill-editor [formControlName]="'productDesc'" [modules]="quillModules">
+                                        </quill-editor>
+                                    </div>
+                                </div>
+                                <div class="row mt-top-30px">
+                                    <div class="col-lg-6 col-12 mt-6">
+                                        <mat-form-field class="w-full">
+                                            <mat-label>Mini Descr. (1000)</mat-label>
+                                            <textarea matInput maxlength="1000" rows="5"
+                                                [formControlName]="'miniDesc'"></textarea>
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col-lg-6 col-12 mt-6">
+                                        <mat-form-field class="w-full">
+                                            <mat-label>Meta desc (160)</mat-label>
+                                            <textarea matInput maxlength="160" rows="5"
+                                                [formControlName]="'metaDesc'"></textarea>
+                                            <mat-icon class="icon-size-5 text-secondary ml-2" style="cursor: pointer;"
+                                                (click)="copyMiniToMeta()" [matTooltip]="'Copy from mini description'"
+                                                svgIcon="mat_outline:content_copy">
+                                            </mat-icon>
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col-lg-6 col-12">
+                                        <mat-form-field class="w-full">
+                                            <mat-label>Meta keywords (50) </mat-label>
+                                            <input matInput maxlength="50" [formControlName]="'keywords'">
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col-lg-6 col-12">
+                                        <mat-form-field class="w-full">
+                                            <mat-label>Internal keywords (800)</mat-label>
+                                            <input matInput maxlength="800" [formControlName]="'internalKeywords'">
+                                            <mat-icon class="icon-size-5 text-secondary ml-2" style="cursor: pointer;"
+                                                (click)="copyMetaToInternal()" [matTooltip]="'Copy from meta keywords'"
+                                                svgIcon="mat_outline:content_copy">
+                                            </mat-icon>
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col-lg-6 col-12">
+                                        <mat-form-field class="w-full">
+                                            <mat-label>Notes (500)</mat-label>
+                                            <textarea matInput rows="5" [formControlName]="'notes'"></textarea>
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col-lg-6 col-12">
+                                        <mat-form-field class="w-full">
+                                            <mat-label>Special notes for purchase order</mat-label>
+                                            <textarea matInput rows="5"
+                                                [formControlName]="'purchaseOrderNotes'"></textarea>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="flex items-center justify-end w-full">
+                            <div class="flex items-center my-2">
+                                <div class="flex items-center mr-4" *ngIf="flashMessage">
+                                    <ng-container *ngIf="flashMessage === 'success'">
+                                        <mat-icon class="text-green-500"
+                                            [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                                        <span class="ml-2">Product Description added successfully</span>
+                                    </ng-container>
+                                    <ng-container *ngIf="flashMessage === 'error'">
+                                        <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                        <span class="ml-2">An error occurred, try again!</span>
+                                    </ng-container>
+                                </div>
+                                <button class="min-w-40" mat-stroked-button [matTooltip]="'Update Description'"
+                                    (click)="updateDescription()" [disabled]="descriptionLoader">
+                                    <mat-progress-spinner *ngIf="descriptionLoader" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
+                                    <mat-icon *ngIf="!descriptionLoader" svgIcon="mode_edit_outline"></mat-icon>
+                                    <span *ngIf="!descriptionLoader" class="ml-1 mr-1">Update</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
-
-                    <!-- Search Products By Supplier -->
-                    <mat-form-field appearance="fill" class="w-full">
-                        <mat-label>Select a supplier</mat-label>
-                        <mat-select [(value)]="supplierSelected" [disabled]="isSupplierNotReceived">
-                            <mat-option (click)="selectBySupplier(supplier)" [value]="supplier"
-                                *ngFor="let supplier of suppliers">
-                                {{supplier.companyName}}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-            </fuse-card>
+                </fuse-card>
+            </div>
         </div>
-    </div>
-    <div class="row" *ngIf="!isLoading">
-        <div class="col-12 my-2">
-            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-                <div class="p-6 sm:p-8 lg:p-10 w-full">
-                    <div class="text-2xl font-bold">
-                        Name & Description
-                    </div>
-
-                    <!-- Form -->
-                    <div class="gap-y-4 mt-6">
-                        <form [formGroup]="productDescriptionForm">
-                            <div class="row my-5">
-                                <div class="col-lg-6 col-12">
-                                    <mat-form-field class="w-full">
-                                        <mat-label>Name (100) </mat-label>
-                                        <input matInput [formControlName]="'productName'">
-                                    </mat-form-field>
-                                </div>
-                                <div class="col-lg-6 col-12">
-                                    <mat-form-field class="w-full">
-                                        <mat-label>Product Number (40)</mat-label>
-                                        <input matInput maxlength="40" [formControlName]="'productNumber'">
-                                    </mat-form-field>
-                                </div>
-                                <div class="col-12">
-                                    <mat-form-field class="w-full">
-                                        <mat-label>Permalink (300)</mat-label>
-                                        <input matInput maxlength="300" [formControlName]="'ProductPermalink'">
-                                    </mat-form-field>
-                                </div>
-                                <div class="col-lg-8 col-12">
-                                    <mat-form-field class="w-full">
-                                        <mat-label>Supplier Link URL: (200)</mat-label>
-                                        <input matInput maxlength="200" [formControlName]="'supplierLink'">
-                                    </mat-form-field>
-                                </div>
-                                <div class="col-lg-4 col-12" *ngIf="selectedProduct?.blnApparel">
-                                    <mat-form-field class="w-full">
-                                        <mat-label>Sex</mat-label>
-                                        <mat-select [formControlName]="'sex'" placeholder="Select Sex">
-                                            <mat-option [value]="0">N/A</mat-option>
-                                            <mat-option [value]="1">Men's</mat-option>
-                                            <mat-option [value]="2">Women's</mat-option>
-                                            <mat-option [value]="3">Men's/Women's</mat-option>
-                                            <mat-option [value]="4">Unisex</mat-option>
-                                        </mat-select>
-                                    </mat-form-field>
-                                </div>
-                                <div class="col-12 mb-6">
-                                    <div>Description</div>
-                                    <quill-editor [formControlName]="'productDesc'" [modules]="quillModules">
-                                    </quill-editor>
-                                </div>
-                            </div>
-                            <div class="row mt-top-30px">
-                                <div class="col-lg-6 col-12 mt-6">
-                                    <mat-form-field class="w-full">
-                                        <mat-label>Mini Descr. (1000)</mat-label>
-                                        <textarea matInput maxlength="1000" rows="5"
-                                            [formControlName]="'miniDesc'"></textarea>
-                                    </mat-form-field>
-                                </div>
-                                <div class="col-lg-6 col-12 mt-6">
-                                    <mat-form-field class="w-full">
-                                        <mat-label>Meta desc (160)</mat-label>
-                                        <textarea matInput maxlength="160" rows="5"
-                                            [formControlName]="'metaDesc'"></textarea>
-                                        <mat-icon class="icon-size-5 text-secondary ml-2" style="cursor: pointer;"
-                                            (click)="copyMiniToMeta()" [matTooltip]="'Copy from mini description'"
-                                            svgIcon="mat_outline:content_copy">
-                                        </mat-icon>
-                                    </mat-form-field>
-                                </div>
-                                <div class="col-lg-6 col-12">
-                                    <mat-form-field class="w-full">
-                                        <mat-label>Meta keywords (50) </mat-label>
-                                        <input matInput maxlength="50" [formControlName]="'keywords'">
-                                    </mat-form-field>
-                                </div>
-                                <div class="col-lg-6 col-12">
-                                    <mat-form-field class="w-full">
-                                        <mat-label>Internal keywords (800)</mat-label>
-                                        <input matInput maxlength="800" [formControlName]="'internalKeywords'">
-                                        <mat-icon class="icon-size-5 text-secondary ml-2" style="cursor: pointer;"
-                                            (click)="copyMetaToInternal()" [matTooltip]="'Copy from meta keywords'"
-                                            svgIcon="mat_outline:content_copy">
-                                        </mat-icon>
-                                    </mat-form-field>
-                                </div>
-                                <div class="col-lg-6 col-12">
-                                    <mat-form-field class="w-full">
-                                        <mat-label>Notes (500)</mat-label>
-                                        <textarea matInput rows="5" [formControlName]="'notes'"></textarea>
-                                    </mat-form-field>
-                                </div>
-                                <div class="col-lg-6 col-12">
-                                    <mat-form-field class="w-full">
-                                        <mat-label>Special notes for purchase order</mat-label>
-                                        <textarea matInput rows="5" [formControlName]="'purchaseOrderNotes'"></textarea>
-                                    </mat-form-field>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="flex items-center justify-end w-full">
-                        <div class="flex items-center my-2">
-                            <div class="flex items-center mr-4" *ngIf="flashMessage">
-                                <ng-container *ngIf="flashMessage === 'success'">
-                                    <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
-                                    <span class="ml-2">Product Description added successfully</span>
-                                </ng-container>
-                                <ng-container *ngIf="flashMessage === 'error'">
-                                    <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
-                                    <span class="ml-2">An error occurred, try again!</span>
-                                </ng-container>
-                            </div>
-                            <button class="min-w-40" mat-stroked-button [matTooltip]="'Update Description'"
-                                (click)="updateDescription()" [disabled]="descriptionLoader">
-                                <mat-progress-spinner *ngIf="descriptionLoader" [diameter]="24"
-                                    [mode]="'indeterminate'">
-                                </mat-progress-spinner>
-                                <mat-icon *ngIf="!descriptionLoader" svgIcon="mode_edit_outline"></mat-icon>
-                                <span *ngIf="!descriptionLoader" class="ml-1 mr-1">Update</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </fuse-card>
-        </div>
-    </div>
+    </ng-container>
 </div>

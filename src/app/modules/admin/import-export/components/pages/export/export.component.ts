@@ -28,7 +28,7 @@ export class OrderExportComponent implements OnInit, OnDestroy {
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _authService: AuthService,
-    private _exportService: ImportExportService,
+    public _exportService: ImportExportService,
     private _commonService: DashboardsService,
     private router: Router,
     private _activeRoute: ActivatedRoute
@@ -61,10 +61,14 @@ export class OrderExportComponent implements OnInit, OnDestroy {
       this._exportService.snackBar('Please select a store');
       return;
     }
-    const queryParams: NavigationExtras = {
-      queryParams: { storeID: this.selectedStore.pk_storeID, type: this.ngType, storeName: this.selectedStore.storeName }
-    };
-    this.router.navigate(['/import-export/export-details'], queryParams);
+    if (this._exportService.adminUserPermissions.selectCategories) {
+      const queryParams: NavigationExtras = {
+        queryParams: { storeID: this.selectedStore.pk_storeID, type: this.ngType, storeName: this.selectedStore.storeName }
+      };
+      this.router.navigate(['/import-export/export-details'], queryParams);
+    } else {
+      this._exportService.snackBar('You do not have permission to access this section.');
+    }
   }
   /**
      * On destroy

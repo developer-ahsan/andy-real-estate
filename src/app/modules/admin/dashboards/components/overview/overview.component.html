@@ -1,6 +1,9 @@
 <div class="flex flex-col flex-auto w-full">
-
-    <div class="flex flex-wrap w-full  p-6 md:p-8">
+    <div class="alert m-4 w-full alert-danger p-4 text-lg text-center font-bold"
+        *ngIf="!_analyticsService.adminUserPermissions.manager">
+        You do not have permission to access this section.
+    </div>
+    <div class="flex flex-wrap w-full  p-6 md:p-8" *ngIf="_analyticsService.adminUserPermissions.manager">
 
         <!-- Title and action buttons -->
         <div class="flex items-center justify-between w-full">

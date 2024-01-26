@@ -1,42 +1,49 @@
 <div class="w-full">
-    <div class="row" *ngIf="!isLoading">
-        <div class="col-12 my-2">
-            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-                <div class="p-6 sm:p-8 lg:p-10 w-full">
-                    <div class="text-2xl font-bold">
-                        Delete Product
-                    </div>
-                    <!-- Core product -->
-                    <div class="gap-y-4 mt-6">
-                        <fuse-alert *ngIf="selectedProduct.storeProductCheck > 0" class="mb-2" [appearance]="'soft'"
-                            [type]="'warning'" [showIcon]="true">
-                            ERROR: Product is assigned to {{selectedProduct.storeProductCheck}} store(s). Un-assign
-                            first.
-                        </fuse-alert>
-                        <div *ngIf="selectedProduct.storeProductCheck == 0">
-                            <fuse-alert class="mb-2" [appearance]="'soft'" [type]="'success'" [showIcon]="true">
-                                Product is not assigned to any store.
+    <div class="alert m-4 w-full alert-danger p-4 text-lg text-center font-bold"
+        *ngIf="!_inventoryService.adminUserPermissions.viewDeleteProduct">
+        You do not have permission to access this section.
+    </div>
+    <ng-container *ngIf="_inventoryService.adminUserPermissions.viewDeleteProduct">
+        <div class="row" *ngIf="!isLoading">
+            <div class="col-12 my-2">
+                <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                    <div class="p-6 sm:p-8 lg:p-10 w-full">
+                        <div class="text-2xl font-bold">
+                            Delete Product
+                        </div>
+                        <!-- Core product -->
+                        <div class="gap-y-4 mt-6">
+                            <fuse-alert *ngIf="selectedProduct.storeProductCheck > 0" class="mb-2" [appearance]="'soft'"
+                                [type]="'warning'" [showIcon]="true">
+                                ERROR: Product is assigned to {{selectedProduct.storeProductCheck}} store(s). Un-assign
+                                first.
                             </fuse-alert>
-                            <mat-form-field class="w-full">
-                                <mat-label>Enter your password to confirm deletion</mat-label>
-                                <input matInput type="password" maxlength="50" [(ngModel)]="ngPassword"
-                                    placeholder="Enter your password">
-                            </mat-form-field>
-                            <div>
-                                <button class="min-w-40" mat-stroked-button [matTooltip]="'Delete Product'"
-                                    (click)="removeModal()" [disabled]="removeLoader">
-                                    <mat-progress-spinner *ngIf="removeLoader" [diameter]="24" [mode]="'indeterminate'">
-                                    </mat-progress-spinner>
-                                    <mat-icon *ngIf="!removeLoader" svgIcon="heroicons_outline:trash"></mat-icon>
-                                    <span *ngIf="!removeLoader" class="ml-1 mr-1">Delete Product</span>
-                                </button>
+                            <div *ngIf="selectedProduct.storeProductCheck == 0">
+                                <fuse-alert class="mb-2" [appearance]="'soft'" [type]="'success'" [showIcon]="true">
+                                    Product is not assigned to any store.
+                                </fuse-alert>
+                                <mat-form-field class="w-full">
+                                    <mat-label>Enter your password to confirm deletion</mat-label>
+                                    <input matInput type="password" maxlength="50" [(ngModel)]="ngPassword"
+                                        placeholder="Enter your password">
+                                </mat-form-field>
+                                <div>
+                                    <button class="min-w-40" mat-stroked-button [matTooltip]="'Delete Product'"
+                                        (click)="removeModal()" [disabled]="removeLoader">
+                                        <mat-progress-spinner *ngIf="removeLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                        <mat-icon *ngIf="!removeLoader" svgIcon="heroicons_outline:trash"></mat-icon>
+                                        <span *ngIf="!removeLoader" class="ml-1 mr-1">Delete Product</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </fuse-card>
+                </fuse-card>
+            </div>
         </div>
-    </div>
+    </ng-container>
 </div>
 <div class="modal" tabindex="-1" role="dialog" #deleteProduct>
     <div class="modal-dialog" role="document">

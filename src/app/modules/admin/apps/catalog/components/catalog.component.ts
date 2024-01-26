@@ -123,7 +123,9 @@ export class CatalogComponent {
   ]
 
 
-
+  public adminUserPermissions = {
+    home: false
+  }
   /**
    * Constructor
    */
@@ -294,6 +296,7 @@ export class CatalogComponent {
     });
   }
   ngOnInit(): void {
+    this.adminUserPermissions = this._commonService.assignPermissions('catalog', this.adminUserPermissions);
     this.getSuppliers();
     this.getColorsDecorationSizes();
   }

@@ -1,80 +1,87 @@
 <div class="w-full">
-    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
-    </ngx-skeleton-loader>
-
-    <div class="row" *ngIf="!isLoading">
-        <div class="col-12 my-2">
-            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-                <div class="p-6 sm:p-8 lg:p-10 w-full">
-                    <div class="text-2xl font-bold">
-                        Add Product Quote
-                    </div>
-                    <div class="gap-y-4 mt-6">
-                        <form [formGroup]="imageUploadForm">
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="mb-2">Upload a Product Quote Image: <span class="text-red-500">JPG, PNG,
-                                            or PDF only.</span> </div>
-                                    <input *ngIf="this.imagesArray?.length === 0" #fileInputImage type="file"
-                                        accept=".jpg,.png,.pdf" [formControlName]="'image'" (change)="upload($event)"
-                                        style="line-height: 2.5;" />
-                                </div>
-                                <div class="col-12 flex justify-end gap-x-2">
-                                    <button *ngIf="this.imagesArray?.length > 0" (click)="deleteImage()"
-                                        class="min-w-40 bg-red-500 border-red-500 text-white" mat-stroked-button
-                                        [disabled]="imageDeleteLoader">
-                                        <mat-progress-spinner *ngIf="imageDeleteLoader" [diameter]="24"
-                                            [mode]="'indeterminate'"></mat-progress-spinner>
-                                        <span *ngIf="!imageDeleteLoader" class="ml-1 mr-1">Delete</span>
-                                    </button>
-                                    <button *ngIf="this.imagesArray?.length === 0" (click)="uploadImage()"
-                                        class="min-w-40" mat-stroked-button [matTooltip]="'(JPG only!)'"
-                                        [disabled]="imageUploadLoader">
-                                        <mat-progress-spinner *ngIf="imageUploadLoader" [diameter]="24"
-                                            [mode]="'indeterminate'"></mat-progress-spinner>
-                                        <mat-icon *ngIf="!imageUploadLoader" [svgIcon]="'heroicons_outline:upload'">
-                                        </mat-icon>
-                                        <span *ngIf="!imageUploadLoader" class="ml-1 mr-1">Upload</span>
-                                    </button>
-
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </fuse-card>
-        </div>
+    <div class="alert m-4 w-full alert-danger p-4 text-lg text-center font-bold"
+        *ngIf="!_inventoryService.productDescription.viewProductQuote">
+        You do not have permission to access this section.
     </div>
+    <ng-container *ngIf="_inventoryService.productDescription.viewProductQuote">
+        <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+        </ngx-skeleton-loader>
 
-    <div class="row my-3" *ngIf="!isLoading">
-        <div class="col-12">
-            <div class="p-2" *ngIf="!imagesArray.length">
-                <div class="font-semibold p-5 alert alert-warning">
-                    No product quote for this product.
-                </div>
+        <div class="row" *ngIf="!isLoading">
+            <div class="col-12 my-2">
+                <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                    <div class="p-6 sm:p-8 lg:p-10 w-full">
+                        <div class="text-2xl font-bold">
+                            Add Product Quote
+                        </div>
+                        <div class="gap-y-4 mt-6">
+                            <form [formGroup]="imageUploadForm">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="mb-2">Upload a Product Quote Image: <span class="text-red-500">JPG,
+                                                PNG,
+                                                or PDF only.</span> </div>
+                                        <input *ngIf="this.imagesArray?.length === 0" #fileInputImage type="file"
+                                            accept=".jpg,.png,.pdf" [formControlName]="'image'"
+                                            (change)="upload($event)" style="line-height: 2.5;" />
+                                    </div>
+                                    <div class="col-12 flex justify-end gap-x-2">
+                                        <button *ngIf="this.imagesArray?.length > 0" (click)="deleteImage()"
+                                            class="min-w-40 bg-red-500 border-red-500 text-white" mat-stroked-button
+                                            [disabled]="imageDeleteLoader">
+                                            <mat-progress-spinner *ngIf="imageDeleteLoader" [diameter]="24"
+                                                [mode]="'indeterminate'"></mat-progress-spinner>
+                                            <span *ngIf="!imageDeleteLoader" class="ml-1 mr-1">Delete</span>
+                                        </button>
+                                        <button *ngIf="this.imagesArray?.length === 0" (click)="uploadImage()"
+                                            class="min-w-40" mat-stroked-button [matTooltip]="'(JPG only!)'"
+                                            [disabled]="imageUploadLoader">
+                                            <mat-progress-spinner *ngIf="imageUploadLoader" [diameter]="24"
+                                                [mode]="'indeterminate'"></mat-progress-spinner>
+                                            <mat-icon *ngIf="!imageUploadLoader" [svgIcon]="'heroicons_outline:upload'">
+                                            </mat-icon>
+                                            <span *ngIf="!imageUploadLoader" class="ml-1 mr-1">Upload</span>
+                                        </button>
+
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </fuse-card>
             </div>
-            <div class="row p-2" *ngIf="imagesArray.length">
-                <div class="col-lg-4 col-12" *ngFor="let image of imagesArray">
-                    <fuse-card *ngIf="extData !== 'pdf'"
-                        class="flex flex-col shadow rounded-2xl my-1 w-full filter-shopping hover: cursor-pointer">
-                        <div class="relative">
-                            <div class="absolute flex flex-col top-0 right-0 p-3">
-                                <!-- <button mat-icon-button>
+        </div>
+
+        <div class="row my-3" *ngIf="!isLoading">
+            <div class="col-12">
+                <div class="p-2" *ngIf="!imagesArray.length">
+                    <div class="font-semibold p-5 alert alert-warning">
+                        No product quote for this product.
+                    </div>
+                </div>
+                <div class="row p-2" *ngIf="imagesArray.length">
+                    <div class="col-lg-4 col-12" *ngFor="let image of imagesArray">
+                        <fuse-card *ngIf="extData !== 'pdf'"
+                            class="flex flex-col shadow rounded-2xl my-1 w-full filter-shopping hover: cursor-pointer">
+                            <div class="relative">
+                                <div class="absolute flex flex-col top-0 right-0 p-3">
+                                    <!-- <button mat-icon-button>
                                     <mat-icon class="icon-size-5 text-gray-50 text-opacity-50"
                                         [svgIcon]="'heroicons_solid:trash'"></mat-icon>
                                 </button> -->
+                                </div>
+                                <img class="object-cover rounded-2xl shadow-sm" src="{{image}}">
+
                             </div>
-                            <img class="object-cover rounded-2xl shadow-sm" src="{{image}}">
-
-                        </div>
 
 
-                    </fuse-card>
-                    <p (click)="openPDF()" class="underline cursor-pointer text-blue-500" *ngIf="extData === 'pdf'">
-                        Click here to view
-                        the product quote</p>
+                        </fuse-card>
+                        <p (click)="openPDF()" class="underline cursor-pointer text-blue-500" *ngIf="extData === 'pdf'">
+                            Click here to view
+                            the product quote</p>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </ng-container>
 </div>

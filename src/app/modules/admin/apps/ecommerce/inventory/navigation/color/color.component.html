@@ -1,392 +1,403 @@
 <div class="w-full">
-    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
-    </ngx-skeleton-loader>
+    <div class="alert m-4 w-full alert-danger p-4 text-lg text-center font-bold"
+        *ngIf="!_inventoryService.productOption.viewColors">
+        You do not have permission to access this section.
+    </div>
+    <ng-container *ngIf="_inventoryService.productOption.viewColors">
+        <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+        </ngx-skeleton-loader>
 
-    <div class="row" *ngIf="!isLoading" #topScrollAnchor1>
-        <div class="col-12 my-2">
-            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-                <div class="p-6 sm:p-8 lg:p-10 w-full">
-                    <div class="text-2xl font-bold">
-                        Add Color
-                    </div>
-
-                    <div class="row mt-6">
-                        <div class="col-12 flex justify-between">
-                            <p class="text-secondary font-bold">
-                                <span *ngIf="isDefaultColor">
-                                    <button
-                                        [matTooltip]="'Type keywords to fetch colors list. This field is required to be filled.'">
-                                        <i class="fa fa-info-circle"></i>
-                                    </button>
-                                    Select Color
-                                </span>
-
-                                <span *ngIf="!isDefaultColor">
-                                    Custom Colors (Comma-separated)
-                                </span>
-                            </p>
-                            <p class="text-secondary cursor-pointer underline">
-                                <span *ngIf="!isDefaultColor" (click)="changeDefaultColor()">
-                                    <button
-                                        [matTooltip]="'Type keywords to fetch colors list. This field is required to be filled.'">
-                                        <i class="fa fa-info-circle"></i>
-                                    </button>
-                                    Select Color
-                                </span>
-
-                                <span *ngIf="isDefaultColor" (click)="changeDefaultColor()">
-                                    Custom Colors (Comma-separated)
-                                </span>
-                            </p>
+        <div class="row" *ngIf="!isLoading" #topScrollAnchor1>
+            <div class="col-12 my-2">
+                <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                    <div class="p-6 sm:p-8 lg:p-10 w-full">
+                        <div class="text-2xl font-bold">
+                            Add Color
                         </div>
-                        <div class="col-12" *ngIf="isDefaultColor">
-                            <mat-form-field class="w-full">
-                                <input type="text" placeholder="Select Color" matInput [formControl]="colorName"
-                                    [matAutocomplete]="auto">
-                                <mat-hint class="mb-1"><span
-                                        *ngFor="let item of selectedColorsList; let i=index">{{item.colorName}}<span
-                                            *ngIf="i < selectedColorsList.length-1">, </span></span>
-                                </mat-hint>
-                                <mat-autocomplete #auto="matAutocomplete">
-                                    <mat-option *ngIf="isColorLoading" class="is-loading">Loading...
-                                    </mat-option>
-                                    <ng-container *ngIf="!isColorLoading">
-                                        <mat-option *ngFor="let result of results" (click)="colorSelected(result)"
-                                            [value]="result.colorName">
-                                            ({{result.pk_colorID}}) - {{ result.colorName }}
+
+                        <div class="row mt-6">
+                            <div class="col-12 flex justify-between">
+                                <p class="text-secondary font-bold">
+                                    <span *ngIf="isDefaultColor">
+                                        <button
+                                            [matTooltip]="'Type keywords to fetch colors list. This field is required to be filled.'">
+                                            <i class="fa fa-info-circle"></i>
+                                        </button>
+                                        Select Color
+                                    </span>
+
+                                    <span *ngIf="!isDefaultColor">
+                                        Custom Colors (Comma-separated)
+                                    </span>
+                                </p>
+                                <p class="text-secondary cursor-pointer underline">
+                                    <span *ngIf="!isDefaultColor" (click)="changeDefaultColor()">
+                                        <button
+                                            [matTooltip]="'Type keywords to fetch colors list. This field is required to be filled.'">
+                                            <i class="fa fa-info-circle"></i>
+                                        </button>
+                                        Select Color
+                                    </span>
+
+                                    <span *ngIf="isDefaultColor" (click)="changeDefaultColor()">
+                                        Custom Colors (Comma-separated)
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="col-12" *ngIf="isDefaultColor">
+                                <mat-form-field class="w-full">
+                                    <input type="text" placeholder="Select Color" matInput [formControl]="colorName"
+                                        [matAutocomplete]="auto">
+                                    <mat-hint class="mb-1"><span
+                                            *ngFor="let item of selectedColorsList; let i=index">{{item.colorName}}<span
+                                                *ngIf="i < selectedColorsList.length-1">, </span></span>
+                                    </mat-hint>
+                                    <mat-autocomplete #auto="matAutocomplete">
+                                        <mat-option *ngIf="isColorLoading" class="is-loading">Loading...
                                         </mat-option>
-                                    </ng-container>
-                                </mat-autocomplete>
-                            </mat-form-field>
+                                        <ng-container *ngIf="!isColorLoading">
+                                            <mat-option *ngFor="let result of results" (click)="colorSelected(result)"
+                                                [value]="result.colorName">
+                                                ({{result.pk_colorID}}) - {{ result.colorName }}
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12" *ngIf="!isDefaultColor">
+                                <mat-form-field class="example-chip-list w-full" appearance="fill">
+                                    <mat-chip-list class="pt-1" #colorchiplist>
+                                        <mat-chip [removable]="true" [selectable]="true"
+                                            *ngFor="let color of customColorsList" (removed)="removeCustomColor(color)">
+                                            {{color.colorName}}
+                                            <mat-icon class="icon-size-5" matChipRemove
+                                                [svgIcon]="'heroicons_solid:minus-circle'"></mat-icon>
+                                        </mat-chip>
+                                        <input [matChipInputFor]="colorchiplist" placeholder="New Color"
+                                            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                            [matChipInputAddOnBlur]="addOnBlur"
+                                            (matChipInputTokenEnd)="addCustomColors($event)">
+                                    </mat-chip-list>
+                                </mat-form-field>
+                            </div>
                         </div>
-                        <div class="col-12" *ngIf="!isDefaultColor">
-                            <mat-form-field class="example-chip-list w-full" appearance="fill">
-                                <mat-chip-list class="pt-1" #colorchiplist>
-                                    <mat-chip [removable]="true" [selectable]="true"
-                                        *ngFor="let color of customColorsList" (removed)="removeCustomColor(color)">
-                                        {{color.colorName}}
-                                        <mat-icon class="icon-size-5" matChipRemove
-                                            [svgIcon]="'heroicons_solid:minus-circle'"></mat-icon>
-                                    </mat-chip>
-                                    <input [matChipInputFor]="colorchiplist" placeholder="New Color"
-                                        [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                                        [matChipInputAddOnBlur]="addOnBlur"
-                                        (matChipInputTokenEnd)="addCustomColors($event)">
-                                </mat-chip-list>
-                            </mat-form-field>
-                        </div>
-                    </div>
 
-                    <!-- Colors -->
-                    <div class="gap-y-4">
-                        <form [formGroup]="colorForm">
-                            <div class="row">
-                                <div class="col-12">
-                                    <!-- <mat-form-field class="w-100">
+                        <!-- Colors -->
+                        <div class="gap-y-4">
+                            <form [formGroup]="colorForm">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <!-- <mat-form-field class="w-100">
                                         <mat-label>Color: ({{colorValue}})</mat-label>
                                         <input placeholder="" matInput [(ngModel)]="colorValue" [ngModelOptions]=" 
                                         {standalone: true}">
                                     </mat-form-field> -->
-                                    <mat-form-field class="w-full">
-                                        <mat-label>Color: ({{colorValue}})</mat-label>
-                                        <input matInput type="color" value="{{colorValue}}"
-                                            (input)="changeColor($event)" placeholder="Color">
-                                    </mat-form-field>
-                                </div>
-                                <div class="col-lg-6 col-12">
-                                    <mat-form-field class="w-full">
-                                        <mat-label>
-                                            Run
-                                        </mat-label>
-                                        <input matInput [formControlName]="'run'" type="number"
-                                            (mousewheel)="$event.preventDefault()" value="0.00" placeholder="Run">
-                                        <mat-icon class="icon-size-5 text-secondary cursor-pointer"
-                                            [matTooltip]="'Reset run value to 0.00'" (click)="resetRunValue()"
-                                            svgIcon="heroicons_outline:refresh"></mat-icon>
-                                    </mat-form-field>
-                                </div>
-                                <div class="col-lg-6 col-12">
-                                    <button
-                                        [matTooltip]="'Enter the hexadecimal value for corresponding color. This hexadecimal color will be used to create color swatches in multiple places on the SmartSites. You can enter upto five hexadecimal colors separated by entering Enter key.'">
-                                        <i class="fa fa-info-circle"></i>
-                                    </button>
-                                    <span class="ml-1">Hex</span>
-                                    <mat-form-field class="w-full">
-                                        <!-- <span matTextPrefix>#&nbsp;</span> -->
-                                        <input maxlength="7" matInput [formControlName]="'hex'" placeholder="Hex">
-                                        <mat-icon class="icon-size-5 text-secondary ml-2" style="cursor: pointer;"
-                                            (click)="copyColorToHex()" [matTooltip]="'Copy hex from color palette'"
-                                            svgIcon="mat_outline:content_copy">
-                                        </mat-icon>
-                                        <mat-error>This field is required</mat-error>
-                                    </mat-form-field>
-                                </div>
+                                        <mat-form-field class="w-full">
+                                            <mat-label>Color: ({{colorValue}})</mat-label>
+                                            <input matInput type="color" value="{{colorValue}}"
+                                                (input)="changeColor($event)" placeholder="Color">
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col-lg-6 col-12">
+                                        <mat-form-field class="w-full">
+                                            <mat-label>
+                                                Run
+                                            </mat-label>
+                                            <input matInput [formControlName]="'run'" type="number"
+                                                (mousewheel)="$event.preventDefault()" value="0.00" placeholder="Run">
+                                            <mat-icon class="icon-size-5 text-secondary cursor-pointer"
+                                                [matTooltip]="'Reset run value to 0.00'" (click)="resetRunValue()"
+                                                svgIcon="heroicons_outline:refresh"></mat-icon>
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col-lg-6 col-12">
+                                        <button
+                                            [matTooltip]="'Enter the hexadecimal value for corresponding color. This hexadecimal color will be used to create color swatches in multiple places on the SmartSites. You can enter upto five hexadecimal colors separated by entering Enter key.'">
+                                            <i class="fa fa-info-circle"></i>
+                                        </button>
+                                        <span class="ml-1">Hex</span>
+                                        <mat-form-field class="w-full">
+                                            <!-- <span matTextPrefix>#&nbsp;</span> -->
+                                            <input maxlength="7" matInput [formControlName]="'hex'" placeholder="Hex">
+                                            <mat-icon class="icon-size-5 text-secondary ml-2" style="cursor: pointer;"
+                                                (click)="copyColorToHex()" [matTooltip]="'Copy hex from color palette'"
+                                                svgIcon="mat_outline:content_copy">
+                                            </mat-icon>
+                                            <mat-error>This field is required</mat-error>
+                                        </mat-form-field>
+                                    </div>
 
-                                <!-- <div class="col-12">
+                                    <!-- <div class="col-12">
                                     <input type="file" accept=".jpg" id="image" (change)="uploadImage($event)" />
                                 </div> -->
+                                </div>
+                            </form>
+                        </div>
+                        <div class="flex items-center justify-end w-full">
+                            <div class="flex items-center my-2">
+                                <div class="flex items-center mr-4" *ngIf="flashMessage">
+                                    <ng-container *ngIf="flashMessage === 'success'">
+                                        <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
+                                        </mat-icon>
+                                        <span class="ml-2">Colors added successfully</span>
+                                    </ng-container>
+                                    <ng-container *ngIf="flashMessage === 'error'">
+                                        <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                        <span class="ml-2">An error occurred, try again!</span>
+                                    </ng-container>
+                                </div>
+                                <button class="min-w-40" mat-stroked-button [matTooltip]="'Add New Color'"
+                                    (click)="addColor()" [disabled]="colorAddLoader">
+                                    <mat-progress-spinner *ngIf="colorAddLoader" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
+                                    <mat-icon *ngIf="!colorAddLoader" [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                                    <span *ngIf="!colorAddLoader" class="ml-1 mr-1">Add Color</span>
+                                </button>
                             </div>
-                        </form>
-                    </div>
-                    <div class="flex items-center justify-end w-full">
-                        <div class="flex items-center my-2">
-                            <div class="flex items-center mr-4" *ngIf="flashMessage">
-                                <ng-container *ngIf="flashMessage === 'success'">
-                                    <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
-                                    </mat-icon>
-                                    <span class="ml-2">Colors added successfully</span>
-                                </ng-container>
-                                <ng-container *ngIf="flashMessage === 'error'">
-                                    <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
-                                    <span class="ml-2">An error occurred, try again!</span>
-                                </ng-container>
-                            </div>
-                            <button class="min-w-40" mat-stroked-button [matTooltip]="'Add New Color'"
-                                (click)="addColor()" [disabled]="colorAddLoader">
-                                <mat-progress-spinner *ngIf="colorAddLoader" [diameter]="24" [mode]="'indeterminate'">
-                                </mat-progress-spinner>
-                                <mat-icon *ngIf="!colorAddLoader" [svgIcon]="'heroicons_outline:plus'"></mat-icon>
-                                <span *ngIf="!colorAddLoader" class="ml-1 mr-1">Add Color</span>
-                            </button>
                         </div>
                     </div>
-                </div>
-            </fuse-card>
+                </fuse-card>
+            </div>
         </div>
-    </div>
 
-    <div class="row mb-3" *ngIf="!isLoading">
-        <div class="col-12">
-            <mat-card class="w-full mb-10 h-full rounded-2xl overflow-hidden">
-                <div class="row">
-                    <div class="col-lg-6 col-12">
-                        <div class="text-2xl font-bold">
-                            <button
-                                [matTooltip]="'Product color images must be: 1.) at least 600 x 600px, 2.) no larger than 1500 x 1500 px, 3.) Must be perfect squares (i.e. same width and height), and 4.) must be a JPG.Only colors that are checked will update. Anything not checked will not be modified at all.For swatch colors, you can enter up to 5 hex values separated by commas'">
-                                <i class="fa fa-info-circle"></i>
+        <div class="row mb-3" *ngIf="!isLoading">
+            <div class="col-12">
+                <mat-card class="w-full mb-10 h-full rounded-2xl overflow-hidden">
+                    <div class="row">
+                        <div class="col-lg-6 col-12">
+                            <div class="text-2xl font-bold">
+                                <button
+                                    [matTooltip]="'Product color images must be: 1.) at least 600 x 600px, 2.) no larger than 1500 x 1500 px, 3.) Must be perfect squares (i.e. same width and height), and 4.) must be a JPG.Only colors that are checked will update. Anything not checked will not be modified at all.For swatch colors, you can enter up to 5 hex values separated by commas'">
+                                    <i class="fa fa-info-circle"></i>
+                                </button>
+                                Colors
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-6" *ngIf="dataSource.length">
+                            <button class="min-w-40 w-full" mat-stroked-button [matTooltip]="'Delete Selected Colors'"
+                                (click)="deleteColors()" [disabled]="deleteLoader">
+                                <mat-progress-spinner *ngIf="deleteLoader" [diameter]="24" [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                                <span *ngIf="!deleteLoader" class="ml-1 mr-1">Remove Selected</span>
                             </button>
-                            Colors
+                        </div>
+                        <div class="col-lg-3 col-6" *ngIf="dataSource.length">
+                            <button class="min-w-40 w-full" mat-flat-button [color]="'primary'"
+                                [matTooltip]="'Update Selected Colors'" (click)="updateColor()"
+                                [disabled]="colorUpdateLoader">
+                                <mat-progress-spinner *ngIf="colorUpdateLoader" [diameter]="24"
+                                    [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                                <mat-icon *ngIf="!colorUpdateLoader" svgIcon="mat_outline:edit"></mat-icon>
+                                <span *ngIf="!colorUpdateLoader" class="ml-1 mr-1">Update</span>
+                            </button>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-6" *ngIf="dataSource.length">
-                        <button class="min-w-40 w-full" mat-stroked-button [matTooltip]="'Delete Selected Colors'"
-                            (click)="deleteColors()" [disabled]="deleteLoader">
-                            <mat-progress-spinner *ngIf="deleteLoader" [diameter]="24" [mode]="'indeterminate'">
-                            </mat-progress-spinner>
-                            <span *ngIf="!deleteLoader" class="ml-1 mr-1">Remove Selected</span>
-                        </button>
+                    <div>
+                        <mat-form-field class="w-full">
+                            <mat-label>Color Comment(50): <span class="text-red-500">(i.e. trim/body)</span></mat-label>
+                            <input matInput placeholder="Color Comment (body/trim)" maxlength="50"
+                                [(ngModel)]="txtColorParts">
+                        </mat-form-field>
                     </div>
-                    <div class="col-lg-3 col-6" *ngIf="dataSource.length">
-                        <button class="min-w-40 w-full" mat-flat-button [color]="'primary'"
-                            [matTooltip]="'Update Selected Colors'" (click)="updateColor()"
-                            [disabled]="colorUpdateLoader">
-                            <mat-progress-spinner *ngIf="colorUpdateLoader" [diameter]="24" [mode]="'indeterminate'">
-                            </mat-progress-spinner>
-                            <mat-icon *ngIf="!colorUpdateLoader" svgIcon="mat_outline:edit"></mat-icon>
-                            <span *ngIf="!colorUpdateLoader" class="ml-1 mr-1">Update</span>
-                        </button>
-                    </div>
-                </div>
-                <div>
-                    <mat-form-field class="w-full">
-                        <mat-label>Color Comment(50): <span class="text-red-500">(i.e. trim/body)</span></mat-label>
-                        <input matInput placeholder="Color Comment (body/trim)" maxlength="50"
-                            [(ngModel)]="txtColorParts">
-                    </mat-form-field>
-                </div>
 
-                <div *ngIf="dataSource.length > 0;else other_content">
-                    <table mat-table [dataSource]="dataSource" class="w-full border-t mt-3">
-                        <!-- Checkbox Column -->
-                        <ng-container matColumnDef="select">
-                            <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10">
-                                <mat-checkbox (change)="$event ? masterToggle() : null"
-                                    [checked]="selection.hasValue() && isAllSelected()"
-                                    [indeterminate]="selection.hasValue() && !isAllSelected()"
-                                    [aria-label]="checkboxLabel() ">
-                                </mat-checkbox>
-                            </th>
-                            <td mat-cell *matCellDef="let row">
-                                <mat-checkbox (click)="$event.stopPropagation()"
-                                    (change)="$event ? selection.toggle(row) : null"
-                                    [checked]="selection.isSelected(row)" [aria-label]="checkboxLabel(row)">
-                                </mat-checkbox>
-                            </td>
-                        </ng-container>
+                    <div *ngIf="dataSource.length > 0;else other_content">
+                        <table mat-table [dataSource]="dataSource" class="w-full border-t mt-3">
+                            <!-- Checkbox Column -->
+                            <ng-container matColumnDef="select">
+                                <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10">
+                                    <mat-checkbox (change)="$event ? masterToggle() : null"
+                                        [checked]="selection.hasValue() && isAllSelected()"
+                                        [indeterminate]="selection.hasValue() && !isAllSelected()"
+                                        [aria-label]="checkboxLabel() ">
+                                    </mat-checkbox>
+                                </th>
+                                <td mat-cell *matCellDef="let row">
+                                    <mat-checkbox (click)="$event.stopPropagation()"
+                                        (change)="$event ? selection.toggle(row) : null"
+                                        [checked]="selection.isSelected(row)" [aria-label]="checkboxLabel(row)">
+                                    </mat-checkbox>
+                                </td>
+                            </ng-container>
 
-                        <!-- Color Column -->
-                        <ng-container matColumnDef="color">
-                            <th mat-header-cell *matHeaderCellDef class="w-40 min-w-40"> Color </th>
-                            <td mat-cell *matCellDef="let element"> {{element.colorName}} </td>
-                        </ng-container>
+                            <!-- Color Column -->
+                            <ng-container matColumnDef="color">
+                                <th mat-header-cell *matHeaderCellDef class="w-40 min-w-40"> Color </th>
+                                <td mat-cell *matCellDef="let element"> {{element.colorName}} </td>
+                            </ng-container>
 
-                        <!-- Run Column -->
-                        <ng-container matColumnDef="run">
-                            <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10"> Run </th>
-                            <td mat-cell *matCellDef="let element">
-                                <mat-form-field class="w-2/3 mt-2" appearance="fill">
-                                    <input matInput type="number" (mousewheel)="$event.preventDefault()"
-                                        placeholder="Run" value="{{element.run}}"
-                                        (input)="rowUpdate(element, 'run', $event)">
-                                </mat-form-field>
-                            </td>
-                        </ng-container>
+                            <!-- Run Column -->
+                            <ng-container matColumnDef="run">
+                                <th mat-header-cell *matHeaderCellDef class="w-10 min-w-10"> Run </th>
+                                <td mat-cell *matCellDef="let element">
+                                    <mat-form-field class="w-2/3 mt-2" appearance="fill">
+                                        <input matInput type="number" (mousewheel)="$event.preventDefault()"
+                                            placeholder="Run" value="{{element.run}}"
+                                            (input)="rowUpdate(element, 'run', $event)">
+                                    </mat-form-field>
+                                </td>
+                            </ng-container>
 
-                        <!-- Hex Column -->
-                        <ng-container matColumnDef="hex">
-                            <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30"> Hex </th>
-                            <td mat-cell *matCellDef="let element;let i=index">
-                                <mat-form-field class="w-full mt-2 mx-1" appearance="fill">
-                                    <!-- <span matTextPrefix>#&nbsp;</span> -->
-                                    <input [(ngModel)]="element.rgb" (input)="rowUpdate(element, 'rgb', $event)"
-                                        placeholder="RGB" matInput>
-                                    <mat-icon class="icon-size-5 text-secondary ml-2" style="cursor: pointer;"
-                                        (click)="copyColorToHexx(i)" [matTooltip]="'Copy hex from color palette'"
-                                        svgIcon="mat_outline:content_copy">
-                                    </mat-icon>
+                            <!-- Hex Column -->
+                            <ng-container matColumnDef="hex">
+                                <th mat-header-cell *matHeaderCellDef class="w-30 min-w-30"> Hex </th>
+                                <td mat-cell *matCellDef="let element;let i=index">
+                                    <mat-form-field class="w-full mt-2 mx-1" appearance="fill">
+                                        <!-- <span matTextPrefix>#&nbsp;</span> -->
+                                        <input [(ngModel)]="element.rgb" (input)="rowUpdate(element, 'rgb', $event)"
+                                            placeholder="RGB" matInput>
+                                        <mat-icon class="icon-size-5 text-secondary ml-2" style="cursor: pointer;"
+                                            (click)="copyColorToHexx(i)" [matTooltip]="'Copy hex from color palette'"
+                                            svgIcon="mat_outline:content_copy">
+                                        </mat-icon>
 
-                                    <!-- <input matInput type="text" class="text-xs" placeholder="RGB" value="{{element.rgb}}"
+                                        <!-- <input matInput type="text" class="text-xs" placeholder="RGB" value="{{element.rgb}}"
                                         (input)="rowUpdate(element, 'rgb', $event)">
                                         <mat-icon class="icon-size-5 text-secondary ml-2" style="cursor: pointer;"
                                             (click)="copyColorToHexx(i)" [matTooltip]="'Copy hex from color palette'"
                                             svgIcon="mat_outline:content_copy">
                                         </mat-icon> -->
-                                </mat-form-field>
-                            </td>
-                        </ng-container>
+                                    </mat-form-field>
+                                </td>
+                            </ng-container>
 
-                        <!-- Image Column -->
-                        <ng-container matColumnDef="upload">
-                            <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20">
-                                <div class="mx-4">Image</div>
-                            </th>
-                            <td mat-cell *matCellDef="let element; let i=index" class="py-1 mx-4">
-                                <ng-container *ngIf="element.media; else defaultValue">
-                                    <!-- <img class="object-cover rounded-2xl shadow-sm w-24" src="{{element.media}}"> -->
-                                    <div ng-repeat="file in imagefinaldata" class="mx-4 flex align-items-center">
-                                        <img style="width: 20% !important;" (error)="removeColorImage(i)"
-                                            src="{{ element.media}}" alt="No image" />
-                                        <mat-icon (click)="removeColorImage(i)" class="cursor-pointer">
-                                            close</mat-icon>
-                                    </div>
-                                </ng-container>
-                                <ng-template #defaultValue>
-                                    <input type="file" class="mx-4" accept=".jpg" id="myfile"
-                                        (change)="upload($event, i)" />
-                                </ng-template>
-                            </td>
-                        </ng-container>
+                            <!-- Image Column -->
+                            <ng-container matColumnDef="upload">
+                                <th mat-header-cell *matHeaderCellDef class="w-20 min-w-20">
+                                    <div class="mx-4">Image</div>
+                                </th>
+                                <td mat-cell *matCellDef="let element; let i=index" class="py-1 mx-4">
+                                    <ng-container *ngIf="element.media; else defaultValue">
+                                        <!-- <img class="object-cover rounded-2xl shadow-sm w-24" src="{{element.media}}"> -->
+                                        <div ng-repeat="file in imagefinaldata" class="mx-4 flex align-items-center">
+                                            <img style="width: 20% !important;" (error)="removeColorImage(i)"
+                                                src="{{ element.media}}" alt="No image" />
+                                            <mat-icon (click)="removeColorImage(i)" class="cursor-pointer">
+                                                close</mat-icon>
+                                        </div>
+                                    </ng-container>
+                                    <ng-template #defaultValue>
+                                        <input type="file" class="mx-4" accept=".jpg" id="myfile"
+                                            (change)="upload($event, i)" />
+                                    </ng-template>
+                                </td>
+                            </ng-container>
 
-                        <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18"></tr>
-                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-                            class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
-                            (click)="selection.select(row)">
-                        </tr>
-                    </table>
-                    <mat-paginator #paginator
-                        class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                        [length]="totalColors" [pageIndex]="0" [pageSize]="20" (page)="getNextColors($event)"
-                        [hidePageSize]="true">
-                    </mat-paginator>
-                </div>
-                <ng-template #other_content>
-                    <div class="text-secondary font-semibold p-5">
-                        There are currently no colors defined for this item.
+                            <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18"></tr>
+                            <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                                class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
+                                (click)="selection.select(row)">
+                            </tr>
+                        </table>
+                        <mat-paginator #paginator
+                            class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                            [length]="totalColors" [pageIndex]="0" [pageSize]="20" (page)="getNextColors($event)"
+                            [hidePageSize]="true">
+                        </mat-paginator>
                     </div>
-                </ng-template>
-            </mat-card>
-        </div>
-
-        <div class="col-12 my-2 hidden">
-            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-                <div class="p-6 sm:p-8 lg:p-10 w-full">
-                    <div class="text-2xl font-bold">
-                        <button
-                            [matTooltip]="'The combo tool allows you to define two separate lists of color attributes. The system will then automatically combine them. For example, if you have a pen that has two color attributes: body and trim, you can specify the body colors in the first list, and the trim colors in the second list and they will be combined. Make sure to separate all colors with commas.The final list will show up in the new color field above.'">
-                            <i class="fa fa-info-circle"></i>
-                        </button>
-                        Combo Tool
-                    </div>
-                    <!-- Features -->
-                    <div class="gap-y-4 mt-6">
-                        <div class="row">
-                            <div class="col-12 mt-3">
-                                <mat-form-field class="w-full">
-                                    <mat-label>List 1</mat-label>
-                                    <input matInput>
-                                </mat-form-field>
-                            </div>
-                            <div class="col-12">
-                                <mat-form-field class="w-full">
-                                    <mat-label>List 2</mat-label>
-                                    <input matInput>
-                                </mat-form-field>
-                            </div>
+                    <ng-template #other_content>
+                        <div class="text-secondary font-semibold p-5">
+                            There are currently no colors defined for this item.
                         </div>
-                    </div>
-                    <div class="flex items-center justify-end w-full">
-                        <div class="flex items-center my-2">
-                            <div class="flex items-center mr-4" *ngIf="flashMessage">
-                                <ng-container *ngIf="flashMessage === 'success'">
-                                    <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
-                                    </mat-icon>
-                                    <span class="ml-2">Run successfully</span>
-                                </ng-container>
-                                <ng-container *ngIf="flashMessage === 'error'">
-                                    <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
-                                    <span class="ml-2">An error occurred, try again!</span>
-                                </ng-container>
-                            </div>
-                            <button class="min-w-40" mat-stroked-button [matTooltip]="'Run Combo Tool'"
-                                (click)="uploadImage()" [disabled]="selectedTermUpdateLoader">
-                                <mat-progress-spinner *ngIf="selectedTermUpdateLoader" [diameter]="24"
-                                    [mode]="'indeterminate'">
-                                </mat-progress-spinner>
-                                <span *ngIf="!selectedTermUpdateLoader" class="ml-1 mr-1">Run Combo Tool</span>
+                    </ng-template>
+                </mat-card>
+            </div>
+
+            <div class="col-12 my-2 hidden">
+                <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                    <div class="p-6 sm:p-8 lg:p-10 w-full">
+                        <div class="text-2xl font-bold">
+                            <button
+                                [matTooltip]="'The combo tool allows you to define two separate lists of color attributes. The system will then automatically combine them. For example, if you have a pen that has two color attributes: body and trim, you can specify the body colors in the first list, and the trim colors in the second list and they will be combined. Make sure to separate all colors with commas.The final list will show up in the new color field above.'">
+                                <i class="fa fa-info-circle"></i>
                             </button>
+                            Combo Tool
                         </div>
-                    </div>
-                </div>
-            </fuse-card>
-        </div>
-    </div>
-
-    <div class="row" *ngIf="!isLoading">
-        <div class="col-12 my-2">
-            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-                <div class="p-6 sm:p-8 lg:p-10 w-full">
-                    <div class="text-2xl font-bold">
-                        Combo tool
-                    </div>
-
-                    <div class="row mt-6">
-                        <div class="col-12">
-                            <fuse-alert [appearance]="'soft'" [type]="'success'" [showIcon]="false">
-                                The combo tool allows you to define two separate lists of color attributes. The system
-                                will then automatically combine them. For example, if you have a pen that has two color
-                                attributes: body and trim, you can specify the body colors in the first list, and the
-                                trim colors in the second list and they will be combined. Make sure to separate all
-                                colors with commas.
-                                <br>
-                                The final list will show up in the new color field above.
-                            </fuse-alert>
-                            <div class="mt-2">
-                                <mat-form-field class="w-full">
-                                    <mat-label>List 1</mat-label>
-                                    <input matInput [(ngModel)]="ngComboList1">
-                                </mat-form-field>
-                                <mat-form-field class="w-full">
-                                    <mat-label>List 2</mat-label>
-                                    <input matInput [(ngModel)]="ngComboList2">
-                                </mat-form-field>
-                                <button mat-stroked-button class="min-w-40" (click)="comboToolGenrator()">
-                                    <span>Run combo tool</span>
+                        <!-- Features -->
+                        <div class="gap-y-4 mt-6">
+                            <div class="row">
+                                <div class="col-12 mt-3">
+                                    <mat-form-field class="w-full">
+                                        <mat-label>List 1</mat-label>
+                                        <input matInput>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-12">
+                                    <mat-form-field class="w-full">
+                                        <mat-label>List 2</mat-label>
+                                        <input matInput>
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-end w-full">
+                            <div class="flex items-center my-2">
+                                <div class="flex items-center mr-4" *ngIf="flashMessage">
+                                    <ng-container *ngIf="flashMessage === 'success'">
+                                        <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
+                                        </mat-icon>
+                                        <span class="ml-2">Run successfully</span>
+                                    </ng-container>
+                                    <ng-container *ngIf="flashMessage === 'error'">
+                                        <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                        <span class="ml-2">An error occurred, try again!</span>
+                                    </ng-container>
+                                </div>
+                                <button class="min-w-40" mat-stroked-button [matTooltip]="'Run Combo Tool'"
+                                    (click)="uploadImage()" [disabled]="selectedTermUpdateLoader">
+                                    <mat-progress-spinner *ngIf="selectedTermUpdateLoader" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
+                                    <span *ngIf="!selectedTermUpdateLoader" class="ml-1 mr-1">Run Combo Tool</span>
                                 </button>
                             </div>
                         </div>
                     </div>
-                </div>
-            </fuse-card>
+                </fuse-card>
+            </div>
         </div>
-    </div>
+
+        <div class="row" *ngIf="!isLoading">
+            <div class="col-12 my-2">
+                <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                    <div class="p-6 sm:p-8 lg:p-10 w-full">
+                        <div class="text-2xl font-bold">
+                            Combo tool
+                        </div>
+
+                        <div class="row mt-6">
+                            <div class="col-12">
+                                <fuse-alert [appearance]="'soft'" [type]="'success'" [showIcon]="false">
+                                    The combo tool allows you to define two separate lists of color attributes. The
+                                    system
+                                    will then automatically combine them. For example, if you have a pen that has two
+                                    color
+                                    attributes: body and trim, you can specify the body colors in the first list, and
+                                    the
+                                    trim colors in the second list and they will be combined. Make sure to separate all
+                                    colors with commas.
+                                    <br>
+                                    The final list will show up in the new color field above.
+                                </fuse-alert>
+                                <div class="mt-2">
+                                    <mat-form-field class="w-full">
+                                        <mat-label>List 1</mat-label>
+                                        <input matInput [(ngModel)]="ngComboList1">
+                                    </mat-form-field>
+                                    <mat-form-field class="w-full">
+                                        <mat-label>List 2</mat-label>
+                                        <input matInput [(ngModel)]="ngComboList2">
+                                    </mat-form-field>
+                                    <button mat-stroked-button class="min-w-40" (click)="comboToolGenrator()">
+                                        <span>Run combo tool</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fuse-card>
+            </div>
+        </div>
+    </ng-container>
 </div>

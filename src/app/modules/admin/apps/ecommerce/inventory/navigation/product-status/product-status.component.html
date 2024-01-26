@@ -1,99 +1,110 @@
 <div class="w-full">
-    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
-    </ngx-skeleton-loader>
+    <div class="alert m-4 w-full alert-danger p-4 text-lg text-center font-bold"
+        *ngIf="!_inventoryService.adminUserPermissions.viewProductStatus">
+        You do not have permission to access this section.
+    </div>
+    <ng-container *ngIf="_inventoryService.adminUserPermissions.viewProductStatus">
+        <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+        </ngx-skeleton-loader>
 
-    <div class="row" *ngIf="!isLoading">
-        <div class="col-12 my-2">
-            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-                <div class="p-6 sm:p-8 lg:p-10 w-full">
-                    <div class="text-2xl font-bold mb-3">
-                        Product Status
-                    </div>
-                    <fuse-alert class="my-3" [appearance]="'soft'" [type]="'info'" [showIcon]="false">
-                        For a store product to appear online, it should be ACTIVE and ONLINE
-                    </fuse-alert>
-                    <div *ngIf="selectedProduct.blnActive">
-                        <fuse-alert [appearance]="'soft'" [name]="'alertBox1'" [type]="'success'">
-                            Product is currently ACTIVE.
-                        </fuse-alert>
-                        <div *ngIf="blnCanBeDisabled" class="row my-3">
-                            <div class="col-12">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Reason for disabling:</mat-label>
-                                    <input matInput [(ngModel)]="reason">
-                                </mat-form-field>
-                            </div>
-
-                            <div class="col-12">
-                                <mat-checkbox class="mb-1" [color]="'primary'" [(ngModel)]="emailCheck"
-                                    name="companyNews">
-                                    Send email notification to program managers about this product being disabled (only
-                                    if this product is on their store).
-                                </mat-checkbox>
-                            </div>
+        <div class="row" *ngIf="!isLoading">
+            <div class="col-12 my-2">
+                <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                    <div class="p-6 sm:p-8 lg:p-10 w-full">
+                        <div class="text-2xl font-bold mb-3">
+                            Product Status
                         </div>
+                        <fuse-alert class="my-3" [appearance]="'soft'" [type]="'info'" [showIcon]="false">
+                            For a store product to appear online, it should be ACTIVE and ONLINE
+                        </fuse-alert>
+                        <div *ngIf="selectedProduct.blnActive">
+                            <fuse-alert [appearance]="'soft'" [name]="'alertBox1'" [type]="'success'">
+                                Product is currently ACTIVE.
+                            </fuse-alert>
+                            <div *ngIf="blnCanBeDisabled" class="row my-3">
+                                <div class="col-12">
+                                    <mat-form-field class="w-full">
+                                        <mat-label>Reason for disabling:</mat-label>
+                                        <input matInput [(ngModel)]="reason">
+                                    </mat-form-field>
+                                </div>
 
-                        <div *ngIf="!blnCanBeDisabled" class="row my-3">
-                            <div class="col-12">
-                                <div *ngIf="statusData.qryRecommended.length > 0"
-                                    class="alert alert-warning add-padding-sm">
-                                    <span class="fa fa-info-circle fa-lg"></span>
-                                    This item is currently featured in the following categories on the following stores:
-                                    <br /><br />
-                                    <div *ngFor="let category of statusData.qryRecommended">
-                                        <a>
-                                            <div class="fa fa-info-circle fa-lg mr-1"></div> <b>{{
-                                                category?.categoryName
-                                                }}</b>
-                                        </a>
-                                        on {{ category?.storeName }}<br />
+                                <div class="col-12">
+                                    <mat-checkbox class="mb-1" [color]="'primary'" [(ngModel)]="emailCheck"
+                                        name="companyNews">
+                                        Send email notification to program managers about this product being disabled
+                                        (only
+                                        if this product is on their store).
+                                    </mat-checkbox>
+                                </div>
+                            </div>
+
+                            <div *ngIf="!blnCanBeDisabled" class="row my-3">
+                                <div class="col-12">
+                                    <div *ngIf="statusData.qryRecommended.length > 0"
+                                        class="alert alert-warning add-padding-sm">
+                                        <span class="fa fa-info-circle fa-lg"></span>
+                                        This item is currently featured in the following categories on the following
+                                        stores:
+                                        <br /><br />
+                                        <div *ngFor="let category of statusData.qryRecommended">
+                                            <a>
+                                                <div class="fa fa-info-circle fa-lg mr-1"></div> <b>{{
+                                                    category?.categoryName
+                                                    }}</b>
+                                            </a>
+                                            on {{ category?.storeName }}<br />
+                                        </div>
+                                        <br />
+                                        <b><span class="disabled">You must replace these featured products on the above
+                                                stores before you can disable this product.</span></b>
                                     </div>
-                                    <br />
-                                    <b><span class="disabled">You must replace these featured products on the above
-                                            stores before you can disable this product.</span></b>
-                                </div>
 
 
-                                <div *ngIf="statusData.qryCampaigns.length > 0"
-                                    class="alert alert-warning add-padding-sm">
-                                    <span class="fa fa-info-circle fa-lg"></span>
-                                    This item is currently featured in the following campaigns on the following stores:
-                                    <br /><br />
-                                    <ng-container *ngFor="let campaign of statusData.qryCampaigns">
-                                        
-                                        <div class=" flex gap-x-1">
-                                            <div class="fa fa-info-circle fa-lg mt-1"></div>
-                                            <div (click)="campaignNavigateion(campaign.fk_storeID)" class="font-bold underline cursor-pointer">
-                                                {{campaign.title}}
+                                    <div *ngIf="statusData.qryCampaigns.length > 0"
+                                        class="alert alert-warning add-padding-sm">
+                                        <span class="fa fa-info-circle fa-lg"></span>
+                                        This item is currently featured in the following campaigns on the following
+                                        stores:
+                                        <br /><br />
+                                        <ng-container *ngFor="let campaign of statusData.qryCampaigns">
+
+                                            <div class=" flex gap-x-1">
+                                                <div class="fa fa-info-circle fa-lg mt-1"></div>
+                                                <div (click)="campaignNavigateion(campaign.fk_storeID)"
+                                                    class="font-bold underline cursor-pointer">
+                                                    {{campaign.title}}
+                                                </div>
+                                                <div> on {{ campaign.storeName }}</div>
+                                                <br />
                                             </div>
-                                            <div> on {{ campaign.storeName }}</div>
-                                            <br />
-                                        </div>
-                                    </ng-container>
-                                     <br />
-                                    <b><span class="disabled">You must replace this item in these categories before you
-                                            can disable this product.</span></b>
-                                </div>
+                                        </ng-container>
+                                        <br />
+                                        <b><span class="disabled">You must replace this item in these categories before
+                                                you
+                                                can disable this product.</span></b>
+                                    </div>
 
 
 
-                                <div *ngIf="statusData.qryCarts.length > 0" class="alert alert-warning add-padding-sm">
-                                    <span class="fa fa-info-circle fa-lg"></span>
-                                    This item is currently in the following active carts/quotes:
-                                    <br /><br />
-                                    <ng-container *ngFor="let cartId of statusData.qryCarts">
+                                    <div *ngIf="statusData.qryCarts.length > 0"
+                                        class="alert alert-warning add-padding-sm">
+                                        <span class="fa fa-info-circle fa-lg"></span>
+                                        This item is currently in the following active carts/quotes:
+                                        <br /><br />
+                                        <ng-container *ngFor="let cartId of statusData.qryCarts">
 
-                                        <div class="flex">
-                                            <div class="fa fa-info-circle fa-lg mr-2 mt-1"></div>
-                                            <div class="mb-1 flex gap-x-1">
-                                                <b>CartID: {{ cartId.pk_cartID }}</b>
-                                                <div (click)="navigate(cartId.storeUserID)"
-                                                    class="underline ml-1 cursor-pointer">{{cartId.storeName}} -
-                                                    {{cartId.customerFirstName}}
-                                                    {{cartId.customerLastName}}</div>
+                                            <div class="flex">
+                                                <div class="fa fa-info-circle fa-lg mr-2 mt-1"></div>
+                                                <div class="mb-1 flex gap-x-1">
+                                                    <b>CartID: {{ cartId.pk_cartID }}</b>
+                                                    <div (click)="navigate(cartId.storeUserID)"
+                                                        class="underline ml-1 cursor-pointer">{{cartId.storeName}} -
+                                                        {{cartId.customerFirstName}}
+                                                        {{cartId.customerLastName}}</div>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <!-- <a *ngIf="objCart?.qryCart?.blnQuote"
+                                            <!-- <a *ngIf="objCart?.qryCart?.blnQuote"
                                          [href]="'#myself#storeUser.viewStoreUserQuotes&userID=' + objCart?.qryCart?.storeUserID">
                                         {{ qryStore?.storeName }} - {{ objCart?.qryCustomer?.firstName }} {{ objCart?.qryCustomer?.lastName }}
                                       </a>
@@ -101,57 +112,58 @@
                                          [href]="'#myself#storeUser.viewStoreUserCarts&userID=' + objCart?.qryCart?.storeUserID">
                                         {{ qryStore?.storeName }} - {{ objCart?.qryCustomer?.firstName }} {{ objCart?.qryCustomer?.lastName }}
                                       </a> -->
-                                        <br />
-                                    </ng-container>
+                                            <br />
+                                        </ng-container>
+                                    </div>
+
+
+
                                 </div>
-
-
-
                             </div>
-                        </div>
 
-                        <div class="col-12 justify-end mt-2 flex gap-x-3">
-                            <div class="text-red-500 text-wrap text-sm mt-2">(Note: disabling a product will send an
-                                email alert to the program manager of each store this product is on)</div>
-                            <button class="min-w-40" mat-stroked-button [matTooltip]="'Disable Product'"
-                                (click)="disableProduct()"
-                                [disabled]="statusData?.qryCampaigns?.length > 0 || statusData?.qryCarts?.length > 0">
-                                <mat-progress-spinner *ngIf="isDisableProductLoader" [diameter]="24"
-                                    [mode]="'indeterminate'">
-                                </mat-progress-spinner>
-
-                                <span *ngIf="!isDisableProductLoader" class="ml-1 mr-1">Disable Product</span>
-                            </button>
-                        </div>
-
-                    </div>
-
-                    <div *ngIf="!selectedProduct.blnActive">
-                        <fuse-alert [type]="'error'" [appearance]="'soft'">
-                            Product is currently DISABLED for all stores.
-                            <div>
-                                Reason : {{this.selectedProduct.disabledReason}}
-                            </div>
-                        </fuse-alert>
-
-
-
-                        <div class="row my-3">
-                            <div class="col-12 text-right">
+                            <div class="col-12 justify-end mt-2 flex gap-x-3">
+                                <div class="text-red-500 text-wrap text-sm mt-2">(Note: disabling a product will send an
+                                    email alert to the program manager of each store this product is on)</div>
                                 <button class="min-w-40" mat-stroked-button [matTooltip]="'Disable Product'"
-                                    (click)="activateProduct()"
+                                    (click)="disableProduct()"
                                     [disabled]="statusData?.qryCampaigns?.length > 0 || statusData?.qryCarts?.length > 0">
-                                    <mat-progress-spinner *ngIf="isActivateProductLoader" [diameter]="24"
+                                    <mat-progress-spinner *ngIf="isDisableProductLoader" [diameter]="24"
                                         [mode]="'indeterminate'">
                                     </mat-progress-spinner>
-                                    <span *ngIf="!isActivateProductLoader" class="ml-1 mr-1">Activate Product</span>
+
+                                    <span *ngIf="!isDisableProductLoader" class="ml-1 mr-1">Disable Product</span>
                                 </button>
                             </div>
-                        </div>
-                    </div>
 
-                </div>
-            </fuse-card>
+                        </div>
+
+                        <div *ngIf="!selectedProduct.blnActive">
+                            <fuse-alert [type]="'error'" [appearance]="'soft'">
+                                Product is currently DISABLED for all stores.
+                                <div>
+                                    Reason : {{this.selectedProduct.disabledReason}}
+                                </div>
+                            </fuse-alert>
+
+
+
+                            <div class="row my-3">
+                                <div class="col-12 text-right">
+                                    <button class="min-w-40" mat-stroked-button [matTooltip]="'Disable Product'"
+                                        (click)="activateProduct()"
+                                        [disabled]="statusData?.qryCampaigns?.length > 0 || statusData?.qryCarts?.length > 0">
+                                        <mat-progress-spinner *ngIf="isActivateProductLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                        <span *ngIf="!isActivateProductLoader" class="ml-1 mr-1">Activate Product</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </fuse-card>
+            </div>
         </div>
-    </div>
+    </ng-container>
 </div>

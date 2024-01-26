@@ -210,7 +210,7 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
       this.artWorkLoader = false;
       if (this.quoteImprintdata.length > 0) {
         this.selectedImprint = this.quoteImprintdata[0].imprintID;
-        this.selectedImprintPmsColor = this.quoteImprintdata[0].pmsColors;
+        // this.selectedImprintPmsColor = this.quoteImprintdata[0].pmsColors;
         this.selectedProofImprint = this.quoteImprintdata[0].imprintID;
         this.selectedPurchaseImprint = this.quoteImprintdata[0];
         this.selectedImprintForTimer = this.quoteImprintdata[0];
@@ -230,9 +230,13 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
           colorsArr.forEach(element => {
             let color = element.split(':');
             finalColor.push({ id: color[0], name: color[1], hex: color[2] });
+            if (this.quoteImprintdata[0].colorNameList) {
+              if (this.quoteImprintdata[0].colorNameList.split(',').includes(color[1])) {
+                this.selectedMultipleColors.push(color[1]);
+              }
+            }
           });
           this.allColors = finalColor;
-          this.selectedMultipleColors = this.quoteImprintdata[0].colorNameList.split(',');
         }
       }
       // this.getArtworkOther();
@@ -484,17 +488,20 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
   onChangeColor(event) {
     let imprint = this.quoteImprintdata.filter(item => item.imprintID == event.value);
     this.selectedImprint = imprint[0].imprintID;
-    this.selectedImprintPmsColor = imprint[0].pmsColors;
+    // this.selectedImprintPmsColor = imprint[0].pmsColors;
     if (imprint[0].allColors) {
-      let colors = imprint[0].allColors;
+      let colors = this.quoteImprintdata[0].allColors;
       let colorsArr = colors.split(',');
       let finalColor = [];
       colorsArr.forEach(element => {
         let color = element.split(':');
         finalColor.push({ id: color[0], name: color[1], hex: color[2] });
+        if (this.quoteImprintdata[0].colorNameList) {
+          if (this.quoteImprintdata[0].colorNameList.split(',').includes(color[1])) {
+            this.selectedMultipleColors.push(color[1]);
+          }
+        }
       });
-      this.allColors = finalColor;
-      this.selectedMultipleColors = imprint[0].colorNameList.split(',');
     }
     this._changeDetectorRef.markForCheck();
   }

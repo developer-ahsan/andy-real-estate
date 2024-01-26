@@ -2,7 +2,7 @@ import { Route } from '@angular/router';
 import { AuthGuard } from 'app/core/auth/guards/auth.guard';
 import { NoAuthGuard } from 'app/core/auth/guards/noAuth.guard';
 import { LayoutComponent } from 'app/layout/layout.component';
-import { InitialDataResolver, StoreStateSupplierResolver, StoresResolver, SuppliersResolver, UserRoleResolver } from 'app/app.resolvers';
+import { InitialDataResolver, StoreStateSupplierResolver, StoresResolver, SuppliersResolver, UserPermissionsResolver, UserRoleResolver } from 'app/app.resolvers';
 import { StatesResolver } from './modules/admin/apps/vendors/components/vendors.resolvers';
 
 // @formatter:off
@@ -71,6 +71,7 @@ export const appRoutes: Route[] = [
         canActivateChild: [AuthGuard],
         component: LayoutComponent,
         resolve: {
+            permsiions: UserPermissionsResolver,
             initialData: InitialDataResolver,
             suppliers: SuppliersResolver,
             stores: StoresResolver,

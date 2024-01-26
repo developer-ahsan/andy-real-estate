@@ -135,7 +135,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
      * Constructor
      */
     constructor(
-        private _analyticsService: DashboardsService,
+        public _analyticsService: DashboardsService,
         private _authService: AuthService,
         private _changeDetectorRef: ChangeDetectorRef,
         private _router: Router

@@ -19,6 +19,21 @@ export class RoyaltyService {
     private _employeeAdmins: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _adminStores: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _reportUsers: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
+
+    public adminUserPermissions = {
+        addLicensingTerm: false,
+        createLicensingCompany: false,
+        royaltyReports: false,
+        selectCLCReport: false,
+        selectLearfieldReport: false,
+        selectLicensingCompany: false,
+        updateLicensingCompany: false,
+        updateLicensingTerm: false,
+        viewCLCReport: false,
+        viewLearfieldReport: false,
+        viewLicensingCompany: false,
+        viewStoreRoyaltySettings: false
+    }
     /**
      * Constructor
      */

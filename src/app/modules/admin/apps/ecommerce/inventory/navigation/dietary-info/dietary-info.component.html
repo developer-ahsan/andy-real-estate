@@ -1,85 +1,91 @@
 <div class="w-full">
-    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
-    </ngx-skeleton-loader>
-
-    <div class="row" *ngIf="!isLoading">
-        <div class="col-12 my-2">
-            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-                <div class="p-6 sm:p-8 lg:p-10 w-full">
-                    <div class="text-2xl font-bold">
-                        Upload Dietary Information Sheet (PDF Only)
-                    </div>
-
-                    <!-- Reviews -->
-                    <div class="gap-y-4 mt-6">
-                        <form [formGroup]="imageUploadForm">
-                            <div class="row">
-                                <div class="col-12 my-1">
-                                    <input type="file" accept=".pdf" [formControlName]="'image'"
-                                        (change)="upload($event)" style="line-height: 2.5;" #fileInputImage />
-                                </div>
-                                <div class="col-12 flex justify-end gap-x-2">
-                                    <button *ngIf="this.pdf" (click)="deletePdf()"
-                                        class="min-w-40 bg-red-500 border-red-500 text-white" mat-stroked-button
-                                        [disabled]="pdfDeleteLoader">
-                                        <mat-progress-spinner *ngIf="pdfDeleteLoader" [diameter]="24"
-                                            [mode]="'indeterminate'"></mat-progress-spinner>
-                                        <span *ngIf="!pdfDeleteLoader" class="ml-1 mr-1">Delete</span>
-                                    </button>
-                                    <button class="min-w-40" (click)="uploadFile()" mat-stroked-button
-                                        [disabled]="imageUploadLoader" [matTooltip]="'Upload PDF format only!'">
-                                        <mat-progress-spinner *ngIf="imageUploadLoader" [diameter]="24"
-                                            [mode]="'indeterminate'"></mat-progress-spinner>
-                                        <mat-icon *ngIf="!imageUploadLoader" [svgIcon]="'heroicons_outline:upload'">
-                                        </mat-icon>
-                                        <span *ngIf="!imageUploadLoader" class="ml-1 mr-1">Upload</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </fuse-card>
-        </div>
+    <div class="alert m-4 w-full alert-danger p-4 text-lg text-center font-bold"
+        *ngIf="!_inventoryService.productDescription.viewDietaryInfo">
+        You do not have permission to access this section.
     </div>
+    <ng-container *ngIf="_inventoryService.productDescription.viewDietaryInfo">
+        <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+        </ngx-skeleton-loader>
 
-    <div class="row" *ngIf="!isLoading">
-        <div class="col-12 my-2">
-            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-                <div class="p-6 sm:p-8 lg:p-10 w-full">
-                    <div class="text-2xl font-bold">
-                        <button [matTooltip]="'You can only have maximum of five blank images per product.'">
-                            <i class="fa fa-info-circle"></i>
-                        </button>
-                        Dietary Information
-                    </div>
-
-                    <!-- Dietary Information -->
-                    <div *ngIf="!pdfLoader" class="gap-y-4 mt-6">
-                        <div class="row p-2" *ngIf="pdf;else other_content">
-                            <div class="col-lg-4 col-12">
-                                <fuse-card
-                                    class="flex flex-col items-center w-full p-8 filter-info bg-light rounded-2xl">
-                                    <div class="flex items-center justify-center p-5 rounded-full bg-primary-100 dark:bg-gray-600 hover:cursor-pointer hover:opacity-80"
-                                        style="cursor: pointer;" (click)="openPdf()">
-                                        <mat-icon class="icon-size-10 text-primary-500 dark:text-primary-300"
-                                            svgIcon="mat_solid:picture_as_pdf"></mat-icon>
-                                    </div>
-                                    <div class="flex items-center justify-center p-2 font-semibold text-sm hover:cursor-pointer hover:opacity-80"
-                                        style="cursor: pointer;" (click)="openPdf()">
-                                        {{selectedProduct?.pk_productID}}.pdf
-                                    </div>
-                                </fuse-card>
-                            </div>
+        <div class="row" *ngIf="!isLoading">
+            <div class="col-12 my-2">
+                <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                    <div class="p-6 sm:p-8 lg:p-10 w-full">
+                        <div class="text-2xl font-bold">
+                            Upload Dietary Information Sheet (PDF Only)
                         </div>
-                        <ng-template #other_content>
-                            <p class="text-secondary font-semibold my-5">
-                                *There is no dietary information PDF sheet uploaded for this product.
-                            </p>
-                        </ng-template>
+
+                        <!-- Reviews -->
+                        <div class="gap-y-4 mt-6">
+                            <form [formGroup]="imageUploadForm">
+                                <div class="row">
+                                    <div class="col-12 my-1">
+                                        <input type="file" accept=".pdf" [formControlName]="'image'"
+                                            (change)="upload($event)" style="line-height: 2.5;" #fileInputImage />
+                                    </div>
+                                    <div class="col-12 flex justify-end gap-x-2">
+                                        <button *ngIf="this.pdf" (click)="deletePdf()"
+                                            class="min-w-40 bg-red-500 border-red-500 text-white" mat-stroked-button
+                                            [disabled]="pdfDeleteLoader">
+                                            <mat-progress-spinner *ngIf="pdfDeleteLoader" [diameter]="24"
+                                                [mode]="'indeterminate'"></mat-progress-spinner>
+                                            <span *ngIf="!pdfDeleteLoader" class="ml-1 mr-1">Delete</span>
+                                        </button>
+                                        <button class="min-w-40" (click)="uploadFile()" mat-stroked-button
+                                            [disabled]="imageUploadLoader" [matTooltip]="'Upload PDF format only!'">
+                                            <mat-progress-spinner *ngIf="imageUploadLoader" [diameter]="24"
+                                                [mode]="'indeterminate'"></mat-progress-spinner>
+                                            <mat-icon *ngIf="!imageUploadLoader" [svgIcon]="'heroicons_outline:upload'">
+                                            </mat-icon>
+                                            <span *ngIf="!imageUploadLoader" class="ml-1 mr-1">Upload</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                </div>
-            </fuse-card>
+                </fuse-card>
+            </div>
         </div>
-    </div>
+
+        <div class="row" *ngIf="!isLoading">
+            <div class="col-12 my-2">
+                <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                    <div class="p-6 sm:p-8 lg:p-10 w-full">
+                        <div class="text-2xl font-bold">
+                            <button [matTooltip]="'You can only have maximum of five blank images per product.'">
+                                <i class="fa fa-info-circle"></i>
+                            </button>
+                            Dietary Information
+                        </div>
+
+                        <!-- Dietary Information -->
+                        <div *ngIf="!pdfLoader" class="gap-y-4 mt-6">
+                            <div class="row p-2" *ngIf="pdf;else other_content">
+                                <div class="col-lg-4 col-12">
+                                    <fuse-card
+                                        class="flex flex-col items-center w-full p-8 filter-info bg-light rounded-2xl">
+                                        <div class="flex items-center justify-center p-5 rounded-full bg-primary-100 dark:bg-gray-600 hover:cursor-pointer hover:opacity-80"
+                                            style="cursor: pointer;" (click)="openPdf()">
+                                            <mat-icon class="icon-size-10 text-primary-500 dark:text-primary-300"
+                                                svgIcon="mat_solid:picture_as_pdf"></mat-icon>
+                                        </div>
+                                        <div class="flex items-center justify-center p-2 font-semibold text-sm hover:cursor-pointer hover:opacity-80"
+                                            style="cursor: pointer;" (click)="openPdf()">
+                                            {{selectedProduct?.pk_productID}}.pdf
+                                        </div>
+                                    </fuse-card>
+                                </div>
+                            </div>
+                            <ng-template #other_content>
+                                <p class="text-secondary font-semibold my-5">
+                                    *There is no dietary information PDF sheet uploaded for this product.
+                                </p>
+                            </ng-template>
+                        </div>
+                    </div>
+                </fuse-card>
+            </div>
+        </div>
+    </ng-container>
 </div>

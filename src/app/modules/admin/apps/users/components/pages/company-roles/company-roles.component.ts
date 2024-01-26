@@ -6,6 +6,7 @@ import { Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { UsersService } from '../../users.service';
 import { AddRole, AddRoleEmployee, addUserRoleProgram, applyBlanketCustomerPercentage, deleteUserRoleProgram, newFLPSUser, RemoveEmployeeRole, removeFLPSUser, RemoveRole, updateFLPSUser, updateRole } from '../../users.types';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 @Component({
   selector: 'app-company-roles',
   templateUrl: './company-roles.component.html',
@@ -96,9 +97,12 @@ export class CompanyRolesComponent implements OnInit, OnDestroy {
   isProgramUserLoader: boolean = false;
 
   mainScreenProgram: string = 'Current Programs';
-
+  adminUserPermissions = {
+    viewRoles: false,
+  }
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
+    private _commonService: DashboardsService,
     private _UsersService: UsersService
   ) { }
 
@@ -129,6 +133,7 @@ export class CompanyRolesComponent implements OnInit, OnDestroy {
     });
   }
   ngOnInit(): void {
+    this.adminUserPermissions = this._commonService.assignPermissions('users', this.adminUserPermissions);
     this.initForm();
     this.isLoading = true;
     this.getAdminRoles(1, 'get');

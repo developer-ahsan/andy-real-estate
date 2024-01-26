@@ -1,343 +1,357 @@
 <div class="w-full">
-    <div class="col-12 bg-card px-10 py-3">
-        <div class="mt-2" #topScrollAnchor>
-            <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
-                Product Catalog
-            </h2>
-        </div>
-        <div class="font-medium">
-            <a class="whitespace-nowrap text-primary-500" *ngIf="!isLoading">Total Products {{total}}</a>
-        </div>
+    <div class="alert m-4 w-full alert-danger p-4 text-lg text-center font-bold" *ngIf="!adminUserPermissions.home">
+        You do not have permission to access this section.
     </div>
-    <div class="row w-full p-2">
-        <div class="col-12 col-md-4">
-            <div class="row w-full p-5 m-0 rounded-2xl shadow bg-card">
-                <div class="col-12">
-                    <div class="text-2xl font-extrabold tracking-tight leading-none"> Filters
-                    </div>
-                </div>
-                <div class="col-12 col-md-6 ">
-                    <mat-form-field class="w-full">
-                        <mat-label>Per Page:</mat-label>
-                        <mat-select matInput [(ngModel)]="catalogFilter.perPage"
-                            (selectionChange)="onPageChange($event)">
-                            <mat-option [value]="25">25</mat-option>
-                            <mat-option [value]="50">50</mat-option>
-                            <mat-option [value]="100">100</mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-                <div class="col-12 col-md-6">
-                    <mat-form-field class="w-full">
-                        <mat-label>Sort by:</mat-label>
-                        <mat-select matInput [(ngModel)]="sortBy" (selectionChange)="sortByFilter($event)">
-                            <mat-option [value]="1">Product ID</mat-option>
-                            <mat-option [value]="2">Price low to high</mat-option>
-                            <mat-option [value]="3">Price high to low</mat-option>
-                            <mat-option [value]="4">Name, A to Z</mat-option>
-                            <mat-option [value]="5">Name, Z to A</mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-                <div class="col-12">
-                    <mat-form-field class="w-full">
-                        <mat-label>Keyword (PID, SPID, product name):</mat-label>
-                        <input [(ngModel)]="keyWord" matInput matTooltip="Enter to search"
-                            (keyup.enter)="searchByKeyword($event)">
-                    </mat-form-field>
-                </div>
-
-                <div class="col-12 mb-3">
-                    <mat-label>Vendor:</mat-label>
-                    <ng-multiselect-dropdown [placeholder]="'Select Vendor'" [settings]="singleSelectDropdownSettings"
-                        [data]="allSuppliers" [(ngModel)]="SelectedVendor" (onSelect)="onSelectedVendor($event)">
-                    </ng-multiselect-dropdown>
-                </div>
-
-                <div class="col-12">
-                    <mat-form-field class="w-full">
-                        <mat-label>Vendor Relation:</mat-label>
-                        <mat-select matInput [(ngModel)]="catalogFilter.vendor_relation"
-                            (selectionChange)="vendorFilter($event)">
-                            <mat-option [value]="0">Any Relation</mat-option>
-                            <mat-option [value]="1">Normal</mat-option>
-                            <mat-option [value]="2">Preffered</mat-option>
-                            <mat-option [value]="3">Partner</mat-option>
-                            <mat-option [value]="4">Preffered & Partner</mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-                <div class="col-12">
-                    <div class="flex">
-                        <mat-label>Min. quantity:</mat-label>
-                        <mat-icon class="icon-size-4 ml-1"
-                            matTooltip="Shows products whose minimum quantity break is less than or equal to the number you enter for this filter."
-                            [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                    </div>
-                    <mat-form-field class="w-full">
-                        <input min="0" [(ngModel)]="minQuantity" matInput type="number"
-                            (mousewheel)="$event.preventDefault()">
-                    </mat-form-field>
-                </div>
-                <div class="col-12 col-md-6">
-                    <div class="flex">
-                        <mat-label>Min. price:</mat-label>
-                        <mat-icon class="icon-size-4 ml-1"
-                            matTooltip="Shows products whose first column cost is greater than the price entered for this filter."
-                            [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                    </div>
-                    <mat-form-field class="w-full">
-                        <input min="0" [(ngModel)]="minPrice" matInput type="number"
-                            (mousewheel)="$event.preventDefault()">
-                        <mat-icon class="icon-size-5" matPrefix
-                            [svgIcon]="'heroicons_solid:currency-dollar'"></mat-icon>
-                    </mat-form-field>
-                </div>
-                <div class="col-12 col-md-6">
-                    <div class="flex">
-                        <mat-label>Max. price:</mat-label>
-                        <mat-icon class="icon-size-4 ml-1"
-                            matTooltip="Shows products whose first column cost is less than the price entered for this filter."
-                            [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
-                    </div>
-                    <mat-form-field class="w-full">
-                        <input min="0" [(ngModel)]="maxPrice" matInput type="number"
-                            (mousewheel)="$event.preventDefault()">
-                        <mat-icon class="icon-size-5" matPrefix
-                            [svgIcon]="'heroicons_solid:currency-dollar'"></mat-icon>
-                    </mat-form-field>
-                </div>
-                <div class="col-12 my-3">
-                    <mat-label>Colors:</mat-label>
-                    <ng-multiselect-dropdown [placeholder]="'Select Colors'" [settings]="dropdownSettings"
-                        [data]="allColors" [(ngModel)]="selectedColor" (onSelect)="onSelectedColor($event)">
-                    </ng-multiselect-dropdown>
-                </div>
-                <div class="col-12 my-3">
-                    <mat-label>Decoration:</mat-label>
-                    <ng-multiselect-dropdown [placeholder]="'Select Decoration'" [settings]="dropdownSettings"
-                        [data]="allMethods" [(ngModel)]="selectedMethod" (onSelect)="onSelectedMethod($event)">
-                    </ng-multiselect-dropdown>
-                </div>
-                <div class="col-12 my-3">
-                    <mat-label>Size:</mat-label>
-                    <ng-multiselect-dropdown [placeholder]="'Select Size'" [settings]="dropdownSettings"
-                        [data]="allSizes" [(ngModel)]="selectedSize" (onSelect)="onSelectedSize($event)">
-                    </ng-multiselect-dropdown>
-                </div>
-                <div class="col-12">
-                    <mat-form-field class="w-full">
-                        <mat-label>Active Products:</mat-label>
-                        <mat-select matInput [(ngModel)]="catalogFilter.bln_active">
-                            <mat-option [value]="1">Active Only</mat-option>
-                            <mat-option [value]="2">Disabled Only</mat-option>
-                            <mat-option [value]="''">Active & Disabled</mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-                <div class="col-12">
-                    <button [color]="'primary'" class="w-full" mat-button mat-stroked-button [disabled]="isFilterLoader"
-                        (click)="getCatalogs(1)">Filter</button>
-                </div>
+    <ng-container *ngIf="adminUserPermissions.home">
+        <div class="col-12 bg-card px-10 py-3">
+            <div class="mt-2" #topScrollAnchor>
+                <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                    Product Catalog
+                </h2>
+            </div>
+            <div class="font-medium">
+                <a class="whitespace-nowrap text-primary-500" *ngIf="!isLoading">Total Products {{total}}</a>
             </div>
         </div>
-        <div class="col-12 col-md-8 ">
-            <div class="w-full p-6 rounded-2xl shadow bg-card" *ngIf="isLoading">
-                <ngx-skeleton-loader count="15" appearance="line" animation="pulse">
-                </ngx-skeleton-loader>
+        <div class="row w-full p-2">
+            <div class="col-12 col-md-4">
+                <div class="row w-full p-5 m-0 rounded-2xl shadow bg-card">
+                    <div class="col-12">
+                        <div class="text-2xl font-extrabold tracking-tight leading-none"> Filters
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 ">
+                        <mat-form-field class="w-full">
+                            <mat-label>Per Page:</mat-label>
+                            <mat-select matInput [(ngModel)]="catalogFilter.perPage"
+                                (selectionChange)="onPageChange($event)">
+                                <mat-option [value]="25">25</mat-option>
+                                <mat-option [value]="50">50</mat-option>
+                                <mat-option [value]="100">100</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <mat-form-field class="w-full">
+                            <mat-label>Sort by:</mat-label>
+                            <mat-select matInput [(ngModel)]="sortBy" (selectionChange)="sortByFilter($event)">
+                                <mat-option [value]="1">Product ID</mat-option>
+                                <mat-option [value]="2">Price low to high</mat-option>
+                                <mat-option [value]="3">Price high to low</mat-option>
+                                <mat-option [value]="4">Name, A to Z</mat-option>
+                                <mat-option [value]="5">Name, Z to A</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12">
+                        <mat-form-field class="w-full">
+                            <mat-label>Keyword (PID, SPID, product name):</mat-label>
+                            <input [(ngModel)]="keyWord" matInput matTooltip="Enter to search"
+                                (keyup.enter)="searchByKeyword($event)">
+                        </mat-form-field>
+                    </div>
+
+                    <div class="col-12 mb-3">
+                        <mat-label>Vendor:</mat-label>
+                        <ng-multiselect-dropdown [placeholder]="'Select Vendor'"
+                            [settings]="singleSelectDropdownSettings" [data]="allSuppliers" [(ngModel)]="SelectedVendor"
+                            (onSelect)="onSelectedVendor($event)">
+                        </ng-multiselect-dropdown>
+                    </div>
+
+                    <div class="col-12">
+                        <mat-form-field class="w-full">
+                            <mat-label>Vendor Relation:</mat-label>
+                            <mat-select matInput [(ngModel)]="catalogFilter.vendor_relation"
+                                (selectionChange)="vendorFilter($event)">
+                                <mat-option [value]="0">Any Relation</mat-option>
+                                <mat-option [value]="1">Normal</mat-option>
+                                <mat-option [value]="2">Preffered</mat-option>
+                                <mat-option [value]="3">Partner</mat-option>
+                                <mat-option [value]="4">Preffered & Partner</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12">
+                        <div class="flex">
+                            <mat-label>Min. quantity:</mat-label>
+                            <mat-icon class="icon-size-4 ml-1"
+                                matTooltip="Shows products whose minimum quantity break is less than or equal to the number you enter for this filter."
+                                [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                        </div>
+                        <mat-form-field class="w-full">
+                            <input min="0" [(ngModel)]="minQuantity" matInput type="number"
+                                (mousewheel)="$event.preventDefault()">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="flex">
+                            <mat-label>Min. price:</mat-label>
+                            <mat-icon class="icon-size-4 ml-1"
+                                matTooltip="Shows products whose first column cost is greater than the price entered for this filter."
+                                [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                        </div>
+                        <mat-form-field class="w-full">
+                            <input min="0" [(ngModel)]="minPrice" matInput type="number"
+                                (mousewheel)="$event.preventDefault()">
+                            <mat-icon class="icon-size-5" matPrefix
+                                [svgIcon]="'heroicons_solid:currency-dollar'"></mat-icon>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="flex">
+                            <mat-label>Max. price:</mat-label>
+                            <mat-icon class="icon-size-4 ml-1"
+                                matTooltip="Shows products whose first column cost is less than the price entered for this filter."
+                                [svgIcon]="'heroicons_solid:question-mark-circle'"></mat-icon>
+                        </div>
+                        <mat-form-field class="w-full">
+                            <input min="0" [(ngModel)]="maxPrice" matInput type="number"
+                                (mousewheel)="$event.preventDefault()">
+                            <mat-icon class="icon-size-5" matPrefix
+                                [svgIcon]="'heroicons_solid:currency-dollar'"></mat-icon>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 my-3">
+                        <mat-label>Colors:</mat-label>
+                        <ng-multiselect-dropdown [placeholder]="'Select Colors'" [settings]="dropdownSettings"
+                            [data]="allColors" [(ngModel)]="selectedColor" (onSelect)="onSelectedColor($event)">
+                        </ng-multiselect-dropdown>
+                    </div>
+                    <div class="col-12 my-3">
+                        <mat-label>Decoration:</mat-label>
+                        <ng-multiselect-dropdown [placeholder]="'Select Decoration'" [settings]="dropdownSettings"
+                            [data]="allMethods" [(ngModel)]="selectedMethod" (onSelect)="onSelectedMethod($event)">
+                        </ng-multiselect-dropdown>
+                    </div>
+                    <div class="col-12 my-3">
+                        <mat-label>Size:</mat-label>
+                        <ng-multiselect-dropdown [placeholder]="'Select Size'" [settings]="dropdownSettings"
+                            [data]="allSizes" [(ngModel)]="selectedSize" (onSelect)="onSelectedSize($event)">
+                        </ng-multiselect-dropdown>
+                    </div>
+                    <div class="col-12">
+                        <mat-form-field class="w-full">
+                            <mat-label>Active Products:</mat-label>
+                            <mat-select matInput [(ngModel)]="catalogFilter.bln_active">
+                                <mat-option [value]="1">Active Only</mat-option>
+                                <mat-option [value]="2">Disabled Only</mat-option>
+                                <mat-option [value]="''">Active & Disabled</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12">
+                        <button [color]="'primary'" class="w-full" mat-button mat-stroked-button
+                            [disabled]="isFilterLoader" (click)="getCatalogs(1)">Filter</button>
+                    </div>
+                </div>
             </div>
-            <div class="flex-auto p-6 sm:p-10 rounded-2xl shadow bg-card w-full" *ngIf="!isLoading">
-                <div class="row">
-                    <div class="col-12" *ngIf="isPageLoading || isFilterLoader">
-                        <ngx-skeleton-loader count="15" appearance="line" animation="pulse">
-                        </ngx-skeleton-loader>
-                    </div>
-                    <div class="col-12" *ngIf="!isPageLoading && !isFilterLoader">
-                        <div class="flex flex-wrap mb-2 gap-2">
-                            <button *ngIf="filterPayload.keyword !== ''" mat-button mat-stroked-button class="mr-1">
-                                <span class="text-sm">Keyword: {{filterPayload.keyword}}</span>
-                                <mat-icon svgIcon="heroicons_outline:x" class="icon-size-4 cursor-pointer"
-                                    (click)="clearFilter('keyword')"></mat-icon>
-                            </button>
-                            <button *ngIf="filterPayload.company_id !== ''" mat-button mat-stroked-button class="mr-1">
-                                <span class="text-sm">Vendor: {{SelectedVendor[0]?.companyName}}</span>
-                                <mat-icon svgIcon="heroicons_outline:x" (click)="clearFilter('company_id')"
-                                    class="icon-size-4 cursor-pointer"></mat-icon>
-                            </button>
-                            <button *ngIf="filterPayload.vendor_relation !== 0" mat-button mat-stroked-button
-                                class="mr-1">
-                                <span class="text-sm">Vendor Relation: {{this.selectedVendorRelation}}</span>
-                                <mat-icon svgIcon="heroicons_outline:x" (click)="clearFilter('vendor_relation')"
-                                    class="icon-size-4 cursor-pointer"></mat-icon>
-                            </button>
-                            <button *ngIf="filterPayload.min_price !== 0" mat-button mat-stroked-button class="mr-1">
-                                <span class="text-sm">Min. Price: {{filterPayload.min_price | currency}}</span>
-                                <mat-icon svgIcon="heroicons_outline:x" (click)="clearFilter('min_price')"
-                                    class="icon-size-4 cursor-pointer"></mat-icon>
-                            </button>
-                            <button *ngIf="filterPayload.max_price !== 0" mat-button mat-stroked-button class="mr-1">
-                                <span class="text-sm">Max. Price: {{filterPayload.max_price | currency}}</span>
-                                <mat-icon svgIcon="heroicons_outline:x" (click)="clearFilter('max_price')"
-                                    class="icon-size-4 cursor-pointer"></mat-icon>
-                            </button>
-                            <button *ngIf="filterPayload.color_search !== ''" mat-button mat-stroked-button
-                                class="mr-1">
-                                <span class="text-sm">Colors: {{selectedColorString}}</span>
-                                <mat-icon svgIcon="heroicons_outline:x" (click)="clearFilter('color_search')"
-                                    class="icon-size-4 cursor-pointer"></mat-icon>
-                            </button>
-                            <button *ngIf="filterPayload.method_search !== ''" methodSearch mat-button
-                                mat-stroked-button class="mr-1">
-                                <span class="text-sm">Decoration: {{selectedDecorationString}}</span>
-                                <mat-icon svgIcon="heroicons_outline:x" (click)="clearFilter('method_search')"
-                                    class="icon-size-4 cursor-pointer"></mat-icon>
-                            </button>
-                            <button *ngIf="filterPayload.size_search !== ''" mat-button mat-stroked-button class="mr-1">
-                                <span class="text-sm">Sizes: {{this.selectedSizeString}}</span>
-                                <mat-icon svgIcon="heroicons_outline:x" (click)="clearFilter('size_search')"
-                                    class="icon-size-4 cursor-pointer"></mat-icon>
-                            </button>
-                            <button *ngIf="filterPayload.min_quantity !== 0" mat-button mat-stroked-button class="mr-1">
-                                <span class="text-sm">Min. Quantity: {{filterPayload.min_quantity}}</span>
-                                <mat-icon svgIcon="heroicons_outline:x" (click)="clearFilter('min_quantity')"
-                                    class="icon-size-4 cursor-pointer"></mat-icon>
-                            </button>
+            <div class="col-12 col-md-8 ">
+                <div class="w-full p-6 rounded-2xl shadow bg-card" *ngIf="isLoading">
+                    <ngx-skeleton-loader count="15" appearance="line" animation="pulse">
+                    </ngx-skeleton-loader>
+                </div>
+                <div class="flex-auto p-6 sm:p-10 rounded-2xl shadow bg-card w-full" *ngIf="!isLoading">
+                    <div class="row">
+                        <div class="col-12" *ngIf="isPageLoading || isFilterLoader">
+                            <ngx-skeleton-loader count="15" appearance="line" animation="pulse">
+                            </ngx-skeleton-loader>
                         </div>
-                        <div class="bg-card shadow rounded-2xl p-5" *ngIf="dataSource.length == 0">
-                            <fuse-alert [type]="'warning'" [appearance]="'outline'">
-                                Please select filter choices to see product results.
-                            </fuse-alert>
+                        <div class="col-12" *ngIf="!isPageLoading && !isFilterLoader">
+                            <div class="flex flex-wrap mb-2 gap-2">
+                                <button *ngIf="filterPayload.keyword !== ''" mat-button mat-stroked-button class="mr-1">
+                                    <span class="text-sm">Keyword: {{filterPayload.keyword}}</span>
+                                    <mat-icon svgIcon="heroicons_outline:x" class="icon-size-4 cursor-pointer"
+                                        (click)="clearFilter('keyword')"></mat-icon>
+                                </button>
+                                <button *ngIf="filterPayload.company_id !== ''" mat-button mat-stroked-button
+                                    class="mr-1">
+                                    <span class="text-sm">Vendor: {{SelectedVendor[0]?.companyName}}</span>
+                                    <mat-icon svgIcon="heroicons_outline:x" (click)="clearFilter('company_id')"
+                                        class="icon-size-4 cursor-pointer"></mat-icon>
+                                </button>
+                                <button *ngIf="filterPayload.vendor_relation !== 0" mat-button mat-stroked-button
+                                    class="mr-1">
+                                    <span class="text-sm">Vendor Relation: {{this.selectedVendorRelation}}</span>
+                                    <mat-icon svgIcon="heroicons_outline:x" (click)="clearFilter('vendor_relation')"
+                                        class="icon-size-4 cursor-pointer"></mat-icon>
+                                </button>
+                                <button *ngIf="filterPayload.min_price !== 0" mat-button mat-stroked-button
+                                    class="mr-1">
+                                    <span class="text-sm">Min. Price: {{filterPayload.min_price | currency}}</span>
+                                    <mat-icon svgIcon="heroicons_outline:x" (click)="clearFilter('min_price')"
+                                        class="icon-size-4 cursor-pointer"></mat-icon>
+                                </button>
+                                <button *ngIf="filterPayload.max_price !== 0" mat-button mat-stroked-button
+                                    class="mr-1">
+                                    <span class="text-sm">Max. Price: {{filterPayload.max_price | currency}}</span>
+                                    <mat-icon svgIcon="heroicons_outline:x" (click)="clearFilter('max_price')"
+                                        class="icon-size-4 cursor-pointer"></mat-icon>
+                                </button>
+                                <button *ngIf="filterPayload.color_search !== ''" mat-button mat-stroked-button
+                                    class="mr-1">
+                                    <span class="text-sm">Colors: {{selectedColorString}}</span>
+                                    <mat-icon svgIcon="heroicons_outline:x" (click)="clearFilter('color_search')"
+                                        class="icon-size-4 cursor-pointer"></mat-icon>
+                                </button>
+                                <button *ngIf="filterPayload.method_search !== ''" methodSearch mat-button
+                                    mat-stroked-button class="mr-1">
+                                    <span class="text-sm">Decoration: {{selectedDecorationString}}</span>
+                                    <mat-icon svgIcon="heroicons_outline:x" (click)="clearFilter('method_search')"
+                                        class="icon-size-4 cursor-pointer"></mat-icon>
+                                </button>
+                                <button *ngIf="filterPayload.size_search !== ''" mat-button mat-stroked-button
+                                    class="mr-1">
+                                    <span class="text-sm">Sizes: {{this.selectedSizeString}}</span>
+                                    <mat-icon svgIcon="heroicons_outline:x" (click)="clearFilter('size_search')"
+                                        class="icon-size-4 cursor-pointer"></mat-icon>
+                                </button>
+                                <button *ngIf="filterPayload.min_quantity !== 0" mat-button mat-stroked-button
+                                    class="mr-1">
+                                    <span class="text-sm">Min. Quantity: {{filterPayload.min_quantity}}</span>
+                                    <mat-icon svgIcon="heroicons_outline:x" (click)="clearFilter('min_quantity')"
+                                        class="icon-size-4 cursor-pointer"></mat-icon>
+                                </button>
+                            </div>
+                            <div class="bg-card shadow rounded-2xl p-5" *ngIf="dataSource.length == 0">
+                                <fuse-alert [type]="'warning'" [appearance]="'outline'">
+                                    Please select filter choices to see product results.
+                                </fuse-alert>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-12" *ngIf="!isPageLoading && !isFilterLoader">
-                        <b class="mt-2" *ngIf="dataSource.length > 0">Total Products {{total}}</b>
-                        <pagination-controls *ngIf="dataSource.length > 0" previousLabel="Prev" nextLabel="Next"
-                            (pageChange)="getNextCatalogData($event)">
-                        </pagination-controls>
-                        <div class="w-full" *ngIf="!isPageLoading">
-                            <ng-container *ngFor="let item of dataSource |  paginate : {
+                        <div class="col-12" *ngIf="!isPageLoading && !isFilterLoader">
+                            <b class="mt-2" *ngIf="dataSource.length > 0">Total Products {{total}}</b>
+                            <pagination-controls *ngIf="dataSource.length > 0" previousLabel="Prev" nextLabel="Next"
+                                (pageChange)="getNextCatalogData($event)">
+                            </pagination-controls>
+                            <div class="w-full" *ngIf="!isPageLoading">
+                                <ng-container *ngFor="let item of dataSource |  paginate : {
                                 itemsPerPage: itemsPerPage,
                                 currentPage: page,
                                 totalItems: total
                               }; let i = index">
-                                <div class="mb-12 p-8 rounded-2xl shadow bg-card">
-                                    <div class="flex justify-between align-items-center">
-                                        <div>
-                                            <a [routerLink]="['/apps/ecommerce/inventory',item.pk_productID]"
-                                                target="_blank">
-                                                <h2 class="my-0 font-semibold">{{item.productNumber}}: <span
-                                                        [innerHTML]="item.productName"></span> </h2>
-                                            </a>
-                                            <h2 class="my-0 font-semibold">ID: {{item.pk_productID}}</h2>
-                                            <div class="font-semibold flex align-items-center text-md text-secondary">
-                                                <p
-                                                    [ngClass]="{'text-green-700': item.vendorRelation == 3,'text-yellow-500': item.vendorRelation == 2}">
-                                                    {{item?.companyName}}</p>
-                                                <div class="mt-1">
-                                                    <mat-icon class="icon-size-4 text-green-700"
-                                                        svgIcon="heroicons_solid:star" *ngIf="item.vendorRelation == 3">
-                                                    </mat-icon>
-                                                    <mat-icon class="icon-size-4 text-yellow-500"
-                                                        svgIcon="heroicons_solid:check-circle"
-                                                        *ngIf="item.vendorRelation == 2">
-                                                    </mat-icon>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <img class="w-30 h-30 m-0"
-                                            src="https://assets.consolidus.com/globalAssets/Products/HiRes/{{item.storeProductID}}.jpg"
-                                            onError="this.src='https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'">
-                                    </div>
-                                    <div class="col-12">
-                                        <span
-                                            class="inline-flex bg-default rounded py-1 text-secondary font-bold">Description</span>
-                                        <div [innerHTML]="item.miniDesc" class="text-justify"></div>
-                                    </div>
-                                    <div class="flex flex-row gap-x-2 font-bold mt-2 ml-2">
-                                        <div class="relative" [id]="'tooltip-' + i" (mouseenter)="mouseEnter($event)"
-                                            (mouseleave)="activeTooltip = ''">
-                                            <div class="underline cursor-pointer">Cost</div>
-                                            <div *ngIf="activeTooltip === 'tooltip-' + i">
-                                                <div class="absolute bg-yellow-100  top-5 -left-10 p-2 z-10 rounded-lg shadow-md"
-                                                    style="max-width: max-content; ">
-
-                                                    <table class="min-w-full divide-y divide-gray-300 text-xs">
-                                                        <thead>
-                                                            <tr>
-                                                                <th *ngFor="let detail of item.splittedCostDetails"
-                                                                    scope="col"
-                                                                    class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
-                                                                    {{ detail.quantity }}</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody class="divide-y divide-gray-200">
-                                                            <tr>
-                                                                <td *ngFor="let detail of item.splittedCostDetails"
-                                                                    class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
-                                                                    {{ detail.cost | currency}}</td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="relative" [id]="'tooltip-' + i +'imprint'"
-                                            (mouseenter)="mouseEnter($event)" (mouseleave)="activeTooltip = ''">
-                                            <div class="underline cursor-pointer">Imprints</div>
-
-                                            <div *ngIf="activeTooltip === 'tooltip-' + i +'imprint'">
-                                                <div class="absolute bg-yellow-100  top-5 -left-30 -right-60 p-2 z-10 rounded-lg shadow-md"
-                                                    style="max-width: max-content; ">
-                                                    <div class="font-medium text-xs">
-                                                        <p
-                                                            *ngFor="let imprint of item.splittedImprintDetails;let i=index">
-                                                            {{i+1 +').'+ imprint.imprint}}</p>
+                                    <div class="mb-12 p-8 rounded-2xl shadow bg-card">
+                                        <div class="flex justify-between align-items-center">
+                                            <div>
+                                                <a [routerLink]="['/apps/ecommerce/inventory',item.pk_productID]"
+                                                    target="_blank">
+                                                    <h2 class="my-0 font-semibold">{{item.productNumber}}: <span
+                                                            [innerHTML]="item.productName"></span> </h2>
+                                                </a>
+                                                <h2 class="my-0 font-semibold">ID: {{item.pk_productID}}</h2>
+                                                <div
+                                                    class="font-semibold flex align-items-center text-md text-secondary">
+                                                    <p
+                                                        [ngClass]="{'text-green-700': item.vendorRelation == 3,'text-yellow-500': item.vendorRelation == 2}">
+                                                        {{item?.companyName}}</p>
+                                                    <div class="mt-1">
+                                                        <mat-icon class="icon-size-4 text-green-700"
+                                                            svgIcon="heroicons_solid:star"
+                                                            *ngIf="item.vendorRelation == 3">
+                                                        </mat-icon>
+                                                        <mat-icon class="icon-size-4 text-yellow-500"
+                                                            svgIcon="heroicons_solid:check-circle"
+                                                            *ngIf="item.vendorRelation == 2">
+                                                        </mat-icon>
                                                     </div>
+                                                </div>
+                                            </div>
+                                            <img class="w-30 h-30 m-0"
+                                                src="https://assets.consolidus.com/globalAssets/Products/HiRes/{{item.storeProductID}}.jpg"
+                                                onError="this.src='https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'">
+                                        </div>
+                                        <div class="col-12">
+                                            <span
+                                                class="inline-flex bg-default rounded py-1 text-secondary font-bold">Description</span>
+                                            <div [innerHTML]="item.miniDesc" class="text-justify"></div>
+                                        </div>
+                                        <div class="flex flex-row gap-x-2 font-bold mt-2 ml-2">
+                                            <div class="relative" [id]="'tooltip-' + i"
+                                                (mouseenter)="mouseEnter($event)" (mouseleave)="activeTooltip = ''">
+                                                <div class="underline cursor-pointer">Cost</div>
+                                                <div *ngIf="activeTooltip === 'tooltip-' + i">
+                                                    <div class="absolute bg-yellow-100  top-5 -left-10 p-2 z-10 rounded-lg shadow-md"
+                                                        style="max-width: max-content; ">
 
+                                                        <table class="min-w-full divide-y divide-gray-300 text-xs">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th *ngFor="let detail of item.splittedCostDetails"
+                                                                        scope="col"
+                                                                        class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                                                                        {{ detail.quantity }}</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody class="divide-y divide-gray-200">
+                                                                <tr>
+                                                                    <td *ngFor="let detail of item.splittedCostDetails"
+                                                                        class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
+                                                                        {{ detail.cost | currency}}</td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="relative" [id]="'tooltip-' + i +'imprint'"
+                                                (mouseenter)="mouseEnter($event)" (mouseleave)="activeTooltip = ''">
+                                                <div class="underline cursor-pointer">Imprints</div>
+
+                                                <div *ngIf="activeTooltip === 'tooltip-' + i +'imprint'">
+                                                    <div class="absolute bg-yellow-100  top-5 -left-30 -right-60 p-2 z-10 rounded-lg shadow-md"
+                                                        style="max-width: max-content; ">
+                                                        <div class="font-medium text-xs">
+                                                            <p
+                                                                *ngFor="let imprint of item.splittedImprintDetails;let i=index">
+                                                                {{i+1 +').'+ imprint.imprint}}</p>
+                                                        </div>
+
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="row">
-                                        <div *ngIf="item.Cost" class="col-12 col-md-6 m-0 overflow-x-auto">
-                                            <span
-                                                class="inline-flex bg-default rounded px-3 py-1 text-secondary font-bold">Cost</span>
-                                            <table class="table table-striped ">
-                                                <thead>
-                                                    <tr>
-                                                        <th *ngFor="let cost of item.Cost">{{cost.quantity}}</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td *ngFor="let cost of item.Cost">{{cost.cost | currency}}</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
+                                        <div class="row">
+                                            <div *ngIf="item.Cost" class="col-12 col-md-6 m-0 overflow-x-auto">
+                                                <span
+                                                    class="inline-flex bg-default rounded px-3 py-1 text-secondary font-bold">Cost</span>
+                                                <table class="table table-striped ">
+                                                    <thead>
+                                                        <tr>
+                                                            <th *ngFor="let cost of item.Cost">{{cost.quantity}}</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td *ngFor="let cost of item.Cost">{{cost.cost | currency}}
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+
                                         </div>
-
-
+                                        <hr class="mt-2">
+                                        <div class="col-12">
+                                            <button class="rounded-md" color="primary" mat-flat-button
+                                                [routerLink]="['/apps/ecommerce/inventory',item.pk_productID,'store-versions']"
+                                                target="_blank">
+                                                Add to Store
+                                            </button>
+                                        </div>
                                     </div>
-                                    <hr class="mt-2">
-                                    <div class="col-12">
-                                        <button class="rounded-md" color="primary" mat-flat-button
-                                            [routerLink]="['/apps/ecommerce/inventory',item.pk_productID,'store-versions']"
-                                            target="_blank">
-                                            Add to Store
-                                        </button>
-                                    </div>
-                                </div>
-                            </ng-container>
-                        </div>
-                        <div *ngIf="!isPageLoading && dataSource.length > 0">
-                            <pagination-controls previousLabel="Prev" nextLabel="Next"
-                                (pageChange)="getNextCatalogData($event)">
-                            </pagination-controls>
+                                </ng-container>
+                            </div>
+                            <div *ngIf="!isPageLoading && dataSource.length > 0">
+                                <pagination-controls previousLabel="Prev" nextLabel="Next"
+                                    (pageChange)="getNextCatalogData($event)">
+                                </pagination-controls>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </ng-container>
 </div>

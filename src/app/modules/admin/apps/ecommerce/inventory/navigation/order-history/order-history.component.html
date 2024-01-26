@@ -1,63 +1,70 @@
 <div class="w-full">
-    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
-    </ngx-skeleton-loader>
-    <div class="row" *ngIf="!isLoading">
-        <div class="col-12 my-2">
-            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-                <div class="p-6 sm:p-8 lg:p-10 w-full">
-                    <div class="text-2xl font-bold">
-                        Orders History
-                    </div>
-                    <!-- Update history -->
-                    <div class="gap-y-4">
-                        <div class="row" *ngIf="order_history.length > 0;else other_content">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Order</th>
-                                        <th>QTY</th>
-                                        <th>Customer</th>
-                                        <th>Company</th>
-                                        <th>Date</th>
-                                        <th>Store</th>
-                                        <th>Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr *ngFor="let item of order_history">
-                                        <td>
-                                            <a target="_blank"
-                                                [routerLink]="['/apps/orders',item.pk_orderID]">{{item.pk_orderID}}</a>
-                                        </td>
-                                        <td>{{item.quantity}}</td>
-                                        <td>
-                                            <a target="_blank"
-                                                [routerLink]="['/apps/customers',item.pk_userID]">{{item.firstName + ' '
-                                                +
-                                                item.lastName}}</a>
-                                        </td>
-                                        <td>{{item.companyName}}</td>
-                                        <td>{{item.orderDate}}</td>
-                                        <td>{{item.storeName}}</td>
-                                        <td>{{item.orderTotal | currency}}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Totals</th>
-                                        <th colspan="5">{{totalQTY}}</th>
-                                        <th>{{totalAmount | currency}}</th>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <ng-template #other_content>
-                            <p class="text-secondary font-semibold my-5">
-                                *This product has never been ordered.
-                            </p>
-                        </ng-template>
-                    </div>
-                </div>
-            </fuse-card>
-        </div>
+    <div class="alert m-4 w-full alert-danger p-4 text-lg text-center font-bold"
+        *ngIf="!_inventoryService.adminUserPermissions.viewOrderHistory">
+        You do not have permission to access this section.
     </div>
+    <ng-container *ngIf="_inventoryService.adminUserPermissions.viewOrderHistory">
+        <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+        </ngx-skeleton-loader>
+        <div class="row" *ngIf="!isLoading">
+            <div class="col-12 my-2">
+                <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                    <div class="p-6 sm:p-8 lg:p-10 w-full">
+                        <div class="text-2xl font-bold">
+                            Orders History
+                        </div>
+                        <!-- Update history -->
+                        <div class="gap-y-4">
+                            <div class="row" *ngIf="order_history.length > 0;else other_content">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Order</th>
+                                            <th>QTY</th>
+                                            <th>Customer</th>
+                                            <th>Company</th>
+                                            <th>Date</th>
+                                            <th>Store</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let item of order_history">
+                                            <td>
+                                                <a target="_blank"
+                                                    [routerLink]="['/apps/orders',item.pk_orderID]">{{item.pk_orderID}}</a>
+                                            </td>
+                                            <td>{{item.quantity}}</td>
+                                            <td>
+                                                <a target="_blank"
+                                                    [routerLink]="['/apps/customers',item.pk_userID]">{{item.firstName +
+                                                    ' '
+                                                    +
+                                                    item.lastName}}</a>
+                                            </td>
+                                            <td>{{item.companyName}}</td>
+                                            <td>{{item.orderDate}}</td>
+                                            <td>{{item.storeName}}</td>
+                                            <td>{{item.orderTotal | currency}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Totals</th>
+                                            <th colspan="5">{{totalQTY}}</th>
+                                            <th>{{totalAmount | currency}}</th>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <ng-template #other_content>
+                                <p class="text-secondary font-semibold my-5">
+                                    *This product has never been ordered.
+                                </p>
+                            </ng-template>
+                        </div>
+                    </div>
+                </fuse-card>
+            </div>
+        </div>
+    </ng-container>
 </div>
