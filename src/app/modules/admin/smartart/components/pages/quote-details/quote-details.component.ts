@@ -213,7 +213,6 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
         // this.selectedImprintPmsColor = this.quoteImprintdata[0].pmsColors;
         this.selectedProofImprint = this.quoteImprintdata[0].imprintID;
         this.selectedPurchaseImprint = this.quoteImprintdata[0];
-        this.selectedImprintForTimer = this.quoteImprintdata[0];
 
         this.quoteImprintdata.forEach(imprint => {
           imprint.timerValues = '00:00:00';
@@ -223,6 +222,8 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
           this.setitemColorsWithIDs(imprint);
 
         });
+        this.selectedImprintForTimer = this.quoteImprintdata[0];
+
         if (this.quoteImprintdata[0].allColors) {
           let colors = this.quoteImprintdata[0].allColors;
           let colorsArr = colors.split(',');
