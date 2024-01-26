@@ -1314,9 +1314,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         if (res["success"]) {
           this._smartartService.snackBar(res["message"]);
-          if (statusID == 9) {
-            imprint.statusName = 'AWAITING ARTWORK APPROVAL';
-          } else if (statusID == 2) {
+          if (statusID == 2) {
             imprint.statusName = 'NEW PENDING';
           } else if (statusID == 3) {
             imprint.statusName = 'AWAITING ARTWORK APPROVAL';
@@ -1326,8 +1324,6 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
             imprint.statusName = 'DECORATOR NOTIFIED';
           } else if (statusID == 7) {
             imprint.statusName = 'NO PROOF NEEDED';
-          } else if (statusID == 9) {
-            imprint.statusName = 'ARTWORK APPROVED';
           } else if (statusID == 11) {
             imprint.statusName = 'IN PRODUCTION';
           } else if (statusID == 12) {
@@ -1361,8 +1357,16 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
           // this.imprintdata[index].imprintComments = this.imprintdata[index].imprintComments + ' <br>' + res["customerArtworkComment"];
         }
         if (statusID == 9) {
-          imprint.pk_statusID = 3;
-          imprint.statusName = 'AWAITING ARTWORK APPROVAL';
+          if (res["returnedStatus"] == 3) {
+            imprint.pk_statusID = 3;
+            imprint.statusName = 'AWAITING ARTWORK APPROVAL';
+          } else if (res["returnedStatus"] == 9) {
+            imprint.pk_statusID = 9;
+            imprint.statusName = 'ARTWORK APPROVED';
+          } else {
+            imprint.pk_statusID = 16;
+            imprint.statusName = 'PO Sent';
+          }
           if (imprint.viewProofCheck) {
             this.removeProofArtImage(imprint);
           }

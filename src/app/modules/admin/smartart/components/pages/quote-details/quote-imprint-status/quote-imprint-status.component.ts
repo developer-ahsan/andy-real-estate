@@ -438,11 +438,13 @@ export class QuoteImprintStatusComponent implements OnInit, OnDestroy {
       this.statusLoader(imprint, statusID, false);
       if (res) {
         this._smartartService.snackBar(res["message"]);
-        this.statusNameAndDate(imprint, statusID);
         if (statusID == 9) {
+          this.statusNameAndDate(imprint, res["returnedStatus"]);
           if (imprint.viewProofCheck) {
             this.removeProofArtImage(imprint);
           }
+        } else {
+          this.statusNameAndDate(imprint, statusID);
         }
         imprint.applyStatusLoader = false;
         this.updateImprintData(imprint);
