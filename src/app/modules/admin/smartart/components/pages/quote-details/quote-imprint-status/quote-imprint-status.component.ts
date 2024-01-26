@@ -69,6 +69,7 @@ export class QuoteImprintStatusComponent implements OnInit, OnDestroy {
         imprint.artworkTime = date[1];
       }
       imprint.bgColor = this.setImprintColor(imprint.fk_statusID);
+      imprint.statusID = 9;
       const url = `https://assets.consolidus.com/Artwork/Proof/Quotes/${this.paramData.pfk_userID}/${this.paramData.fk_cartID}/${this.paramData.pk_cartLineID}/${imprint.imprintID}.jpg?${this.tempValue}`;
       this.checkIfImageExists(url, imprint);
     });
@@ -460,6 +461,11 @@ export class QuoteImprintStatusComponent implements OnInit, OnDestroy {
 
     imprint.bgColor = this.setImprintColor(statusID);
     this._changeDetectorRef.markForCheck();
+  }
+
+  // Apply Manual StatusChange() 
+  applyStatusChangeImprint(imprint, statusID) {
+
   }
   // Update order Attention
   updateAttentionFlagOrder(imprint, check) {

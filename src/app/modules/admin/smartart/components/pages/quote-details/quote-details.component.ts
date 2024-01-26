@@ -502,12 +502,16 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
           }
         }
       });
+      this.allColors = finalColor;
     }
     this._changeDetectorRef.markForCheck();
   }
   // Imprint Colors
   updateOrderLineImprintColors() {
-    let colors = this.selectedMultipleColors;
+    console.log(this.selectedMultipleColors)
+    let updatedColors = [...this.selectedMultipleColors];
+
+    let colors = [...this.selectedMultipleColors];
     if (this.selectedImprintPmsColor) {
       colors.push(this.selectedImprintPmsColor);
     }
@@ -525,9 +529,18 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
         const index = this.quoteImprintdata.findIndex(item => item.imprintID == this.selectedImprint);
         this.quoteImprintdata[index].colorNameList = colors.toString();
         this.quoteImprintdata[index].pmsColors = this.selectedImprintPmsColor;
+        if (this.selectedImprintPmsColor && this.allColors) {
+          const colorExists = this.allColors.find(element => element.name === this.selectedImprintPmsColor);
+          if (colorExists && !this.selectedMultipleColors.includes(this.selectedImprintPmsColor)) {
+            updatedColors.push(this.selectedImprintPmsColor);
+          }
+        }
+        this.selectedMultipleColors = updatedColors;
+        this.selectedImprintPmsColor = '';
         // this.orderData.internalComments = this.orderData.internalComments + res["comment"];
         // this.ngComment = '';
         this._smartartService.snackBar(res["message"]);
+        this._changeDetectorRef.markForCheck();
       }
       this.imprintColorsLoader = false;
       this._changeDetectorRef.markForCheck();
