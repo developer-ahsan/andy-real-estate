@@ -538,5 +538,10 @@ export interface UpdateQuoteArtworkStatus {
     firstName: string;
     lastName: string;
     email: string;
+    productID: number;
+    orderQuantity: number;
+    colorNameList: string;
+    blnIncludeApproveByDate: boolean;
+    approveByDate: string;
     update_quote_artwork_status: boolean;
 };

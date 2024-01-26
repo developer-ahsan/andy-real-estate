@@ -339,8 +339,12 @@ export class QuoteImprintStatusComponent implements OnInit, OnDestroy {
     });
   }
   // update Statuses
-  updateStatuses(imprint, statusID) {
-    this.statusLoader(imprint, statusID, true);
+  updateStatuses(imprint, statusID, type?) {
+    if (type == 'apply') {
+      imprint.applyStatusLoader = true;
+    } else {
+      this.statusLoader(imprint, statusID, true);
+    }
     const fileUrl = `https://assets.consolidus.com/globalAssets/Stores/quoteExports/${this.quoteData.storeName}/${this.quoteData.fk_cartID}.pdf`;
     let params = {
       file_check: true,
@@ -358,7 +362,7 @@ export class QuoteImprintStatusComponent implements OnInit, OnDestroy {
   applyStatusChange(imprint, statusID) {
     const { firstName, lastName, storeUserID, fk_cartID, pk_cartLineID, email, sessionArtworkCompanyName, storePrimaryHighlight, pk_storeID, storeName, storeURL, storeCode, protocol, sessionArtworkrutgersStudentType, blnGroupRun, productName, productNumber, productID, orderQuantity, blnIgnoreAdditionalArtEmails, sessionArtworkrutgersEmployeeType, quoteDate, inHandsDateValue, pfk_userID, blnAdditionalArtApproval, blnAdditionalApprovalOverride, sessionArtworkBillingStudentOrgCode } = this.quoteData;
 
-    const { blnIncludeApproveByDate, emailRecipients, fk_artApprovalContactID, fk_storeUserApprovalContactID, thumbnailURL, methodName, locationName, colorNameList, itemColors, isFileExist, proofComments, imprintID, fk_statusID, blnRespond, blnProofSent } = imprint;
+    const { blnIncludeApproveByDate, emailRecipients, fk_artApprovalContactID, fk_storeUserApprovalContactID, thumbnailURL, methodName, locationName, colorNameList, itemColors, isFileExist, proofComments, imprintID, fk_statusID, blnRespond, blnProofSent, approveByDate } = imprint;
 
     const { adminUserID } = this.smartArtUser;
 
@@ -370,6 +374,18 @@ export class QuoteImprintStatusComponent implements OnInit, OnDestroy {
     let converDate;
     if (inHandsDateValue) {
       converDate = moment(inHandsDateValue).format('MM/DD/yyyy')
+    }
+    let approveDate;
+    if (approveByDate) {
+      approveDate = moment(approveByDate).format('MM/DD/yyyy')
+    }
+    let approvingStoreUserID = null;
+    if (fk_storeUserApprovalContactID) {
+      approvingStoreUserID = fk_storeUserApprovalContactID;
+    } else if (fk_artApprovalContactID) {
+      approvingStoreUserID = fk_artApprovalContactID;
+    } else {
+      approvingStoreUserID = storeUserID;
     }
     let payload: UpdateQuoteArtworkStatus = {
       cartLineID: pk_cartLineID,
@@ -397,7 +413,7 @@ export class QuoteImprintStatusComponent implements OnInit, OnDestroy {
       storeProductImage: thumbnailURL,
       blnIgnoreAdditionalArtEmails,
       blnProofSent,
-      fk_artApprovalContactID,
+      fk_artApprovalContactID: approvingStoreUserID,
       fk_storeUserApprovalContactID,
       storeUserID,
       isFileExist,
@@ -411,6 +427,11 @@ export class QuoteImprintStatusComponent implements OnInit, OnDestroy {
       firstName,
       lastName,
       email,
+      productID,
+      orderQuantity,
+      colorNameList,
+      blnIncludeApproveByDate,
+      approveByDate: approveDate,
       update_quote_artwork_status: true
     }
     this._smartartService.UpdateSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -418,7 +439,18 @@ export class QuoteImprintStatusComponent implements OnInit, OnDestroy {
       if (res) {
         this._smartartService.snackBar(res["message"]);
         this.statusNameAndDate(imprint, statusID);
+        if (statusID == 9) {
+          if (imprint.viewProofCheck) {
+            this.removeProofArtImage(imprint);
+          }
+        }
+        imprint.applyStatusLoader = false;
+        this.updateImprintData(imprint);
+        this._changeDetectorRef.markForCheck();
       }
+    }, err => {
+      imprint.applyStatusLoader = false;
+      this._changeDetectorRef.markForCheck();
     });
   }
   statusLoader(imprint, statusID, loader) {
@@ -462,10 +494,90 @@ export class QuoteImprintStatusComponent implements OnInit, OnDestroy {
     imprint.bgColor = this.setImprintColor(statusID);
     this._changeDetectorRef.markForCheck();
   }
+  updateImprintData(imprint) {
+    imprint.proofComments = '';
+    imprint.statusID = 9;
+    imprint.emailRecipients = '';
+    imprint.recipientsComment = '';
+    this.generateEmailRecipinets(imprint);
+    this._changeDetectorRef.markForCheck();
+  }
 
-  // Apply Manual StatusChange() 
-  applyStatusChangeImprint(imprint, statusID) {
-
+  sendFollwUpEmail(imprint) {
+    // imprint.followUPLoader = true;
+    // const url = `https://assets.consolidus.com/globalAssets/Products/HiRes/${this.orderData.pk_storeProductID}.jpg?${this.randomString}`;
+    // let storeImage: any = '';
+    // this.checkImageExist(url).then(imgRes => {
+    //   if (imgRes) {
+    //     storeImage = url;
+    //   } else {
+    //     storeImage = 'https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg';
+    //   }
+    //   let payload: sendOrderCustomerFollowUpEmail = {
+    //     orderID: Number(this.paramData.fk_orderID),
+    //     orderLineID: Number(this.paramData.pk_orderLineID),
+    //     orderLineImprintID: Number(imprint.pk_imprintID),
+    //     artApprovalContactID: this.orderData.fk_artApprovalContactID,
+    //     storeUserApprovalContactID: this.orderData.fk_storeUserApprovalContactID,
+    //     protocol: this.orderData.protocol,
+    //     email_recipients: imprint.emailRecipients.split(','),
+    //     smartArtAdminEmail: this.smartArtUser.email,
+    //     locationName: imprint.locationName,
+    //     methodName: imprint.decorationName,
+    //     imprintColors: imprint.imprintColors,
+    //     productNumber: this.orderData.sessionArtwork_productNumber,
+    //     productName: this.orderData.sessionArtwork_productName,
+    //     primaryHighlight: this.orderData.storePrimaryHighlight,
+    //     storeID: this.orderData.sessionArtworkStoreID,
+    //     storeName: this.orderData.sessionArtworkStoreName,
+    //     storeCode: this.orderData.storeCode,
+    //     storeProductID: this.orderData.pk_storeProductID,
+    //     quantity: this.orderData.quantity,
+    //     storeProductImageURL: storeImage,
+    //     storeUserFirstName: this.orderData.sessionArtworkFirstName,
+    //     storeUserLastName: this.orderData.sessionArtworkLastName,
+    //     storeUserEmail: this.orderData.sessionArtworkEmail,
+    //     storeUserID: this.orderData.fk_storeUserID,
+    //     storeUserCompanyName: this.orderData.sessionArtworkCompanyName,
+    //     blnStoreUserApprovalDone: imprint.blnStoreUserApprovalDone,
+    //     send_order_customer_followUp_email: true
+    //   }
+    //   this._smartartService.AddSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll), finalize(() => {
+    //     imprint.followUPLoader = false;
+    //     this._changeDetectorRef.markForCheck();
+    //   })).subscribe(res => {
+    //     if (res["success"]) {
+    //       imprint.statusName = 'AWAITING ARTWORK APPROVAL';
+    //       imprint.pk_statusID = 3;
+    //       this.setImprintColor(imprint);
+    //       this.updateImprintsData();
+    //       this._smartartService.snackBar('Artwork status successfully updated.');
+    //       this._changeDetectorRef.markForCheck();
+    //     }
+    //   });
+    // });
+  }
+  sendOrderProofUpdates(imprint) {
+    // let payload: sendOrderProofUpdate = {
+    //   imprintLocationName: imprint.locationName,
+    //   imprintMethodName: imprint.decorationName,
+    //   imprintID: Number(imprint.pk_imprintID),
+    //   storeName: this.orderData.storeName,
+    //   orderID: this.orderData.pk_orderID,
+    //   storeID: this.orderData.sessionArtworkStoreID,
+    //   productName: this.orderData.sessionArtwork_productName,
+    //   storeUserID: this.orderData.fk_storeUserID,
+    //   orderLineID: Number(this.paramData.pk_orderLineID),
+    //   send_order_proof_update: true
+    // }
+    // imprint.senOrderProofLoader = true;
+    // this._smartartService.AddSmartArtData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    //   imprint.senOrderProofLoader = false;
+    //   this._changeDetectorRef.markForCheck();
+    // }, err => {
+    //   imprint.senOrderProofLoader = false;
+    //   this._changeDetectorRef.markForCheck();
+    // });
   }
   // Update order Attention
   updateAttentionFlagOrder(imprint, check) {

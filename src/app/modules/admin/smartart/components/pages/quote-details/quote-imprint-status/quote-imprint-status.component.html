@@ -230,8 +230,8 @@
                                         </div>
                                     </div>
                                     <div>
-                                        <button (click)="uploadArtworkFileToServer(imprint)"
-                                            class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">
+                                        <button (click)="uploadArtworkFileToServer(imprint)" mat-button mat-flat-button
+                                            color="primary" class="min-w-30 mt-2 rounded-md">
                                             <span *ngIf="!imprint?.artworkProofLoader">Update Artwork
                                                 Proof</span>
                                             <mat-progress-spinner [color]="'light'" *ngIf="imprint?.artworkProofLoader"
@@ -267,9 +267,8 @@
                                         <ng-container
                                             *ngIf="imprint.fk_artApprovalContactID || (imprint.fk_storeUserApprovalContactID && !imprint.blnStoreUserApprovalDone)">
                                             <br>
-                                            <button type="button"
-                                                class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                [disabled]="imprint.senOrderProofLoader">
+                                            <button (click)="sendOrderProofUpdates(imprint)" class="min-w-30 rounded-md"
+                                                mat-button mat-flat-button [disabled]="imprint.senOrderProofLoader">
                                                 <span *ngIf="!imprint?.senOrderProofLoader">Send proof
                                                     update</span>
                                                 <mat-progress-spinner [color]="'light'"
@@ -346,8 +345,9 @@
                                         <textarea matInput [(ngModel)]="imprint.proofComments"></textarea>
                                     </mat-form-field>
                                     <div class="tex-right">
-                                        <button class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200"
-                                            [disabled]="imprint.applyStatusLoader">
+                                        <button mat-button mat-flat-button color="primary" class="min-w-30 rounded-md"
+                                            [disabled]="imprint.applyStatusLoader"
+                                            (click)="updateStatuses(imprint,imprint.statusID,'apply')">
                                             <span *ngIf="!imprint?.applyStatusLoader">Apply Status
                                                 Change</span>
                                             <mat-progress-spinner *ngIf="imprint?.applyStatusLoader" [diameter]="24"
@@ -400,8 +400,15 @@
                                         </div>
                                     </div>
                                     <div>
-                                        <button class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">Send
-                                            follow up for email</button>
+                                        <button (click)="sendFollwUpEmail(imprint)" mat-button mat-flat-button
+                                            color="primary" class="min-w-30 mt-2 rounded-md">
+                                            <span *ngIf="!imprint?.followUPLoader">
+                                                Send follow up email
+                                            </span>
+                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.followUPLoader"
+                                                [diameter]="24" [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="col-md-4 col-12">
@@ -429,13 +436,12 @@
                                         <ng-container
                                             *ngIf="imprint.fk_artApprovalContactID || (imprint.fk_storeUserApprovalContactID && !imprint.blnStoreUserApprovalDone)">
                                             <br>
-                                            <button type="button"
-                                                class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                [disabled]="imprint.awaitingStatusLoader">
-                                                <span *ngIf="!imprint?.awaitingStatusLoader">Send proof
+                                            <button (click)="sendOrderProofUpdates(imprint)" class="min-w-30 rounded-md"
+                                                mat-button mat-flat-button [disabled]="imprint.senOrderProofLoader">
+                                                <span *ngIf="!imprint?.senOrderProofLoader">Send proof
                                                     update</span>
                                                 <mat-progress-spinner [color]="'light'"
-                                                    *ngIf="imprint?.awaitingStatusLoader" [diameter]="24"
+                                                    *ngIf="imprint?.senOrderProofLoader" [diameter]="24"
                                                     [mode]="'indeterminate'">
                                                 </mat-progress-spinner>
                                             </button>
@@ -508,8 +514,9 @@
                                         <textarea matInput [(ngModel)]="imprint.proofComments"></textarea>
                                     </mat-form-field>
                                     <div class="tex-right">
-                                        <button class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200"
-                                            [disabled]="imprint.applyStatusLoader">
+                                        <button mat-button mat-flat-button color="primary" class="min-w-30 rounded-md"
+                                            [disabled]="imprint.applyStatusLoader"
+                                            (click)="updateStatuses(imprint,imprint.statusID,'apply')">
                                             <span *ngIf="!imprint?.applyStatusLoader">Apply Status
                                                 Change</span>
                                             <mat-progress-spinner *ngIf="imprint?.applyStatusLoader" [diameter]="24"
@@ -562,8 +569,15 @@
                                         </div>
                                     </div>
                                     <div>
-                                        <button class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">Send
-                                            follow up for email</button>
+                                        <button (click)="sendFollwUpEmail(imprint)" mat-button mat-flat-button
+                                            color="primary" class="min-w-30 mt-2 rounded-md">
+                                            <span *ngIf="!imprint?.followUPLoader">
+                                                Send follow up email
+                                            </span>
+                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.followUPLoader"
+                                                [diameter]="24" [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="col-md-4 col-12">
@@ -602,13 +616,12 @@
                                         <ng-container
                                             *ngIf="imprint.fk_artApprovalContactID || (imprint.fk_storeUserApprovalContactID && !imprint.blnStoreUserApprovalDone)">
                                             <br>
-                                            <button type="button"
-                                                class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                [disabled]="imprint.awaitingStatusLoader">
-                                                <span *ngIf="!imprint?.awaitingStatusLoader">Send proof
+                                            <button (click)="sendOrderProofUpdates(imprint)" class="min-w-30 rounded-md"
+                                                mat-button mat-flat-button [disabled]="imprint.senOrderProofLoader">
+                                                <span *ngIf="!imprint?.senOrderProofLoader">Send proof
                                                     update</span>
                                                 <mat-progress-spinner [color]="'light'"
-                                                    *ngIf="imprint?.awaitingStatusLoader" [diameter]="24"
+                                                    *ngIf="imprint?.senOrderProofLoader" [diameter]="24"
                                                     [mode]="'indeterminate'">
                                                 </mat-progress-spinner>
                                             </button>
@@ -681,8 +694,9 @@
                                         <textarea matInput [(ngModel)]="imprint.proofComments"></textarea>
                                     </mat-form-field>
                                     <div class="tex-right">
-                                        <button class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200"
-                                            [disabled]="imprint.applyStatusLoader">
+                                        <button mat-button mat-flat-button color="primary" class="min-w-30 rounded-md"
+                                            [disabled]="imprint.applyStatusLoader"
+                                            (click)="updateStatuses(imprint,imprint.statusID,'apply')">
                                             <span *ngIf="!imprint?.applyStatusLoader">Apply Status
                                                 Change</span>
                                             <mat-progress-spinner *ngIf="imprint?.applyStatusLoader" [diameter]="24"
@@ -706,8 +720,7 @@
                                             href="https://assets.consolidus.com/artwork/Proof/Quotes/{{this.paramData.pfk_userID}}/{{this.paramData.fk_cartID}}/{{this.paramData.pk_cartLineID}}/{{imprint.imprintID}}.jpg?{{tempValue}}"
                                             target="_blank">(Click here to view proof)</a>
                                     </div>
-                                    <button type="button"
-                                        class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                    <button mat-button mat-flat-button color="primary" class="min-w-30"
                                         [disabled]="imprint.pendingStatusLoader">
                                         <span *ngIf="!imprint?.pendingStatusLoader">Acknowledge
                                             changes requested</span>
@@ -743,13 +756,12 @@
                                         <ng-container
                                             *ngIf="imprint.fk_artApprovalContactID || (imprint.fk_storeUserApprovalContactID && !imprint.blnStoreUserApprovalDone)">
                                             <br>
-                                            <button type="button"
-                                                class="min-w-30 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
-                                                [disabled]="imprint.proofStatusLoader">
-                                                <span *ngIf="!imprint?.proofStatusLoader">No
-                                                    proof needed</span>
+                                            <button (click)="sendOrderProofUpdates(imprint)" class="min-w-30 rounded-md"
+                                                mat-button mat-flat-button [disabled]="imprint.senOrderProofLoader">
+                                                <span *ngIf="!imprint?.senOrderProofLoader">Send proof
+                                                    update</span>
                                                 <mat-progress-spinner [color]="'light'"
-                                                    *ngIf="imprint?.proofStatusLoader" [diameter]="24"
+                                                    *ngIf="imprint?.senOrderProofLoader" [diameter]="24"
                                                     [mode]="'indeterminate'">
                                                 </mat-progress-spinner>
                                             </button>
@@ -836,15 +848,14 @@
                                             </mat-progress-spinner>
                                         </button>
                                         <br>
-                                        <button type="button"
+                                        <button
                                             *ngIf="imprint.fk_artApprovalContactID || (imprint.fk_storeUserApprovalContactID && !imprint.blnStoreUserApprovalDone)"
-                                            class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                            [disabled]="imprint.awaitingStatusLoader">
-                                            <span *ngIf="!imprint?.awaitingStatusLoader">Send proof
+                                            (click)="sendOrderProofUpdates(imprint)" class="min-w-30 rounded-md"
+                                            mat-button mat-flat-button [disabled]="imprint.senOrderProofLoader">
+                                            <span *ngIf="!imprint?.senOrderProofLoader">Send proof
                                                 update</span>
-                                            <mat-progress-spinner [color]="'light'"
-                                                *ngIf="imprint?.awaitingStatusLoader" [diameter]="24"
-                                                [mode]="'indeterminate'">
+                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.senOrderProofLoader"
+                                                [diameter]="24" [mode]="'indeterminate'">
                                             </mat-progress-spinner>
                                         </button>
                                     </div>
@@ -909,13 +920,12 @@
                                         <ng-container
                                             *ngIf="imprint.fk_artApprovalContactID || (imprint.fk_storeUserApprovalContactID && !imprint.blnStoreUserApprovalDone)">
                                             <br>
-                                            <button type="button"
-                                                class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                [disabled]="imprint.awaitingStatusLoader">
-                                                <span *ngIf="!imprint?.awaitingStatusLoader">Send proof
+                                            <button (click)="sendOrderProofUpdates(imprint)" class="min-w-30 rounded-md"
+                                                mat-button mat-flat-button [disabled]="imprint.senOrderProofLoader">
+                                                <span *ngIf="!imprint?.senOrderProofLoader">Send proof
                                                     update</span>
                                                 <mat-progress-spinner [color]="'light'"
-                                                    *ngIf="imprint?.awaitingStatusLoader" [diameter]="24"
+                                                    *ngIf="imprint?.senOrderProofLoader" [diameter]="24"
                                                     [mode]="'indeterminate'">
                                                 </mat-progress-spinner>
                                             </button>
@@ -986,8 +996,15 @@
                                             id="email-{{imprint.pk_imprintID}}">
                                     </mat-form-field>
                                     <div>
-                                        <button class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200">Send
-                                            follow up email</button>
+                                        <button (click)="sendFollwUpEmail(imprint)" mat-button mat-flat-button
+                                            color="primary" class="min-w-30 mt-2 rounded-md">
+                                            <span *ngIf="!imprint?.followUPLoader">
+                                                Send follow up email
+                                            </span>
+                                            <mat-progress-spinner [color]="'light'" *ngIf="imprint?.followUPLoader"
+                                                [diameter]="24" [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="col-md-4 col-12">
@@ -1006,13 +1023,12 @@
                                         <ng-container
                                             *ngIf="imprint.fk_artApprovalContactID || (imprint.fk_storeUserApprovalContactID && !imprint.blnStoreUserApprovalDone)">
                                             <br>
-                                            <button type="button"
-                                                class="min-w-30 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                [disabled]="imprint.awaitingStatusLoader">
-                                                <span *ngIf="!imprint?.awaitingStatusLoader">Send proof
+                                            <button (click)="sendOrderProofUpdates(imprint)" class="min-w-30 rounded-md"
+                                                mat-button mat-flat-button [disabled]="imprint.senOrderProofLoader">
+                                                <span *ngIf="!imprint?.senOrderProofLoader">Send proof
                                                     update</span>
                                                 <mat-progress-spinner [color]="'light'"
-                                                    *ngIf="imprint?.awaitingStatusLoader" [diameter]="24"
+                                                    *ngIf="imprint?.senOrderProofLoader" [diameter]="24"
                                                     [mode]="'indeterminate'">
                                                 </mat-progress-spinner>
                                             </button>
@@ -1085,9 +1101,9 @@
                                         <textarea matInput [(ngModel)]="imprint.proofComments"></textarea>
                                     </mat-form-field>
                                     <div class="tex-right">
-                                        <button class="min-w-30 mt-2 btn buttonComment hover:bg-gray-200"
-                                            (click)="applyStatusChangeImprint(imprint, imprint.statusID,'apply')"
-                                            [disabled]="imprint.applyStatusLoader">
+                                        <button mat-button mat-flat-button color="primary" class="min-w-30 rounded-md"
+                                            [disabled]="imprint.applyStatusLoader"
+                                            (click)="updateStatuses(imprint,imprint.statusID,'apply')">
                                             <span *ngIf="!imprint?.applyStatusLoader">Apply Status
                                                 Change</span>
                                             <mat-progress-spinner *ngIf="imprint?.applyStatusLoader" [diameter]="24"

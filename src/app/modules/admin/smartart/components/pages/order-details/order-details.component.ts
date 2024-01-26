@@ -1315,7 +1315,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
         if (res["success"]) {
           this._smartartService.snackBar(res["message"]);
           if (statusID == 9) {
-            imprint.statusName = 'Artwork Approved';
+            imprint.statusName = 'AWAITING ARTWORK APPROVAL';
           } else if (statusID == 2) {
             imprint.statusName = 'NEW PENDING';
           } else if (statusID == 3) {
@@ -1361,9 +1361,12 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
           // this.imprintdata[index].imprintComments = this.imprintdata[index].imprintComments + ' <br>' + res["customerArtworkComment"];
         }
         if (statusID == 9) {
+          imprint.pk_statusID = 3;
+          imprint.statusName = 'AWAITING ARTWORK APPROVAL';
           if (imprint.viewProofCheck) {
             this.removeProofArtImage(imprint);
           }
+          imprint.formattedStatusDate = moment().format('yyyy-MM-DD');
         }
         this.updateImprintsData();
         this._changeDetectorRef.markForCheck();

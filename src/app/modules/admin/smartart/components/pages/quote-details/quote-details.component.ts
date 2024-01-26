@@ -508,7 +508,6 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
   }
   // Imprint Colors
   updateOrderLineImprintColors() {
-    console.log(this.selectedMultipleColors)
     let updatedColors = [...this.selectedMultipleColors];
 
     let colors = [...this.selectedMultipleColors];
