@@ -249,7 +249,10 @@ export class QuoteProductsComponent implements OnInit {
       if (res["unselectedImprints"].length) {
         cartLine.ngImprintSelected = res["unselectedImprints"][0];
       }
+      this._changeDetectorRef.markForCheck();
     });
+    this._changeDetectorRef.markForCheck();
+
   }
   onItemSelect(item: any) {
     this.ngNewProduct = [this.allProducts.find(product => product.fk_productID == item.fk_productID)];
@@ -660,8 +663,8 @@ export class QuoteProductsComponent implements OnInit {
       cartLineID: pk_cartLineID,
       blnGroupRun,
       groupRunCartLineID,
-      bln_unit_cost_override: blnOverrideCostPrice,
-      blnOverrideShippingNewOption: blnOverrideShippingOptions,
+      bln_unit_cost_override: blnOverrideCostPrice ? blnOverrideCostPrice : false,
+      blnOverrideShippingNewOption: blnOverrideShippingOptions ? blnOverrideShippingOptions : false,
       orderQuantity,
       isFulfillmentCart: this.selectedQuoteDetail.isFulfillmentCart,
       warehouse_delivery_option: warehouseDeliveryOption,

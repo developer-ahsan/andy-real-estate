@@ -104,7 +104,7 @@ export class QuotesService {
     getQuoteData(params): Observable<any[]> {
         return this._httpClient.get<any[]>(environment.quotes, {
             params: params
-        });
+        }).pipe(retry(3));
     };
     // Common Post Call
     AddQuoteData(payload) {
