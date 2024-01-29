@@ -1,156 +1,165 @@
 <div class="absolute inset-0 flex flex-col min-w-0 overflow-y-auto bg-light dark:bg-transparent">
-    <!-- Header -->
-    <div class="bg-white relative bg-light  sm:items-center sm:justify-between py-8 px-8 md:px-8 border-b"
-        #topScrollAnchor>
-        <!-- Loader -->
-        <div class="flex justify-between">
-            <div>
-                <div class="text-4xl font-extrabold tracking-tight leading-none">Quotes</div>
-                <div class="ml-0.5 font-medium text-secondary">
-                    <span *ngIf="totalRecords > 0 && !isLoading">{{totalRecords}} records
-                        found</span>
-                    <span *ngIf="totalRecords < 1 && !isLoading">No records found</span>
+    <div class="alert m-4 w-full alert-danger p-4 text-lg text-center font-bold"
+        *ngIf="!_quoteService.quotePermissions.selectQuote">
+        You do not have permission to access this section.
+    </div>
+    <ng-container *ngIf="_quoteService.quotePermissions.selectQuote">
+        <!-- Header -->
+        <div class="bg-white relative bg-light  sm:items-center sm:justify-between py-8 px-8 md:px-8 border-b"
+            #topScrollAnchor>
+            <!-- Loader -->
+            <div class="flex justify-between">
+                <div>
+                    <div class="text-4xl font-extrabold tracking-tight leading-none">Quotes</div>
+                    <div class="ml-0.5 font-medium text-secondary">
+                        <span *ngIf="totalRecords > 0 && !isLoading">{{totalRecords}} records
+                            found</span>
+                        <span *ngIf="totalRecords < 1 && !isLoading">No records found</span>
+                    </div>
                 </div>
-            </div>
-            <!-- <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                <!-- <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
                 Quotes
                 <p class="text-md font-medium text-gray-500 p-0">{{totalRecords}} records found</p>
             </h2> -->
+                <div>
+                    <mat-form-field class="w-100">
+                        <mat-label class="font-bold text-lg">Restore Quote ID </mat-label>
+                        <mat-progress-spinner class="mr-2" *ngIf="restoreLoader" [diameter]="24"
+                            [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                        <input matInput type="number" [disabled]="restoreLoader" placeholder="Restore Quote ID"
+                            matTooltip="Enter to restore qoute" [(ngModel)]="restoreQuoteID"
+                            (keyup.enter)="restoreQuote()">
+                    </mat-form-field>
+                </div>
+            </div>
+
+
+            <!-- Filters -->
             <div>
-                <mat-form-field class="w-100">
-                    <mat-label class="font-bold text-lg">Restore Quote ID </mat-label>
-                    <mat-progress-spinner class="mr-2" *ngIf="restoreLoader" [diameter]="24" [mode]="'indeterminate'">
-                    </mat-progress-spinner>
-                    <input matInput type="number" [disabled]="restoreLoader" placeholder="Restore Quote ID"
-                        matTooltip="Enter to restore qoute" [(ngModel)]="restoreQuoteID" (keyup.enter)="restoreQuote()">
-                </mat-form-field>
+                <ul role="list" class="mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
+                    <li class="col-span-1 flex rounded-md">
+                        <mat-form-field class="w-full">
+                            <mat-label>Store</mat-label>
+                            <mat-select matInput [(ngModel)]="storeID">
+                                <mat-option *ngFor="let store of storesList"
+                                    [value]="store.pk_storeID">{{store.storeName}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </li>
+                    <li class="col-span-1 flex rounded-md">
+                        <mat-form-field class="w-full">
+                            <mat-label>Time span</mat-label>
+                            <mat-date-range-input [rangePicker]="picker">
+                                <input matStartDate placeholder="Start date" [(ngModel)]="dateStart">
+                                <input matEndDate placeholder="End date" [(ngModel)]="dateEnd">
+                            </mat-date-range-input>
+                            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-date-range-picker #picker></mat-date-range-picker>
+                        </mat-form-field>
+                    </li>
+                    <li class="col-span-1 flex rounded-md">
+                        <mat-form-field class="w-full">
+                            <mat-label>Per Page</mat-label>
+                            <mat-select matInput [(ngModel)]="size">
+                                <mat-option [value]="20">20</mat-option>
+                                <mat-option [value]="50">50</mat-option>
+                                <mat-option [value]="100">100</mat-option>
+                                <mat-option [value]="500">500</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </li>
+                    <li class="col-span-1 flex rounded-md">
+                        <mat-form-field class="w-full">
+                            <mat-label>Quote ID</mat-label>
+                            <input matInput placeholder="Quote ID" [(ngModel)]="quoteID">
+                        </mat-form-field>
+                    </li>
+                </ul>
+                <div class="text-right">
+                    <button class="min-w-40" (click)="filterQuoteData()" [disabled]="isQuoteLoader" [color]="'primary'"
+                        mat-button mat-flat-button>
+                        <span class="ml-2 mr-1" *ngIf="!isQuoteLoader">Filter</span>
+                        <mat-progress-spinner *ngIf="isQuoteLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                    </button>
+                </div>
             </div>
         </div>
-
-
-        <!-- Filters -->
-        <div>
-            <ul role="list" class="mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
-                <li class="col-span-1 flex rounded-md">
-                    <mat-form-field class="w-full">
-                        <mat-label>Store</mat-label>
-                        <mat-select matInput [(ngModel)]="storeID">
-                            <mat-option *ngFor="let store of storesList"
-                                [value]="store.pk_storeID">{{store.storeName}}</mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </li>
-                <li class="col-span-1 flex rounded-md">
-                    <mat-form-field class="w-full">
-                        <mat-label>Time span</mat-label>
-                        <mat-date-range-input [rangePicker]="picker">
-                            <input matStartDate placeholder="Start date" [(ngModel)]="dateStart">
-                            <input matEndDate placeholder="End date" [(ngModel)]="dateEnd">
-                        </mat-date-range-input>
-                        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                        <mat-date-range-picker #picker></mat-date-range-picker>
-                    </mat-form-field>
-                </li>
-                <li class="col-span-1 flex rounded-md">
-                    <mat-form-field class="w-full">
-                        <mat-label>Per Page</mat-label>
-                        <mat-select matInput [(ngModel)]="size">
-                            <mat-option [value]="20">20</mat-option>
-                            <mat-option [value]="50">50</mat-option>
-                            <mat-option [value]="100">100</mat-option>
-                            <mat-option [value]="500">500</mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </li>
-                <li class="col-span-1 flex rounded-md">
-                    <mat-form-field class="w-full">
-                        <mat-label>Quote ID</mat-label>
-                        <input matInput placeholder="Quote ID" [(ngModel)]="quoteID">
-                    </mat-form-field>
-                </li>
-            </ul>
-            <div class="text-right">
-                <button class="min-w-40" (click)="filterQuoteData()" [disabled]="isQuoteLoader" [color]="'primary'"
-                    mat-button mat-flat-button>
-                    <span class="ml-2 mr-1" *ngIf="!isQuoteLoader">Filter</span>
-                    <mat-progress-spinner *ngIf="isQuoteLoader" [diameter]="24" [mode]="'indeterminate'">
-                    </mat-progress-spinner>
-                </button>
-            </div>
-        </div>
-    </div>
-    <div class="w-full">
-        <div class="p-5 w-full" *ngIf="isLoading">
-            <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
+        <div class="w-full">
+            <div class="p-5 w-full" *ngIf="isLoading">
+                <ngx-skeleton-loader count="8" appearance="line" animation="pulse" [theme]="{ 
                 'background-color': '#dedede'
               }">
-            </ngx-skeleton-loader>
-        </div>
-        <div *ngIf="!isLoading">
-            <div *ngIf="quotesData.length > 0;else other_content" class="w-full">
-                <table mat-table [dataSource]="quotesData" class="w-full border-t">
-                    <ng-container matColumnDef="date">
-                        <th mat-header-cell *matHeaderCellDef class="w-20 min-w-10">
-                            Date
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element?.dateCreated | date}}
-                        </td>
-                    </ng-container>
-                    <ng-container matColumnDef="name">
-                        <th mat-header-cell *matHeaderCellDef class="w-60 min-w-40">
-                            Name
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            <b>{{element?.firstName + ' ' + element?.lastName}}</b>
-                            <p>
-                                <ng-container *ngIf="element.companyProfileName; else companyNameBlock">{{
-                                    element.companyProfileName }}</ng-container>
-                                <ng-template #companyNameBlock>{{ element.companyName }}</ng-template>
-                                <ng-container *ngIf="element.attributeName"> - {{ element.locationName }} - {{
-                                    element.attributeName }}</ng-container>
-                            </p>
-                            <span><b>{{element?.pk_cartID}}</b> - {{element?.storeName}}</span>
-                        </td>
-                    </ng-container>
-                    <ng-container matColumnDef="price">
-                        <th mat-header-cell *matHeaderCellDef class="w-20 min-w-10">
-                            Price
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            <b>{{element?.cartTotal | currency}}</b>
-                            <br>
-                            <mat-icon *ngIf="element.blnQuote" svgIcon="mat_solid:format_quote" class="text-green-900"
-                                matTooltip="This is a quote"></mat-icon>
-                            <mat-icon *ngIf="!element.blnQuote" svgIcon="mat_solid:format_quote" class="text-gray-900"
-                                matTooltip="This is not a quote"></mat-icon>
-                            <mat-icon *ngIf="element.blnGroupOrder" class="ml-2"
-                                [svgIcon]="'heroicons_outline:user-group'" matTooltip="This is group order"></mat-icon>
-                            <mat-icon *ngIf="!element.blnGroupOrder" class="ml-2"
-                                [svgIcon]="'heroicons_outline:user-group'"
-                                matTooltip="This is not group order"></mat-icon>
-                        </td>
-                    </ng-container>
-                    <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
-                    <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="quoteDetails(row.pk_cartID)"
-                        class="h-14 hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;">
-                    </tr>
-                </table>
-                <mat-progress-bar mode="indeterminate" *ngIf="isPageLoader"
-                    style="position: relative;"></mat-progress-bar>
-                <mat-paginator #paginator class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                    [ngClass]="{'pointer-events-none': isLoading}" [length]="totalRecords" [pageIndex]="0"
-                    [pageSize]="size" (page)="getNextPageQuote($event)" [hidePageSize]="true">
-                </mat-paginator>
+                </ngx-skeleton-loader>
             </div>
-            <!-- No product Found -->
-            <ng-template #other_content>
-                <div class="text-secondary font-semibold text-center alert alert-warning mx-5 my-3">
-                    Your search did not return any results.
+            <div *ngIf="!isLoading">
+                <div *ngIf="quotesData.length > 0;else other_content" class="w-full">
+                    <table mat-table [dataSource]="quotesData" class="w-full border-t">
+                        <ng-container matColumnDef="date">
+                            <th mat-header-cell *matHeaderCellDef class="w-20 min-w-10">
+                                Date
+                            </th>
+                            <td mat-cell *matCellDef="let element">
+                                {{element?.dateCreated | date}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="name">
+                            <th mat-header-cell *matHeaderCellDef class="w-60 min-w-40">
+                                Name
+                            </th>
+                            <td mat-cell *matCellDef="let element">
+                                <b>{{element?.firstName + ' ' + element?.lastName}}</b>
+                                <p>
+                                    <ng-container *ngIf="element.companyProfileName; else companyNameBlock">{{
+                                        element.companyProfileName }}</ng-container>
+                                    <ng-template #companyNameBlock>{{ element.companyName }}</ng-template>
+                                    <ng-container *ngIf="element.attributeName"> - {{ element.locationName }} - {{
+                                        element.attributeName }}</ng-container>
+                                </p>
+                                <span><b>{{element?.pk_cartID}}</b> - {{element?.storeName}}</span>
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="price">
+                            <th mat-header-cell *matHeaderCellDef class="w-20 min-w-10">
+                                Price
+                            </th>
+                            <td mat-cell *matCellDef="let element">
+                                <b>{{element?.cartTotal | currency}}</b>
+                                <br>
+                                <mat-icon *ngIf="element.blnQuote" svgIcon="mat_solid:format_quote"
+                                    class="text-green-900" matTooltip="This is a quote"></mat-icon>
+                                <mat-icon *ngIf="!element.blnQuote" svgIcon="mat_solid:format_quote"
+                                    class="text-gray-900" matTooltip="This is not a quote"></mat-icon>
+                                <mat-icon *ngIf="element.blnGroupOrder" class="ml-2"
+                                    [svgIcon]="'heroicons_outline:user-group'"
+                                    matTooltip="This is group order"></mat-icon>
+                                <mat-icon *ngIf="!element.blnGroupOrder" class="ml-2"
+                                    [svgIcon]="'heroicons_outline:user-group'"
+                                    matTooltip="This is not group order"></mat-icon>
+                            </td>
+                        </ng-container>
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns;" class="h-18 bg-light"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                            (click)="quoteDetails(row.pk_cartID)" class="h-14 hover:bg-gray-100 dark:hover:bg-hover"
+                            style="cursor: pointer;">
+                        </tr>
+                    </table>
+                    <mat-progress-bar mode="indeterminate" *ngIf="isPageLoader"
+                        style="position: relative;"></mat-progress-bar>
+                    <mat-paginator #paginator
+                        class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                        [ngClass]="{'pointer-events-none': isLoading}" [length]="totalRecords" [pageIndex]="0"
+                        [pageSize]="size" (page)="getNextPageQuote($event)" [hidePageSize]="true">
+                    </mat-paginator>
                 </div>
-            </ng-template>
+                <!-- No product Found -->
+                <ng-template #other_content>
+                    <div class="text-secondary font-semibold text-center alert alert-warning mx-5 my-3">
+                        Your search did not return any results.
+                    </div>
+                </ng-template>
+            </div>
         </div>
-    </div>
-
-
+    </ng-container>
 </div>

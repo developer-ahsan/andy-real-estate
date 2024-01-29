@@ -96,7 +96,7 @@ export class GenerateReportComponent implements OnInit {
     constructor(
         private _formBuilder: FormBuilder,
         private _changeDetectorRef: ChangeDetectorRef,
-        private _flpsService: FLPSService
+        public _flpsService: FLPSService
     ) {
     }
 
@@ -197,6 +197,10 @@ export class GenerateReportComponent implements OnInit {
         });
     }
     generateReport() {
+        if (!this._flpsService.flpsPermissions.flpsReport) {
+            this._flpsService.snackBar('You do not have permission to access this section.');
+            return;
+        }
         if (!this.selectedEmployee) {
             this._flpsService.snackBar('Please select any flps user');
             return;

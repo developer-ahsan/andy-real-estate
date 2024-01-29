@@ -18,6 +18,38 @@ export class FLPSService {
     private _employeeAdmins: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _flpsStores: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     private _reportUsers: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
+
+    public flpsPermissions = {
+        addFLPSStoreUser: false,
+        applyBlanketCustomerPercentage: false,
+        bulkCustomerUpdate: false,
+        flpsReport: false,
+        flpsReport2: false,
+        login: false,
+        logout: false,
+        newFLPSUser: false,
+        options: false,
+        options2: false,
+        removeFLPSStoreUser: false,
+        removeFLPSUser: false,
+        removeFLPSUserConfirm: false,
+        selectFLPSUser: false,
+        selectFLPSstore: false,
+        updateFLPSStoreUser: false,
+        updateFLPSUser: false,
+        updateReport: false,
+        updateStoreManagementTypes: false,
+        viewBlanketCustomerPercentage: false,
+        viewDisabledFLPSUsers: false,
+        viewFLPSUser: false,
+        viewFLPSUserCustomers: false,
+        viewFLPSUserOrders: false,
+        viewFLPSlogin: false,
+        viewFLPSstore: false,
+        viewMyStores: false,
+        viewNewFLPSUser: false,
+        viewStoreManagementTypes: false
+    }
     /**
      * Constructor
      */

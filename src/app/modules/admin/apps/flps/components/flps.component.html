@@ -135,63 +135,69 @@
 
             <!-- Main -->
             <div class="flex-auto  pt-9 pb-12  md:pb-12" #topScrollAnchor>
-
-                <!-- Panel header -->
-                <div class="flex items-center px-6" *ngIf="flpsToken">
-
-                    <!-- Drawer toggle -->
-                    <button class="lg:hidden -ml-2" mat-icon-button (click)="drawer.toggle()">
-                        <mat-icon [svgIcon]="'heroicons_outline:menu'"></mat-icon>
-                    </button>
-
-                    <!-- Panel title -->
-                    <div class="ml-2 lg:ml-0 text-3xl font-bold tracking-tight leading-none">
-                        {{getPanelInfo(selectedPanel).title}}
+                <div class="flex items-center px-6" *ngIf="!_flpsService.flpsPermissions.viewFLPSlogin">
+                    <div class="alert m-4  w-full alert-danger p-4 text-lg text-center font-bold">
+                        You do not have permission to access this section.
                     </div>
                 </div>
-                <div class="flex items-center justify-center px-6" *ngIf="!flpsToken" style="height: 100%;">
-                    <div class="w-full sm:w-auto py-8 px-4 sm:p-12 sm:rounded-2xl sm:shadow sm:bg-card">
-                        <div class="w-full max-w-80 sm:w-80 mx-auto sm:mx-0">
-                            <div class="mt-8 mb-2 text-4xl font-extrabold tracking-tight leading-tight">FLPS Sign in
-                            </div>
-                            <mat-form-field class="w-full">
-                                <mat-label>Username</mat-label>
-                                <input matInput [(ngModel)]="ngEmail" type="text">
-                            </mat-form-field>
-                            <mat-form-field class="w-full">
-                                <mat-label>Password</mat-label>
-                                <input matInput [(ngModel)]="ngPassword" type="password">
-                            </mat-form-field>
-                            <button [disabled]="isLoginLoader" mat-flat-button class="w-full" [color]="'primary'"
-                                [matTooltip]="'Login'" (click)="loginFLPS()">
-                                <span *ngIf="!isLoginLoader"> Login </span>
-                                <mat-progress-spinner *ngIf="isLoginLoader" [diameter]="24" [mode]="'indeterminate'">
-                                </mat-progress-spinner>
-                            </button>
+                <ng-container *ngIf="_flpsService.flpsPermissions.viewFLPSlogin">
+                    <!-- Panel header -->
+                    <div class="flex items-center px-6" *ngIf="flpsToken">
+
+                        <!-- Drawer toggle -->
+                        <button class="lg:hidden -ml-2" mat-icon-button (click)="drawer.toggle()">
+                            <mat-icon [svgIcon]="'heroicons_outline:menu'"></mat-icon>
+                        </button>
+
+                        <!-- Panel title -->
+                        <div class="ml-2 lg:ml-0 text-3xl font-bold tracking-tight leading-none">
+                            {{getPanelInfo(selectedPanel).title}}
                         </div>
                     </div>
-                </div>
+                    <div class="flex items-center justify-center px-6" *ngIf="!flpsToken" style="height: 100%;">
+                        <div class="w-full sm:w-auto py-8 px-4 sm:p-12 sm:rounded-2xl sm:shadow sm:bg-card">
+                            <div class="w-full max-w-80 sm:w-80 mx-auto sm:mx-0">
+                                <div class="mt-8 mb-2 text-4xl font-extrabold tracking-tight leading-tight">FLPS Sign in
+                                </div>
+                                <mat-form-field class="w-full">
+                                    <mat-label>Username</mat-label>
+                                    <input matInput [(ngModel)]="ngEmail" type="text">
+                                </mat-form-field>
+                                <mat-form-field class="w-full">
+                                    <mat-label>Password</mat-label>
+                                    <input matInput [(ngModel)]="ngPassword" type="password">
+                                </mat-form-field>
+                                <button [disabled]="isLoginLoader" mat-flat-button class="w-full" [color]="'primary'"
+                                    [matTooltip]="'Login'" (click)="loginFLPS()">
+                                    <span *ngIf="!isLoginLoader"> Login </span>
+                                    <mat-progress-spinner *ngIf="isLoginLoader" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
 
-                <!-- Load settings panel -->
-                <div class="mt-8" *ngIf="flpsToken">
-                    <ng-container [ngSwitch]="selectedPanel">
-                        <!-- Account -->
-                        <ng-container *ngSwitchCase="'account'">
-                            <app-generate-report [(isLoading)]="isLoading"></app-generate-report>
+                    <!-- Load settings panel -->
+                    <div class="mt-8" *ngIf="flpsToken">
+                        <ng-container [ngSwitch]="selectedPanel">
+                            <!-- Account -->
+                            <ng-container *ngSwitchCase="'account'">
+                                <app-generate-report [(isLoading)]="isLoading"></app-generate-report>
+                            </ng-container>
+                            <!-- Security -->
+                            <ng-container *ngSwitchCase="'security'">
+                                <app-user-flps-management [(isLoading)]="isLoading">
+                                </app-user-flps-management>
+                            </ng-container>
+                            <!-- Plan & Billing -->
+                            <ng-container *ngSwitchCase="'plan-billing'">
+                                <app-storess-management></app-storess-management>
+                            </ng-container>
+                            <!-- Notifications -->
                         </ng-container>
-                        <!-- Security -->
-                        <ng-container *ngSwitchCase="'security'">
-                            <app-user-flps-management [(isLoading)]="isLoading">
-                            </app-user-flps-management>
-                        </ng-container>
-                        <!-- Plan & Billing -->
-                        <ng-container *ngSwitchCase="'plan-billing'">
-                            <app-storess-management></app-storess-management>
-                        </ng-container>
-                        <!-- Notifications -->
-                    </ng-container>
-                </div>
-
+                    </div>
+                </ng-container>
             </div>
 
         </mat-drawer-content>

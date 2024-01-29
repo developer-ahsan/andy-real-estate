@@ -25,7 +25,7 @@ export class QuoteOriginalComponent implements OnInit, OnDestroy {
   isOriginalReport: boolean = false
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _QuotesService: QuotesService,
+    public _QuotesService: QuotesService,
     private _smartartService: SmartArtService,
     public sanitizer: DomSanitizer
   ) {

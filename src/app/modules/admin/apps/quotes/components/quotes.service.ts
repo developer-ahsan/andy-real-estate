@@ -43,6 +43,35 @@ export class QuotesService {
     opts = [];
 
     public duplicateCheck: boolean = false;
+
+    public quotePermissions = {
+        addArtworkComment: false,
+        addArtworkFile: false,
+        addComment: false,
+        convertToQuote: false,
+        home: false,
+        originalQuoteReport: false,
+        removeArtworkFile: false,
+        removeComment: false,
+        removeQuote: false,
+        restoreQuote: false,
+        searchQuotes: false,
+        selectQuote: false,
+        updateArtworkStatus: false,
+        viewAddComment: false,
+        viewArtworkDetails: false,
+        viewQuoteReport: false,
+    }
+    public modifyQuote = {
+        addGroupRunProduct: false,
+        addProduct: false,
+        convertToGroupRun: false,
+        home: false,
+        removeProduct: false,
+        unconvertToGroupRun: false,
+        updateContactInformation: false,
+        updateShippingInformation: false,
+    }
     /**
      * Constructor
      */

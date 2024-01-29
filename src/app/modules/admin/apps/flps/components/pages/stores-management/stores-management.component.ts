@@ -68,7 +68,7 @@ export class FLPSsStoresManagementComponent implements OnInit {
 
     constructor(
         private _changeDetectorRef: ChangeDetectorRef,
-        private _flpsService: FLPSService
+        public _flpsService: FLPSService
     ) {
     }
 

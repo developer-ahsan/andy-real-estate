@@ -62,7 +62,7 @@ export class QuotesComponent {
         private _changeDetectorRef: ChangeDetectorRef,
         private _router: Router,
         private _commonService: DashboardsService,
-        private _quoteService: QuotesService,
+        public _quoteService: QuotesService,
         private _fuseMediaWatcherService: FuseMediaWatcherService,
     ) {
     }
@@ -76,6 +76,7 @@ export class QuotesComponent {
      */
 
     ngOnInit(): void {
+        this._quoteService.quotePermissions = this._commonService.assignPermissions('quote', this._quoteService.quotePermissions);
         this.isLoading = true;
         this.getStores();
         this.getQuotes(1);

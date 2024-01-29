@@ -35,7 +35,8 @@ export class QuotesDetailsComponent implements OnInit, OnDestroy {
    */
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _quoteService: QuotesService,
+    public _quoteService: QuotesService,
+    private _commonService: DashboardsService,
     private route: ActivatedRoute,
     private _router: Router,
     private _fuseMediaWatcherService: FuseMediaWatcherService,
@@ -52,6 +53,7 @@ export class QuotesDetailsComponent implements OnInit, OnDestroy {
    */
 
   ngOnInit(): void {
+    this._quoteService.quotePermissions = this._commonService.assignPermissions('quote', this._quoteService.quotePermissions);
     this.routes = this._quoteService.navigationLabels;
     this._router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {

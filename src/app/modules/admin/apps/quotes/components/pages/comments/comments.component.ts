@@ -42,7 +42,7 @@ export class QuoteComments implements OnInit, OnDestroy {
   blnUrgent: boolean = false;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _quoteService: QuotesService,
+    public _quoteService: QuotesService,
     private _commonService: DashboardsService,
     private _authService: AuthService,
   ) { }

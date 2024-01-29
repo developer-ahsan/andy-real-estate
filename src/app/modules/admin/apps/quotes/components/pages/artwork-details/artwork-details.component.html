@@ -1,125 +1,132 @@
 <div class="w-full">
-    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
-    </ngx-skeleton-loader>
-    <div class="row my-3 p-5" *ngIf="!isLoading">
-        <div class="col-12 mb-4 bg-card rounded-2xl w-full p-8 pb-4" *ngFor="let item of artworkData">
-            <div class="flex items-center justify-between">
-                <div class="flex flex-col mr-6">
-                    <div class="text-2xl font-semibold leading-tight">
-                        {{item.pk_cartID}}-{{item.pk_cartLineID}}: {{item.productName}}</div>
+    <div class="alert m-4 w-full alert-danger p-4 text-lg text-center font-bold"
+        *ngIf="!_quoteService.quotePermissions.viewArtworkDetails">
+        You do not have permission to access this section.
+    </div>
+    <ng-container *ngIf="_quoteService.quotePermissions.viewArtworkDetails">
+        <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+        </ngx-skeleton-loader>
+        <div class="row my-3 p-5" *ngIf="!isLoading">
+            <div class="col-12 mb-4 bg-card rounded-2xl w-full p-8 pb-4" *ngFor="let item of artworkData">
+                <div class="flex items-center justify-between">
+                    <div class="flex flex-col mr-6">
+                        <div class="text-2xl font-semibold leading-tight">
+                            {{item.pk_cartID}}-{{item.pk_cartLineID}}: {{item.productName}}</div>
+                    </div>
+                    <img class="w-20 rounded-lg object-cover" src="{{imgUrl}}/HiRes/{{item.productID}}.jpg"
+                        onError="this.src='https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'"
+                        alt="Product Image">
                 </div>
-                <img class="w-20 rounded-lg object-cover" src="{{imgUrl}}/HiRes/{{item.productID}}.jpg"
-                    onError="this.src='https://assets.consolidus.com/globalAssets/Products/coming_soon.jpg'"
-                    alt="Product Image">
-            </div>
-            <div class="my-2 border-b"></div>
-            <div *ngIf="item.imprints.length == 0" class="px-3">
-                <div class="alert alert-warning">This item is blank</div>
-            </div>
-            <div *ngIf="item.imprints.length > 0">
-                <table class="table table-condensed table-striped table-hover padding-1x"
-                    *ngFor="let imprint of item.imprints">
-                    <tbody>
-                        <tr>
-                            <td width="30%">
-                                <b>{{imprint.locationName}} / {{imprint.methodName}}</b>
-                            </td>
-                            <td width="10%">
-                                <a class="text-decoration-none" *ngIf="imprint.proofImg"
-                                    href="https://assets.consolidus.com/artwork/Proof/Quotes/{{quoteDetail.storeUserID}}/{{quoteDetail.pk_cartID}}/{{item.pk_cartLineID}}/{{imprint.id}}.jpg"
-                                    target="_blank">View Proof</a>
-                                <span *ngIf="!imprint.proofImg">---</span>
-                            </td>
-                            <td width="40%">
-                                <span>{{imprint?.statusName || not_available}}</span>
-                                <button type="button" (click)="updateMarkRevisionNeeded(imprint)"
-                                    class="ml-2 inline-flex items-center gap-x-1.5 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 min-w-40"
-                                    [disabled]="imprint.revisionLoader">
-                                    <span class="fa fa-exclamation-circle" *ngIf="!imprint.revisionLoader"></span>
-                                    <span *ngIf="!imprint.revisionLoader">Mark Revision Needed</span>
-                                    <mat-progress-spinner *ngIf="imprint.revisionLoader" [diameter]="24"
-                                        [mode]="'indeterminate'">
-                                    </mat-progress-spinner>
-                                </button>
-                            </td>
+                <div class="my-2 border-b"></div>
+                <div *ngIf="item.imprints.length == 0" class="px-3">
+                    <div class="alert alert-warning">This item is blank</div>
+                </div>
+                <div *ngIf="item.imprints.length > 0">
+                    <table class="table table-condensed table-striped table-hover padding-1x"
+                        *ngFor="let imprint of item.imprints">
+                        <tbody>
+                            <tr>
+                                <td width="30%">
+                                    <b>{{imprint.locationName}} / {{imprint.methodName}}</b>
+                                </td>
+                                <td width="10%">
+                                    <a class="text-decoration-none" *ngIf="imprint.proofImg"
+                                        href="https://assets.consolidus.com/artwork/Proof/Quotes/{{quoteDetail.storeUserID}}/{{quoteDetail.pk_cartID}}/{{item.pk_cartLineID}}/{{imprint.id}}.jpg"
+                                        target="_blank">View Proof</a>
+                                    <span *ngIf="!imprint.proofImg">---</span>
+                                </td>
+                                <td width="40%">
+                                    <span>{{imprint?.statusName || not_available}}</span>
+                                    <button type="button" (click)="updateMarkRevisionNeeded(imprint)"
+                                        class="ml-2 inline-flex items-center gap-x-1.5 rounded-md bg-orange-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 min-w-40"
+                                        [disabled]="imprint.revisionLoader">
+                                        <span class="fa fa-exclamation-circle" *ngIf="!imprint.revisionLoader"></span>
+                                        <span *ngIf="!imprint.revisionLoader">Mark Revision Needed</span>
+                                        <mat-progress-spinner *ngIf="imprint.revisionLoader" [diameter]="24"
+                                            [mode]="'indeterminate'">
+                                        </mat-progress-spinner>
+                                    </button>
+                                </td>
 
-                            <td width="1%" align="center" valign="top">
-                                <span class="fa fa-comments fa-lg clickable cursor-pointer" data-toggle="modal"
-                                    matTooltip="View artwork comments" (click)="openCommentModal(imprint)"></span>
-                            </td>
-                        </tr>
-                        <tr *ngFor="let artwork of imprint.artworkFiles; let i=index">
-                            <td width="30%"></td>
-                            <td width="10%"></td>
-                            <td width="40%">
-                                <ng-container *ngIf="imprint.logoBankID != 0; else customerLogoBlock">
-                                    <a target="_blank"
-                                        href="https://assets.consolidus.com/globalAssets/Stores/logoBank2/{{quoteDetail.storeID}}/Thumbs/{{imprint.logoBankID}}.jpg">
-                                        Artwork File #{{artwork.count}}
-                                    </a>
-                                </ng-container>
-
-                                <ng-template #customerLogoBlock>
-                                    <ng-container *ngIf="imprint.customerLogoBankID != 0; else locationLogoBlock">
+                                <td width="1%" align="center" valign="top">
+                                    <span class="fa fa-comments fa-lg clickable cursor-pointer" data-toggle="modal"
+                                        matTooltip="View artwork comments" (click)="openCommentModal(imprint)"></span>
+                                </td>
+                            </tr>
+                            <tr *ngFor="let artwork of imprint.artworkFiles; let i=index">
+                                <td width="30%"></td>
+                                <td width="10%"></td>
+                                <td width="40%">
+                                    <ng-container *ngIf="imprint.logoBankID != 0; else customerLogoBlock">
                                         <a target="_blank"
-                                            href="https://assets.consolidus.com/globalAssets/StoreUser/LogoBank/{{quoteDetail.storeUserID}}/{{quoteDetail.storeID}}/Thumbs/{{imprint.customerLogoBankID}}.jpg">
+                                            href="https://assets.consolidus.com/globalAssets/Stores/logoBank2/{{quoteDetail.storeID}}/Thumbs/{{imprint.logoBankID}}.jpg">
                                             Artwork File #{{artwork.count}}
                                         </a>
                                     </ng-container>
 
-                                    <ng-template #locationLogoBlock>
-                                        <ng-container *ngIf="imprint.locationLogoBankID != 0; else artworkFilesBlock">
+                                    <ng-template #customerLogoBlock>
+                                        <ng-container *ngIf="imprint.customerLogoBankID != 0; else locationLogoBlock">
                                             <a target="_blank"
-                                                href="https://assets.consolidus.com/globalAssets/Stores/locationLogoBank/{{quoteDetail.pk_locationID}}/Thumbs/{{imprint.locationLogoBankID}}.jpg">
+                                                href="https://assets.consolidus.com/globalAssets/StoreUser/LogoBank/{{quoteDetail.storeUserID}}/{{quoteDetail.storeID}}/Thumbs/{{imprint.customerLogoBankID}}.jpg">
                                                 Artwork File #{{artwork.count}}
                                             </a>
                                         </ng-container>
 
-                                        <ng-template #artworkFilesBlock>
-                                            <a target="_blank" class="text-blue-500"
-                                                *ngIf="imprint.artworkFiles.length > 0"
-                                                href="https://assets.consolidus.com/artwork/quotes/{{quoteDetail.storeID}}/{{quoteDetail.storeUserID}}/{{quoteDetail.pk_cartID}}/{{imprint.pk_cartLineID}}/{{artwork?.ID}}.{{artwork?.EXTENSION}}?{{tempDate}}"
-                                                target="_blank">
-                                                Artwork File #{{artwork.count}}
-                                            </a>
+                                        <ng-template #locationLogoBlock>
+                                            <ng-container
+                                                *ngIf="imprint.locationLogoBankID != 0; else artworkFilesBlock">
+                                                <a target="_blank"
+                                                    href="https://assets.consolidus.com/globalAssets/Stores/locationLogoBank/{{quoteDetail.pk_locationID}}/Thumbs/{{imprint.locationLogoBankID}}.jpg">
+                                                    Artwork File #{{artwork.count}}
+                                                </a>
+                                            </ng-container>
+
+                                            <ng-template #artworkFilesBlock>
+                                                <a target="_blank" class="text-blue-500"
+                                                    *ngIf="imprint.artworkFiles.length > 0"
+                                                    href="https://assets.consolidus.com/artwork/quotes/{{quoteDetail.storeID}}/{{quoteDetail.storeUserID}}/{{quoteDetail.pk_cartID}}/{{imprint.pk_cartLineID}}/{{artwork?.ID}}.{{artwork?.EXTENSION}}?{{tempDate}}"
+                                                    target="_blank">
+                                                    Artwork File #{{artwork.count}}
+                                                </a>
+                                            </ng-template>
                                         </ng-template>
                                     </ng-template>
-                                </ng-template>
-                            </td>
-                            <td width="1%" align="center" valign="top" *ngIf="imprint.artworkFiles.length > 0">
-                                <mat-icon svgIcon="heroicons_outline:trash"
-                                    class="icon-size-4 cursor-pointer text-red-500" matTooltip="Delete File"
-                                    (click)="openRemoveModal(artwork.FILENAME,i,imprint)"
-                                    *ngIf="!artwork?.delLoader"></mat-icon>
-                                <mat-progress-spinner *ngIf="artwork?.delLoader" [diameter]="24"
-                                    [mode]="'indeterminate'">
-                                </mat-progress-spinner>
-                            </td>
-                        </tr>
-                        <!-- Upload Artwork File -->
-                        <tr *ngIf="imprint.artworkFiles.length < 10">
-                            <td width="30%"></td>
-                            <td width="10%"></td>
-                            <td colspan="2" valign="top">
-                                <b>Upload new artwork file:</b><br>
-                                <form class="flex justify-between align-items-center">
-                                    <input type="file" #fileInput name="newArtworkFile" class="inline"
-                                        (change)="uploadFile($event)">&nbsp;&nbsp;&nbsp;
-                                    <button type="submit" class="mat-button mat-stroked-button"
-                                        [disabled]="imprint.uploadLoader" (click)="uploadArtworkMedia(imprint)">
-                                        <span *ngIf="!imprint.uploadLoader" class="fa fa-upload"> Upload</span>
-                                        <mat-progress-spinner *ngIf="imprint.uploadLoader" [diameter]="24"
-                                            [mode]="'indeterminate'">
-                                        </mat-progress-spinner>
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                                </td>
+                                <td width="1%" align="center" valign="top" *ngIf="imprint.artworkFiles.length > 0">
+                                    <mat-icon svgIcon="heroicons_outline:trash"
+                                        class="icon-size-4 cursor-pointer text-red-500" matTooltip="Delete File"
+                                        (click)="openRemoveModal(artwork.FILENAME,i,imprint)"
+                                        *ngIf="!artwork?.delLoader"></mat-icon>
+                                    <mat-progress-spinner *ngIf="artwork?.delLoader" [diameter]="24"
+                                        [mode]="'indeterminate'">
+                                    </mat-progress-spinner>
+                                </td>
+                            </tr>
+                            <!-- Upload Artwork File -->
+                            <tr *ngIf="imprint.artworkFiles.length < 10">
+                                <td width="30%"></td>
+                                <td width="10%"></td>
+                                <td colspan="2" valign="top">
+                                    <b>Upload new artwork file:</b><br>
+                                    <form class="flex justify-between align-items-center">
+                                        <input type="file" #fileInput name="newArtworkFile" class="inline"
+                                            (change)="uploadFile($event)">&nbsp;&nbsp;&nbsp;
+                                        <button type="submit" class="mat-button mat-stroked-button"
+                                            [disabled]="imprint.uploadLoader" (click)="uploadArtworkMedia(imprint)">
+                                            <span *ngIf="!imprint.uploadLoader" class="fa fa-upload"> Upload</span>
+                                            <mat-progress-spinner *ngIf="imprint.uploadLoader" [diameter]="24"
+                                                [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-    </div>
+    </ng-container>
 </div>
 <!-- Comment Modal -->
 <div #commentModal class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog"

@@ -96,7 +96,7 @@ export class FLPSUserManagementComponent implements OnInit, OnDestroy {
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     public _commonService: DashboardsService,
-    private _flpsService: FLPSService
+    public _flpsService: FLPSService
   ) { }
 
   initForm() {

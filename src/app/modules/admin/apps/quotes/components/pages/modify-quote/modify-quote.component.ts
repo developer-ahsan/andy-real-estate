@@ -5,6 +5,7 @@ import { takeUntil } from 'rxjs/operators';
 import { QuotesService } from '../../quotes.service';
 import * as Excel from 'exceljs/dist/exceljs.min.js';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
   selector: 'app-modify-quote',
@@ -30,10 +31,13 @@ export class QuoteModifyComponent implements OnInit, OnDestroy {
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _quoteService: QuotesService
+    private _commonService: DashboardsService,
+    public _quoteService: QuotesService
   ) { }
 
   ngOnInit(): void {
+    this._quoteService.modifyQuote = this._commonService.assignPermissions('modifyQuote', this._quoteService.modifyQuote);
+
   };
   calledScreen(screen) {
     this.mainScreen = screen;

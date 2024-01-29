@@ -37,7 +37,7 @@ export class QuoteReportsComponent implements OnInit, OnDestroy {
   totalPrice = 0;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _quotesService: QuotesService,
+    public _quotesService: QuotesService,
     private _snackBar: MatSnackBar,
   ) { }
 

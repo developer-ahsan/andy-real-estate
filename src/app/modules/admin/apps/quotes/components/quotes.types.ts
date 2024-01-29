@@ -111,12 +111,14 @@ export interface addAccessory {
     warehouse_delivery_option: number;
     cartLineGroundCost: number;
     cartLineGroundPrice: number;
+    storeID: number;
     add_modify_quote_accessory: boolean;
 };
 
 
 export interface updateAccessories {
     cartID: number;
+    storeID: number;
     cartLineID: number;
     blnGroupRun: number;
     productName: string;
@@ -182,6 +184,7 @@ interface UpdateImprint {
 export interface deleteImprints {
     cartID: number;
     cartLineID: number;
+    storeID: number;
     blnGroupRun: number;
     productName: string;
     loggedInUserID: number;
@@ -192,6 +195,7 @@ export interface deleteImprints {
 };
 export interface AddImprints {
     cartID: number;
+    storeID: number;
     cartLineID: number;
     blnGroupRun: number;
     productName: string;
@@ -315,6 +319,7 @@ export interface updateProductOption {
     warehouse_delivery_option: number;
     cartLineGroundCost: number;
     cartLineGroundPrice: number;
+    storeID: number;
     update_cart_product_option: boolean;
 };
 

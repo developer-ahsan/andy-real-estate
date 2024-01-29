@@ -11,6 +11,7 @@ import { MatDrawer } from '@angular/material/sidenav';
 import Swal from 'sweetalert2'
 import * as CryptoJS from 'crypto-js';
 import { FlpsLogin } from './flps.types';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
 @Component({
     selector: 'flps',
@@ -44,10 +45,11 @@ export class FLPSComponent {
      */
     constructor(
         private _changeDetectorRef: ChangeDetectorRef,
-        private _flpsService: FLPSService,
+        public _flpsService: FLPSService,
         private _router: Router,
         private _authService: AuthService,
         private _fuseMediaWatcherService: FuseMediaWatcherService,
+        private _commonService: DashboardsService
     ) {
     }
 
@@ -60,6 +62,8 @@ export class FLPSComponent {
      */
 
     ngOnInit(): void {
+        this._flpsService.flpsPermissions = this._commonService.assignPermissions('flps', this._flpsService.flpsPermissions);
+
         this.routes = this._flpsService.navigationLabels;
         this.isLoading = false;
         this.panels = [
@@ -134,6 +138,10 @@ export class FLPSComponent {
         this.topScroll.nativeElement.scrollIntoView({ behavior: 'smooth' });
     }
     loginFLPS() {
+        if (!this._flpsService.flpsPermissions.login) {
+            this._flpsService.snackBar('You do not have permission to access this section.');
+            return;
+        }
         if (this.ngEmail == '' || this.ngPassword == '') {
             this._flpsService.snackBar('Username and password is required');
             return;

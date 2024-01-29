@@ -42,7 +42,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _quoteService: QuotesService,
+    public _quoteService: QuotesService,
     private _router: Router
   ) { }
 
