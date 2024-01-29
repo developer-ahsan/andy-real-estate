@@ -416,7 +416,11 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
           imprint.selectedContact = this.orderData.sessionArtwork_artApprovalContactID;
         }
         if (imprint?.fk_artApprovalContactID) {
-          imprint.emailRecipients = imprint.approvalContactEmail;
+          if (imprint.pk_statusID == 11) {
+            imprint.emailRecipients = this.orderData.sessionArtwork_artworkEmail;
+          } else {
+            imprint.emailRecipients = imprint.approvalContactEmail;
+          }
           // imprint.selectedContact = this.orderData.sessionArtwork_artApprovalContactID;
           // if (imprint.decorationName.toLowerCase().includes('screen')) {
           //   imprint.selectedContactEmail = imprint.screenprintEmail;
@@ -1774,6 +1778,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       }
       // IN PRODUCTION
       else if (imprint.pk_statusID == 11) {
+        imprint.emailRecipients = this.orderData.sessionArtwork_artworkEmail;
       }
       // WAITING FOR GROUP ORDER
       else if (imprint.pk_statusID == 17) {
@@ -1808,7 +1813,11 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
         imprint.selectedContact = this.orderData.sessionArtwork_artApprovalContactID;
       }
       if (imprint?.fk_artApprovalContactID) {
-        imprint.emailRecipients = imprint.approvalContactEmail;
+        if (imprint.pk_statusID == 11) {
+          imprint.emailRecipients = this.orderData.sessionArtwork_artworkEmail;
+        } else {
+          imprint.emailRecipients = imprint.approvalContactEmail;
+        }
         // imprint.selectedContact = this.orderData.sessionArtwork_artApprovalContactID;
         // if (imprint.decorationName.toLowerCase().includes('screen')) {
         //   imprint.selectedContactEmail = imprint.screenprintEmail;

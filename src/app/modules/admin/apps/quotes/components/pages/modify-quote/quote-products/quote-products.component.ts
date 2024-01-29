@@ -223,6 +223,8 @@ export class QuoteProductsComponent implements OnInit {
         });
       }
     });
+    this.selectedQuoteDetail.cartTotal = this.selectedQuoteDetail.price + this.selectedQuoteDetail?.shippingGroundPrice +
+      this.selectedQuoteDetail.tax + (this.selectedQuoteDetail.blnRoyalty ? this.selectedQuoteDetail.royaltyPrice : 0);
   }
   getCartLineImprints(cartLine) {
     let params = {
@@ -266,7 +268,7 @@ export class QuoteProductsComponent implements OnInit {
     this.selectedCartLine = cartLine;
     this.currentSelectedProduct = cartLine;
     this.currentSearchProductCtrl.setValue(cartLine);
-    this.ngCurrentProduct = cartLine;
+    this.ngCurrentProduct = [cartLine];
     this.ngCurrentProduct[0].displayText = this.ngCurrentProduct[0].pk_storeProductID + ' - ' + this.ngCurrentProduct[0].productNumber + ': ' + this.ngCurrentProduct[0].productName
 
     // Group Run Master
@@ -573,7 +575,7 @@ export class QuoteProductsComponent implements OnInit {
       cartline_id: pk_cartLineID,
       color_id: this.ngColor,
       color_name: colorName,
-      size_id: this.ngSize,
+      size_id: this.ngSize != 0 ? this.ngSize : null,
       size_name: sizeName,
       product_id: fk_productID,
       product_name: productName,
