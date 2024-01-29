@@ -412,31 +412,35 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
         // WAITING FOR GROUP ORDER
         else if (imprint.pk_statusID == 17) {
         }
-
-        if (!imprint?.fk_artApprovalContactID && !imprint?.fk_storeUserApprovalContactID && !imprint?.blnStoreUserApprovalDone) {
+        if (!imprint?.fk_artApprovalContactID) {
           imprint.selectedContact = this.orderData.sessionArtwork_artApprovalContactID;
-          if (imprint.decorationName.toLowerCase().includes('screen')) {
-            imprint.selectedContactEmail = imprint.screenprintEmail;
-            this.orderData.artworkEmail = imprint;
-          } else if (imprint.decorationName.toLowerCase().includes('embroid')) {
-            imprint.selectedContactEmail = imprint.embroideryEmail;
-          } else {
-            imprint.selectedContactEmail = imprint.artworkEmail;
-          }
-          this.orderData.artworkEmail = imprint.selectedContactEmail;
+        }
+        if (imprint?.fk_artApprovalContactID) {
+          imprint.emailRecipients = imprint.approvalContactEmail;
+          // imprint.selectedContact = this.orderData.sessionArtwork_artApprovalContactID;
+          // if (imprint.decorationName.toLowerCase().includes('screen')) {
+          //   imprint.selectedContactEmail = imprint.screenprintEmail;
+          //   this.orderData.artworkEmail = imprint;
+          // } else if (imprint.decorationName.toLowerCase().includes('embroid')) {
+          //   imprint.selectedContactEmail = imprint.embroideryEmail;
+          // } else {
+          //   imprint.selectedContactEmail = imprint.artworkEmail;
+          // }
+          // this.orderData.artworkEmail = imprint.selectedContactEmail;
           this._changeDetectorRef.markForCheck();
         } else {
-          imprint.selectedContact = null;
-          if (imprint.decorationName.toLowerCase().includes('screen')) {
-            imprint.selectedContactEmail = imprint.screenprintEmail;
-            this.orderData.artworkEmail = imprint
-            imprint.emailRecipients = imprint.selectedContactEmail;
-          } else if (imprint.decorationName.toLowerCase().includes('embroid')) {
-            imprint.selectedContactEmail = imprint.embroideryEmail;
-            imprint.emailRecipients = imprint.selectedContactEmail;
-          } else {
-            imprint.selectedContactEmail = imprint.artworkEmail;
-          }
+          imprint.emailRecipients = this.orderData.sessionArtworkEmail
+          //   imprint.selectedContact = null;
+          // if (imprint.decorationName.toLowerCase().includes('screen')) {
+          //   imprint.selectedContactEmail = imprint.screenprintEmail;
+          //   this.orderData.artworkEmail = imprint
+          //   imprint.emailRecipients = imprint.selectedContactEmail;
+          // } else if (imprint.decorationName.toLowerCase().includes('embroid')) {
+          //   imprint.selectedContactEmail = imprint.embroideryEmail;
+          //   imprint.emailRecipients = imprint.selectedContactEmail;
+          // } else {
+          //   imprint.selectedContactEmail = imprint.artworkEmail;
+          // }
           this.orderData.artworkEmail = imprint.selectedContactEmail;
           this._changeDetectorRef.markForCheck();
         }
@@ -444,21 +448,25 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       // Contact Proof
       if (res["contactProofs"]) {
         res["contactProofs"].forEach(element => {
-          if (element.blnStoreUserApprovalContact) {
-            element.value = element.pk_approvalContactID;
-          } else {
-            element.value = element.pk_artApprovalContactID;
-          }
+          // if (element.blnStoreUserApprovalContact) {
+          //   element.value = element.storeUserApprovalID;
+          // } else {
+          //   element.value = element.approvalContactID;
+          // }
           this.imprintdata.forEach(imprint => {
-            if (imprint?.fk_storeUserApprovalContactID && !imprint?.blnStoreUserApprovalDone) {
-              if (imprint?.fk_storeUserApprovalContactID == element.pk_approvalContactID) {
-                imprint.selectedContact = element;
-                imprint.selectedContactEmail = element.email;
-              }
-            } else if (imprint?.fk_artApprovalContactID && imprint?.fk_artApprovalContactID == element.pk_artApprovalContactID) {
+            if (imprint?.fk_artApprovalContactID == element.approvalContactID) {
               imprint.selectedContact = element;
               imprint.selectedContactEmail = element.email;
             }
+            // if (imprint?.fk_storeUserApprovalContactID && !imprint?.blnStoreUserApprovalDone) {
+            //   if (imprint?.fk_storeUserApprovalContactID == element.storeUserApprovalID) {
+            //     imprint.selectedContact = element;
+            //     imprint.selectedContactEmail = element.email;
+            //   }
+            // } else if (imprint?.fk_artApprovalContactID && imprint?.fk_artApprovalContactID == element.approvalContactID) {
+            //   imprint.selectedContact = element;
+            //   imprint.selectedContactEmail = element.email;
+            // }
           });
           element.blnStoreUserApproval = element.blnStoreUserApprovalContacts ? 1 : 0;
           this._changeDetectorRef.markForCheck();
@@ -1164,10 +1172,10 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
   // Update Proof Contact
   updateProofContact(imprint) {
     let artAprrovalID;
-    if (imprint.selectedContact == this.orderData.sessionArtwork_artApprovalContactID) {
-      artAprrovalID = this.orderData.sessionArtwork_artApprovalContactID;
+    if (imprint.fk_approvalContactID == imprint.selectedContact) {
+      artAprrovalID = imprint.fk_approvalContactID;
     } else {
-      artAprrovalID = imprint.selectedContact.pk_artApprovalContactID;
+      artAprrovalID = imprint.selectedContact.approvalContactID;
     }
     imprint.isProofLoader = true;
     let payload: updateOrderProofContact = {
@@ -1771,56 +1779,116 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
       else if (imprint.pk_statusID == 17) {
       }
 
-      if (!imprint?.fk_artApprovalContactID && !imprint?.fk_storeUserApprovalContactID && !imprint?.blnStoreUserApprovalDone) {
+      // if (!imprint?.fk_artApprovalContactID && !imprint?.fk_storeUserApprovalContactID && !imprint?.blnStoreUserApprovalDone) {
+      //   imprint.selectedContact = this.orderData.sessionArtwork_artApprovalContactID;
+      //   if (imprint.decorationName.toLowerCase().includes('screen')) {
+      //     imprint.selectedContactEmail = imprint.screenprintEmail;
+      //     this.orderData.artworkEmail = imprint;
+      //   } else if (imprint.decorationName.toLowerCase().includes('embroid')) {
+      //     imprint.selectedContactEmail = imprint.embroideryEmail;
+      //   } else {
+      //     imprint.selectedContactEmail = imprint.artworkEmail;
+      //   }
+      //   this.orderData.artworkEmail = imprint.selectedContactEmail;
+      // } else {
+      //   imprint.selectedContact = null;
+      //   if (imprint.decorationName.toLowerCase().includes('screen')) {
+      //     imprint.selectedContactEmail = imprint.screenprintEmail;
+      //     this.orderData.artworkEmail = imprint
+      //     imprint.emailRecipients = imprint.selectedContactEmail;
+      //   } else if (imprint.decorationName.toLowerCase().includes('embroid')) {
+      //     imprint.selectedContactEmail = imprint.embroideryEmail;
+      //     imprint.emailRecipients = imprint.selectedContactEmail;
+      //   } else {
+      //     imprint.selectedContactEmail = imprint.artworkEmail;
+      //   }
+      //   this.orderData.artworkEmail = imprint.selectedContactEmail;
+      // }
+      if (!imprint?.fk_artApprovalContactID) {
         imprint.selectedContact = this.orderData.sessionArtwork_artApprovalContactID;
-        if (imprint.decorationName.toLowerCase().includes('screen')) {
-          imprint.selectedContactEmail = imprint.screenprintEmail;
-          this.orderData.artworkEmail = imprint;
-        } else if (imprint.decorationName.toLowerCase().includes('embroid')) {
-          imprint.selectedContactEmail = imprint.embroideryEmail;
-        } else {
-          imprint.selectedContactEmail = imprint.artworkEmail;
-        }
-        this.orderData.artworkEmail = imprint.selectedContactEmail;
+      }
+      if (imprint?.fk_artApprovalContactID) {
+        imprint.emailRecipients = imprint.approvalContactEmail;
+        // imprint.selectedContact = this.orderData.sessionArtwork_artApprovalContactID;
+        // if (imprint.decorationName.toLowerCase().includes('screen')) {
+        //   imprint.selectedContactEmail = imprint.screenprintEmail;
+        //   this.orderData.artworkEmail = imprint;
+        // } else if (imprint.decorationName.toLowerCase().includes('embroid')) {
+        //   imprint.selectedContactEmail = imprint.embroideryEmail;
+        // } else {
+        //   imprint.selectedContactEmail = imprint.artworkEmail;
+        // }
+        // this.orderData.artworkEmail = imprint.selectedContactEmail;
+        this._changeDetectorRef.markForCheck();
       } else {
-        imprint.selectedContact = null;
-        if (imprint.decorationName.toLowerCase().includes('screen')) {
-          imprint.selectedContactEmail = imprint.screenprintEmail;
-          this.orderData.artworkEmail = imprint
-          imprint.emailRecipients = imprint.selectedContactEmail;
-        } else if (imprint.decorationName.toLowerCase().includes('embroid')) {
-          imprint.selectedContactEmail = imprint.embroideryEmail;
-          imprint.emailRecipients = imprint.selectedContactEmail;
-        } else {
-          imprint.selectedContactEmail = imprint.artworkEmail;
-        }
+        imprint.emailRecipients = this.orderData.sessionArtworkEmail
+        //   imprint.selectedContact = null;
+        // if (imprint.decorationName.toLowerCase().includes('screen')) {
+        //   imprint.selectedContactEmail = imprint.screenprintEmail;
+        //   this.orderData.artworkEmail = imprint
+        //   imprint.emailRecipients = imprint.selectedContactEmail;
+        // } else if (imprint.decorationName.toLowerCase().includes('embroid')) {
+        //   imprint.selectedContactEmail = imprint.embroideryEmail;
+        //   imprint.emailRecipients = imprint.selectedContactEmail;
+        // } else {
+        //   imprint.selectedContactEmail = imprint.artworkEmail;
+        // }
         this.orderData.artworkEmail = imprint.selectedContactEmail;
+        this._changeDetectorRef.markForCheck();
       }
       const url = `https://assets.consolidus.com/artwork/Proof/${this.paramData.pfk_userID}/${this.paramData.fk_orderID}/${this.paramData.pk_orderLineID}/${imprint.pk_imprintID}.jpg`
       this.checkIfImageExists(url, imprint)
     });
     // Contact Proof
+
+    // Contact Proof
     if (this.contactProofs) {
       this.contactProofs.forEach(element => {
-        if (element.blnStoreUserApprovalContact) {
-          element.value = element.pk_approvalContactID;
-        } else {
-          element.value = element.pk_artApprovalContactID;
-        }
+        // if (element.blnStoreUserApprovalContact) {
+        //   element.value = element.storeUserApprovalID;
+        // } else {
+        //   element.value = element.approvalContactID;
+        // }
         this.imprintdata.forEach(imprint => {
-          if (imprint?.fk_storeUserApprovalContactID && !imprint?.blnStoreUserApprovalDone) {
-            if (imprint?.fk_storeUserApprovalContactID == element.pk_approvalContactID) {
-              imprint.selectedContact = element;
-              imprint.selectedContactEmail = element.email;
-            }
-          } else if (imprint?.fk_artApprovalContactID && imprint?.fk_artApprovalContactID == element.pk_artApprovalContactID) {
+          if (imprint?.fk_artApprovalContactID == element.approvalContactID) {
             imprint.selectedContact = element;
             imprint.selectedContactEmail = element.email;
           }
+          // if (imprint?.fk_storeUserApprovalContactID && !imprint?.blnStoreUserApprovalDone) {
+          //   if (imprint?.fk_storeUserApprovalContactID == element.storeUserApprovalID) {
+          //     imprint.selectedContact = element;
+          //     imprint.selectedContactEmail = element.email;
+          //   }
+          // } else if (imprint?.fk_artApprovalContactID && imprint?.fk_artApprovalContactID == element.approvalContactID) {
+          //   imprint.selectedContact = element;
+          //   imprint.selectedContactEmail = element.email;
+          // }
         });
         element.blnStoreUserApproval = element.blnStoreUserApprovalContacts ? 1 : 0;
+        this._changeDetectorRef.markForCheck();
       });
     }
+    // if (this.contactProofs) {
+    //   this.contactProofs.forEach(element => {
+    //     if (element.blnStoreUserApprovalContact) {
+    //       element.value = element.storeUserApprovalID;
+    //     } else {
+    //       element.value = element.approvalContactID;
+    //     }
+    //     this.imprintdata.forEach(imprint => {
+    //       if (imprint?.fk_storeUserApprovalContactID && !imprint?.blnStoreUserApprovalDone) {
+    //         if (imprint?.fk_storeUserApprovalContactID == element.storeUserApprovalID) {
+    //           imprint.selectedContact = element;
+    //           imprint.selectedContactEmail = element.email;
+    //         }
+    //       } else if (imprint?.fk_artApprovalContactID && imprint?.fk_artApprovalContactID == element.approvalContactID) {
+    //         imprint.selectedContact = element;
+    //         imprint.selectedContactEmail = element.email;
+    //       }
+    //     });
+    //     element.blnStoreUserApproval = element.blnStoreUserApprovalContacts ? 1 : 0;
+    //   });
+    // }
   }
   // Upload Files
   uploadFilesCommonFn(event, type): void {

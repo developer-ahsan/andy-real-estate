@@ -278,3 +278,57 @@ export interface addGroupRunProduct {
     loggedInUserID: number;
     add_group_run_product: boolean;
 };
+
+export interface addProductOption {
+    cart_id: number;
+    cartline_id: number;
+    color_id: number;
+    color_name: string;
+    size_id: number;
+    size_name: string;
+    product_id: number;
+    product_name: string;
+    isApparel: boolean;
+    groupRunCartLineID: number;
+    blnGroupRun: boolean;
+    quantity: number;
+    admin_user_id: number;
+    blnOverrideShippingNewOption: boolean;
+    orderQuantity: number;
+    isFulfillmentCart: boolean;
+    warehouse_delivery_option: number;
+    cartLineGroundCost: number;
+    cartLineGroundPrice: number;
+    add_cart_product_option: boolean;
+};
+
+export interface updateProductOption {
+    cart_line_options: cart_line_option[];
+    remove_option_ids: cart_line_option[];
+    cartLineID: number;
+    blnGroupRun: boolean;
+    groupRunCartLineID: boolean;
+    bln_unit_cost_override: boolean;
+    blnOverrideShippingNewOption: boolean;
+    orderQuantity: number;
+    isFulfillmentCart: boolean;
+    warehouse_delivery_option: number;
+    cartLineGroundCost: number;
+    cartLineGroundPrice: number;
+    update_cart_product_option: boolean;
+};
+
+export interface cart_line_option {
+    product_id: number;
+    color_id: number;
+    color_name: string;
+    quantity: number;
+    size_id: number;
+    size_name: string;
+    cart_line_option_run_cost: number;
+    cart_line_option_run_price: number;
+    cart_line_option_setup_cost: number;
+    cart_line_option_setup_price: number;
+    option_id: number;
+    product_name: string;
+};

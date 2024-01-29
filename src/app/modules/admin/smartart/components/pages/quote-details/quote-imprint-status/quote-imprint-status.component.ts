@@ -54,8 +54,7 @@ export class QuoteImprintStatusComponent implements OnInit, OnDestroy {
     this.smartArtUser = this.dataForNewComponent?.smartArtUser;
     this.artworktemplatesData = this.dataForNewComponent?.artworktemplatesData;
     this.contactProofs = this.dataForNewComponent?.contactProofs;
-    console.log(this.quoteData);
-    console.log(this.quoteImprintdata);
+
 
     this.userData = JSON.parse(localStorage.getItem('userDetails'));
     this.quoteImprintdata.forEach(imprint => {
@@ -146,7 +145,11 @@ export class QuoteImprintStatusComponent implements OnInit, OnDestroy {
     if (imprint.selectedContact == 0) {
       artAprrovalID = 0;
     } else {
-      artAprrovalID = imprint.selectedContact.pk_artApprovalContactID;
+      if (imprint.selectedContact.blnStoreUserApprovalDone) {
+        artAprrovalID = imprint.selectedContact.storeUserApprovalID;
+      } else {
+        artAprrovalID = imprint.selectedContact.artApprovalContactID;
+      }
     }
     imprint.isProofLoader = true;
     let payload: updateQuoteProofContact = {

@@ -394,15 +394,15 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
           if (element.blnStoreUserApprovalContact) {
             element.value = element.storeUserApprovalID;
           } else {
-            element.value = element.pk_artApprovalContactID;
+            element.value = element.artApprovalContactID;
           }
           this.quoteImprintdata.forEach(imprint => {
             if (imprint?.fk_storeUserApprovalContactID && !imprint?.blnStoreUserApprovalDone) {
-              if (imprint?.fk_storeUserApprovalContactID == element.pk_approvalContactID) {
+              if (imprint?.fk_storeUserApprovalContactID == element.storeUserApprovalID) {
                 imprint.selectedContact = element;
                 imprint.selectedContactEmail = element.email;
               }
-            } else if (imprint?.fk_artApprovalContactID && (imprint?.fk_artApprovalContactID == element.pk_artApprovalContactID)) {
+            } else if (imprint?.fk_artApprovalContactID && (imprint?.fk_artApprovalContactID == element.artApprovalContactID)) {
               imprint.selectedContact = element;
               imprint.selectedContactEmail = element.email;
             }

@@ -3,7 +3,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { QuotesService } from '../../../quotes.service';
 import { Subject } from 'rxjs';
-import { AddImprints, RemoveCartProduct, UpdateCartShipping, addAccessory, addGroupRunProduct, addNewProduct, deleteImprints, updateAccessories, updateCartInfo, updateCartShipping, updateGroupRun, updateImprints } from '../../../quotes.types';
+import { AddImprints, RemoveCartProduct, UpdateCartShipping, addAccessory, addGroupRunProduct, addNewProduct, addProductOption, cart_line_option, deleteImprints, updateAccessories, updateCartInfo, updateCartShipping, updateGroupRun, updateImprints, updateProductOption } from '../../../quotes.types';
 import moment from 'moment';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
@@ -169,8 +169,8 @@ export class QuoteProductsComponent implements OnInit {
       if (cartLine.Colors) {
         const colorsData = cartLine.Colors.split('#_');
         colorsData.forEach((colors, index) => {
-          const [pk_colorID, pk_sizeID, quantity, colorName, runCost, runPrice] = colors.split('||');
-          cartLine.ColorsData.push({ pk_colorID: Number(pk_colorID), quantity, colorName, runCost: Number(runCost), runPrice: Number(runPrice), pk_sizeID: Number(pk_sizeID) });
+          const [pk_colorID, pk_sizeID, quantity, colorName, runCost, runPrice, pk_optionID, setupCost, setupPrice] = colors.split('||');
+          cartLine.ColorsData.push({ pk_colorID: Number(pk_colorID), quantity, colorName, runCost: Number(runCost), runPrice: Number(runPrice), pk_sizeID: Number(pk_sizeID), pk_optionID: Number(pk_optionID), setupCost: Number(setupCost), setupPrice: Number(setupPrice) });
           if (index == 0) {
             this.ngColor = Number(pk_colorID);
           }
@@ -555,7 +555,7 @@ export class QuoteProductsComponent implements OnInit {
   }
   addProductOptions() {
     const user = JSON.parse(localStorage.getItem('userDetails'));
-    const { blnSample, blnTaxable, blnRoyaltyStore, blnRoyalty, blnApparel, blnOverrideShippingProductInfo, blnOverrideShippingShipping, pk_storeProductID, pk_cartLineID, fk_productID, productName, fk_cartID, warehouseDeliveryOption, event, blnGroupRun, groupRunCartLineID } = this.selectedCartLine;
+    const { blnSample, blnTaxable, blnRoyaltyStore, blnRoyalty, blnApparel, blnOverrideShippingProductInfo, blnOverrideShippingShipping, pk_storeProductID, pk_cartLineID, fk_productID, productName, fk_cartID, warehouseDeliveryOption, event, blnGroupRun, groupRunCartLineID, orderQuantity, cartLineBaseCost, cartLineBasePrice } = this.selectedCartLine;
     let colorName = '';
     let sizeName = '';
     if (this.ngColor != 0) {
@@ -568,7 +568,7 @@ export class QuoteProductsComponent implements OnInit {
       this._quoteService.snackBar('Quantity should be positive or greater than 0');
       return;
     }
-    let paylaod = {
+    let paylaod: addProductOption = {
       cart_id: fk_cartID,
       cartline_id: pk_cartLineID,
       color_id: this.ngColor,
@@ -583,6 +583,11 @@ export class QuoteProductsComponent implements OnInit {
       quantity: this.ngQuantity,
       admin_user_id: user.pk_userID,
       blnOverrideShippingNewOption: this.ngOverrideShipping,
+      orderQuantity: orderQuantity,
+      isFulfillmentCart: this.selectedQuoteDetail.isFulfillmentCart,
+      warehouse_delivery_option: warehouseDeliveryOption,
+      cartLineGroundCost: cartLineBaseCost,
+      cartLineGroundPrice: cartLineBasePrice,
       add_cart_product_option: true
     };
     this.selectedCartLine.addProductOption = true;
@@ -604,61 +609,76 @@ export class QuoteProductsComponent implements OnInit {
   }
   // Implement methods for functionality
   updateProductOptions() {
-    const { fk_productID, } = this.selectedCartLine;
-    console.log(this.selectedCartLine.ColorsData);
-    // export interface updateProductOption {
-    //   cart_line_options: cart_line_option[];
-    //   remove_option_ids: cart_line_option[];
-    // }
+    const { fk_productID, productName, pk_cartLineID, blnGroupRun, groupRunCartLineID, blnOverrideStandardCostPrice, blnOverrideCostPrice, orderQuantity, blnOverrideShippingOptions, warehouseDeliveryOption, cartLineBaseCost, cartLineBasePrice } = this.selectedCartLine;
+    console.log(this.selectedCartLine);
 
-    // export interface cart_line_option {
-    //   product_id: number;
-    //   color_id: number;
-    //   color_name: string;
-    //   quantity: number;
-    //   size_id: number;
-    //   size_name: string;
-    //   cart_line_option_run_cost: number;
-    //   cart_line_option_run_price: number;
-    //   cart_line_option_setup_cost: number;
-    //   cart_line_option_setup_price: number;
-    //   bln_override: boolean;
-    //   option_id: number;
-    //   bln_quantity_changed: boolean;
-    //   product_name: string;
-    // }
-    // let options = [];
-    // this.ngSelectedProduct.color_sizes.forEach(element => {
-    //   options.push({
-    //     color_id: element.fk_colorID,
-    //     size_id: element.fk_sizeID,
-    //     quantity: element.quantity,
-    //     cost: element.runCost,
-    //     price: element.runPrice,
-    //     bln_override: element.blnOverride,
-    //     option_id: element.pk_optionID
-    //   })
-    // });
-    // let payload = {
-    //   cart_line_options: [],
-    //   remove_option_ids: []
-    // }
-    // this.isUpdateOptionLoader = true;
-    // this._orderService.updateOrderCalls(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe((res: any) => {
-    //   if (res) {
-    //     if (res["success"]) {
-    //       this.getOrderLineDetailsAfterUpdateOrAdd(res["message"]);
-    //     } else {
-    //       this.isUpdateOptionLoader = false;
-    //     }
-    //   } else {
-    //     this.isUpdateOptionLoader = false;
-    //   }
-    //   this._changeDetectorRef.markForCheck();
-    // }, err => {
-    //   this.isUpdateOptionLoader = false;
-    //   this._changeDetectorRef.markForCheck();
-    // });
+    let options = [];
+    let removeOptions = [];
+    this.selectedCartLine.ColorsData.forEach(element => {
+      const size = this.selectedCartLine.sizesListData.find(item => item.pk_sizeID == element.pk_sizeID);
+      if (!element.isRemoved) {
+        options.push(
+          {
+            product_id: fk_productID,
+            color_id: element.pk_colorID,
+            color_name: element.colorName,
+            quantity: Number(element.quantity),
+            size_id: Number(element.pk_sizeID),
+            size_name: size ? size.sizeName : '',
+            cart_line_option_run_cost: element.runCost,
+            cart_line_option_run_price: element.runPrice,
+            cart_line_option_setup_cost: element.setupCost,
+            cart_line_option_setup_price: element.setupPrice,
+            option_id: element.pk_optionID,
+            product_name: productName,
+          }
+        )
+      } else {
+        removeOptions.push(
+          {
+            product_id: fk_productID,
+            color_id: element.pk_colorID,
+            color_name: element.colorName,
+            quantity: Number(element.quantity),
+            size_id: Number(element.pk_sizeID),
+            size_name: size ? size[0].sizeName : '',
+            cart_line_option_run_cost: element.runCost,
+            cart_line_option_run_price: element.runPrice,
+            cart_line_option_setup_cost: element.setupCost,
+            cart_line_option_setup_price: element.setupPrice,
+            option_id: element.pk_optionID,
+            product_name: productName,
+          }
+        );
+      }
+    });
+    let payload: updateProductOption = {
+      cart_line_options: options,
+      remove_option_ids: removeOptions,
+      cartLineID: pk_cartLineID,
+      blnGroupRun,
+      groupRunCartLineID,
+      bln_unit_cost_override: blnOverrideCostPrice,
+      blnOverrideShippingNewOption: blnOverrideShippingOptions,
+      orderQuantity,
+      isFulfillmentCart: this.selectedQuoteDetail.isFulfillmentCart,
+      warehouse_delivery_option: warehouseDeliveryOption,
+      cartLineGroundCost: cartLineBaseCost,
+      cartLineGroundPrice: cartLineBasePrice,
+      update_cart_product_option: true
+    }
+    this.selectedCartLine.updateOptions = true;
+    this._quoteService.UpdateQuoteData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe((res: any) => {
+      if (res["success"]) {
+        this._quoteService.snackBar(res["message"]);
+        this.getQuoteFromAPI();
+      }
+      this.selectedCartLine.updateOptions = false;
+      this._changeDetectorRef.markForCheck();
+    }, err => {
+      this.selectedCartLine.updateOptions = false;
+      this._changeDetectorRef.markForCheck();
+    });
   }
   // addAccoryOptionOptions
   addAccoryOptionOptions() {

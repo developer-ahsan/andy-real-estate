@@ -513,9 +513,9 @@
                         </div>
                         <div>
                             <button mat-button mat-stroked-button (click)="updateProductOptions()"
-                                [disabled]="selectedCartLine.isUpdateOptionLoader" class="min-w-30">
-                                <span *ngIf="!selectedCartLine.isUpdateOptionLoader">Update Options</span>
-                                <mat-progress-spinner *ngIf="selectedCartLine.isUpdateOptionLoader" [diameter]="24"
+                                [disabled]="selectedCartLine.updateOptions" class="min-w-30">
+                                <span *ngIf="!selectedCartLine.updateOptions">Update Options</span>
+                                <mat-progress-spinner *ngIf="selectedCartLine.updateOptions" [diameter]="24"
                                     [mode]="'indeterminate'">
                                 </mat-progress-spinner>
                             </button>
