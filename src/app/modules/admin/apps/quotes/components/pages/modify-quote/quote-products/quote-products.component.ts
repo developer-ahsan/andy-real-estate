@@ -3,7 +3,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { QuotesService } from '../../../quotes.service';
 import { Subject } from 'rxjs';
-import { AddImprints, RemoveCartProduct, UpdateCartShipping, addAccessory, addGroupRunProduct, addNewProduct, addProductOption, cart_line_option, deleteImprints, updateAccessories, updateCartInfo, updateCartShipping, updateGroupRun, updateImprints, updateProductOption } from '../../../quotes.types';
+import { AddImprints, RemoveCartProduct, UpdateCartRoyalties, UpdateCartShipping, addAccessory, addGroupRunProduct, addNewProduct, addProductOption, cart_line_option, deleteImprints, updateAccessories, updateCartInfo, updateCartShipping, updateGroupRun, updateImprints, updateProductOption } from '../../../quotes.types';
 import moment from 'moment';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 
@@ -296,26 +296,38 @@ export class QuoteProductsComponent implements OnInit {
     })
   }
   getAllProducts() {
-    let params = {
-      modify_cart_current_products: true,
-      store_id: this.selectedQuoteDetail.storeID
-    }
-    this._quoteService.getQuoteData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    this._quoteService.ModifyCurrentProducts$.subscribe(res => {
       this.allProducts = res["data"];
       res["data"].forEach(element => {
         element.displayText = element.pk_storeProductID + ' - ' + element.productNumber + ': ' + element.productName
       });
       this.selectedProduct = this.allProducts[0];
       this.ngNewProduct = [this.allProducts[0]];
-      console.log(this.ngNewProduct);
       // this.currentSelectedProduct = this.allProducts[0];
       this.searchProductCtrl.setValue(this.selectedProduct)
       this.isLoading = false;
-      this._changeDetectorRef.markForCheck();
-    }, err => {
-      this.isLoading = false;
-      this._changeDetectorRef.markForCheck();
-    })
+    });
+
+    // let params = {
+    //   modify_cart_current_products: true,
+    //   store_id: this.selectedQuoteDetail.storeID
+    // }
+    // this._quoteService.getQuoteData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+    //   this.allProducts = res["data"];
+    //   res["data"].forEach(element => {
+    //     element.displayText = element.pk_storeProductID + ' - ' + element.productNumber + ': ' + element.productName
+    //   });
+    //   this.selectedProduct = this.allProducts[0];
+    //   this.ngNewProduct = [this.allProducts[0]];
+    //   console.log(this.ngNewProduct);
+    //   // this.currentSelectedProduct = this.allProducts[0];
+    //   this.searchProductCtrl.setValue(this.selectedProduct)
+    //   this.isLoading = false;
+    //   this._changeDetectorRef.markForCheck();
+    // }, err => {
+    //   this.isLoading = false;
+    //   this._changeDetectorRef.markForCheck();
+    // })
   }
   getProductsCtrl() {
     let params;
@@ -383,15 +395,19 @@ export class QuoteProductsComponent implements OnInit {
     return value?.productName;
   }
   updateRoyalties() {
-    const { royaltyPrice } = this.selectedCartLine;
+    const { royaltyPrice, pk_cartLineID, fk_cartID } = this.selectedCartLine;
 
     if (royaltyPrice < 0) {
       this._quoteService.snackBar('Royalties should be 0 or positive value');
       return;
     }
-    let paylaod = {
+    const user = JSON.parse(localStorage.getItem('userDetails'));
+
+    let paylaod: UpdateCartRoyalties = {
       royalty_price: royaltyPrice,
-      cartLine_id: this.selectedCartLine.pk_cartLineID,
+      cartLine_id: pk_cartLineID,
+      cartID: fk_cartID,
+      admin_user_id: user.pk_userID,
       update_cart_royalty: true
     }
     this.selectedCartLine.isRoyaltyLoader = true;
@@ -414,16 +430,21 @@ export class QuoteProductsComponent implements OnInit {
       this._quoteService.snackBar('Shipping Price should be 0 or positive value');
       return;
     }
+    const user = JSON.parse(localStorage.getItem('userDetails'));
+
+    const { pk_cartID } = this.selectedQuoteDetail;
     let paylaod: UpdateCartShipping = {
       shippingGroundPrice,
       shippingGroundCost,
+      cartLineGroundCost: cartLineCost,
+      cartLineGroundPrice: cartLinePrice,
       cartLine_id: pk_cartLineID,
-      blnOverrideShippingNewAccessory: blnOverrideShippingShipping,
+      cartID: pk_cartID,
+      admin_user_id: user.pk_userID,
+      blnOverrideShippingShipping: blnOverrideShippingShipping,
       orderQuantity: orderQuantity,
       isFulfillmentCart,
       warehouse_delivery_option: warehouseDeliveryOption ? warehouseDeliveryOption : 0,
-      cartLineGroundCost: cartLineCost,
-      cartLineGroundPrice: cartLinePrice,
       update_cart_shipping: true
     }
     this.selectedCartLine.isShippingLoader = true;
@@ -576,6 +597,7 @@ export class QuoteProductsComponent implements OnInit {
     let paylaod: addProductOption = {
       cart_id: fk_cartID,
       cartline_id: pk_cartLineID,
+      store_id: this.selectedQuoteDetail.storeID,
       color_id: this.ngColor,
       color_name: colorName,
       size_id: this.ngSize != 0 ? this.ngSize : null,
@@ -661,6 +683,7 @@ export class QuoteProductsComponent implements OnInit {
     let payload: updateProductOption = {
       cart_line_options: options,
       storeID,
+      cartID: pk_cartID,
       remove_option_ids: removeOptions,
       cartLineID: pk_cartLineID,
       blnGroupRun,

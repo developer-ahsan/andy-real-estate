@@ -216,13 +216,15 @@ export interface AddImprints {
 export interface UpdateCartShipping {
     shippingGroundPrice: number;
     shippingGroundCost: number;
+    cartLineGroundCost: number;
+    cartLineGroundPrice: number;
     cartLine_id: number;
-    blnOverrideShippingNewAccessory: boolean;
+    cartID: number;
+    admin_user_id: number;
+    blnOverrideShippingShipping: boolean;
     orderQuantity: number;
     isFulfillmentCart: boolean;
     warehouse_delivery_option: number;
-    cartLineGroundCost: number;
-    cartLineGroundPrice: number;
     update_cart_shipping: boolean;
 };
 
@@ -286,6 +288,7 @@ export interface addGroupRunProduct {
 export interface addProductOption {
     cart_id: number;
     cartline_id: number;
+    store_id: number;
     color_id: number;
     color_name: string;
     size_id: number;
@@ -310,6 +313,7 @@ export interface updateProductOption {
     cart_line_options: cart_line_option[];
     remove_option_ids: cart_line_option[];
     cartLineID: number;
+    cartID: number;
     blnGroupRun: boolean;
     groupRunCartLineID: boolean;
     bln_unit_cost_override: boolean;
@@ -321,6 +325,13 @@ export interface updateProductOption {
     cartLineGroundPrice: number;
     storeID: number;
     update_cart_product_option: boolean;
+};
+export interface UpdateCartRoyalties {
+    royalty_price: number;
+    cartLine_id: number;
+    cartID: number;
+    admin_user_id: number;
+    update_cart_royalty: boolean;
 };
 
 export interface cart_line_option {

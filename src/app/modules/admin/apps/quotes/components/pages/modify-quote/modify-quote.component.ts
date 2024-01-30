@@ -36,8 +36,16 @@ export class QuoteModifyComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    this.isLoading = true;
     this._quoteService.modifyQuote = this._commonService.assignPermissions('modifyQuote', this._quoteService.modifyQuote);
-
+    this._quoteService.qoutesDetails$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((quote) => {
+        this._quoteService.getSelectedProducts(quote["data"][0].storeID).subscribe(() => {
+          this.isLoading = false;
+          this._changeDetectorRef.markForCheck();
+        });
+      });
   };
   calledScreen(screen) {
     this.mainScreen = screen;

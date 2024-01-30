@@ -2,9 +2,11 @@
     You do not have permission to access this section.
 </div>
 <ng-container *ngIf="_quoteService.modifyQuote.home">
-    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
-    </ngx-skeleton-loader>
-    <div class="row my-3 w-full" *ngIf="!isLoading">
+    <!-- <div class="bg-card rounded-2xl shadow  p-6 w-full" *ngIf="isLoading">
+        <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+        </ngx-skeleton-loader>
+    </div> -->
+    <div class="row my-3 w-full">
         <div class="col-12 my-2">
             <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen"
                 (change)="calledScreen(group.value)">
@@ -14,8 +16,8 @@
                 <mat-button-toggle value="Quote Details">
                     Quote Details
                 </mat-button-toggle>
-                <mat-button-toggle value="Products">
-                    Products
+                <mat-button-toggle [disabled]="isLoading" value="Products">
+                    {{isLoading ? 'Loading Products ...' : 'Products'}}
                 </mat-button-toggle>
             </mat-button-toggle-group>
         </div>

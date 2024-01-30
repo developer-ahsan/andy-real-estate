@@ -39,6 +39,7 @@ export class QuotesService {
     private _distributionCodes: BehaviorSubject<any | null> = new BehaviorSubject(null);
     private _quoteDetails: BehaviorSubject<any | null> = new BehaviorSubject(null);
     private _quoteComments: BehaviorSubject<any | null> = new BehaviorSubject(null);
+    private _quoteCurrentProducts: BehaviorSubject<any | null> = new BehaviorSubject(null);
 
     opts = [];
 
@@ -128,6 +129,9 @@ export class QuotesService {
     get distributionCodes$(): Observable<any> {
         return this._distributionCodes.asObservable();
     }
+    get ModifyCurrentProducts$(): Observable<any[]> {
+        return this._quoteCurrentProducts.asObservable();
+    };
 
     // Common get Calls
     getQuoteData(params): Observable<any[]> {
@@ -177,4 +181,17 @@ export class QuotesService {
         return this._httpClient.put(
             environment.products, payload, { headers });
     };
+
+    getSelectedProducts(store_id): Observable<any> {
+        let params = {
+            modify_cart_current_products: true,
+            store_id: store_id
+        }
+        return this._httpClient.get<any>(environment.quotes, { params: params }).pipe(
+            tap((quote) => {
+                this._quoteCurrentProducts.next(quote);
+            }),
+            retry(3)
+        );
+    }
 }
