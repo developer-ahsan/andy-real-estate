@@ -41,10 +41,15 @@ export class QuoteModifyComponent implements OnInit, OnDestroy {
     this._quoteService.qoutesDetails$
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((quote) => {
-        this._quoteService.getSelectedProducts(quote["data"][0].storeID).subscribe(() => {
-          this.isLoading = false;
-          this._changeDetectorRef.markForCheck();
-        });
+        this._quoteService.ModifyCurrentProducts$.subscribe(res => {
+          if (!res) {
+            this._quoteService.getSelectedProducts(quote["data"][0].storeID).subscribe(() => {
+              this.isLoading = false;
+              this._changeDetectorRef.markForCheck();
+            });
+          }
+        })
+
       });
   };
   calledScreen(screen) {

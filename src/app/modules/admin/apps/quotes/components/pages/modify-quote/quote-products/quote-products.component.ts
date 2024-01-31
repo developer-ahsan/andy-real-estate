@@ -86,19 +86,19 @@ export class QuoteProductsComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.isLoading = true;
     this.getQuotesDetails();
   }
   getQuotesDetails() {
+    this.getAllProducts();
     this._quoteService.qoutesDetails$
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((quote) => {
+        this.isLoading = true;
+        this._changeDetectorRef.markForCheck();
         this.selectedQuoteDetail = quote["data"][0];
         this.cartLines = quote["cartLines"];
         console.log(this.cartLines);
         this.refactorCartLinesData();
-        this.getProductsCtrl();
-        this.getAllProducts();
         this.selectedCartLine = this.cartLines[0];
         this.currentSelectedProduct = this.cartLines[0];
         this.ngCurrentProduct = [this.cartLines[0]];
@@ -107,8 +107,6 @@ export class QuoteProductsComponent implements OnInit {
         // Group Run Master
         this.ngCurrentGroupProduct = [this.cartLines[0]];
         this.ngCurrentGroupProduct[0].displayText = this.ngCurrentGroupProduct[0].pk_storeProductID + ' - ' + this.ngCurrentGroupProduct[0].productNumber + ': ' + this.ngCurrentGroupProduct[0].productName;
-
-        // this.getSelectedProducts();
         this._changeDetectorRef.markForCheck();
       });
   }
@@ -118,10 +116,9 @@ export class QuoteProductsComponent implements OnInit {
       single_cart: true,
       cart_id: this.selectedQuoteDetail.pk_cartID
     }
+    this.cartLines = [];
     this._quoteService.getQuoteMainDetail(params).subscribe(quote => {
       this.cartLines = quote["cartLines"];
-      this.refactorCartLinesData();
-      this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     });
   }
@@ -130,7 +127,7 @@ export class QuoteProductsComponent implements OnInit {
     this.selectedQuoteDetail.shippingGroundCost = 0;
     this.selectedQuoteDetail.royaltyPrice = 0;
     this.selectedQuoteDetail.shippingGroundPrice = 0;
-    this.cartLines.forEach(cartLine => {
+    this.cartLines.forEach((cartLine, index) => {
       cartLine.blnOverrideShippingNewAccessory = true;
       cartLine.blnOverrideShippingProductInfo = false;
       cartLine.blnOverrideShippingShipping = true;
@@ -145,7 +142,6 @@ export class QuoteProductsComponent implements OnInit {
       } else {
         this.selectedQuoteDetail.isFulfillmentCart = false;
       }
-      this.getCartLineImprints(cartLine);
       //  Accessories
       cartLine.AccessoriesData = [];
       if (cartLine.Accessories) {
@@ -222,11 +218,17 @@ export class QuoteProductsComponent implements OnInit {
           }
         });
       }
+      // CartLine Imprints
+      let last = false;
+      if (index == this.cartLines.length - 1) {
+        last = true;
+      }
+      this.getCartLineImprints(cartLine, last);
     });
     this.selectedQuoteDetail.cartTotal = this.selectedQuoteDetail.price + this.selectedQuoteDetail?.shippingGroundPrice +
       this.selectedQuoteDetail.tax + (this.selectedQuoteDetail.blnRoyalty ? this.selectedQuoteDetail.royaltyPrice : 0);
   }
-  getCartLineImprints(cartLine) {
+  getCartLineImprints(cartLine, last) {
     let params = {
       cartline_imprints: true,
       cartline_fk_ProductID: cartLine.fk_productID,
@@ -249,10 +251,13 @@ export class QuoteProductsComponent implements OnInit {
       if (res["unselectedImprints"].length) {
         cartLine.ngImprintSelected = res["unselectedImprints"][0];
       }
+      if (last) {
+        this.isLoading = false;
+      }
       this._changeDetectorRef.markForCheck();
     });
-    this._changeDetectorRef.markForCheck();
 
+    this._changeDetectorRef.markForCheck();
   }
   onItemSelect(item: any) {
     this.ngNewProduct = [this.allProducts.find(product => product.fk_productID == item.fk_productID)];
@@ -288,7 +293,7 @@ export class QuoteProductsComponent implements OnInit {
       this.orderProducts = res["data"];
       this.selectedProduct = this.allProducts[0];
       this.searchProductCtrl.setValue(this.selectedProduct)
-      this.isLoading = false;
+      // this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isLoading = false;
@@ -305,7 +310,7 @@ export class QuoteProductsComponent implements OnInit {
       this.ngNewProduct = [this.allProducts[0]];
       // this.currentSelectedProduct = this.allProducts[0];
       this.searchProductCtrl.setValue(this.selectedProduct)
-      this.isLoading = false;
+      // this.isLoading = false;
     });
 
     // let params = {

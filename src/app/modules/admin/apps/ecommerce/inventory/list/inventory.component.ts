@@ -3249,7 +3249,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             keywordsString = names.toString().replace(/'/g, "-");
         };
 
-        const description = {
+        let description = {
             name: String(productName.replace(/'/g, "''")),
             product_number: String(productNumber),
             product_desc: String(mainDescription?.replace(/'/g, "''")) || null,
@@ -3268,6 +3268,8 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             supplier_id: this.supplierId,
             permalink: null
         };
+        description = this._commponService.replaceSingleQuotesWithDoubleSingleQuotes(description);
+
         let payload = {
             description: description,
             physics: physics,
@@ -3283,6 +3285,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             pk_userID: Number(this.userDetails.pk_userID),
             create_product: true
         }
+        payload = this._commponService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
         if (!this.productId) {
             this.createProductDetailLoader = true;
             this._changeDetectorRef.markForCheck();

@@ -583,7 +583,8 @@
                                         <div class="col-12" *ngIf="supplierType != 'Apparel Item'">
                                             <mat-form-field appearance="fill" class="w-full">
                                                 <mat-label>Product Dimensions</mat-label>
-                                                <input matInput type="text" formControlName="productDimensions">
+                                                <input matInput maxlength="50" type="text"
+                                                    formControlName="productDimensions">
                                             </mat-form-field>
                                         </div>
                                         <!-- <div class="col-lg-4 col-12" *ngIf="supplierType != 'Apparel Item'">
