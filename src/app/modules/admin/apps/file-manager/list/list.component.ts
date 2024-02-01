@@ -157,6 +157,8 @@ export class StoresListComponent implements OnInit, OnDestroy {
         return this.settingStoreForm.controls;
     }
     ngOnInit(): void {
+        this._fileManagerService.store = this._commonService.assignPermissions('store', this._fileManagerService.store);
+
         this.initCreateStoreForm();
         // this.isLoading = true;
 

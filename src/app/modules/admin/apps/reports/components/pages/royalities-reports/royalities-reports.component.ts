@@ -63,7 +63,7 @@ export class RoyalitiesReportComponent implements OnInit, OnDestroy {
   serverCurrentDate = '';
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _reportService: ReportsService, private currencyPipe: CurrencyPipe,
+    public _reportService: ReportsService, private currencyPipe: CurrencyPipe,
   ) {
   }
 
@@ -123,6 +123,10 @@ export class RoyalitiesReportComponent implements OnInit, OnDestroy {
   }
   // Reports
   generateReport(page) {
+    if (!this._reportService.reporter.viewRoyaltiesReport) {
+      this._reportService.snackBar('You do not have permission to access this section.');
+      return;
+    }
     if (this.royaltyID == 0 || this.selectedStores.fk_storeID == '') {
       this._reportService.snackBar('You must select a store and report type above before you can generate the report.');
       return;

@@ -51,7 +51,7 @@ export class ReportBestSellerComponent implements OnInit, OnDestroy {
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _reportService: ReportsService,
+    public _reportService: ReportsService,
     private commonService: DashboardsService
   ) { }
 
@@ -81,6 +81,10 @@ export class ReportBestSellerComponent implements OnInit, OnDestroy {
   }
 
   generateReport(page) {
+    if (!this._reportService.reporter.viewBestSellers) {
+      this._reportService.snackBar('You do not have permission to access this section.');
+      return;
+    }
     this.isGenerateReportLoader = true;
     if (page == 1) {
       this.page = 1;

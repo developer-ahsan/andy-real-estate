@@ -72,6 +72,10 @@ export class ReportsOrderProcessingComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
   };
   generateReport(page) {
+    if (!this._reportService.reporter.viewOrderProcessingSupportReport) {
+      this._reportService.snackBar('You do not have permission to access this section.');
+      return;
+    }
     this.generateReportData = null;
     this.employeesReportData = null;
     this.lastYear_report_summary = null;

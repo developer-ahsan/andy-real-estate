@@ -39,7 +39,7 @@ export class ReportAccountCodeComponent implements OnInit, OnDestroy {
   initialData: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _reportService: ReportsService,
+    public _reportService: ReportsService,
     private commonService: DashboardsService
   ) { }
 
@@ -58,6 +58,10 @@ export class ReportAccountCodeComponent implements OnInit, OnDestroy {
   }
   // Reports
   generateReport() {
+    if (!this._reportService.reporter.viewAccountCode) {
+      this._reportService.snackBar('You do not have permission to access this section.');
+      return;
+    }
     if (this.selectedStores.pk_storeID == 0) {
       this._reportService.snackBar('Please select a store');
       return;

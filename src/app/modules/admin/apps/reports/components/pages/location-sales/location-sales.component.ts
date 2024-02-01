@@ -44,7 +44,7 @@ export class ReportsLocationSalesComponent implements OnInit, OnDestroy {
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _reportService: ReportsService
+    public _reportService: ReportsService
   ) { }
 
   ngOnInit(): void {
@@ -98,6 +98,10 @@ export class ReportsLocationSalesComponent implements OnInit, OnDestroy {
   }
   // Reports
   generateReport(page) {
+    if (!this._reportService.reporter.viewLocationSalesReport) {
+      this._reportService.snackBar('You do not have permission to access this section.');
+      return;
+    }
     this.lastYearTotal = {
       blnPercent: false,
       Sales: 0,

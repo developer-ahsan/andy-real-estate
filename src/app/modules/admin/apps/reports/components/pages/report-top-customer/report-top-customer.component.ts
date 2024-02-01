@@ -47,7 +47,7 @@ export class ReportTopCustomerComponent implements OnInit, OnDestroy {
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _reportService: ReportsService,
+    public _reportService: ReportsService,
     private commonService: DashboardsService
   ) { }
   ngOnInit(): void {
@@ -66,6 +66,10 @@ export class ReportTopCustomerComponent implements OnInit, OnDestroy {
 
   // Reports
   generateReport(page) {
+    if (!this._reportService.reporter.viewTopCustomerReport) {
+      this._reportService.snackBar('You do not have permission to access this section.');
+      return;
+    }
     this.generateReportData = null;
     this._reportService.setFiltersReport();
     let selectedStores = [];

@@ -44,7 +44,7 @@ export class QuoteGraphicsReportComponent implements OnInit, OnDestroy {
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _reportService: ReportsService,
+    public _reportService: ReportsService,
     private currencyPipe: CurrencyPipe
   ) { }
   ngOnInit(): void {
@@ -59,6 +59,10 @@ export class QuoteGraphicsReportComponent implements OnInit, OnDestroy {
     return `${this.totalHours}:${this.totalMinutes}:${this.totalSeconds}`;
   }
   generateReport() {
+    if (!this._reportService.reporter.viewQuoteGraphicsSupportReport) {
+      this._reportService.snackBar('You do not have permission to access this section.');
+      return;
+    }
     let annual = 0;
     if (this._reportService.ngPlan == 'weekly') {
       annual = 52;

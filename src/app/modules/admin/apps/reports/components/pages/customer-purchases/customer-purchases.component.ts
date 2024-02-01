@@ -45,7 +45,7 @@ export class ReportCustomerPurchaseComponent implements OnInit, OnDestroy {
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private commonService: DashboardsService, private currencyPipe: CurrencyPipe,
-    private _reportService: ReportsService
+    public _reportService: ReportsService
   ) { }
 
   ngOnInit(): void {
@@ -63,6 +63,10 @@ export class ReportCustomerPurchaseComponent implements OnInit, OnDestroy {
   }
   // Reports
   generateReport(page) {
+    if (!this._reportService.reporter.viewCustomerPurchasesReport) {
+      this._reportService.snackBar('You do not have permission to access this section.');
+      return;
+    }
     this.generateReportData = null;
     this.totalsData = {
       NO: 0,

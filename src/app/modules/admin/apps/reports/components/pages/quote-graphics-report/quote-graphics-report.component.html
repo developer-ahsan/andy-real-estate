@@ -1,6 +1,9 @@
 <div #topScrollAnchor></div>
-
-<div class="w-full">
+<div class="alert m-4 w-full alert-danger p-4 text-lg text-center font-bold"
+    *ngIf="!_reportService.reporter.selectQuoteGraphicsSupportReport">
+    You do not have permission to access this section.
+</div>
+<div class="w-full" *ngIf="_reportService.reporter.selectQuoteGraphicsSupportReport">
     <div class="px-8 pb-4">
         <div class="row" *ngIf="!generateReportData">
             <div class="col-12">

@@ -38,7 +38,7 @@ export class ReportInventorySummaryComponent implements OnInit, OnDestroy {
   initialReportData = [];
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _reportService: ReportsService,
+    public _reportService: ReportsService,
     private commonService: DashboardsService
   ) { }
 

@@ -29,7 +29,7 @@ export class ReportStandardMarginComponent implements OnInit, OnDestroy {
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _reportService: ReportsService
+    public _reportService: ReportsService
   ) { }
 
   ngOnInit(): void {

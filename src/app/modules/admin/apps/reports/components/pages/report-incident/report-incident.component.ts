@@ -57,7 +57,7 @@ export class ReportIncidentComponent implements OnInit, OnDestroy {
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private commonService: DashboardsService,
-    private _reportService: ReportsService
+    public _reportService: ReportsService
   ) { }
 
   ngOnInit(): void {

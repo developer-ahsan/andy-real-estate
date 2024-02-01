@@ -61,6 +61,61 @@ export class ReportsService {
     opts = [];
 
     public duplicateCheck: boolean = false;
+
+    public reporter = {
+        home: false,
+        royaltySummary: false,
+        selectAccountCode: false,
+        selectBestSellers: false,
+        selectCustomerPurchases: false,
+        selectEmployeeSales: false,
+        selectEmployeeSales2: false,
+        selectEmployeeSummary: false,
+        selectGraphicsSupportReport: false,
+        selectIncidentReport: false,
+        selectItemReport: false,
+        selectLocationSales: false,
+        selectOrderProcessingSupportReport: false,
+        selectQuoteGraphicsSupportReport: false,
+        selectRoyalties: false,
+        selectSamplesSales: false,
+        selectStoreSales: false,
+        selectStoreSales2: false,
+        selectStoreSales3: false,
+        selectSupplierSales: false,
+        selectSupplierSales2: false,
+        selectSupplierSales3: false,
+        selectSupportReport: false,
+        selectTopCustomerSales: false,
+        selectVendorRelationsReport: false,
+        viewAccountCode: false,
+        viewBestSellers: false,
+        viewCustomerPurchasesReport: false,
+        viewEmployeeSalesReport: false,
+        viewEmployeeSalesReport2: false,
+        viewEmployeeSummary: false,
+        viewGraphicsSupportReport: false,
+        viewIncidentReport: false,
+        viewInventorySummary: false,
+        viewItemReport: false,
+        viewLocationSalesReport: false,
+        viewMarginReport: false,
+        viewMarkups: false,
+        viewOrderProcessingSupportReport: false,
+        viewQuoteGraphicsSupportReport: false,
+        viewRoyaltiesReport: false,
+        viewSamplesReport: false,
+        viewStoreSalesReport: false,
+        viewStoreSalesReport2: false,
+        viewStoreSalesReport3: false,
+        viewSupplierSalesReport: false,
+        viewSupplierSalesReport2: false,
+        viewSupplierSalesReport3: false,
+        viewSupportReport: false,
+        viewTopCustomerReport: false,
+        viewVendorRelationsReport: false
+    };
+
     /**
      * Constructor
      */

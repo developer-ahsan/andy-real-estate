@@ -58,7 +58,7 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
   @ViewChild('summaryScrollAnchor') summaryScrollAnchor: ElementRef;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef, private currencyPipe: CurrencyPipe,
-    private _reportService: ReportsService
+    public _reportService: ReportsService
   ) { }
 
   ngOnInit(): void {
@@ -127,6 +127,10 @@ export class ReportsEmployeeSalesComponent implements OnInit, OnDestroy {
   }
   // Reports
   generateReport() {
+    if (!this._reportService.reporter.viewEmployeeSalesReport) {
+      this._reportService.snackBar('You do not have permission to access this section.');
+      return;
+    }
     this.generateReportData = null;
     this.storeTotals = {
       COST: 0,

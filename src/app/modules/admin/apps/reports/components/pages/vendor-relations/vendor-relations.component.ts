@@ -29,13 +29,17 @@ export class ReportVendorRelationsComponent implements OnInit, OnDestroy {
   sortOrder: boolean = true;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _reportService: ReportsService
+    public _reportService: ReportsService
   ) { }
 
   ngOnInit(): void {
   };
   // Reports
   generateReport() {
+    if (!this._reportService.reporter.viewVendorRelationsReport) {
+      this._reportService.snackBar('You do not have permission to access this section.');
+      return;
+    }
     this.isGenerateReportLoader = true;
     let params = {
       is_weekly: this._reportService.ngPlan == 'weekly' ? true : false,

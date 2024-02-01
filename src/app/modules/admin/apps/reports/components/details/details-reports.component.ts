@@ -5,6 +5,7 @@ import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { ReportsService } from '../reports.service';
+import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 @Component({
   selector: 'app-details-reports',
   templateUrl: './details-reports.component.html',
@@ -33,6 +34,7 @@ export class ReportsDetailsComponent implements OnInit, OnDestroy {
   selectedSupplier: any;
   isSearchingSupplier = false;
   serverCurrentDate = '';
+
   /**
    * Constructor
    */
@@ -42,6 +44,7 @@ export class ReportsDetailsComponent implements OnInit, OnDestroy {
     private _router: Router,
     private route: ActivatedRoute,
     private _fuseMediaWatcherService: FuseMediaWatcherService,
+    private _commonService: DashboardsService
   ) {
   }
 
@@ -55,6 +58,8 @@ export class ReportsDetailsComponent implements OnInit, OnDestroy {
    */
 
   ngOnInit(): void {
+    this._ReportsService.reporter = this._commonService.assignPermissions('reporter', this._ReportsService.reporter);
+
     this.getCurrentDate();
     this.routesInitialization();
     this._router.events.subscribe((event) => {

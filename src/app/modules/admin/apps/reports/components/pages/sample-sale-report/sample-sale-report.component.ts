@@ -37,7 +37,7 @@ export class ReportSampleSaleComponent implements OnInit, OnDestroy {
   @ViewChild('summaryScrollAnchor') summaryScrollAnchor: ElementRef;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _reportService: ReportsService,
+    public _reportService: ReportsService,
     private _commonService: DashboardsService
   ) { }
 
@@ -63,6 +63,10 @@ export class ReportSampleSaleComponent implements OnInit, OnDestroy {
   }
   // Reports
   generateReport(page) {
+    if (!this._reportService.reporter.viewSamplesReport) {
+      this._reportService.snackBar('You do not have permission to access this section.');
+      return;
+    }
     this.generateReportData = null;
     this.totalData = 0;
     this._reportService.setFiltersReport();

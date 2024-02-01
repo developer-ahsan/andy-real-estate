@@ -20,6 +20,7 @@ import { MatSlideToggleChange } from "@angular/material/slide-toggle";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { StoreProductService } from "../../product-store/store.service";
 import { environment } from "environments/environment";
+import { DashboardsService } from "app/modules/admin/dashboards/dashboard.service";
 
 @Component({
   selector: "app-product-details",
@@ -62,8 +63,9 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
    */
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _inventoryService: InventoryService,
+    public _inventoryService: InventoryService,
     private _router: Router,
+    private _commonService: DashboardsService,
     private _fuseMediaWatcherService: FuseMediaWatcherService,
     private _snackBar: MatSnackBar,
     private _storeProductService: StoreProductService,
@@ -94,6 +96,11 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
     })
   }
   ngOnInit(): void {
+    this._inventoryService.adminUserPermissions = this._commonService.assignPermissions('product', this._inventoryService.adminUserPermissions);
+    this._inventoryService.productDescription = this._commonService.assignPermissions('productDescription', this._inventoryService.productDescription);
+    this._inventoryService.productImprint = this._commonService.assignPermissions('productImprint', this._inventoryService.productImprint);
+    this._inventoryService.productOption = this._commonService.assignPermissions('productOption', this._inventoryService.productOption);
+    this._inventoryService.storeProduct = this._commonService.assignPermissions('storeProduct', this._inventoryService.storeProduct);
     // Initialize Screen
     this._router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
@@ -123,7 +130,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
         const productId = res.id;
         this._inventoryService.product$
           .pipe(takeUntil(this._unsubscribeAll))
-          .subscribe((details:any) => {
+          .subscribe((details: any) => {
             if (details) {
               this.last_updated = details["data"][0]?.lastUpdatedDate
                 ? moment.utc(details["data"][0]?.lastUpdatedDate).format("lll")
@@ -296,7 +303,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   }
 
   checkImageExist() {
-    const {pk_storeProductID} =this.selectedProduct;
+    const { pk_storeProductID } = this.selectedProduct;
     const url = `https://assets.consolidus.com/globalAssets/Products/HiRes/${pk_storeProductID}.jpg`
     const img = new Image();
     img.src = url;

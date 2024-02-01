@@ -129,6 +129,10 @@ export class ReportsStoreSalesComponent implements OnInit, OnDestroy {
     }
   }
   generateReport(page) {
+    if (!this._reportService.reporter.viewStoreSalesReport) {
+      this._reportService.snackBar('You do not have permission to access this section.');
+      return;
+    }
     this.generateReportData = null;
     this.employeesReportData = null;
     this.lastYear_report_summary = null;

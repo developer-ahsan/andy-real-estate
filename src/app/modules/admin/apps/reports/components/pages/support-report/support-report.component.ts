@@ -63,7 +63,7 @@ export class ReportSupportComponent implements OnInit, OnDestroy {
   selectedRoles: any;
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _reportService: ReportsService
+    public _reportService: ReportsService
   ) { }
 
   ngOnInit(): void {
@@ -89,6 +89,10 @@ export class ReportSupportComponent implements OnInit, OnDestroy {
     });
   }
   generateReport() {
+    if (!this._reportService.reporter.viewSupportReport) {
+      this._reportService.snackBar('You do not have permission to access this section.');
+      return;
+    }
     if (!this.selectedRoles) {
       this._reportService.snackBar('Please select a support role.');
       return;

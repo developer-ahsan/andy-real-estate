@@ -14,6 +14,7 @@ import { FileManagerService } from "app/modules/admin/apps/file-manager/store-ma
 import moment from "moment";
 import { FuseMediaWatcherService } from "@fuse/services/media-watcher";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
+import { DashboardsService } from "app/modules/admin/dashboards/dashboard.service";
 
 @Component({
   selector: "file-manager-details",
@@ -54,6 +55,7 @@ export class StoresDetailsComponent implements OnInit, OnDestroy {
     private _fuseMediaWatcherService: FuseMediaWatcherService,
     private _storesManagerService: FileManagerService,
     private route: ActivatedRoute,
+    private _commonService: DashboardsService,
     private _router: Router
   ) { }
 
@@ -69,6 +71,7 @@ export class StoresDetailsComponent implements OnInit, OnDestroy {
     this.panel.close();
   }
   ngOnInit(): void {
+    this._storesManagerService.store = this._commonService.assignPermissions('store', this._storesManagerService.store);
     let storeId;
     this.route.params.subscribe(param => {
       storeId = param.id;
