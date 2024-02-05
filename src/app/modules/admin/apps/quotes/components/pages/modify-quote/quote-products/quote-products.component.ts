@@ -945,10 +945,13 @@ export class QuoteProductsComponent implements OnInit {
         blnOverrideRunSetup: imprints.blnOverrideRunSetup ? imprints.blnOverrideRunSetup : false
       })
     }
+    const { pk_cartID, storeID } = this.selectedQuoteDetail;
+
     let payload: updateImprints = {
       cartID: fk_cartID,
       cartLineID: pk_cartLineID,
       blnGroupRun,
+      storeID,
       productName: productName,
       loggedInUserID: user.pk_userID,
       imprints: selectedImprints,

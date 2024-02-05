@@ -853,15 +853,17 @@
                                         <td align="center"></td>
                                         <td align="center"><b>
                                                 <span *ngIf="orderDetail.discount">
-                                                    {{(-1 * this.orderDetail.discount) + (((this.orderDetail.totalPrice
-                                                    + (-1 * this.orderDetail.discount))-this.orderDetail.totalRoyalties)
-                                                    * this.orderDetail.salesTaxRate) | currency: 'USD':
-                                                    'symbol':'1.4-4'}}
-                                                </span>
-                                                <span *ngIf="!orderDetail.discount">{{((this.orderDetail.totalPrice -
+                                                    {{(((this.orderDetail.totalPrice+(-1*this.orderDetail.discount)) -
                                                     this.orderDetail.totalRoyalties) * this.orderDetail.salesTaxRate) |
                                                     currency: 'USD':
-                                                    'symbol':'1.4-4'}}</span></b></td>
+                                                    'symbol':'1.4-4'}}
+                                                </span>
+                                                <span *ngIf="!orderDetail.discount">
+                                                    {{((this.orderDetail.totalPrice-this.orderDetail.totalRoyalties) *
+                                                    this.orderDetail.salesTaxRate) |
+                                                    currency: 'USD':
+                                                    'symbol':'1.4-4'}}</span></b>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>ADJUSTMENTS</td>

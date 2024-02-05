@@ -156,6 +156,7 @@ export interface updateImprints {
     blnGroupRun: number;
     productName: string;
     loggedInUserID: number;
+    storeID: number;
     imprints: UpdateImprint[];
     update_modify_quote_imprint: boolean;
 };

@@ -639,14 +639,16 @@
 
                                         <tr>
                                             <td>
-                                                <select class="select1 wide form-control"
-                                                    [(ngModel)]="imprint.imprintID">
-                                                    <option [value]="imprint.imprintID">
-                                                        {{imprint.locationName}} / {{imprint.decorationName}}</option>
-                                                    <option [value]="item.pk_imprintID"
-                                                        *ngFor="let item of selectedCartLine.unselectedImprints">
-                                                        {{item.locationName}} / {{item.methodName}}</option>
-                                                </select>
+                                                <mat-form-field class="w-full">
+                                                    <mat-select [(ngModel)]="imprint.imprintID">
+                                                        <mat-option [value]="imprint.imprintID">
+                                                            {{imprint.locationName}} /
+                                                            {{imprint.decorationName}}</mat-option>
+                                                        <mat-option [value]="item.pk_imprintID"
+                                                            *ngFor="let item of selectedCartLine.unselectedImprints">
+                                                            {{item.locationName}} / {{item.methodName}}</mat-option>
+                                                    </mat-select>
+                                                </mat-form-field>
                                             </td>
 
                                             <td></td>
