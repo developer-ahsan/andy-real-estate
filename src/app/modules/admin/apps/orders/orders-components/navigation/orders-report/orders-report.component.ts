@@ -346,7 +346,6 @@ export class OrdersReportComponent implements OnInit {
         });
       });
     }
-
   }
   public exportHtmlToPDF() {
     this.isGeneratePDFLoader = true;
