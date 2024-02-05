@@ -672,7 +672,7 @@ export class QuoteProductsComponent implements OnInit {
             color_name: element.colorName,
             quantity: Number(element.quantity),
             size_id: Number(element.pk_sizeID),
-            size_name: size ? size[0].sizeName : '',
+            size_name: size ? size.sizeName : '',
             cart_line_option_run_cost: element.runCost,
             cart_line_option_run_price: element.runPrice,
             cart_line_option_setup_cost: element.setupCost,
