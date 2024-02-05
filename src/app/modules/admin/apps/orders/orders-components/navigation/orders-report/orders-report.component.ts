@@ -327,21 +327,23 @@ export class OrdersReportComponent implements OnInit {
       }, 200);
       this._changeDetectorRef.markForCheck();
     } else {
-      this._orderService.getGroupOrderOptions(this.orderDetail.pk_orderID, this.orderDetail.fk_storeID, email).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-        if (res) {
-          this.groupOrderOptions = res["qryParticipant"];
-          this.shippingData = res["strOrderLineShipping"];
-          this.qryInitiatorOptions = res["qryInitiator"];
-          this.getOrderProducts();
+      this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+        const orderLineIds = res["data"].map(element => element.pk_orderLineID);
+        this._orderService.getGroupOrderOptions(this.orderDetail.pk_orderID, this.orderDetail.fk_storeID, email, orderLineIds.toString()).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+          if (res) {
+            this.groupOrderOptions = res["qryParticipant"];
+            this.shippingData = res["strOrderLineShipping"];
+            this.qryInitiatorOptions = res["qryInitiator"];
+            this.getOrderProducts();
+            this.isGroupLoader = false;
+            this._changeDetectorRef.markForCheck();
+          }
+        }, err => {
           this.isGroupLoader = false;
+          this.isLoading = false;
+          this._orderService.snackBar('Something went wrong');
           this._changeDetectorRef.markForCheck();
-        }
-      }, err => {
-        this.isGroupLoader = false;
-        this.isLoading = false;
-        this._orderService.snackBar('Something went wrong');
-        this._changeDetectorRef.markForCheck();
-
+        });
       });
     }
 

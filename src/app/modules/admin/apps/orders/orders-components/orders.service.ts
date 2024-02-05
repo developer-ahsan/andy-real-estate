@@ -323,12 +323,13 @@ export class OrdersService {
         );
     }
     // Group Order Options 
-    getGroupOrderOptions(id, store_id, email) {
+    getGroupOrderOptions(id, store_id, email, order_line_id) {
         return this._httpClient.get(environment.orders, {
             params: {
                 group_orderline_options: true,
                 order_id: id,
                 bln_initiator: 1,
+                order_line_id,
                 email: email,
                 store_id: store_id
             }
