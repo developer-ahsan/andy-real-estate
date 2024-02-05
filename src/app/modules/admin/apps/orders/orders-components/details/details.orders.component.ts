@@ -148,6 +148,7 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
                     }
                 }
                 if (fk_groupOrderID) {
+                    this.getGroupOrderDetails(pk_orderID, fk_groupOrderID);
                     let index = this._orderService.navigationLabels[2].children.findIndex(item => item.title == 'Group Order Details');
                     if (index == -1) {
                         this._orderService.navigationLabels[2].children.push(
@@ -174,24 +175,25 @@ export class OrdersDetailsComponent implements OnInit, OnDestroy {
     getOrderStatus() {
         const { blnAdditionalArtApproval, blnProcurement, paymentDate, fk_groupOrderID, pk_orderID, gatewayTrxID } = this.selectedOrderDetail;
         this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-            const orderLineIds = res["data"].map(element => element.pk_orderLineID);
-
-            if (fk_groupOrderID && orderLineIds.length > 0) {
-                this.getGroupOrderDetails(pk_orderID, fk_groupOrderID, orderLineIds.join());
-            }
-
             this.selectedOrderDetail['OrderStatus'] = res["resultStatus"];
             this.isLoading = false;
             this._changeDetectorRef.markForCheck();
         });
     }
-    getGroupOrderDetails(pk_orderID, fk_groupOrderID, orderLineIds) {
+    getGroupOrderDetails(pk_orderID, fk_groupOrderID) {
+        this._orderService.orderProducts$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+            const orderLineIds = res["data"].map(element => element.pk_orderLineID);
+            if (fk_groupOrderID && orderLineIds.length > 0) {
+                this._orderService.getGroupOrderOptions(pk_orderID, this.selectedOrderDetail.fk_storeID, '', orderLineIds).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+                });
+            }
+            this._changeDetectorRef.markForCheck();
+        });
         this._orderService.getGroupOrderParticipants(fk_groupOrderID).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         });
         this._orderService.getGroupOrderDetails(pk_orderID).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
         });
-        this._orderService.getGroupOrderOptions(pk_orderID, this.selectedOrderDetail.fk_storeID, '', orderLineIds).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-        });
+
     }
     /**
      * On destroy
