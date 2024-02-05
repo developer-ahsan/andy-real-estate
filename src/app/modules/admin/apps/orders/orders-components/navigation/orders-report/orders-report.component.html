@@ -783,8 +783,9 @@
                                                     </td>
                                                 </tr>
                                             </ng-container>
-
-                                            <ng-container *ngIf="orderDetail.blnRoyaltyStore && orderDetail.blnRoyalty">
+                                            <!-- Royalties -->
+                                            <ng-container
+                                                *ngIf="orderDetail.blnRoyaltyStore && qryOrderLine.blnRoyalty">
                                                 <tr height="10">
                                                     <td colspan="6"></td>
                                                 </tr>
