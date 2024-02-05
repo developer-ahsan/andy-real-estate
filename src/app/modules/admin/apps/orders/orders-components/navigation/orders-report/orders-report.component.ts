@@ -132,7 +132,7 @@ export class OrdersReportComponent implements OnInit {
     orderLine.TotalShippingPrice = 0;
     const matchingShippings = this.shippingData.filter(item => item.fk_orderLineID === orderLine.pk_orderLineID);
     orderLine.shippingData.push(...matchingShippings);
-    shippingData.forEach(shipping => {
+    orderLine.shippingData.forEach(shipping => {
       orderLine.TotalShippingCost = shipping.shippingCost;
       orderLine.TotalShippingPrice = shipping.shippingPrice;
     });
