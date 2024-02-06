@@ -41,7 +41,7 @@ export class ApparelDecoratorComponent implements OnInit, OnDestroy {
   isPageLoading: boolean = false;
   isUpdateLoader: boolean = false;
   constructor(
-    private _storeManagerService: FileManagerService,
+    public _storeManagerService: FileManagerService,
     private _commonService: DashboardsService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar

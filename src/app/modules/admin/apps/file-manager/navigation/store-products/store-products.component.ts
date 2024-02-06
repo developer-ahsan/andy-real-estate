@@ -52,7 +52,7 @@ export class StoreProductsComponent implements OnInit, OnDestroy {
   vendorRelation = 0;
   hasVideo = 0;
   constructor(
-    private _storeManagerService: FileManagerService,
+    public _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar,
     private router: Router

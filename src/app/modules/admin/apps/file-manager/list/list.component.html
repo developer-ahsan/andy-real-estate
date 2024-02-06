@@ -1,491 +1,499 @@
 <div class="absolute inset-0 flex flex-col min-w-0 bg-card dark:bg-transparent overflow-y-auto">
   <!-- Header -->
-  <div class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-8 px-6 md:px-8 border-b">
-    <!-- Loader -->
-    <div class="absolute inset-x-0 bottom-1" *ngIf="isLoading">
-      <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
-    </div>
+  <div class="alert m-4 w-full alert-danger p-4 text-lg text-center font-bold"
+    *ngIf="!_fileManagerService.store.selectStore">
+    You do not have permission to access this section.
+  </div>
+  <ng-container *ngIf="_fileManagerService.store.selectStore">
+    <div
+      class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-8 px-6 md:px-8 border-b">
+      <!-- Loader -->
+      <div class="absolute inset-x-0 bottom-1" *ngIf="isLoading">
+        <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+      </div>
 
-    <div class="row w-full" *ngIf="!enableAddStoreForm">
-      <div class="col-10">
-        <!-- Title -->
-        <div class="text-4xl font-extrabold tracking-tight leading-none">Stores</div>
-        <div class="ml-0.5 font-medium text-secondary">
-          <span *ngIf="stores.length > 0">{{stores.length}} records found</span>
-          <span *ngIf="stores.length < 1">No records found</span>
+      <div class="row w-full" *ngIf="!enableAddStoreForm">
+        <div class="col-10">
+          <!-- Title -->
+          <div class="text-4xl font-extrabold tracking-tight leading-none">Stores</div>
+          <div class="ml-0.5 font-medium text-secondary">
+            <span *ngIf="stores.length > 0">{{stores.length}} records found</span>
+            <span *ngIf="stores.length < 1">No records found</span>
+          </div>
+        </div>
+        <div class="col-2">
+          <!-- Upload button -->
+          <button class="min-w-40 w-full" [disabled]="isLoading" mat-flat-button [matTooltip]="'Create New Store'"
+            (click)="toggleAddStoreFormEnable()" [color]="'primary'">
+            <mat-progress-spinner *ngIf="isLoading" [diameter]="24" [mode]="'indeterminate'">
+            </mat-progress-spinner>
+            <span class="ml-2 mr-1" *ngIf="!isLoading">Create Store</span>
+          </button>
         </div>
       </div>
-      <div class="col-2">
-        <!-- Upload button -->
-        <button class="min-w-40 w-full" [disabled]="isLoading" mat-flat-button [matTooltip]="'Create New Store'"
-          (click)="toggleAddStoreFormEnable()" [color]="'primary'">
-          <mat-progress-spinner *ngIf="isLoading" [diameter]="24" [mode]="'indeterminate'">
-          </mat-progress-spinner>
-          <span class="ml-2 mr-1" *ngIf="!isLoading">Create Store</span>
-        </button>
+
+      <div class="row w-full" *ngIf="enableAddStoreForm">
+        <div class="col-10">
+          <!-- Title -->
+          <div class="text-4xl font-extrabold tracking-tight">Create Store</div>
+        </div>
+        <div class="col-2">
+          <!-- Upload button -->
+          <button class="min-w-40 w-full" mat-flat-button [matTooltip]="'Back to stores'"
+            (click)="toggleAddStoreFormEnable()" [color]="'primary'">
+            <mat-icon [svgIcon]="'heroicons_outline:arrow-narrow-left'"></mat-icon>
+            <span class="ml-2 mr-1">Back</span>
+          </button>
+        </div>
       </div>
     </div>
 
-    <div class="row w-full" *ngIf="enableAddStoreForm">
-      <div class="col-10">
-        <!-- Title -->
-        <div class="text-4xl font-extrabold tracking-tight">Create Store</div>
-      </div>
-      <div class="col-2">
-        <!-- Upload button -->
-        <button class="min-w-40 w-full" mat-flat-button [matTooltip]="'Back to stores'"
-          (click)="toggleAddStoreFormEnable()" [color]="'primary'">
-          <mat-icon [svgIcon]="'heroicons_outline:arrow-narrow-left'"></mat-icon>
-          <span class="ml-2 mr-1">Back</span>
-        </button>
+    <div class="row mx-2" *ngIf="!enableAddStoreForm">
+      <div class="col-12 mb-3">
+        <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full mt-3">
+          <mat-label>Search Store</mat-label>
+          <mat-icon matPrefix [svgIcon]="'heroicons_outline:search'"></mat-icon>
+          <input class="h-6" matInput (input)="searchKeyword()" [(ngModel)]="ngSearch" [autocomplete]="'off'"
+            [placeholder]="'Search Store'" />
+        </mat-form-field>
       </div>
     </div>
-  </div>
 
-  <div class="row mx-2" *ngIf="!enableAddStoreForm">
-    <div class="col-12 mb-3">
-      <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full mt-3">
-        <mat-label>Search Store</mat-label>
-        <mat-icon matPrefix [svgIcon]="'heroicons_outline:search'"></mat-icon>
-        <input class="h-6" matInput (input)="searchKeyword()" [(ngModel)]="ngSearch" [autocomplete]="'off'"
-          [placeholder]="'Search Store'" />
-      </mat-form-field>
-    </div>
-  </div>
+    <div class="row mx-0 bg-card" *ngIf="!enableAddStoreForm">
+      <!-- <div class="col-12 font-semibold flex justify-end">
+        {{ stores.length }} Records Found
+      </div> -->
 
-  <div class="row mx-0 bg-card" *ngIf="!enableAddStoreForm">
-    <!-- <div class="col-12 font-semibold flex justify-end">
-      {{ stores.length }} Records Found
-    </div> -->
+      <!-- Main -->
+      <div class="flex flex-auto">
+        <!-- Products list -->
+        <div class="flex flex-col flex-auto sm:mb-18">
+          <ng-container *ngIf="stores.length > 0; else noStores">
+            <!-- Table wrapper -->
+            <div class="overflow-auto" cdkScrollable>
+              <!-- Table -->
+              <table class="w-full table-fixed bg-transparent" [ngClass]="{ 'pointer-events-none': isLoading }"
+                mat-table [multiTemplateDataRows]="true" [dataSource]="dataSource" matSort>
+                <!-- Position Column -->
+                <ng-container matColumnDef="pk_storeID">
+                  <th class="w-40 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef
+                    mat-sort-header disableClear>
+                    ID
+                  </th>
+                  <td mat-cell *matCellDef="let store">{{ store.pk_storeID }}</td>
+                </ng-container>
 
-    <!-- Main -->
-    <div class="flex flex-auto">
-      <!-- Products list -->
-      <div class="flex flex-col flex-auto sm:mb-18">
-        <ng-container *ngIf="stores.length > 0; else noStores">
-          <!-- Table wrapper -->
-          <div class="overflow-auto" cdkScrollable>
-            <!-- Table -->
-            <table class="w-full table-fixed bg-transparent" [ngClass]="{ 'pointer-events-none': isLoading }" mat-table
-              [multiTemplateDataRows]="true" [dataSource]="dataSource" matSort>
-              <!-- Position Column -->
-              <ng-container matColumnDef="pk_storeID">
-                <th class="w-40 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef
-                  mat-sort-header disableClear>
-                  ID
-                </th>
-                <td mat-cell *matCellDef="let store">{{ store.pk_storeID }}</td>
-              </ng-container>
+                <!-- Store Name Column -->
+                <ng-container matColumnDef="storeName">
+                  <th class="bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef
+                    mat-sort-header disableClear>
+                    Store
+                  </th>
+                  <td mat-cell *matCellDef="let store">{{ store.storeName }}</td>
+                </ng-container>
 
-              <!-- Store Name Column -->
-              <ng-container matColumnDef="storeName">
-                <th class="bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef mat-sort-header
-                  disableClear>
-                  Store
-                </th>
-                <td mat-cell *matCellDef="let store">{{ store.storeName }}</td>
-              </ng-container>
+                <tr class="shadow" mat-header-row *matHeaderRowDef="storeTableColumns; sticky: true"></tr>
+                <tr class="h-16 hover:bg-gray-100 dark:hover:bg-hover" mat-row matRipple
+                  *matRowDef="let store; columns: storeTableColumns" style="cursor: pointer"
+                  (click)="storeDetails(store)"></tr>
+              </table>
+            </div>
+          </ng-container>
 
-              <tr class="shadow" mat-header-row *matHeaderRowDef="storeTableColumns; sticky: true"></tr>
-              <tr class="h-16 hover:bg-gray-100 dark:hover:bg-hover" mat-row matRipple
-                *matRowDef="let store; columns: storeTableColumns" style="cursor: pointer"
-                (click)="storeDetails(store)"></tr>
-            </table>
-          </div>
-        </ng-container>
-
-        <ng-template #noStores>
-          <div class="p-8 sm:p-16 border-t text-4xl font-semibold tracking-tight text-center">
-            No stores found
-          </div>
-        </ng-template>
+          <ng-template #noStores>
+            <div class="p-8 sm:p-16 border-t text-4xl font-semibold tracking-tight text-center">
+              No stores found
+            </div>
+          </ng-template>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="row mx-0 p-10 bg-light h-auto" *ngIf="enableAddStoreForm">
-    <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
-      <!-- Select a store -->
-      <div class="text-2xl font-extrabold tracking-tight leading-none">
-        Add a new store
-      </div>
-      <div>
-        <mat-stepper [linear]="true" #stepper>
-          <mat-step [stepControl]="createStoreForm">
-            <ng-template matStepLabel>Create a new store</ng-template>
-            <form [formGroup]="createStoreForm">
-              <div class="row my-3">
-                <div class="col-lg-6 col-12">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Store Name *</mat-label>
-                    <input formControlName="storeName" matInput />
-                    <mat-error *ngIf="cs.storeName.hasError('required')">
-                      Store Name is required
-                    </mat-error>
-                  </mat-form-field>
-                </div>
-                <div class="col-lg-6 col-12">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Code(6) *</mat-label>
-                    <input formControlName="storeCode" matInput />
-                    <mat-error *ngIf="cs.storeCode.hasError('required')">
-                      Store Code is required
-                    </mat-error>
-                  </mat-form-field>
-                </div>
-                <div class="col-lg-6 col-12">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Business Name</mat-label>
-                    <input formControlName="businessName" matInput />
-                  </mat-form-field>
-                </div>
-                <div class="col-lg-6 col-12">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Root URL *</mat-label>
-                    <input formControlName="storeURL" matInput />
-                    <mat-error *ngIf="cs.storeURL.hasError('required')">
-                      Root URL is required
-                    </mat-error>
-                  </mat-form-field>
-                </div>
+    <div class="row mx-0 p-10 bg-light h-auto" *ngIf="enableAddStoreForm">
+      <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
+        <!-- Select a store -->
+        <div class="text-2xl font-extrabold tracking-tight leading-none">
+          Add a new store
+        </div>
+        <div>
+          <mat-stepper [linear]="true" #stepper>
+            <mat-step [stepControl]="createStoreForm">
+              <ng-template matStepLabel>Create a new store</ng-template>
+              <form [formGroup]="createStoreForm">
+                <div class="row my-3">
+                  <div class="col-lg-6 col-12">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Store Name *</mat-label>
+                      <input formControlName="storeName" matInput />
+                      <mat-error *ngIf="cs.storeName.hasError('required')">
+                        Store Name is required
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-lg-6 col-12">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Code(6) *</mat-label>
+                      <input formControlName="storeCode" matInput />
+                      <mat-error *ngIf="cs.storeCode.hasError('required')">
+                        Store Code is required
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-lg-6 col-12">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Business Name</mat-label>
+                      <input formControlName="businessName" matInput />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-lg-6 col-12">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Root URL *</mat-label>
+                      <input formControlName="storeURL" matInput />
+                      <mat-error *ngIf="cs.storeURL.hasError('required')">
+                        Root URL is required
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
 
-                <div class="col-lg-4 col-md-6 col-12">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Margin 1 *</mat-label>
-                    <span matSuffix>%</span>
-                    <input type="number" formControlName="margin1" matInput />
-                  </mat-form-field>
-                </div>
-                <div class="col-lg-4 col-md-6 col-12">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Margin 2 *</mat-label>
-                    <input type="number" formControlName="margin2" matInput />
-                    <span matSuffix>%</span>
-                  </mat-form-field>
-                </div>
-                <div class="col-lg-4 col-md-6 col-12">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Margin 3 *</mat-label>
-                    <input type="number" formControlName="margin3" matInput />
-                    <span matSuffix>%</span>
-                  </mat-form-field>
-                </div>
-                <div class="col-lg-4 col-md-6 col-12">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Margin 4 *</mat-label>
-                    <input type="number" formControlName="margin4" matInput />
-                    <span matSuffix>%</span>
-                  </mat-form-field>
-                </div>
-                <div class="col-lg-4 col-md-6 col-12">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Margin 5 *</mat-label>
-                    <input type="number" formControlName="margin5" matInput />
-                    <span matSuffix>%</span>
-                  </mat-form-field>
-                </div>
-                <div class="col-lg-4 col-md-6 col-12">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Margin 6 *</mat-label>
-                    <input type="number" formControlName="margin6" matInput />
-                    <span matSuffix>%</span>
-                  </mat-form-field>
-                </div>
+                  <div class="col-lg-4 col-md-6 col-12">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Margin 1 *</mat-label>
+                      <span matSuffix>%</span>
+                      <input type="number" formControlName="margin1" matInput />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-lg-4 col-md-6 col-12">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Margin 2 *</mat-label>
+                      <input type="number" formControlName="margin2" matInput />
+                      <span matSuffix>%</span>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-lg-4 col-md-6 col-12">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Margin 3 *</mat-label>
+                      <input type="number" formControlName="margin3" matInput />
+                      <span matSuffix>%</span>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-lg-4 col-md-6 col-12">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Margin 4 *</mat-label>
+                      <input type="number" formControlName="margin4" matInput />
+                      <span matSuffix>%</span>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-lg-4 col-md-6 col-12">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Margin 5 *</mat-label>
+                      <input type="number" formControlName="margin5" matInput />
+                      <span matSuffix>%</span>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-lg-4 col-md-6 col-12">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Margin 6 *</mat-label>
+                      <input type="number" formControlName="margin6" matInput />
+                      <span matSuffix>%</span>
+                    </mat-form-field>
+                  </div>
 
-                <div class="col-12 col-lg-6">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Program Director (50) *</mat-label>
-                    <input formControlName="championName" matInput />
-                    <mat-error *ngIf="cs.championName.hasError('required')">
-                      Program Director is required
-                    </mat-error>
-                  </mat-form-field>
-                </div>
-                <div class="col-12 col-lg-6">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Handling Charge</mat-label>
-                    <input formControlName="storeHandling" type="number" matInput />
-                  </mat-form-field>
-                </div>
-                <div class="col-lg-6 col-12">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>SightMax Site ID</mat-label>
-                    <input formControlName="siteMaxSiteID" type="number" matInput />
-                  </mat-form-field>
-                </div>
+                  <div class="col-12 col-lg-6">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Program Director (50) *</mat-label>
+                      <input formControlName="championName" matInput />
+                      <mat-error *ngIf="cs.championName.hasError('required')">
+                        Program Director is required
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-12 col-lg-6">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Handling Charge</mat-label>
+                      <input formControlName="storeHandling" type="number" matInput />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-lg-6 col-12">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>SightMax Site ID</mat-label>
+                      <input formControlName="siteMaxSiteID" type="number" matInput />
+                    </mat-form-field>
+                  </div>
 
-                <div class="col-lg-6 col-12">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>SightMax Queue ID</mat-label>
-                    <input formControlName="siteMaxQueueID" type="number" matInput />
-                  </mat-form-field>
-                </div>
-                <div class="col-12">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Tag Line (150)</mat-label>
-                    <input formControlName="tagLine" matInput />
-                  </mat-form-field>
-                </div>
-                <div class="col-12">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Google Analytics ID (15)</mat-label>
-                    <input formControlName="googleAnalyticsID" matInput />
-                  </mat-form-field>
-                </div>
-
-
-                <div class="col-12">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Browser Title (180)</mat-label>
-                    <input formControlName="browserTitle" matInput />
-                  </mat-form-field>
-                </div>
-
-                <div class="col-12">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Main Description</mat-label>
-                    <textarea formControlName="metaDesc" rows="5" matInput> </textarea>
-                  </mat-form-field>
-                </div>
-
-                <div class="col-12">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Meta Keywords (300)</mat-label>
-                    <input formControlName="metaKeywords" matInput />
-                  </mat-form-field>
-                </div>
+                  <div class="col-lg-6 col-12">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>SightMax Queue ID</mat-label>
+                      <input formControlName="siteMaxQueueID" type="number" matInput />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-12">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Tag Line (150)</mat-label>
+                      <input formControlName="tagLine" matInput />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-12">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Google Analytics ID (15)</mat-label>
+                      <input formControlName="googleAnalyticsID" matInput />
+                    </mat-form-field>
+                  </div>
 
 
-                <div class="col-12 col-lg-6">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Report Color (Hex Value)</mat-label>
-                    <input type="color" formControlName="reportColor" matInput value="#000000" />
-                  </mat-form-field>
-                </div>
+                  <div class="col-12">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Browser Title (180)</mat-label>
+                      <input formControlName="browserTitle" matInput />
+                    </mat-form-field>
+                  </div>
 
-                <!-- Select fields -->
-                <!-- Protocol -->
-                <div class="col-12  col-lg-6">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Protocol</mat-label>
-                    <mat-select formControlName="protocol">
-                      <mat-option value="Http">HTTP</mat-option>
-                      <mat-option value="Https">HTTPS</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                </div>
+                  <div class="col-12">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Main Description</mat-label>
+                      <textarea formControlName="metaDesc" rows="5" matInput> </textarea>
+                    </mat-form-field>
+                  </div>
 
-                <div class="col-6">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Include Shipping</mat-label>
-                    <mat-select formControlName="blnShipping">
-                      <mat-option [value]="true">Yes</mat-option>
-                      <mat-option [value]="false">No</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                </div>
-                <div class="col-6">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>SciQuest Enabled</mat-label>
-                    <mat-select formControlName="blnEProcurement">
-                      <mat-option [value]="true">Yes</mat-option>
-                      <mat-option [value]="false">No</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                </div>
-                <div class="col-12 text-right">
-                  <!-- <button mat-button mat-flat-button mat-stroked-button matStepperPrevious>Back</button> -->
-                  <button class="min-w-40" [matTooltip]="'Save & Continue'" mat-button mat-flat-button
-                    mat-stroked-button (click)="createStore()" [disabled]="createStoreLoader">
-                    <mat-progress-spinner *ngIf="createStoreLoader" [diameter]="24" [mode]="'indeterminate'">
-                    </mat-progress-spinner>
-                    <span *ngIf="!createStoreLoader">Save & Continue</span>
-                  </button>
-                </div>
-              </div>
-            </form>
-          </mat-step>
-          <!-- Settings Step -->
-          <mat-step [stepControl]="settingStoreForm" label="Store Settings">
-            <form [formGroup]="settingStoreForm">
-              <div class="row my-3">
-                <div class="col-12">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Custom Registration Text</mat-label>
-                    <textarea formControlName="googleTag" matInput> </textarea>
-                  </mat-form-field>
-                </div>
-                <div class="col-12">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Google Tag (200)</mat-label>
-                    <input formControlName="googleTag" matInput />
-                  </mat-form-field>
-                </div>
-                <div class="col-12">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Bing Tag (200)</mat-label>
-                    <input formControlName="bingTag" matInput />
-                  </mat-form-field>
-                </div>
-                <div class="col-6">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Cost Center Codes</mat-label>
-                    <mat-select formControlName="blnCostCenterCodes">
-                      <mat-option [value]="true">Yes</mat-option>
-                      <mat-option [value]="false">No</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                </div>
-                <div class="col-6">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Registration Welcome Email</mat-label>
-                    <mat-select formControlName="blnWelcomeEmail">
-                      <mat-option [value]="true">Yes</mat-option>
-                      <mat-option [value]="false">No</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                </div>
-                <div class="col-6">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Require Location</mat-label>
-                    <mat-select formControlName="blnRequireLocation">
-                      <mat-option [value]="true">Yes</mat-option>
-                      <mat-option [value]="false">No</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                </div>
-                <div class="col-6">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Require Account Code</mat-label>
-                    <mat-select formControlName="blnRequireAccountCode">
-                      <mat-option [value]="true">Yes</mat-option>
-                      <mat-option [value]="false">No</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                </div>
-                <div class="col-6">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Show product members in URL</mat-label>
-                    <mat-select formControlName="blnProductNumbers">
-                      <mat-option [value]="true">Yes</mat-option>
-                      <mat-option [value]="false">No</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                </div>
-                <div class="col-6">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>PDF Invoices</mat-label>
-                    <mat-select formControlName="blnPDFInvoice">
-                      <mat-option [value]="true">Yes</mat-option>
-                      <mat-option [value]="false">No</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                </div>
-                <div class="col-6">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>PDF Shipping notifications</mat-label>
-                    <mat-select formControlName="blnPDFShippingNotifications">
-                      <mat-option [value]="true">Yes</mat-option>
-                      <mat-option [value]="false">No</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                </div>
+                  <div class="col-12">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Meta Keywords (300)</mat-label>
+                      <input formControlName="metaKeywords" matInput />
+                    </mat-form-field>
+                  </div>
 
-                <div class="col-6">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Include store logo bank</mat-label>
-                    <mat-select formControlName="blnLogoBank">
-                      <mat-option [value]="true">Yes</mat-option>
-                      <mat-option [value]="false">No</mat-option>
-                    </mat-select>
-                  </mat-form-field>
+
+                  <div class="col-12 col-lg-6">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Report Color (Hex Value)</mat-label>
+                      <input type="color" formControlName="reportColor" matInput value="#000000" />
+                    </mat-form-field>
+                  </div>
+
+                  <!-- Select fields -->
+                  <!-- Protocol -->
+                  <div class="col-12  col-lg-6">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Protocol</mat-label>
+                      <mat-select formControlName="protocol">
+                        <mat-option value="Http">HTTP</mat-option>
+                        <mat-option value="Https">HTTPS</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+
+                  <div class="col-6">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Include Shipping</mat-label>
+                      <mat-select formControlName="blnShipping">
+                        <mat-option [value]="true">Yes</mat-option>
+                        <mat-option [value]="false">No</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-6">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>SciQuest Enabled</mat-label>
+                      <mat-select formControlName="blnEProcurement">
+                        <mat-option [value]="true">Yes</mat-option>
+                        <mat-option [value]="false">No</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-12 text-right">
+                    <!-- <button mat-button mat-flat-button mat-stroked-button matStepperPrevious>Back</button> -->
+                    <button class="min-w-40" [matTooltip]="'Save & Continue'" mat-button mat-flat-button
+                      mat-stroked-button (click)="createStore()" [disabled]="createStoreLoader">
+                      <mat-progress-spinner *ngIf="createStoreLoader" [diameter]="24" [mode]="'indeterminate'">
+                      </mat-progress-spinner>
+                      <span *ngIf="!createStoreLoader">Save & Continue</span>
+                    </button>
+                  </div>
                 </div>
-                <div class="col-6">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Include customer logo bank</mat-label>
-                    <mat-select formControlName="blnCustomerLogoBank">
-                      <mat-option [value]="true">Yes</mat-option>
-                      <mat-option [value]="false">No</mat-option>
-                    </mat-select>
-                  </mat-form-field>
+              </form>
+            </mat-step>
+            <!-- Settings Step -->
+            <mat-step [stepControl]="settingStoreForm" label="Store Settings">
+              <form [formGroup]="settingStoreForm">
+                <div class="row my-3">
+                  <div class="col-12">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Custom Registration Text</mat-label>
+                      <textarea formControlName="googleTag" matInput> </textarea>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-12">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Google Tag (200)</mat-label>
+                      <input formControlName="googleTag" matInput />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-12">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Bing Tag (200)</mat-label>
+                      <input formControlName="bingTag" matInput />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-6">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Cost Center Codes</mat-label>
+                      <mat-select formControlName="blnCostCenterCodes">
+                        <mat-option [value]="true">Yes</mat-option>
+                        <mat-option [value]="false">No</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-6">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Registration Welcome Email</mat-label>
+                      <mat-select formControlName="blnWelcomeEmail">
+                        <mat-option [value]="true">Yes</mat-option>
+                        <mat-option [value]="false">No</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-6">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Require Location</mat-label>
+                      <mat-select formControlName="blnRequireLocation">
+                        <mat-option [value]="true">Yes</mat-option>
+                        <mat-option [value]="false">No</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-6">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Require Account Code</mat-label>
+                      <mat-select formControlName="blnRequireAccountCode">
+                        <mat-option [value]="true">Yes</mat-option>
+                        <mat-option [value]="false">No</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-6">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Show product members in URL</mat-label>
+                      <mat-select formControlName="blnProductNumbers">
+                        <mat-option [value]="true">Yes</mat-option>
+                        <mat-option [value]="false">No</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-6">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>PDF Invoices</mat-label>
+                      <mat-select formControlName="blnPDFInvoice">
+                        <mat-option [value]="true">Yes</mat-option>
+                        <mat-option [value]="false">No</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-6">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>PDF Shipping notifications</mat-label>
+                      <mat-select formControlName="blnPDFShippingNotifications">
+                        <mat-option [value]="true">Yes</mat-option>
+                        <mat-option [value]="false">No</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+
+                  <div class="col-6">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Include store logo bank</mat-label>
+                      <mat-select formControlName="blnLogoBank">
+                        <mat-option [value]="true">Yes</mat-option>
+                        <mat-option [value]="false">No</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-6">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Include customer logo bank</mat-label>
+                      <mat-select formControlName="blnCustomerLogoBank">
+                        <mat-option [value]="true">Yes</mat-option>
+                        <mat-option [value]="false">No</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-6">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Declining program notifications</mat-label>
+                      <mat-select formControlName="blnDecliningProgramNotifications">
+                        <mat-option [value]="true">Yes</mat-option>
+                        <mat-option [value]="false">No</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-6">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Referral at Checkout</mat-label>
+                      <mat-select formControlName="blnCheckoutReferral">
+                        <mat-option [value]="true">Yes</mat-option>
+                        <mat-option [value]="false">No</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-6">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Use expanded product search</mat-label>
+                      <mat-select formControlName="blnExpandedProductSearch">
+                        <mat-option [value]="true">Yes</mat-option>
+                        <mat-option [value]="false">No</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-6">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Use quote help/assistance</mat-label>
+                      <mat-select formControlName="blnQuoteHelp">
+                        <mat-option [value]="true">Yes</mat-option>
+                        <mat-option [value]="false">No</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-6">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Include exit survey</mat-label>
+                      <mat-select formControlName="blnExitSurvey">
+                        <mat-option [value]="true">Yes</mat-option>
+                        <mat-option [value]="false">No</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-6">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Allow SmartArt quotes</mat-label>
+                      <mat-select formControlName="blnSmartArtQuotes">
+                        <mat-option [value]="true">Yes</mat-option>
+                        <mat-option [value]="false">No</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-6">
+                    <mat-form-field appearance="fill" class="w-full">
+                      <mat-label>Include in internal sales report</mat-label>
+                      <mat-select formControlName="blnSalesReport">
+                        <mat-option [value]="true">Yes</mat-option>
+                        <mat-option [value]="false">No</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-12 text-right">
+                    <!-- <button mat-button mat-flat-button mat-stroked-button matStepperPrevious>Back</button> -->
+                    <button class="min-w-40" [matTooltip]="'Create Store'" mat-button mat-flat-button mat-stroked-button
+                      (click)="createStoreSettings()" [disabled]="settingStoreLoader">
+                      <mat-progress-spinner *ngIf="settingStoreLoader" [diameter]="24" [mode]="'indeterminate'">
+                      </mat-progress-spinner>
+                      <span *ngIf="!settingStoreLoader"> Create Store</span>
+                    </button>
+                  </div>
                 </div>
-                <div class="col-6">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Declining program notifications</mat-label>
-                    <mat-select formControlName="blnDecliningProgramNotifications">
-                      <mat-option [value]="true">Yes</mat-option>
-                      <mat-option [value]="false">No</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                </div>
-                <div class="col-6">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Referral at Checkout</mat-label>
-                    <mat-select formControlName="blnCheckoutReferral">
-                      <mat-option [value]="true">Yes</mat-option>
-                      <mat-option [value]="false">No</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                </div>
-                <div class="col-6">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Use expanded product search</mat-label>
-                    <mat-select formControlName="blnExpandedProductSearch">
-                      <mat-option [value]="true">Yes</mat-option>
-                      <mat-option [value]="false">No</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                </div>
-                <div class="col-6">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Use quote help/assistance</mat-label>
-                    <mat-select formControlName="blnQuoteHelp">
-                      <mat-option [value]="true">Yes</mat-option>
-                      <mat-option [value]="false">No</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                </div>
-                <div class="col-6">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Include exit survey</mat-label>
-                    <mat-select formControlName="blnExitSurvey">
-                      <mat-option [value]="true">Yes</mat-option>
-                      <mat-option [value]="false">No</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                </div>
-                <div class="col-6">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Allow SmartArt quotes</mat-label>
-                    <mat-select formControlName="blnSmartArtQuotes">
-                      <mat-option [value]="true">Yes</mat-option>
-                      <mat-option [value]="false">No</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                </div>
-                <div class="col-6">
-                  <mat-form-field appearance="fill" class="w-full">
-                    <mat-label>Include in internal sales report</mat-label>
-                    <mat-select formControlName="blnSalesReport">
-                      <mat-option [value]="true">Yes</mat-option>
-                      <mat-option [value]="false">No</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                </div>
-                <div class="col-12 text-right">
-                  <!-- <button mat-button mat-flat-button mat-stroked-button matStepperPrevious>Back</button> -->
-                  <button class="min-w-40" [matTooltip]="'Create Store'" mat-button mat-flat-button mat-stroked-button
-                    (click)="createStoreSettings()" [disabled]="settingStoreLoader">
-                    <mat-progress-spinner *ngIf="settingStoreLoader" [diameter]="24" [mode]="'indeterminate'">
-                    </mat-progress-spinner>
-                    <span *ngIf="!settingStoreLoader"> Create Store</span>
-                  </button>
-                </div>
-              </div>
-            </form>
-          </mat-step>
-        </mat-stepper>
+              </form>
+            </mat-step>
+          </mat-stepper>
+        </div>
       </div>
     </div>
-  </div>
+  </ng-container>
+
 </div>

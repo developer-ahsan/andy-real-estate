@@ -15,7 +15,7 @@ export class ResetTopTenComponent implements OnInit, OnDestroy {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   updateLoader: boolean = false;
   constructor(
-    private _storeManagerService: FileManagerService,
+    public _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _commonService: DashboardsService
   ) { }

@@ -73,7 +73,7 @@ export class StoresListComponent implements OnInit, OnDestroy {
         private _activatedRoute: ActivatedRoute,
         private _changeDetectorRef: ChangeDetectorRef,
         private _router: Router,
-        private _fileManagerService: FileManagerService,
+        public _fileManagerService: FileManagerService,
         private _commonService: DashboardsService,
         private _fuseMediaWatcherService: FuseMediaWatcherService,
         private _formBuilder: FormBuilder

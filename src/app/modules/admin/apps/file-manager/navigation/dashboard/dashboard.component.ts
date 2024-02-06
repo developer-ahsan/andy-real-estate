@@ -127,12 +127,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ];
 
   constructor(
-    private _fileManagerService: FileManagerService,
+    public _fileManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private currencyPipe: CurrencyPipe
   ) {
-    
-this.setChartOptions();
+
+    this.setChartOptions();
     this.chartOptionsBar = {
       series: [],
       chart: {

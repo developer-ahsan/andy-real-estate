@@ -33,7 +33,7 @@ export class RapidbuildActionsComponent implements OnInit, OnDestroy {
   finalProducts: any;
   totalRecords = 0;
   constructor(
-    private _storeManagerService: FileManagerService,
+    public _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _customerService: CustomersService,
     private router: Router,

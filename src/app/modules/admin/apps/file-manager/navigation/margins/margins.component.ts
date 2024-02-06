@@ -23,7 +23,7 @@ export class MarginsComponent implements OnInit, OnDestroy {
   dataSourceLoading = false;
   page: number = 1;
 
-  updateMarginLoader : boolean = false;
+  updateMarginLoader: boolean = false;
   @ViewChild('changeProfile') changeProfile: ElementRef;
 
 
@@ -72,7 +72,7 @@ export class MarginsComponent implements OnInit, OnDestroy {
   marginProdPage = 1;
   marginLoadMore: boolean = false;
   constructor(
-    private _storesManagerService: FileManagerService,
+    public _storesManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar
   ) { }
@@ -557,7 +557,7 @@ export class MarginsComponent implements OnInit, OnDestroy {
                 });
                 this.updateMarginLoader = false;
                 this._changeDetectorRef.markForCheck();
-                
+
 
               },
               (error: any) => {

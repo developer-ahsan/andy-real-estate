@@ -23,7 +23,7 @@ export class ShippingNotificaitonComponent implements OnInit, OnDestroy {
   toastMessage: any = '';
 
   constructor(
-    private _storeManagerService: FileManagerService,
+    public _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _formBuilder: FormBuilder,
     private _snackBar: MatSnackBar

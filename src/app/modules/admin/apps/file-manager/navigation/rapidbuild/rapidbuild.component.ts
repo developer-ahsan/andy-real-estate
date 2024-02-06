@@ -59,7 +59,7 @@ export class RapidbuildComponent implements OnInit, OnDestroy {
 
   imprintData: any;
   constructor(
-    private _storeManagerService: FileManagerService,
+    public _storeManagerService: FileManagerService,
     private _storeService: StoreProductService,
     private _rapidBuildService: RapidBuildService,
     private _changeDetectorRef: ChangeDetectorRef,

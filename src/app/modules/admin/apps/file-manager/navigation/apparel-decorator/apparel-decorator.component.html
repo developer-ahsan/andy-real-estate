@@ -1,53 +1,59 @@
-<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isPageLoading"></ngx-skeleton-loader>
-<div *ngIf="!isPageLoading">
-  <fuse-card class="rounded-2xl shadow bg-card flex">
-    <div class="row" style="width: -webkit-fill-available;">
-      <div class="col-12">
-        <div class="p-6 sm:p-8 lg:p-10 w-full">
-          <div class="row">
-            <div class="col-lg-6 col-12 pb-6 sm:pb-8 lg:pb-8">
-              <div class="text-2xl font-bold">
-                Store Apparel Decorator
+<div class="alert m-4 w-full alert-danger p-4 text-lg text-center font-bold"
+  *ngIf="!_storeManagerService.store.viewStoreApparelDecorator">
+  You do not have permission to access this section.
+</div>
+<ng-container *ngIf="_storeManagerService.store.viewStoreApparelDecorator">
+  <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isPageLoading"></ngx-skeleton-loader>
+  <div *ngIf="!isPageLoading">
+    <fuse-card class="rounded-2xl shadow bg-card flex">
+      <div class="row" style="width: -webkit-fill-available;">
+        <div class="col-12">
+          <div class="p-6 sm:p-8 lg:p-10 w-full">
+            <div class="row">
+              <div class="col-lg-6 col-12 pb-6 sm:pb-8 lg:pb-8">
+                <div class="text-2xl font-bold">
+                  Store Apparel Decorator
+                </div>
               </div>
-            </div>
-            <div class="col-12">
-              <note class="text-gray-600">This tool will set the decorator for all apparel items on
-                {{selectedStore.storeName}} to whatever decorator you select below.<br />
-                Please note that this tool <b>only affects the Store Product Level imprint settings, which override
-                  the
-                  Master Product Level imprint settings</b>. You can always override the imprint settings for
-                individual
-                products at the Store Product level under the Imprint settings for that product.</note>
-            </div>
-            <div class="col-12 pt-5">
-              <form>
-                <div class="row">
-                  <div class="col-12 pb-5">
-                    <!-- <mat-form-field class="w-full">
+              <div class="col-12">
+                <note class="text-gray-600">This tool will set the decorator for all apparel items on
+                  {{selectedStore.storeName}} to whatever decorator you select below.<br />
+                  Please note that this tool <b>only affects the Store Product Level imprint settings, which override
+                    the
+                    Master Product Level imprint settings</b>. You can always override the imprint settings for
+                  individual
+                  products at the Store Product level under the Imprint settings for that product.</note>
+              </div>
+              <div class="col-12 pt-5">
+                <form>
+                  <div class="row">
+                    <div class="col-12 pb-5">
+                      <!-- <mat-form-field class="w-full">
                       <mat-label>Select Decorator</mat-label>
                       <mat-select matInput [(ngModel)]="selectedItems">
                         <mat-option *ngFor="let decorato of dropdownList"
                           [value]="decorato.pk_companyID">{{decorato.companyName}}</mat-option>
                       </mat-select>
                     </mat-form-field> -->
-                    <ng-multiselect-dropdown [placeholder]="'Select Supplier'" [settings]="dropdownSettings"
-                      [data]="dropdownList" (onSelect)="onItemSelect($event)">
-                    </ng-multiselect-dropdown>
+                      <ng-multiselect-dropdown [placeholder]="'Select Supplier'" [settings]="dropdownSettings"
+                        [data]="dropdownList" (onSelect)="onItemSelect($event)">
+                      </ng-multiselect-dropdown>
+                    </div>
+                    <div class="col-12 col-md-12 flex justify-end">
+                      <button class="min-w-40" mat-stroked-button (click)="saveChanges()" [disabled]="isUpdateLoader">
+                        <mat-progress-spinner *ngIf="isUpdateLoader" [diameter]="24" [mode]="'indeterminate'">
+                        </mat-progress-spinner>
+                        <mat-icon *ngIf="!isUpdateLoader" svgIcon="mode_edit_outline"></mat-icon>
+                        <span *ngIf="!isUpdateLoader" class="ml-1 mr-1">Save Changes</span>
+                      </button>
+                    </div>
                   </div>
-                  <div class="col-12 col-md-12 flex justify-end">
-                    <button class="min-w-40" mat-stroked-button (click)="saveChanges()" [disabled]="isUpdateLoader">
-                      <mat-progress-spinner *ngIf="isUpdateLoader" [diameter]="24" [mode]="'indeterminate'">
-                      </mat-progress-spinner>
-                      <mat-icon *ngIf="!isUpdateLoader" svgIcon="mode_edit_outline"></mat-icon>
-                      <span *ngIf="!isUpdateLoader" class="ml-1 mr-1">Save Changes</span>
-                    </button>
-                  </div>
-                </div>
-              </form>
+                </form>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </fuse-card>
-</div>
+    </fuse-card>
+  </div>
+</ng-container>

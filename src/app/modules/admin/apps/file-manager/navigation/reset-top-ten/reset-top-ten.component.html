@@ -1,45 +1,53 @@
-<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
-</ngx-skeleton-loader>
-<div class="row" *ngIf="!isLoading">
-    <div class="col-12 my-2">
-        <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
-            <div class="p-6 sm:p-8 lg:p-10 w-full">
-                <div class="text-2xl font-bold">
-                    Reset Top Ten
-                </div>
-
-                <div class="row my-2">
-                    <div class="col-12 alert alert-warning">
-                        <span class="text-secondary font-semibold">
-                            WARNING: This action cannot be undone. The top ten file will be deleted and the count will
-                            be restarted. 10 random products will be selected from the store until there are at least 10
-                            product clicks for the top ten list.
-                        </span>
-                    </div>
-                </div>
-
-                <div class="flex items-center justify-end w-full">
-                    <div class="flex items-center my-2">
-                        <div class="flex items-center mr-4" *ngIf="flashMessage">
-                            <ng-container *ngIf="flashMessage === 'success'">
-                                <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
-                                </mat-icon>
-                                <span class="ml-2">Top ten list resetted successfully</span>
-                            </ng-container>
-                            <ng-container *ngIf="flashMessage === 'error'">
-                                <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
-                                <span class="ml-2">An error occurred, try again!</span>
-                            </ng-container>
-                        </div>
-                        <button class="min-w-40" mat-stroked-button [matTooltip]="'Reset Top Ten'" (click)="reset()"
-                            [disabled]="updateLoader">
-                            <mat-progress-spinner *ngIf="updateLoader" [diameter]="24" [mode]="'indeterminate'">
-                            </mat-progress-spinner>
-                            <span *ngIf="!updateLoader" class="ml-1 mr-1">Reset Top Ten</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </fuse-card>
-    </div>
+<div class="alert m-4 w-full alert-danger p-4 text-lg text-center font-bold"
+    *ngIf="!_storeManagerService.store.viewResetTopTen">
+    You do not have permission to access this section.
 </div>
+<ng-container *ngIf="_storeManagerService.store.viewResetTopTen">
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+    </ngx-skeleton-loader>
+    <div class="row" *ngIf="!isLoading">
+        <div class="col-12 my-2">
+            <fuse-card class="rounded-2xl shadow bg-card flex flex-col lg:flex-row w-full">
+                <div class="p-6 sm:p-8 lg:p-10 w-full">
+                    <div class="text-2xl font-bold">
+                        Reset Top Ten
+                    </div>
+
+                    <div class="row my-2">
+                        <div class="col-12 alert alert-warning">
+                            <span class="text-secondary font-semibold">
+                                WARNING: This action cannot be undone. The top ten file will be deleted and the count
+                                will
+                                be restarted. 10 random products will be selected from the store until there are at
+                                least 10
+                                product clicks for the top ten list.
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-end w-full">
+                        <div class="flex items-center my-2">
+                            <div class="flex items-center mr-4" *ngIf="flashMessage">
+                                <ng-container *ngIf="flashMessage === 'success'">
+                                    <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
+                                    </mat-icon>
+                                    <span class="ml-2">Top ten list resetted successfully</span>
+                                </ng-container>
+                                <ng-container *ngIf="flashMessage === 'error'">
+                                    <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                    <span class="ml-2">An error occurred, try again!</span>
+                                </ng-container>
+                            </div>
+                            <button class="min-w-40" mat-stroked-button [matTooltip]="'Reset Top Ten'" (click)="reset()"
+                                [disabled]="updateLoader">
+                                <mat-progress-spinner *ngIf="updateLoader" [diameter]="24" [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                                <span *ngIf="!updateLoader" class="ml-1 mr-1">Reset Top Ten</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </fuse-card>
+        </div>
+    </div>
+</ng-container>

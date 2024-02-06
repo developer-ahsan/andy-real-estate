@@ -1,312 +1,338 @@
-<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
-</ngx-skeleton-loader>
-<div class="row m-0" *ngIf="!isLoading">
-    <div class="col-12 my-2">
-        <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen"
-            (change)="calledScreen(group.value)">
-            <mat-button-toggle value="Surveys">
-                Surveys
-            </mat-button-toggle>
-            <mat-button-toggle value="Hidden">
-                Hidden Surveys
-            </mat-button-toggle>
-            <mat-button-toggle value="add">
-                Add Survey
-            </mat-button-toggle>
-            <mat-button-toggle value="header">
-                Add Survey Header
-            </mat-button-toggle>
-        </mat-button-toggle-group>
-    </div>
-    <div class="col-12 p-10 my-2 bg-card rounded-2xl shadow">
-        <!-- Current Surveys -->
-        <div *ngIf="mainScreen === 'Surveys'">
-            <div class="row">
-                <div class="col-12 text-2xl font-extrabold tracking-tight leading-none my-2">
-                    Current store surveys
-                </div>
-                <div class="col-12 font-medium mb-5">
-                    NOTE: Surveys can only be sent to customers once they've been finalized. Finalized surveys cannot be
-                    deleted or modified.
-                </div>
+<div class="alert m-4 w-full alert-danger p-4 text-lg text-center font-bold"
+    *ngIf="!_storeManagerService.store.viewSurveys">
+    You do not have permission to access this section.
+</div>
+<ng-container *ngIf="_storeManagerService.store.viewSurveys">
+    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isLoading">
+    </ngx-skeleton-loader>
+    <div class="row m-0" *ngIf="!isLoading">
+        <div class="col-12 my-2">
+            <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen"
+                (change)="calledScreen(group.value)">
+                <mat-button-toggle value="Surveys">
+                    Surveys
+                </mat-button-toggle>
+                <mat-button-toggle value="Hidden">
+                    Hidden Surveys
+                </mat-button-toggle>
+                <mat-button-toggle value="add">
+                    Add Survey
+                </mat-button-toggle>
+                <mat-button-toggle value="header">
+                    Add Survey Header
+                </mat-button-toggle>
+            </mat-button-toggle-group>
+        </div>
+        <div class="col-12 p-10 my-2 bg-card rounded-2xl shadow">
+            <!-- Current Surveys -->
+            <div *ngIf="mainScreen === 'Surveys'">
+                <div class="row">
+                    <div class="col-12 text-2xl font-extrabold tracking-tight leading-none my-2">
+                        Current store surveys
+                    </div>
+                    <div class="col-12 font-medium mb-5">
+                        NOTE: Surveys can only be sent to customers once they've been finalized. Finalized surveys
+                        cannot be
+                        deleted or modified.
+                    </div>
 
-                <div class="col-12" *ngIf="dataSourceLoading">
-                    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="dataSourceLoading">
-                    </ngx-skeleton-loader>
-                </div>
+                    <div class="col-12" *ngIf="dataSourceLoading">
+                        <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="dataSourceLoading">
+                        </ngx-skeleton-loader>
+                    </div>
 
-                <div class="col-12 overflow-x-auto" *ngIf="!dataSourceLoading">
-                    <ng-container *ngIf="surveysList.length > 0; else noRecords">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr class="columnHeader2">
-                                    <th width="5%">ID</th>
-                                    <th width="10%">Date created</th>
-                                    <th width="65%">Name</th>
-                                    <th width="10%" class="text-center">Finalized <span class="fa fa-question-circle"
-                                            matTooltip="Finalized surveys can no longer be modified and are made available to be sent to customers."></span>
-                                    </th>
-                                    <th width="15%" class="text-center">Automated <span class="fa fa-question-circle"
-                                            matTooltip="Automated surveys will go out automatically to customers 7 days after payment, and again after 14 days."></span>
-                                    </th>
-                                    <th width="1%"></th>
-                                    <th width="1%"></th>
-                                    <th width="1%"></th>
-                                    <th width="1%"></th>
-                                    <th width="1%"></th>
-                                    <th width="1%"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr *ngFor="let survey of surveysList">
-                                    <td>{{survey.pk_surveyID}}</td>
-                                    <td>{{survey.FormattedCreatedDate}}</td>
-                                    <td>{{survey.name}}</td>
-                                    <td class="text-center">
-                                        <span class="fa fa-check fa-lg text-success" *ngIf="survey.blnFinalized"></span>
-                                        <span class="fa fa-times fa-lg text-danger" *ngIf="!survey.blnFinalized"></span>
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="fa fa-check fa-lg text-success" *ngIf="survey.blnAutomate"></span>
-                                        <span class="fa fa-times fa-lg text-danger" *ngIf="!survey.blnAutomate"></span>
-                                    </td>
-                                    <td>
-                                        <button (click)="goToEditPage(survey)"
-                                            class="p-2 bg-blue-500 text-xs text-white rounded-md" matTooltip="Edit">
-                                            <mat-icon class="icon-size-4 text-white"
-                                                svgIcon="mat_outline:edit"></mat-icon>
-                                        </button>
-                                    </td>
-                                    <td>
-                                        <button *ngIf="!survey.blnFinalized" class="p-2 bg-red-500 text-xs rounded-md"
-                                            matTooltip="Remove" [disabled]="survey.isDelLoader"
-                                            (click)="removeSurvey(survey)">
-                                            <mat-icon *ngIf="!survey.isDelLoader" class="icon-size-4 text-white"
-                                                svgIcon="mat_outline:delete"></mat-icon>
-                                            <mat-progress-spinner class="text-white" *ngIf="survey.isDelLoader"
-                                                [diameter]="24" [mode]="'indeterminate'">
-                                            </mat-progress-spinner>
-                                        </button>
-                                        <button *ngIf="survey.blnFinalized" [disabled]="survey.blnFinalized"
-                                            class="p-2 bg-gray-300 text-xs rounded-md"
-                                            matTooltip="You cannot remove this survey because it has been finalized.">
-                                            <mat-icon class="icon-size-4 text-white"
-                                                svgIcon="mat_outline:delete"></mat-icon>
-                                        </button>
-                                    </td>
-                                    <td>
-                                        <button *ngIf="!survey.blnFinalized" class="p-2 bg-green-500 text-xs rounded-md"
-                                            matTooltip="Finalize" (click)="finalizeSurvey(survey)"
-                                            [disabled]="survey.isFinalizeLoader">
-                                            <mat-progress-spinner class="text-white" *ngIf="survey.isFinalizeLoader"
-                                                [diameter]="24" [mode]="'indeterminate'">
-                                            </mat-progress-spinner>
-                                            <mat-icon *ngIf="!survey.isFinalizeLoader" class="icon-size-4 text-white"
-                                                svgIcon="mat_outline:check"></mat-icon>
-                                        </button>
-                                        <button *ngIf="survey.blnFinalized" [disabled]="survey.blnFinalized"
-                                            class="p-2 bg-gray-300 text-xs rounded-md"
-                                            matTooltip="This survey is already finalized.">
-                                            <mat-icon class="icon-size-4 text-white"
-                                                svgIcon="mat_outline:check"></mat-icon>
-                                        </button>
-                                    </td>
-                                    <td>
-                                        <button *ngIf="!survey.blnFinalized; else blnAutomate"
-                                            [disabled]="!survey.blnFinalized"
-                                            class="p-2 bg-gray-300 text-xs text-white rounded-md"
-                                            matTooltip="You cannot automate this survey until it is finalized.">
-                                            <mat-icon class="icon-size-4 text-white"
-                                                svgIcon="mat_outline:watch_later"></mat-icon>
-                                        </button>
-                                        <ng-template #blnAutomate>
-                                            <button *ngIf="survey.blnAutomate"
-                                                class="p-2 bg-green-500 text-xs text-white rounded-md"
-                                                matTooltip="Turn off automation" [disabled]="survey.isAutomateLoader"
-                                                (click)="automateSurvey(survey,false)">
-                                                <mat-progress-spinner class="text-white" *ngIf="survey.isAutomateLoader"
+                    <div class="col-12 overflow-x-auto" *ngIf="!dataSourceLoading">
+                        <ng-container *ngIf="surveysList.length > 0; else noRecords">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr class="columnHeader2">
+                                        <th width="5%">ID</th>
+                                        <th width="10%">Date created</th>
+                                        <th width="65%">Name</th>
+                                        <th width="10%" class="text-center">Finalized <span
+                                                class="fa fa-question-circle"
+                                                matTooltip="Finalized surveys can no longer be modified and are made available to be sent to customers."></span>
+                                        </th>
+                                        <th width="15%" class="text-center">Automated <span
+                                                class="fa fa-question-circle"
+                                                matTooltip="Automated surveys will go out automatically to customers 7 days after payment, and again after 14 days."></span>
+                                        </th>
+                                        <th width="1%"></th>
+                                        <th width="1%"></th>
+                                        <th width="1%"></th>
+                                        <th width="1%"></th>
+                                        <th width="1%"></th>
+                                        <th width="1%"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let survey of surveysList">
+                                        <td>{{survey.pk_surveyID}}</td>
+                                        <td>{{survey.FormattedCreatedDate}}</td>
+                                        <td>{{survey.name}}</td>
+                                        <td class="text-center">
+                                            <span class="fa fa-check fa-lg text-success"
+                                                *ngIf="survey.blnFinalized"></span>
+                                            <span class="fa fa-times fa-lg text-danger"
+                                                *ngIf="!survey.blnFinalized"></span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="fa fa-check fa-lg text-success"
+                                                *ngIf="survey.blnAutomate"></span>
+                                            <span class="fa fa-times fa-lg text-danger"
+                                                *ngIf="!survey.blnAutomate"></span>
+                                        </td>
+                                        <td>
+                                            <button (click)="goToEditPage(survey)"
+                                                class="p-2 bg-blue-500 text-xs text-white rounded-md" matTooltip="Edit">
+                                                <mat-icon class="icon-size-4 text-white"
+                                                    svgIcon="mat_outline:edit"></mat-icon>
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <button *ngIf="!survey.blnFinalized"
+                                                class="p-2 bg-red-500 text-xs rounded-md" matTooltip="Remove"
+                                                [disabled]="survey.isDelLoader" (click)="removeSurvey(survey)">
+                                                <mat-icon *ngIf="!survey.isDelLoader" class="icon-size-4 text-white"
+                                                    svgIcon="mat_outline:delete"></mat-icon>
+                                                <mat-progress-spinner class="text-white" *ngIf="survey.isDelLoader"
                                                     [diameter]="24" [mode]="'indeterminate'">
                                                 </mat-progress-spinner>
+                                            </button>
+                                            <button *ngIf="survey.blnFinalized" [disabled]="survey.blnFinalized"
+                                                class="p-2 bg-gray-300 text-xs rounded-md"
+                                                matTooltip="You cannot remove this survey because it has been finalized.">
                                                 <mat-icon class="icon-size-4 text-white"
-                                                    *ngIf="!survey.isAutomateLoader"
+                                                    svgIcon="mat_outline:delete"></mat-icon>
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <button *ngIf="!survey.blnFinalized"
+                                                class="p-2 bg-green-500 text-xs rounded-md" matTooltip="Finalize"
+                                                (click)="finalizeSurvey(survey)" [disabled]="survey.isFinalizeLoader">
+                                                <mat-progress-spinner class="text-white" *ngIf="survey.isFinalizeLoader"
+                                                    [diameter]="24" [mode]="'indeterminate'">
+                                                </mat-progress-spinner>
+                                                <mat-icon *ngIf="!survey.isFinalizeLoader"
+                                                    class="icon-size-4 text-white"
+                                                    svgIcon="mat_outline:check"></mat-icon>
+                                            </button>
+                                            <button *ngIf="survey.blnFinalized" [disabled]="survey.blnFinalized"
+                                                class="p-2 bg-gray-300 text-xs rounded-md"
+                                                matTooltip="This survey is already finalized.">
+                                                <mat-icon class="icon-size-4 text-white"
+                                                    svgIcon="mat_outline:check"></mat-icon>
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <button *ngIf="!survey.blnFinalized; else blnAutomate"
+                                                [disabled]="!survey.blnFinalized"
+                                                class="p-2 bg-gray-300 text-xs text-white rounded-md"
+                                                matTooltip="You cannot automate this survey until it is finalized.">
+                                                <mat-icon class="icon-size-4 text-white"
                                                     svgIcon="mat_outline:watch_later"></mat-icon>
                                             </button>
-                                            <button *ngIf="!survey.blnAutomate" [disabled]="survey.isAutomateLoader"
+                                            <ng-template #blnAutomate>
+                                                <button *ngIf="survey.blnAutomate"
+                                                    class="p-2 bg-green-500 text-xs text-white rounded-md"
+                                                    matTooltip="Turn off automation"
+                                                    [disabled]="survey.isAutomateLoader"
+                                                    (click)="automateSurvey(survey,false)">
+                                                    <mat-progress-spinner class="text-white"
+                                                        *ngIf="survey.isAutomateLoader" [diameter]="24"
+                                                        [mode]="'indeterminate'">
+                                                    </mat-progress-spinner>
+                                                    <mat-icon class="icon-size-4 text-white"
+                                                        *ngIf="!survey.isAutomateLoader"
+                                                        svgIcon="mat_outline:watch_later"></mat-icon>
+                                                </button>
+                                                <button *ngIf="!survey.blnAutomate" [disabled]="survey.isAutomateLoader"
+                                                    class="p-2 bg-blue-500 text-xs text-white rounded-md"
+                                                    matTooltip="Turn on automation.  Automating a survey means it will be sent out to customers automatically 7 days after payment, and again after 14 days."
+                                                    (click)="automateSurvey(survey,true)">
+                                                    <mat-progress-spinner class="text-white"
+                                                        *ngIf="survey.isAutomateLoader" [diameter]="24"
+                                                        [mode]="'indeterminate'">
+                                                    </mat-progress-spinner>
+                                                    <mat-icon class="icon-size-4 text-white"
+                                                        *ngIf="!survey.isAutomateLoader"
+                                                        svgIcon="mat_outline:watch_later"></mat-icon>
+                                                </button>
+                                            </ng-template>
+                                        </td>
+                                        <td>
+                                            <button *ngIf="survey.blnFinalized"
+                                                class="p-2 bg-blue-500 text-xs rounded-md" matTooltip="Survey analytics"
+                                                (click)="surveysAnalytics(survey)">
+                                                <mat-icon class="icon-size-4 text-white"
+                                                    svgIcon="mat_outline:pie_chart"></mat-icon>
+                                            </button>
+                                            <button *ngIf="!survey.blnFinalized" [disabled]="true"
+                                                class="p-2 bg-gray-300 text-xs rounded-md"
+                                                matTooltip="Analytics are not available until the survey is finalized.">
+                                                <mat-icon class="icon-size-4 text-white"
+                                                    svgIcon="mat_outline:pie_chart"></mat-icon>
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <button (click)="hideUnhideSurvey(survey, true)"
+                                                class="p-2 bg-blue-500 text-xs text-white rounded-md" matTooltip="Hide"
+                                                [disabled]="survey.isHideLoader">
+                                                <mat-progress-spinner class="text-white" *ngIf="survey.isHideLoader"
+                                                    [diameter]="24" [mode]="'indeterminate'">
+                                                </mat-progress-spinner>
+                                                <mat-icon class="icon-size-4 text-white" *ngIf="!survey.isHideLoader"
+                                                    [svgIcon]="'mat_outline:visibility_off'"></mat-icon>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <mat-paginator style="border-bottom-left-radius: 16px;border-bottom-right-radius:16px"
+                                class="sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                                [ngClass]="{'pointer-events-none': isPaginatorLoading}"
+                                (page)="getNextSurveysData($event)" [length]="totalSurveys" [pageIndex]="0"
+                                [pageSize]="20" [hidePageSize]="true">
+                            </mat-paginator>
+                        </ng-container>
+                        <ng-template #noRecords>
+                            <div class="alert alert-warning ">
+                                There are currently no surveys defined for this store.
+                            </div>
+                        </ng-template>
+                    </div>
+                </div>
+            </div>
+            <!-- Hidden Surveys -->
+            <div *ngIf="mainScreen === 'Hidden'">
+                <div class="text-2xl font-extrabold tracking-tight leading-none my-2">
+                    Hidden Surverys
+                </div>
+                <div class="row">
+                    <div class="col-12" *ngIf="isHiddenPageLoading">
+                        <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isHiddenPageLoading">
+                        </ngx-skeleton-loader>
+                    </div>
+
+                    <div class="col-12 overflow-x-auto" *ngIf="!isHiddenPageLoading">
+                        <ng-container *ngIf="surveysList.length > 0; else noRecords">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr class="columnHeader2">
+                                        <th width="5%">ID</th>
+                                        <th width="10%">Date created</th>
+                                        <th width="65%">Name</th>
+                                        <th width="10%" class="text-center">Finalized <span
+                                                class="fa fa-question-circle"
+                                                matTooltip="Finalized surveys can no longer be modified and are made available to be sent to customers."></span>
+                                        </th>
+                                        <th width="1%"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let survey of hiddentSurveysList">
+                                        <td>{{survey.pk_surveyID}}</td>
+                                        <td>{{survey.FormattedCreatedDate}}</td>
+                                        <td>{{survey.name}}</td>
+                                        <td class="text-center">
+                                            <span class="fa fa-check fa-lg text-success"
+                                                *ngIf="survey.blnFinalized"></span>
+                                            <span class="fa fa-times fa-lg text-danger"
+                                                *ngIf="!survey.blnFinalized"></span>
+                                        </td>
+                                        <td>
+                                            <button (click)="hideUnhideSurvey(survey, false)"
                                                 class="p-2 bg-blue-500 text-xs text-white rounded-md"
-                                                matTooltip="Turn on automation.  Automating a survey means it will be sent out to customers automatically 7 days after payment, and again after 14 days."
-                                                (click)="automateSurvey(survey,true)">
-                                                <mat-progress-spinner class="text-white" *ngIf="survey.isAutomateLoader"
+                                                matTooltip="Unhide" [disabled]="survey.isHideLoader">
+                                                <mat-progress-spinner class="text-white" *ngIf="survey.isHideLoader"
                                                     [diameter]="24" [mode]="'indeterminate'">
                                                 </mat-progress-spinner>
-                                                <mat-icon class="icon-size-4 text-white"
-                                                    *ngIf="!survey.isAutomateLoader"
-                                                    svgIcon="mat_outline:watch_later"></mat-icon>
+                                                <mat-icon class="icon-size-5 text-white" *ngIf="!survey.isHideLoader"
+                                                    [svgIcon]="'mat_outline:visibility'"></mat-icon>
                                             </button>
-                                        </ng-template>
-                                    </td>
-                                    <td>
-                                        <button *ngIf="survey.blnFinalized" class="p-2 bg-blue-500 text-xs rounded-md"
-                                            matTooltip="Survey analytics" (click)="surveysAnalytics(survey)">
-                                            <mat-icon class="icon-size-4 text-white"
-                                                svgIcon="mat_outline:pie_chart"></mat-icon>
-                                        </button>
-                                        <button *ngIf="!survey.blnFinalized" [disabled]="true"
-                                            class="p-2 bg-gray-300 text-xs rounded-md"
-                                            matTooltip="Analytics are not available until the survey is finalized.">
-                                            <mat-icon class="icon-size-4 text-white"
-                                                svgIcon="mat_outline:pie_chart"></mat-icon>
-                                        </button>
-                                    </td>
-                                    <td>
-                                        <button (click)="hideUnhideSurvey(survey, true)"
-                                            class="p-2 bg-blue-500 text-xs text-white rounded-md" matTooltip="Hide"
-                                            [disabled]="survey.isHideLoader">
-                                            <mat-progress-spinner class="text-white" *ngIf="survey.isHideLoader"
-                                                [diameter]="24" [mode]="'indeterminate'">
-                                            </mat-progress-spinner>
-                                            <mat-icon class="icon-size-4 text-white" *ngIf="!survey.isHideLoader"
-                                                [svgIcon]="'mat_outline:visibility_off'"></mat-icon>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <mat-paginator style="border-bottom-left-radius: 16px;border-bottom-right-radius:16px"
-                            class="sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                            [ngClass]="{'pointer-events-none': isPaginatorLoading}" (page)="getNextSurveysData($event)"
-                            [length]="totalSurveys" [pageIndex]="0" [pageSize]="20" [hidePageSize]="true">
-                        </mat-paginator>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <mat-paginator style="border-bottom-left-radius: 16px;border-bottom-right-radius:16px"
+                                class="sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                                [ngClass]="{'pointer-events-none': isPaginatorLoading}"
+                                (page)="getNextHiddenData($event)" [length]="totalHiddenSurveys" [pageIndex]="0"
+                                [pageSize]="20" [hidePageSize]="true">
+                            </mat-paginator>
+                        </ng-container>
+                        <ng-template #noRecords>
+                            <div class="alert alert-warning">
+                                There are currently no surveys for this store.
+                            </div>
+                        </ng-template>
+                    </div>
+                </div>
+            </div>
+            <!-- Add New Survey -->
+            <div *ngIf="mainScreen === 'add'">
+                <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+                    Add new survey
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <mat-form-field appearance="fill" class="w-full">
+                            <mat-label>Name</mat-label>
+                            <input matInput maxlength="50" placeholder="Name" (input)="setAddSurvey($event)">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 flex justify-end">
+                        <button class="min-w-40" mat-stroked-button [matTooltip]="'Add new survey'"
+                            (click)="addSurvey()" [disabled]="isAddSurveyLoader">
+                            <mat-progress-spinner *ngIf="isAddSurveyLoader" [diameter]="24" [mode]="'indeterminate'">
+                            </mat-progress-spinner>
+                            <mat-icon *ngIf="!isAddSurveyLoader" svgIcon="heroicons_outline:plus"></mat-icon>
+                            <span *ngIf="!isAddSurveyLoader" class="ml-1 mr-1">Add Survey</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Add Survey Header -->
+            <div *ngIf="mainScreen === 'header'">
+                <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
+                    Add new survey
+                </div>
+                <div class="row mt-3">
+                    <ng-container *ngIf="!isHeaderImage;else headerImage">
+                        <div class="col-12 alert alert-warning">
+                            There is no header image uploaded for this store's survey pages.
+                        </div>
+                        <div class="col-12">
+                            <b>Header image file:</b><br />
+                            <span class="text-red-500">1500px W by 300px H JPG only!</span><br />
+                            <input type="file" accept=".jpg,.jpeg" (change)="upload($event)" #fileInputImage />
+                            <br>
+                            <br>
+                            <button mat-button mat-flat-button color="primary" class="min-w-40"
+                                [disabled]="isHeaderAddLoader" (click)="uploadImage()">
+                                <span *ngIf="!isHeaderAddLoader">Add Header Image</span>
+                                <mat-progress-spinner *ngIf="isHeaderAddLoader" [diameter]="24"
+                                    [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                            </button>
+                        </div>
                     </ng-container>
-                    <ng-template #noRecords>
-                        <div class="alert alert-warning ">
-                            There are currently no surveys defined for this store.
+                    <ng-template #headerImage>
+                        <div class="col-12">
+                            <img src="https://assets.consolidus.com/globalAssets/Stores/surveys/headers/{{selectedStore.pk_storeID}}.jpg?v={{tempValue}}"
+                                class="w-200" />
+                            <br>
+                            <button mat-button mat-flat-button color="warn" class="min-w-40"
+                                [disabled]="isHeaderRemoveLoader" (click)="removeHeaderImage()">
+                                <span *ngIf="!isHeaderRemoveLoader">Remove Header Image</span>
+                                <mat-progress-spinner *ngIf="isHeaderRemoveLoader" [diameter]="24"
+                                    [mode]="'indeterminate'">
+                                </mat-progress-spinner>
+                            </button>
                         </div>
                     </ng-template>
                 </div>
-            </div>
-        </div>
-        <!-- Hidden Surveys -->
-        <div *ngIf="mainScreen === 'Hidden'">
-            <div class="text-2xl font-extrabold tracking-tight leading-none my-2">
-                Hidden Surverys
-            </div>
-            <div class="row">
-                <div class="col-12" *ngIf="isHiddenPageLoading">
-                    <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isHiddenPageLoading">
-                    </ngx-skeleton-loader>
-                </div>
-
-                <div class="col-12 overflow-x-auto" *ngIf="!isHiddenPageLoading">
-                    <ng-container *ngIf="surveysList.length > 0; else noRecords">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr class="columnHeader2">
-                                    <th width="5%">ID</th>
-                                    <th width="10%">Date created</th>
-                                    <th width="65%">Name</th>
-                                    <th width="10%" class="text-center">Finalized <span class="fa fa-question-circle"
-                                            matTooltip="Finalized surveys can no longer be modified and are made available to be sent to customers."></span>
-                                    </th>
-                                    <th width="1%"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr *ngFor="let survey of hiddentSurveysList">
-                                    <td>{{survey.pk_surveyID}}</td>
-                                    <td>{{survey.FormattedCreatedDate}}</td>
-                                    <td>{{survey.name}}</td>
-                                    <td class="text-center">
-                                        <span class="fa fa-check fa-lg text-success" *ngIf="survey.blnFinalized"></span>
-                                        <span class="fa fa-times fa-lg text-danger" *ngIf="!survey.blnFinalized"></span>
-                                    </td>
-                                    <td>
-                                        <button (click)="hideUnhideSurvey(survey, false)"
-                                            class="p-2 bg-blue-500 text-xs text-white rounded-md" matTooltip="Unhide"
-                                            [disabled]="survey.isHideLoader">
-                                            <mat-progress-spinner class="text-white" *ngIf="survey.isHideLoader"
-                                                [diameter]="24" [mode]="'indeterminate'">
-                                            </mat-progress-spinner>
-                                            <mat-icon class="icon-size-5 text-white" *ngIf="!survey.isHideLoader"
-                                                [svgIcon]="'mat_outline:visibility'"></mat-icon>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <mat-paginator style="border-bottom-left-radius: 16px;border-bottom-right-radius:16px"
-                            class="sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                            [ngClass]="{'pointer-events-none': isPaginatorLoading}" (page)="getNextHiddenData($event)"
-                            [length]="totalHiddenSurveys" [pageIndex]="0" [pageSize]="20" [hidePageSize]="true">
-                        </mat-paginator>
-                    </ng-container>
-                    <ng-template #noRecords>
-                        <div class="alert alert-warning">
-                            There are currently no surveys for this store.
-                        </div>
-                    </ng-template>
-                </div>
-            </div>
-        </div>
-        <!-- Add New Survey -->
-        <div *ngIf="mainScreen === 'add'">
-            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
-                Add new survey
-            </div>
-            <div class="row mt-3">
-                <div class="col-12">
-                    <mat-form-field appearance="fill" class="w-full">
-                        <mat-label>Name</mat-label>
-                        <input matInput maxlength="50" placeholder="Name" (input)="setAddSurvey($event)">
-                    </mat-form-field>
-                </div>
-                <div class="col-12 flex justify-end">
-                    <button class="min-w-40" mat-stroked-button [matTooltip]="'Add new survey'" (click)="addSurvey()"
-                        [disabled]="isAddSurveyLoader">
-                        <mat-progress-spinner *ngIf="isAddSurveyLoader" [diameter]="24" [mode]="'indeterminate'">
-                        </mat-progress-spinner>
-                        <mat-icon *ngIf="!isAddSurveyLoader" svgIcon="heroicons_outline:plus"></mat-icon>
-                        <span *ngIf="!isAddSurveyLoader" class="ml-1 mr-1">Add Survey</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-        <!-- Add Survey Header -->
-        <div *ngIf="mainScreen === 'header'">
-            <div class="text-2xl font-extrabold tracking-tight leading-none my-3">
-                Add new survey
-            </div>
-            <div class="row mt-3">
-                <ng-container *ngIf="!isHeaderImage;else headerImage">
-                    <div class="col-12 alert alert-warning">
-                        There is no header image uploaded for this store's survey pages.
-                    </div>
-                    <div class="col-12">
-                        <b>Header image file:</b><br />
-                        <span class="text-red-500">1500px W by 300px H JPG only!</span><br />
-                        <input type="file" accept=".jpg,.jpeg" (change)="upload($event)" #fileInputImage />
-                        <br>
-                        <br>
-                        <button mat-button mat-flat-button color="primary" class="min-w-40"
-                            [disabled]="isHeaderAddLoader" (click)="uploadImage()">
-                            <span *ngIf="!isHeaderAddLoader">Add Header Image</span>
-                            <mat-progress-spinner *ngIf="isHeaderAddLoader" [diameter]="24" [mode]="'indeterminate'">
-                            </mat-progress-spinner>
-                        </button>
-                    </div>
-                </ng-container>
-                <ng-template #headerImage>
-                    <div class="col-12">
-                        <img src="https://assets.consolidus.com/globalAssets/Stores/surveys/headers/{{selectedStore.pk_storeID}}.jpg?v={{tempValue}}"
-                            class="w-200" />
-                        <br>
-                        <button mat-button mat-flat-button color="warn" class="min-w-40"
-                            [disabled]="isHeaderRemoveLoader" (click)="removeHeaderImage()">
-                            <span *ngIf="!isHeaderRemoveLoader">Remove Header Image</span>
-                            <mat-progress-spinner *ngIf="isHeaderRemoveLoader" [diameter]="24" [mode]="'indeterminate'">
-                            </mat-progress-spinner>
-                        </button>
-                    </div>
-                </ng-template>
             </div>
         </div>
     </div>
+</ng-container>

@@ -24,7 +24,7 @@ export class OfflineProductsComponent implements OnInit, OnDestroy {
   isKeywordSearch: boolean = false;
 
   constructor(
-    private _storeManagerService: FileManagerService,
+    public _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar
   ) { }

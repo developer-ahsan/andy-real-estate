@@ -50,7 +50,7 @@ export class StoreSettingsComponent implements OnInit, OnDestroy {
   suppliersList: any = [];
   qryCreditTerms: any;
   constructor(
-    private _storesManagerService: FileManagerService,
+    public _storesManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _formBuilder: FormBuilder,
     private _snackBar: MatSnackBar,

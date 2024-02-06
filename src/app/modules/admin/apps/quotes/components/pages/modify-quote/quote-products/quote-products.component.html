@@ -411,83 +411,95 @@
                             </tr>
 
 
+                            <ng-container *ngFor="let product of selectedCartLine.ColorsData">
+                                <tr class="">
+                                    <td width="10%">
+                                        <select *ngIf="selectedCartLine.ColorsListData.length != 0"
+                                            class="select1 wide form-control" [(ngModel)]="product.pk_colorID">
+                                            <option *ngFor="let color of selectedCartLine.ColorsListData"
+                                                [value]="color.pk_colorID">
+                                                {{color.colorName}}</option>
+                                        </select>
+                                        <select *ngIf="selectedCartLine.ColorsListData.length == 0"
+                                            class="select1 wide form-control" [(ngModel)]="product.pk_colorID">
+                                            <option [value]="0">N/A</option>
+                                        </select>
+                                    </td>
 
-                            <tr class="" *ngFor="let product of selectedCartLine.ColorsData">
-                                <td width="10%">
-                                    <select *ngIf="selectedCartLine.ColorsListData.length != 0"
-                                        class="select1 wide form-control" [(ngModel)]="product.pk_colorID">
-                                        <option *ngFor="let color of selectedCartLine.ColorsListData"
-                                            [value]="color.pk_colorID">
-                                            {{color.colorName}}</option>
-                                    </select>
-                                    <select *ngIf="selectedCartLine.ColorsListData.length == 0"
-                                        class="select1 wide form-control" [(ngModel)]="product.pk_colorID">
-                                        <option [value]="0">N/A</option>
-                                    </select>
-                                </td>
+                                    <td width="10%">
+                                        <select *ngIf="selectedCartLine.sizesListData.length != 0"
+                                            class="select1 wide form-control" [(ngModel)]="product.pk_sizeID">
+                                            <option *ngFor="let size of selectedCartLine.sizesListData"
+                                                [value]="size.pk_sizeID">
+                                                {{size.sizeName}}</option>
+                                        </select>
+                                        <select *ngIf="selectedCartLine.sizesListData.length == 0"
+                                            class="select1 wide form-control" [(ngModel)]="product.pk_sizeID">
+                                            <option [value]="0">N/A</option>
+                                        </select>
+                                    </td>
 
-                                <td width="10%">
-                                    <select *ngIf="selectedCartLine.sizesListData.length != 0"
-                                        class="select1 wide form-control" [(ngModel)]="product.pk_sizeID">
-                                        <option *ngFor="let size of selectedCartLine.sizesListData"
-                                            [value]="size.pk_sizeID">
-                                            {{size.sizeName}}</option>
-                                    </select>
-                                    <select *ngIf="selectedCartLine.sizesListData.length == 0"
-                                        class="select1 wide form-control" [(ngModel)]="product.pk_sizeID">
-                                        <option [value]="0">N/A</option>
-                                    </select>
-                                </td>
+                                    <td width="10%">
+                                        <input min="0" type="number" name="quantity138125"
+                                            class="adminInput light wide form-control" [(ngModel)]="product.quantity"
+                                            required="" maxlength="8">
+                                    </td>
+                                    <td>
 
-                                <td width="10%">
-                                    <input min="0" type="number" name="quantity138125"
-                                        class="adminInput light wide form-control" [(ngModel)]="product.quantity"
-                                        required="" maxlength="8">
-                                </td>
-                                <td>
+                                        <mat-form-field class="w-full">
+                                            <span matSuffix>$ &nbsp;</span>
+                                            <input type="text" [(ngModel)]="product.runCost" required="" maxlength="8"
+                                                matInput>
+                                        </mat-form-field>
 
-                                    <mat-form-field class="w-full">
-                                        <span matSuffix>$ &nbsp;</span>
-                                        <input type="text" [(ngModel)]="product.runCost" required="" maxlength="8"
-                                            matInput>
-                                    </mat-form-field>
-
-                                    <!-- </div> -->
-                                    <!-- </div> -->
-                                </td>
-                                <td align="center">+ {{selectedCartLine.cartLineBaseCost | currency}} =
-                                    {{(product.runCost
-                                    + selectedCartLine.cartLineBaseCost) | currency}}
-                                    <br>
-                                    {{(product.quantity * (product.runCost + selectedCartLine.cartLineBaseCost)) |
-                                    currency}}
-                                </td>
-                                <td>
-                                    <!-- <div class="form-group no-bottom-margin">
+                                        <!-- </div> -->
+                                        <!-- </div> -->
+                                    </td>
+                                    <td align="center">+ {{selectedCartLine.cartLineBaseCost | currency}} =
+                                        <!-- {{(product.runCost
+                                    + selectedCartLine.cartLineBaseCost) | currency}} -->
+                                        <br>
+                                        {{(product.runCost + selectedCartLine.cartLineBaseCost) |
+                                        currency}}
+                                    </td>
+                                    <td>
+                                        <!-- <div class="form-group no-bottom-margin">
                                     <div class="input-group no-bottom-margin">
                                         <div class="input-group-addon">$</div>
                                         <input type="text" class="form-control adminInput light wide"
                                             [(ngModel)]="product.runPrice" required="" maxlength="8">
                                     </div>
                                 </div> -->
-                                    <mat-form-field class="w-full">
-                                        <span matSuffix>$ &nbsp;</span>
-                                        <input type="text" [(ngModel)]="product.runPrice" required="" maxlength="8"
-                                            matInput>
-                                    </mat-form-field>
-                                </td>
-                                <td align="center">+ {{selectedCartLine.cartLineBasePrice | currency}} =
-                                    {{(product.runPrice + selectedCartLine.cartLineBasePrice)
-                                    | currency}}
-                                    <br>
-                                    {{(product.quantity * (product.runPrice + selectedCartLine.cartLineBasePrice)) |
-                                    currency}}
-                                </td>
-                                <td align="center" valign="top">
-                                    <mat-checkbox [(ngModel)]="product.isRemoved"></mat-checkbox>
-                                </td>
-                            </tr>
-
+                                        <mat-form-field class="w-full">
+                                            <span matSuffix>$ &nbsp;</span>
+                                            <input type="text" [(ngModel)]="product.runPrice" required="" maxlength="8"
+                                                matInput>
+                                        </mat-form-field>
+                                    </td>
+                                    <td align="center">+ {{selectedCartLine.cartLineBasePrice | currency}} =
+                                        <!-- {{(product.runPrice + selectedCartLine.cartLineBasePrice)
+                                    | currency}} -->
+                                        <br>
+                                        {{(product.runPrice + selectedCartLine.cartLineBasePrice) |
+                                        currency}}
+                                    </td>
+                                    <td align="center" valign="top">
+                                        <mat-checkbox [(ngModel)]="product.isRemoved"></mat-checkbox>
+                                    </td>
+                                </tr>
+                                <tr class="columnHeader2 font-bold">
+                                    <td colspan="3"></td>
+                                    <td align="center">TOTAL:</td>
+                                    <td align="center">
+                                        {{((product.runCost + selectedCartLine.cartLineBaseCost)*product.quantity)
+                                        | currency}} </td>
+                                    <td align="center">TOTAL:</td>
+                                    <td align="center">
+                                        {{((product.runPrice + selectedCartLine.cartLineBasePrice)*product.quantity)
+                                        | currency}}</td>
+                                    <td></td>
+                                </tr>
+                            </ng-container>
                             <tr class="columnHeader2 font-bold">
                                 <td colspan="2">GRAND TOTAL:</td>
                                 <td align="center">{{selectedCartLine.totalQuantity}}</td>
@@ -766,7 +778,7 @@
                 </mat-expansion-panel-header>
                 <div class="p-3">
                     <!-- *ngIf="ngSelectedProduct.imprintsUnSelected.length > 0" -->
-                    <div *ngIf="selectedCartLine?.unselectedImprints.length;else noImprintDataOptions">
+                    <div *ngIf="selectedCartLine?.unselectedImprints?.length;else noImprintDataOptions">
                         <mat-form-field class="w-full">
                             <mat-select matInput [(ngModel)]="selectedCartLine.ngImprintSelected">
                                 <mat-option *ngFor="let imprint of selectedCartLine?.unselectedImprints"

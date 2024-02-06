@@ -1,4 +1,5 @@
-<div class="rounded-2xl shadow bg-card flex pb-10" #topScrollAnchor>
+<div class="rounded-2xl shadow bg-card flex pb-10" #topScrollAnchor
+    *ngIf="_storeManagerService.store.viewStoreProductSupplier">
     <div class="row" style="width: -webkit-fill-available;">
         <div class="col-12">
             <div class="p-6 pb-2 sm:p-8 dm:pb-2 lg:p-10 lg:pb-2 w-full">
@@ -139,4 +140,8 @@
             </div>
         </div>
     </div>
+</div>
+<div class="alert m-4 w-full alert-danger p-4 text-lg text-center font-bold"
+    *ngIf="!_storeManagerService.store.viewStoreProductSupplier">
+    You do not have permission to access this section.
 </div>

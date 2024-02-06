@@ -22,7 +22,7 @@ export class ProductsSuppliersComponent implements OnInit, OnDestroy {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   displayedColumns: string[] = ['pid', 'spid', 'sid', 'name', 'master', 'store'];
   dataSource = [];
-  dataCount= [];
+  dataCount = [];
   totalRecords = 0;
   totalProducts = 0;
   duplicatedDataSource = [];
@@ -36,7 +36,7 @@ export class ProductsSuppliersComponent implements OnInit, OnDestroy {
   suppliers = [];
 
   constructor(
-    private _storeManagerService: FileManagerService,
+    public _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar
   ) { }

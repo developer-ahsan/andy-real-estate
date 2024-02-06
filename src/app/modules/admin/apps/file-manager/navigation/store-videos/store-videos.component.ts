@@ -38,7 +38,7 @@ export class StoreVideosComponent implements OnInit, OnDestroy {
   keywordSearch: string = "";
 
   constructor(
-    private _storeManagerService: FileManagerService,
+    public _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar
   ) { }

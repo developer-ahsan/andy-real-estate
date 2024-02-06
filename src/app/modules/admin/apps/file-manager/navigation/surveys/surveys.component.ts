@@ -40,7 +40,7 @@ export class SurveysComponent implements OnInit, OnDestroy {
   imageValue: any;
   @ViewChild('fileInputImage') fileInputImage: ElementRef;
   constructor(
-    private _storeManagerService: FileManagerService,
+    public _storeManagerService: FileManagerService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _snackBar: MatSnackBar,
     private _commonService: DashboardsService,

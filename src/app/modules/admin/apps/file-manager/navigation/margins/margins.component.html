@@ -1,489 +1,503 @@
-<div class="row py-2 overflow-auto">
-  <div class="col-12">
-    <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen" (change)="calledScreen(group.value)">
-      <mat-button-toggle *ngFor="let buttonValue of screens" value="{{buttonValue}}">
-        {{ buttonValue }}
-      </mat-button-toggle>
-    </mat-button-toggle-group>
-  </div>
+<div class="alert m-4 w-full alert-danger p-4 text-lg text-center font-bold"
+  *ngIf="!_storesManagerService.store.viewMargins">
+  You do not have permission to access this section.
 </div>
+<ng-contianer *ngIf="!_storesManagerService.store.viewMargins">
+  <div class="row py-2 overflow-auto">
+    <div class="col-12">
+      <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mainScreen" (change)="calledScreen(group.value)">
+        <mat-button-toggle *ngFor="let buttonValue of screens" value="{{buttonValue}}">
+          {{ buttonValue }}
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+  </div>
 
 
 
-<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="mainScreen == 'Margins' && dataSourceLoading">
-</ngx-skeleton-loader>
-<div>
-  <div *ngIf="!isLoading">
-    <fuse-card class="rounded-2xl shadow bg-card flex" *ngIf="mainScreen == 'Margins' && !dataSourceLoading">
-      <div class="row" style="width: -webkit-fill-available;" *ngIf="!isMarginDetails">
-        <div class="col-12">
-          <div class="p-6 sm:p-8 lg:p-10 w-full">
-            <div class="row">
-              <div class="col-12">
-                <div class="text-2xl font-bold">
-                  Margins
+  <ngx-skeleton-loader count="8" appearance="line" animation="pulse"
+    *ngIf="mainScreen == 'Margins' && dataSourceLoading">
+  </ngx-skeleton-loader>
+  <div>
+    <div *ngIf="!isLoading">
+      <fuse-card class="rounded-2xl shadow bg-card flex" *ngIf="mainScreen == 'Margins' && !dataSourceLoading">
+        <div class="row" style="width: -webkit-fill-available;" *ngIf="!isMarginDetails">
+          <div class="col-12">
+            <div class="p-6 sm:p-8 lg:p-10 w-full">
+              <div class="row">
+                <div class="col-12">
+                  <div class="text-2xl font-bold">
+                    Margins
+                  </div>
+                  <note class="text-md">Below are all the margin break-downs that currently exist in the store. The
+                    frequency denotes for
+                    how many products each margin group appears. Click on SELECT to see the list of products that follow
+                    the particular margin break down and/or update the margin break down.</note>
                 </div>
-                <note class="text-md">Below are all the margin break-downs that currently exist in the store. The
-                  frequency denotes for
-                  how many products each margin group appears. Click on SELECT to see the list of products that follow
-                  the particular margin break down and/or update the margin break down.</note>
               </div>
             </div>
           </div>
-        </div>
 
-        <div class="col-12 px-10" *ngIf="isKeywordSearch">
-          <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isKeywordSearch">
-          </ngx-skeleton-loader>
-        </div>
-
-        <div class="col-12 pb-5" *ngIf="!isKeywordSearch">
-          <ng-container *ngIf="dataSource.length > 0; else noRecords">
-            <table mat-table [dataSource]="dataSource" class="w-full">
-              <div class="color-blue">
-                <!-- SPID Column -->
-                <ng-container matColumnDef="frequency">
-                  <th class="min-w-50 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
-                    Frequency
-                  </th>
-                  <td mat-cell *matCellDef="let element">{{ element.counter }}</td>
-                </ng-container>
-
-                <!-- Name Column -->
-                <ng-container matColumnDef="1">
-                  <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
-                    1%
-                  </th>
-                  <td mat-cell *matCellDef="let element">
-                    {{(element.margin1 * 100).toFixed(2)}}%
-                  </td>
-                </ng-container>
-
-                <!-- Status Column -->
-                <ng-container matColumnDef="2">
-                  <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
-                    2%
-                  </th>
-                  <td mat-cell *matCellDef="let element">
-                    {{(element.margin2 * 100).toFixed(2)}}%
-                  </td>
-                </ng-container>
-                <ng-container matColumnDef="3">
-                  <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
-                    3%
-                  </th>
-                  <td mat-cell *matCellDef="let element">
-                    {{(element.margin3 * 100).toFixed(2)}}%
-                  </td>
-                </ng-container>
-                <ng-container matColumnDef="4">
-                  <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
-                    4%
-                  </th>
-                  <td mat-cell *matCellDef="let element">
-                    {{(element.margin4 * 100).toFixed(2)}}%
-                  </td>
-                </ng-container>
-                <ng-container matColumnDef="5">
-                  <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
-                    5%
-                  </th>
-                  <td mat-cell *matCellDef="let element">
-                    {{(element.margin5 * 100).toFixed(2)}}%
-                  </td>
-                </ng-container>
-                <ng-container matColumnDef="6">
-                  <th class="min-w-5 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
-                    6%
-                  </th>
-                  <td mat-cell *matCellDef="let element">
-                    {{(element.margin6 * 100).toFixed(2)}}%
-                  </td>
-                </ng-container>
-                <ng-container matColumnDef="Action" class="text-center">
-                  <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5 text-center" mat-header-cell
-                    *matHeaderCellDef>
-                    Action
-                  </th>
-                  <td mat-cell *matCellDef="let element" class="text-center">
-                    <button mat-button color="primary" disabled>Select</button>
-                  </td>
-                </ng-container>
-              </div>
-              <tr mat-header-row class="h-16 shadow bg-card" *matHeaderRowDef="displayedColumns"></tr>
-              <tr mat-row class="hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
-                *matRowDef="let row; columns: displayedColumns" (click)="marginDetails(row)"></tr>
-            </table>
-          </ng-container>
-          <ng-template #noRecords>
-            <div class="font-semibold tracking-tight text-center">
-              <p>No record found</p>
-            </div>
-          </ng-template>
-        </div>
-      </div>
-      <div class="row w-full" *ngIf="isMarginDetails">
-        <div class="col-12">
-          <div class="p-6 sm:p-8 lg:p-10 w-full">
-            <div class="text-right m-2">
-              <button mat-button mat-stroked-button (click)="isMarginDetails = !isMarginDetails"
-                matTooltip="Back to margins list" class="min-w-30">Back
-                to margins</button>
-            </div>
-            <table class="table">
-              <tr>
-                <th *ngIf="marginDetailsData.margin1">1</th>
-                <th *ngIf="marginDetailsData.margin2">2</th>
-                <th *ngIf="marginDetailsData.margin3">3</th>
-                <th *ngIf="marginDetailsData.margin4">4</th>
-                <th *ngIf="marginDetailsData.margin5">5</th>
-                <th *ngIf="marginDetailsData.margin6">6</th>
-              </tr>
-              <tr>
-                <td *ngIf="marginDetailsData.margin1" class="font-bold">{{(marginDetailsData.margin1 * 100).toFixed(2)}} %</td>
-                <td *ngIf="marginDetailsData.margin2" class="font-bold">{{(marginDetailsData.margin2 * 100).toFixed(2)}}%</td>
-                <td *ngIf="marginDetailsData.margin3" class="font-bold">{{(marginDetailsData.margin3 * 100).toFixed(2)}}%</td>
-                <td *ngIf="marginDetailsData.margin4" class="font-bold">{{(marginDetailsData.margin4 * 100).toFixed(2)}}%</td>
-                <td *ngIf="marginDetailsData.margin5" class="font-bold">{{(marginDetailsData.margin5 * 100).toFixed(2)}}%</td>
-                <td *ngIf="marginDetailsData.margin6" class="font-bold">{{(marginDetailsData.margin6 * 100).toFixed(2)}}%</td>
-              </tr>
-            </table>
+          <div class="col-12 px-10" *ngIf="isKeywordSearch">
+            <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isKeywordSearch">
+            </ngx-skeleton-loader>
           </div>
-        </div>
-        <div class="col-12">
-          <div class="px-6 sm:px-8 lg:px-10 w-full">
-            <mat-form-field class="min-w-100">
-              <mat-label>Filter by product type:</mat-label>
-              <mat-select matInput [(ngModel)]="ngProdFilter">
-                <mat-option [value]="'all'" (click)="getMarginProducts(1)">All</mat-option>
-                <mat-option [value]="'hardgoods'" (click)="getMarginProducts(1)">Hardgoods</mat-option>
-                <mat-option [value]="'apparel'" (click)="getMarginProducts(1)">Apparel</mat-option>
-              </mat-select>
-            </mat-form-field>
-            <div *ngIf="marginProdsLoader">
-              <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
-              </ngx-skeleton-loader>
-            </div>
-            <div class="h-60 overflow-y-auto border p-2" *ngIf="!marginProdsLoader">
-              <table class="table table-striped">
-                <thead>
-                  <tr>
-                    <th width="30%">Vendor</th>
-                    <th width="70%">Product</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let item of marginProducts">
-                    <td>{{item.vendor}}</td>
-                    <td>
-                      <a target="_blank"
-                        [routerLink]="['/apps/ecommerce/inventory/storeProduct',item.pk_storeProductID,'pricing']">{{item.product}}</a>
+
+          <div class="col-12 pb-5" *ngIf="!isKeywordSearch">
+            <ng-container *ngIf="dataSource.length > 0; else noRecords">
+              <table mat-table [dataSource]="dataSource" class="w-full">
+                <div class="color-blue">
+                  <!-- SPID Column -->
+                  <ng-container matColumnDef="frequency">
+                    <th class="min-w-50 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
+                      Frequency
+                    </th>
+                    <td mat-cell *matCellDef="let element">{{ element.counter }}</td>
+                  </ng-container>
+
+                  <!-- Name Column -->
+                  <ng-container matColumnDef="1">
+                    <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
+                      1%
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                      {{(element.margin1 * 100).toFixed(2)}}%
                     </td>
-                  </tr>
-                </tbody>
+                  </ng-container>
+
+                  <!-- Status Column -->
+                  <ng-container matColumnDef="2">
+                    <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
+                      2%
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                      {{(element.margin2 * 100).toFixed(2)}}%
+                    </td>
+                  </ng-container>
+                  <ng-container matColumnDef="3">
+                    <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
+                      3%
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                      {{(element.margin3 * 100).toFixed(2)}}%
+                    </td>
+                  </ng-container>
+                  <ng-container matColumnDef="4">
+                    <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
+                      4%
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                      {{(element.margin4 * 100).toFixed(2)}}%
+                    </td>
+                  </ng-container>
+                  <ng-container matColumnDef="5">
+                    <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
+                      5%
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                      {{(element.margin5 * 100).toFixed(2)}}%
+                    </td>
+                  </ng-container>
+                  <ng-container matColumnDef="6">
+                    <th class="min-w-5 bg-gray-50 dark:bg-black dark:bg-opacity-5" mat-header-cell *matHeaderCellDef>
+                      6%
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                      {{(element.margin6 * 100).toFixed(2)}}%
+                    </td>
+                  </ng-container>
+                  <ng-container matColumnDef="Action" class="text-center">
+                    <th class="min-w-10 bg-gray-50 dark:bg-black dark:bg-opacity-5 text-center" mat-header-cell
+                      *matHeaderCellDef>
+                      Action
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-center">
+                      <button mat-button color="primary" disabled>Select</button>
+                    </td>
+                  </ng-container>
+                </div>
+                <tr mat-header-row class="h-16 shadow bg-card" *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row class="hover:bg-gray-100 dark:hover:bg-hover" style="cursor: pointer;"
+                  *matRowDef="let row; columns: displayedColumns" (click)="marginDetails(row)"></tr>
               </table>
-              <div class="flex justify-center cursor-pointer" *ngIf="marginTotalProds > marginProducts.length">
-                <p *ngIf="!marginLoadMore" (click)="marginNextProducts()">Load More</p>
-                <mat-progress-spinner *ngIf="marginLoadMore" [diameter]="24" [mode]="'indeterminate'">
-                </mat-progress-spinner>
+            </ng-container>
+            <ng-template #noRecords>
+              <div class="font-semibold tracking-tight text-center">
+                <p>No record found</p>
               </div>
-            </div>
+            </ng-template>
           </div>
         </div>
-        <div class="col-12 my-2">
-          <div class="p-6 sm:p-8 lg:p-10 w-full">
-            <p class="text-lg text-secondary font-bold">Margin Update</p>
-            <p class="text-red-500">The margins will be updated for all the products above.</p>
-            <div class="row my-2" [formGroup]="marginDetailForm">
-              <div *ngIf="marginDetailsData.margin1" class="col-md-2 col-6">
-                <mat-form-field appearance="fill" class="w-full">
-                  <mat-label>
-                    Margin1 %
-                  </mat-label>
-                  <input matInput formControlName="margin1" />
-                </mat-form-field>
+        <div class="row w-full" *ngIf="isMarginDetails">
+          <div class="col-12">
+            <div class="p-6 sm:p-8 lg:p-10 w-full">
+              <div class="text-right m-2">
+                <button mat-button mat-stroked-button (click)="isMarginDetails = !isMarginDetails"
+                  matTooltip="Back to margins list" class="min-w-30">Back
+                  to margins</button>
               </div>
-              <div *ngIf="marginDetailsData.margin2" class="col-md-2 col-6">
-                <mat-form-field appearance="fill" class="w-full">
-                  <mat-label>
-                    Margin2 %
-                  </mat-label>
-                  <input matInput formControlName="margin2" />
-                </mat-form-field>
-              </div>
-              <div *ngIf="marginDetailsData.margin3" class="col-md-2 col-6">
-                <mat-form-field appearance="fill" class="w-full">
-                  <mat-label>
-                    Margin3 %
-                  </mat-label>
-                  <input matInput formControlName="margin3" />
-                </mat-form-field>
-              </div>
-              <div *ngIf="marginDetailsData.margin4" class="col-md-2 col-6">
-                <mat-form-field appearance="fill" class="w-full">
-                  <mat-label>
-                    Margin4 %
-                  </mat-label>
-                  <input matInput formControlName="margin4" />
-                </mat-form-field>
-              </div>
-              <div *ngIf="marginDetailsData.margin5" class="col-md-2 col-6">
-                <mat-form-field appearance="fill" class="w-full">
-                  <mat-label>
-                    Margin5 %
-                  </mat-label>
-                  <input matInput formControlName="margin5" />
-                </mat-form-field>
-              </div>
-              <div *ngIf="marginDetailsData.margin6" class="col-md-2 col-6">
-                <mat-form-field appearance="fill" class="w-full">
-                  <mat-label>
-                    Margin6 %
-                  </mat-label>
-                  <input matInput formControlName="margin6" />
-                </mat-form-field>
-              </div>
-            </div>
-            <div class="my-2">
-              <a (click)="applyMargins('apparel')" class="cursor-pointer">Apply hardgoods margins</a>
-              <br>
-              <a (click)="applyMargins('goods')" class="cursor-pointer">Apply apparel margins</a>
-            </div>
-            <div>
-              <button [disabled] = "updateMarginLoader"  mat-button mat-stroked-button class="min-w-30" (click)="openUpdateModal()">
-                <span *ngIf="!updateMarginLoader"> Update product margins </span>
-                <mat-progress-spinner *ngIf="updateMarginLoader" [diameter]="24" [mode]="'indeterminate'">
-                </mat-progress-spinner>
-              </button>
+              <table class="table">
+                <tr>
+                  <th *ngIf="marginDetailsData.margin1">1</th>
+                  <th *ngIf="marginDetailsData.margin2">2</th>
+                  <th *ngIf="marginDetailsData.margin3">3</th>
+                  <th *ngIf="marginDetailsData.margin4">4</th>
+                  <th *ngIf="marginDetailsData.margin5">5</th>
+                  <th *ngIf="marginDetailsData.margin6">6</th>
+                </tr>
+                <tr>
+                  <td *ngIf="marginDetailsData.margin1" class="font-bold">{{(marginDetailsData.margin1 *
+                    100).toFixed(2)}} %</td>
+                  <td *ngIf="marginDetailsData.margin2" class="font-bold">{{(marginDetailsData.margin2 *
+                    100).toFixed(2)}}%</td>
+                  <td *ngIf="marginDetailsData.margin3" class="font-bold">{{(marginDetailsData.margin3 *
+                    100).toFixed(2)}}%</td>
+                  <td *ngIf="marginDetailsData.margin4" class="font-bold">{{(marginDetailsData.margin4 *
+                    100).toFixed(2)}}%</td>
+                  <td *ngIf="marginDetailsData.margin5" class="font-bold">{{(marginDetailsData.margin5 *
+                    100).toFixed(2)}}%</td>
+                  <td *ngIf="marginDetailsData.margin6" class="font-bold">{{(marginDetailsData.margin6 *
+                    100).toFixed(2)}}%</td>
+                </tr>
+              </table>
             </div>
           </div>
-        </div>
-      </div>
-    </fuse-card>
-    <!-- Default Values -->
-    <fuse-card class="rounded-2xl shadow bg-card flex " *ngIf="mainScreen == 'Default Values'">
-      <div class="row" style="width: -webkit-fill-available;">
-        <div class="col-12">
-          <div class="p-6 sm:p-8 lg:p-10 w-full">
-            <div class="row">
-              <div class="col-lg-6 col-12">
-                <div class="text-2xl font-bold">
-                  Default Values
+          <div class="col-12">
+            <div class="px-6 sm:px-8 lg:px-10 w-full">
+              <mat-form-field class="min-w-100">
+                <mat-label>Filter by product type:</mat-label>
+                <mat-select matInput [(ngModel)]="ngProdFilter">
+                  <mat-option [value]="'all'" (click)="getMarginProducts(1)">All</mat-option>
+                  <mat-option [value]="'hardgoods'" (click)="getMarginProducts(1)">Hardgoods</mat-option>
+                  <mat-option [value]="'apparel'" (click)="getMarginProducts(1)">Apparel</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <div *ngIf="marginProdsLoader">
+                <ngx-skeleton-loader count="8" appearance="line" animation="pulse">
+                </ngx-skeleton-loader>
+              </div>
+              <div class="h-60 overflow-y-auto border p-2" *ngIf="!marginProdsLoader">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th width="30%">Vendor</th>
+                      <th width="70%">Product</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of marginProducts">
+                      <td>{{item.vendor}}</td>
+                      <td>
+                        <a target="_blank"
+                          [routerLink]="['/apps/ecommerce/inventory/storeProduct',item.pk_storeProductID,'pricing']">{{item.product}}</a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="flex justify-center cursor-pointer" *ngIf="marginTotalProds > marginProducts.length">
+                  <p *ngIf="!marginLoadMore" (click)="marginNextProducts()">Load More</p>
+                  <mat-progress-spinner *ngIf="marginLoadMore" [diameter]="24" [mode]="'indeterminate'">
+                  </mat-progress-spinner>
                 </div>
               </div>
-              <div class="col-12">
-                <note class="text-md">
-                  PLEASE NOTE: The store margins below are simply the suggested values used when entering the margins
-                  for a product.<br>
-                  Modifying these margins has no impact on the current pricing of the products.</note>
+            </div>
+          </div>
+          <div class="col-12 my-2">
+            <div class="p-6 sm:p-8 lg:p-10 w-full">
+              <p class="text-lg text-secondary font-bold">Margin Update</p>
+              <p class="text-red-500">The margins will be updated for all the products above.</p>
+              <div class="row my-2" [formGroup]="marginDetailForm">
+                <div *ngIf="marginDetailsData.margin1" class="col-md-2 col-6">
+                  <mat-form-field appearance="fill" class="w-full">
+                    <mat-label>
+                      Margin1 %
+                    </mat-label>
+                    <input matInput formControlName="margin1" />
+                  </mat-form-field>
+                </div>
+                <div *ngIf="marginDetailsData.margin2" class="col-md-2 col-6">
+                  <mat-form-field appearance="fill" class="w-full">
+                    <mat-label>
+                      Margin2 %
+                    </mat-label>
+                    <input matInput formControlName="margin2" />
+                  </mat-form-field>
+                </div>
+                <div *ngIf="marginDetailsData.margin3" class="col-md-2 col-6">
+                  <mat-form-field appearance="fill" class="w-full">
+                    <mat-label>
+                      Margin3 %
+                    </mat-label>
+                    <input matInput formControlName="margin3" />
+                  </mat-form-field>
+                </div>
+                <div *ngIf="marginDetailsData.margin4" class="col-md-2 col-6">
+                  <mat-form-field appearance="fill" class="w-full">
+                    <mat-label>
+                      Margin4 %
+                    </mat-label>
+                    <input matInput formControlName="margin4" />
+                  </mat-form-field>
+                </div>
+                <div *ngIf="marginDetailsData.margin5" class="col-md-2 col-6">
+                  <mat-form-field appearance="fill" class="w-full">
+                    <mat-label>
+                      Margin5 %
+                    </mat-label>
+                    <input matInput formControlName="margin5" />
+                  </mat-form-field>
+                </div>
+                <div *ngIf="marginDetailsData.margin6" class="col-md-2 col-6">
+                  <mat-form-field appearance="fill" class="w-full">
+                    <mat-label>
+                      Margin6 %
+                    </mat-label>
+                    <input matInput formControlName="margin6" />
+                  </mat-form-field>
+                </div>
               </div>
-              <div class="col-12 mt-5">
-                <form [formGroup]="defaultMarginForm">
-                  <div class="row">
-                    <div class="col-12 pb-1">
-                      <p class="text-lg font-bold border-b">Hardgoods</p>
-                    </div>
-                    <div class="col-md-2 col-6">
-                      <mat-form-field appearance="fill" class="w-full">
-                        <mat-label>
-                          Margin1 %
-                        </mat-label>
-                        <input matInput formControlName="margin1" />
-                      </mat-form-field>
-                    </div>
-                    <div class="col-md-2 col-6">
-                      <mat-form-field appearance="fill" class="w-full">
-                        <mat-label>
-                          Margin2 %
-                        </mat-label>
-                        <input matInput formControlName="margin2" />
-                      </mat-form-field>
-                    </div>
-                    <div class="col-md-2 col-6">
-                      <mat-form-field appearance="fill" class="w-full">
-                        <mat-label>
-                          Margin3 %
-                        </mat-label>
-                        <input matInput formControlName="margin3" />
-                      </mat-form-field>
-                    </div>
-                    <div class="col-md-2 col-6">
-                      <mat-form-field appearance="fill" class="w-full">
-                        <mat-label>
-                          Margin4 %
-                        </mat-label>
-                        <input matInput formControlName="margin4" />
-                      </mat-form-field>
-                    </div>
-                    <div class="col-md-2 col-6">
-                      <mat-form-field appearance="fill" class="w-full">
-                        <mat-label>
-                          Margin5 %
-                        </mat-label>
-                        <input matInput formControlName="margin5" />
-                      </mat-form-field>
-                    </div>
-                    <div class="col-md-2 col-6">
-                      <mat-form-field appearance="fill" class="w-full">
-                        <mat-label>
-                          Margin6 %
-                        </mat-label>
-                        <input matInput formControlName="margin6" />
-                      </mat-form-field>
-                    </div>
-                    <div class="col-12 pb-1">
-                      <p class="text-lg font-bold border-b">Apparel</p>
-                    </div>
-                    <div class="col-md-2 col-6">
-                      <mat-form-field appearance="fill" class="w-full">
-                        <mat-label>
-                          Margin1 %
-                        </mat-label>
-                        <input matInput formControlName="apparel1" />
-                      </mat-form-field>
-                    </div>
-                    <div class="col-md-2 col-6">
-                      <mat-form-field appearance="fill" class="w-full">
-                        <mat-label>
-                          Margin2 %
-                        </mat-label>
-                        <input matInput formControlName="apparel2" />
-                      </mat-form-field>
-                    </div>
-                    <div class="col-md-2 col-6">
-                      <mat-form-field appearance="fill" class="w-full">
-                        <mat-label>
-                          Margin3 %
-                        </mat-label>
-                        <input matInput formControlName="apparel3" />
-                      </mat-form-field>
-                    </div>
-                    <div class="col-md-2 col-6">
-                      <mat-form-field appearance="fill" class="w-full">
-                        <mat-label>
-                          Margin4 %
-                        </mat-label>
-                        <input matInput formControlName="apparel4" />
-                      </mat-form-field>
-                    </div>
-                    <div class="col-md-2 col-6">
-                      <mat-form-field appearance="fill" class="w-full">
-                        <mat-label>
-                          Margin5 %
-                        </mat-label>
-                        <input matInput formControlName="apparel5" />
-                      </mat-form-field>
-                    </div>
-                    <div class="col-md-2 col-6">
-                      <mat-form-field appearance="fill" class="w-full">
-                        <mat-label>
-                          Margin6 %
-                        </mat-label>
-                        <input matInput formControlName="apparel6" />
-                      </mat-form-field>
-                    </div>
-                    <div class="col-12 pb-1">
-                      <p class="text-lg font-bold border-b">Print</p>
-                    </div>
-                    <div class="col-md-2 col-6">
-                      <mat-form-field appearance="fill" class="w-full">
-                        <mat-label>
-                          Margin1 %
-                        </mat-label>
-                        <input matInput formControlName="print1" />
-                      </mat-form-field>
-                    </div>
-                    <div class="col-md-2 col-6">
-                      <mat-form-field appearance="fill" class="w-full">
-                        <mat-label>
-                          Margin2 %
-                        </mat-label>
-                        <input matInput formControlName="print2" />
-                      </mat-form-field>
-                    </div>
-                    <div class="col-md-2 col-6">
-                      <mat-form-field appearance="fill" class="w-full">
-                        <mat-label>
-                          Margin3 %
-                        </mat-label>
-                        <input matInput formControlName="print3" />
-                      </mat-form-field>
-                    </div>
-                    <div class="col-md-2 col-6">
-                      <mat-form-field appearance="fill" class="w-full">
-                        <mat-label>
-                          Margin4 %
-                        </mat-label>
-                        <input matInput formControlName="print4" />
-                      </mat-form-field>
-                    </div>
-                    <div class="col-md-2 col-6">
-                      <mat-form-field appearance="fill" class="w-full">
-                        <mat-label>
-                          Margin5 %
-                        </mat-label>
-                        <input matInput formControlName="print5" />
-                      </mat-form-field>
-                    </div>
-                    <div class="col-md-2 col-6">
-                      <mat-form-field appearance="fill" class="w-full">
-                        <mat-label>
-                          Margin6 %
-                        </mat-label>
-                        <input matInput formControlName="print6" />
-                      </mat-form-field>
-                    </div>
-                    <div class="col-12 flex items-center justify-end w-full">
-                      <div class="flex mr-4" *ngIf="defaultMarginMsgLoader">
-                        <ng-container>
-                          <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
-                          <span class="ml-2">Default Values Update Successfully</span>
-                        </ng-container>
+              <div class="my-2">
+                <a (click)="applyMargins('apparel')" class="cursor-pointer">Apply hardgoods margins</a>
+                <br>
+                <a (click)="applyMargins('goods')" class="cursor-pointer">Apply apparel margins</a>
+              </div>
+              <div>
+                <button [disabled]="updateMarginLoader" mat-button mat-stroked-button class="min-w-30"
+                  (click)="openUpdateModal()">
+                  <span *ngIf="!updateMarginLoader"> Update product margins </span>
+                  <mat-progress-spinner *ngIf="updateMarginLoader" [diameter]="24" [mode]="'indeterminate'">
+                  </mat-progress-spinner>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </fuse-card>
+      <!-- Default Values -->
+      <fuse-card class="rounded-2xl shadow bg-card flex " *ngIf="mainScreen == 'Default Values'">
+        <div class="row" style="width: -webkit-fill-available;">
+          <div class="col-12">
+            <div class="p-6 sm:p-8 lg:p-10 w-full">
+              <div class="row">
+                <div class="col-lg-6 col-12">
+                  <div class="text-2xl font-bold">
+                    Default Values
+                  </div>
+                </div>
+                <div class="col-12">
+                  <note class="text-md">
+                    PLEASE NOTE: The store margins below are simply the suggested values used when entering the margins
+                    for a product.<br>
+                    Modifying these margins has no impact on the current pricing of the products.</note>
+                </div>
+                <div class="col-12 mt-5">
+                  <form [formGroup]="defaultMarginForm">
+                    <div class="row">
+                      <div class="col-12 pb-1">
+                        <p class="text-lg font-bold border-b">Hardgoods</p>
                       </div>
+                      <div class="col-md-2 col-6">
+                        <mat-form-field appearance="fill" class="w-full">
+                          <mat-label>
+                            Margin1 %
+                          </mat-label>
+                          <input matInput formControlName="margin1" />
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-2 col-6">
+                        <mat-form-field appearance="fill" class="w-full">
+                          <mat-label>
+                            Margin2 %
+                          </mat-label>
+                          <input matInput formControlName="margin2" />
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-2 col-6">
+                        <mat-form-field appearance="fill" class="w-full">
+                          <mat-label>
+                            Margin3 %
+                          </mat-label>
+                          <input matInput formControlName="margin3" />
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-2 col-6">
+                        <mat-form-field appearance="fill" class="w-full">
+                          <mat-label>
+                            Margin4 %
+                          </mat-label>
+                          <input matInput formControlName="margin4" />
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-2 col-6">
+                        <mat-form-field appearance="fill" class="w-full">
+                          <mat-label>
+                            Margin5 %
+                          </mat-label>
+                          <input matInput formControlName="margin5" />
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-2 col-6">
+                        <mat-form-field appearance="fill" class="w-full">
+                          <mat-label>
+                            Margin6 %
+                          </mat-label>
+                          <input matInput formControlName="margin6" />
+                        </mat-form-field>
+                      </div>
+                      <div class="col-12 pb-1">
+                        <p class="text-lg font-bold border-b">Apparel</p>
+                      </div>
+                      <div class="col-md-2 col-6">
+                        <mat-form-field appearance="fill" class="w-full">
+                          <mat-label>
+                            Margin1 %
+                          </mat-label>
+                          <input matInput formControlName="apparel1" />
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-2 col-6">
+                        <mat-form-field appearance="fill" class="w-full">
+                          <mat-label>
+                            Margin2 %
+                          </mat-label>
+                          <input matInput formControlName="apparel2" />
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-2 col-6">
+                        <mat-form-field appearance="fill" class="w-full">
+                          <mat-label>
+                            Margin3 %
+                          </mat-label>
+                          <input matInput formControlName="apparel3" />
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-2 col-6">
+                        <mat-form-field appearance="fill" class="w-full">
+                          <mat-label>
+                            Margin4 %
+                          </mat-label>
+                          <input matInput formControlName="apparel4" />
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-2 col-6">
+                        <mat-form-field appearance="fill" class="w-full">
+                          <mat-label>
+                            Margin5 %
+                          </mat-label>
+                          <input matInput formControlName="apparel5" />
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-2 col-6">
+                        <mat-form-field appearance="fill" class="w-full">
+                          <mat-label>
+                            Margin6 %
+                          </mat-label>
+                          <input matInput formControlName="apparel6" />
+                        </mat-form-field>
+                      </div>
+                      <div class="col-12 pb-1">
+                        <p class="text-lg font-bold border-b">Print</p>
+                      </div>
+                      <div class="col-md-2 col-6">
+                        <mat-form-field appearance="fill" class="w-full">
+                          <mat-label>
+                            Margin1 %
+                          </mat-label>
+                          <input matInput formControlName="print1" />
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-2 col-6">
+                        <mat-form-field appearance="fill" class="w-full">
+                          <mat-label>
+                            Margin2 %
+                          </mat-label>
+                          <input matInput formControlName="print2" />
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-2 col-6">
+                        <mat-form-field appearance="fill" class="w-full">
+                          <mat-label>
+                            Margin3 %
+                          </mat-label>
+                          <input matInput formControlName="print3" />
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-2 col-6">
+                        <mat-form-field appearance="fill" class="w-full">
+                          <mat-label>
+                            Margin4 %
+                          </mat-label>
+                          <input matInput formControlName="print4" />
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-2 col-6">
+                        <mat-form-field appearance="fill" class="w-full">
+                          <mat-label>
+                            Margin5 %
+                          </mat-label>
+                          <input matInput formControlName="print5" />
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-2 col-6">
+                        <mat-form-field appearance="fill" class="w-full">
+                          <mat-label>
+                            Margin6 %
+                          </mat-label>
+                          <input matInput formControlName="print6" />
+                        </mat-form-field>
+                      </div>
+                      <div class="col-12 flex items-center justify-end w-full">
+                        <div class="flex mr-4" *ngIf="defaultMarginMsgLoader">
+                          <ng-container>
+                            <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                            <span class="ml-2">Default Values Update Successfully</span>
+                          </ng-container>
+                        </div>
 
-                      <button [disabled]="!defaultMarginForm.valid || defaultMarginLoader"
-                        (click)="updateDefaultMargin()" [matTooltip]="'Update'" class="order-first sm:order-last"
-                        mat-flat-button mat-stroked-button>
-                        <mat-progress-spinner *ngIf="defaultMarginLoader" [diameter]="24" [mode]="'indeterminate'">
-                        </mat-progress-spinner>
-                        <mat-icon *ngIf="!defaultMarginLoader" svgIcon="mode_edit_outline"></mat-icon>
-                        <span class="px-2">Update</span>
-                      </button>
-                    </div>
-                    <!-- <div class="col-12 text-right">
+                        <button [disabled]="!defaultMarginForm.valid || defaultMarginLoader"
+                          (click)="updateDefaultMargin()" [matTooltip]="'Update'" class="order-first sm:order-last"
+                          mat-flat-button mat-stroked-button>
+                          <mat-progress-spinner *ngIf="defaultMarginLoader" [diameter]="24" [mode]="'indeterminate'">
+                          </mat-progress-spinner>
+                          <mat-icon *ngIf="!defaultMarginLoader" svgIcon="mode_edit_outline"></mat-icon>
+                          <span class="px-2">Update</span>
+                        </button>
+                      </div>
+                      <!-- <div class="col-12 text-right">
                       <button class="my-5" (click)="updateDefaultMargin()" mat-flat-button mat-stroked-button
                         [matTooltip]="'Update'">
                         <span class="px-2">Update</span>
                       </button>
                     </div> -->
-                  </div>
-                </form>
+                    </div>
+                  </form>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </fuse-card>
+      </fuse-card>
+    </div>
   </div>
-</div>
 
-<div class="modal" tabindex="-1" role="dialog" #changeProfile>
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Remove Company Profile</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <p>Are you sure you want to proceed? This will update all the products above to the margins defined here. This
-          cannot be undone.</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="updateMarginProducts()">Yes</button>
-        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+  <div class="modal" tabindex="-1" role="dialog" #changeProfile>
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Remove Company Profile</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Are you sure you want to proceed? This will update all the products above to the margins defined here. This
+            cannot be undone.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="updateMarginProducts()">Yes</button>
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
+</ng-contianer>

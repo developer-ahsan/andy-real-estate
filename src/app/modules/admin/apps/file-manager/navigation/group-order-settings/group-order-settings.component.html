@@ -1,85 +1,92 @@
-<ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isStoreFetch">
-</ngx-skeleton-loader>
+<div class="alert m-4 w-full alert-danger p-4 text-lg text-center font-bold"
+  *ngIf="!_storeManagerService.store.viewGroupBuySettings">
+  You do not have permission to access this section.
+</div>
+<ng-container *ngIf="_storeManagerService.store.viewGroupBuySettings">
+  <ngx-skeleton-loader count="8" appearance="line" animation="pulse" *ngIf="isStoreFetch">
+  </ngx-skeleton-loader>
 
-<div *ngIf="!isStoreFetch">
-  <form [formGroup]="groupOrdersSettingsForm">
-    <div class="row px-3 bg-light">
-      <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
-        <div class="text-2xl font-extrabold tracking-tight leading-none">
-          {{selectedStore?.storeName}} Group Order Settings
-        </div>
-        <div class="row my-3">
-          <div class="col-12">
-            <div class="flex">
-              <mat-label> Allow group orders on this store </mat-label>
-              <mat-icon matTooltip="This determines whether group order functionality is avialable on the store or not."
-                svgIcon="heroicons_solid:question-mark-circle" class="icon-size-4"></mat-icon>
-            </div>
-            <mat-form-field appearance="fill" class="w-full">
-              <mat-select [formControlName]="'blnGroupOrderActive'">
-                <mat-option [value]="true">Yes</mat-option>
-                <mat-option [value]="false">No</mat-option>
-              </mat-select>
-            </mat-form-field>
+  <div *ngIf="!isStoreFetch">
+    <form [formGroup]="groupOrdersSettingsForm">
+      <div class="row px-3 bg-light">
+        <div class="col-12 bg-card sm:p-6 md:p-6 lg:p-10 rounded-2xl shadow">
+          <div class="text-2xl font-extrabold tracking-tight leading-none">
+            {{selectedStore?.storeName}} Group Order Settings
           </div>
-          <div class="col-12">
-            <div class="flex">
-              <mat-label> Allow initiator to invite existing customers/users </mat-label>
-              <mat-icon
-                matTooltip="This determines whether or not the initiator of a group order can select from a list of existing customers/users.  Turning this off ensures that the initiator can only enter email addresses to invite participants."
-                svgIcon="heroicons_solid:question-mark-circle" class="icon-size-4"></mat-icon>
+          <div class="row my-3">
+            <div class="col-12">
+              <div class="flex">
+                <mat-label> Allow group orders on this store </mat-label>
+                <mat-icon
+                  matTooltip="This determines whether group order functionality is avialable on the store or not."
+                  svgIcon="heroicons_solid:question-mark-circle" class="icon-size-4"></mat-icon>
+              </div>
+              <mat-form-field appearance="fill" class="w-full">
+                <mat-select [formControlName]="'blnGroupOrderActive'">
+                  <mat-option [value]="true">Yes</mat-option>
+                  <mat-option [value]="false">No</mat-option>
+                </mat-select>
+              </mat-form-field>
             </div>
-            <mat-form-field appearance="fill" class="w-full">
-              <mat-select [formControlName]="'blnChooseFromExistingCustomers'">
-                <mat-option [value]="true">Yes</mat-option>
-                <mat-option [value]="false">No</mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
-          <!-- Pays -->
-          <div class="col-12">
-            <div class="flex">
-              <mat-label> Allow initiator to pay for the entire group order </mat-label>
-              <mat-icon
-                matTooltip="This determines whether or not the initiator of a group order can select to pay for the entire group order.  Turning this off will ensure that each indivdiual participant, including the initiator, will be paying for their own portion."
-                svgIcon="heroicons_solid:question-mark-circle" class="icon-size-4"></mat-icon>
+            <div class="col-12">
+              <div class="flex">
+                <mat-label> Allow initiator to invite existing customers/users </mat-label>
+                <mat-icon
+                  matTooltip="This determines whether or not the initiator of a group order can select from a list of existing customers/users.  Turning this off ensures that the initiator can only enter email addresses to invite participants."
+                  svgIcon="heroicons_solid:question-mark-circle" class="icon-size-4"></mat-icon>
+              </div>
+              <mat-form-field appearance="fill" class="w-full">
+                <mat-select [formControlName]="'blnChooseFromExistingCustomers'">
+                  <mat-option [value]="true">Yes</mat-option>
+                  <mat-option [value]="false">No</mat-option>
+                </mat-select>
+              </mat-form-field>
             </div>
-            <mat-form-field appearance="fill" class="w-full">
-              <mat-select [formControlName]="'blnInitiatorPays'">
-                <mat-option [value]="true">Yes</mat-option>
-                <mat-option [value]="false">No</mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
+            <!-- Pays -->
+            <div class="col-12">
+              <div class="flex">
+                <mat-label> Allow initiator to pay for the entire group order </mat-label>
+                <mat-icon
+                  matTooltip="This determines whether or not the initiator of a group order can select to pay for the entire group order.  Turning this off will ensure that each indivdiual participant, including the initiator, will be paying for their own portion."
+                  svgIcon="heroicons_solid:question-mark-circle" class="icon-size-4"></mat-icon>
+              </div>
+              <mat-form-field appearance="fill" class="w-full">
+                <mat-select [formControlName]="'blnInitiatorPays'">
+                  <mat-option [value]="true">Yes</mat-option>
+                  <mat-option [value]="false">No</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
 
 
-          <div class="col-12 flex justify-end">
-            <div class="items-center">
-              <div class="flex items-center my-2">
-                <div class="flex items-center mr-4" *ngIf="flashMessage">
-                  <ng-container *ngIf="flashMessage === 'success'">
-                    <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
-                    </mat-icon>
-                    <span class="ml-2">Group order settings updated successfully</span>
-                  </ng-container>
-                  <ng-container *ngIf="flashMessage === 'error'">
-                    <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
-                    <span class="ml-2">An error occurred, try again!</span>
-                  </ng-container>
+            <div class="col-12 flex justify-end">
+              <div class="items-center">
+                <div class="flex items-center my-2">
+                  <div class="flex items-center mr-4" *ngIf="flashMessage">
+                    <ng-container *ngIf="flashMessage === 'success'">
+                      <mat-icon class="text-green-500" [svgIcon]="'heroicons_outline:check'">
+                      </mat-icon>
+                      <span class="ml-2">Group order settings updated successfully</span>
+                    </ng-container>
+                    <ng-container *ngIf="flashMessage === 'error'">
+                      <mat-icon class="text-red-500" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                      <span class="ml-2">An error occurred, try again!</span>
+                    </ng-container>
+                  </div>
+                  <button class="min-w-40" mat-stroked-button [matTooltip]="'Update Group Order Settings'"
+                    (click)="saveChanges()" [disabled]="isGroupOrderUpdate">
+                    <mat-progress-spinner *ngIf="isGroupOrderUpdate" [diameter]="24" [mode]="'indeterminate'">
+                    </mat-progress-spinner>
+                    <mat-icon *ngIf="!isGroupOrderUpdate" svgIcon="mode_edit_outline"></mat-icon>
+                    <span *ngIf="!isGroupOrderUpdate" class="ml-1 mr-1">Save Changes</span>
+                  </button>
                 </div>
-                <button class="min-w-40" mat-stroked-button [matTooltip]="'Update Group Order Settings'"
-                  (click)="saveChanges()" [disabled]="isGroupOrderUpdate">
-                  <mat-progress-spinner *ngIf="isGroupOrderUpdate" [diameter]="24" [mode]="'indeterminate'">
-                  </mat-progress-spinner>
-                  <mat-icon *ngIf="!isGroupOrderUpdate" svgIcon="mode_edit_outline"></mat-icon>
-                  <span *ngIf="!isGroupOrderUpdate" class="ml-1 mr-1">Save Changes</span>
-                </button>
               </div>
             </div>
-          </div>
 
+          </div>
         </div>
       </div>
-    </div>
-  </form>
-</div>
+    </form>
+  </div>
+</ng-container>
