@@ -170,8 +170,8 @@ export class OrdersReportComponent implements OnInit {
             orderLine.royaltyPrice = orderLine.optionsPrice * this.orderDetail.apparelRoyaltyAmount;
             this.orderDetail.totalRoyalties += orderLine.optionsPrice * this.orderDetail.apparelRoyaltyAmount;
           } else {
-            orderLine.royaltyPrice = orderLine.optionsPrice * this.orderDetail.royalties;
-            this.orderDetail.totalRoyalties += orderLine.optionsPrice * this.orderDetail.royalties;
+            orderLine.royaltyPrice = orderLine.optionsPrice * this.orderDetail.royaltyAmount;
+            this.orderDetail.totalRoyalties += orderLine.optionsPrice * this.orderDetail.royaltyAmount;
           }
         }
         // this.orderDetail.totalRoyalties += orderLine.royaltyPrice;
