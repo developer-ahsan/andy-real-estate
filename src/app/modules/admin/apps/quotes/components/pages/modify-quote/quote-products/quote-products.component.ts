@@ -526,7 +526,7 @@ export class QuoteProductsComponent implements OnInit {
     } else {
       msg = 'This will clear the selected product of a group run master, converting it to just a regular product.  This will also convert all sub-products in this group run to regular products.  This cannot be undone.  Are you sure you want to continue?';
     }
-    this._commonService.showConfirmation('Changing the item on this quote line will remove all options and imprints, including any artwork comments and attached artwork.  If you need this information, please save it first before changing the product.  Are you sure you want to continue?  This action cannot be undone.', (confirmed) => {
+    this._commonService.showConfirmation(msg, (confirmed) => {
       if (confirmed) {
         let payload: updateGroupRun = {
           blnGroupRun: check,

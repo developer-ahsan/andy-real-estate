@@ -253,7 +253,7 @@
 
                     <div class="col-12 text-right">
                         <button
-                            *ngIf="selectedQuoteDetail.blnGroupOrder && !selectedCartLine.blnGroupRun && !selectedCartLine.groupRunCartLineID && selectedCartLine.blnApparel"
+                            *ngIf="!selectedQuoteDetail.blnGroupOrder && !selectedCartLine.blnGroupRun && !selectedCartLine.groupRunCartLineID && selectedCartLine.blnApparel"
                             class="mr-2 min-w-40" mat-button mat-flat-button color="primary"
                             (click)="makeGroupRunMaster(true)" [disabled]="selectedCartLine.isUpdateGroupRunLoader">
                             <span *ngIf="!selectedCartLine.isUpdateGroupRunLoader">Make group run master</span>
@@ -262,7 +262,7 @@
                             </mat-progress-spinner>
                         </button>
                         <button
-                            *ngIf="!selectedQuoteDetail.blnGroupOrder && !selectedCartLine.blnGroupRun && !selectedCartLine.groupRunCartLineID && selectedCartLine.blnApparel"
+                            *ngIf="!selectedQuoteDetail.blnGroupOrder && selectedCartLine.blnGroupRun && !selectedCartLine.groupRunCartLineID && selectedCartLine.blnApparel"
                             class="mr-2 min-w-40" mat-button mat-flat-button color="primary"
                             (click)="makeGroupRunMaster(false)" [disabled]="selectedCartLine.isUpdateGroupRunLoader">
                             <span *ngIf="!selectedCartLine.isUpdateGroupRunLoader">Clear group run master</span>
@@ -766,7 +766,7 @@
                 </mat-expansion-panel-header>
                 <div class="p-3">
                     <!-- *ngIf="ngSelectedProduct.imprintsUnSelected.length > 0" -->
-                    <div>
+                    <div *ngIf="selectedCartLine?.unselectedImprints.length;else noImprintDataOptions">
                         <mat-form-field class="w-full">
                             <mat-select matInput [(ngModel)]="selectedCartLine.ngImprintSelected">
                                 <mat-option *ngFor="let imprint of selectedCartLine?.unselectedImprints"
@@ -784,6 +784,12 @@
                             </button>
                         </div>
                     </div>
+                    <ng-template #noImprintDataOptions>
+                        <div class="alert alert-warning my-2">
+                            <span class="fa fa-exclamation-circle fa-lg"></span>
+                            This product does not have any available imprints.
+                        </div>
+                    </ng-template>
                 </div>
             </mat-expansion-panel>
 
