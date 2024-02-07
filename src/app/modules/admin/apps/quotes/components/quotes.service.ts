@@ -182,10 +182,11 @@ export class QuotesService {
             environment.products, payload, { headers });
     };
 
-    getSelectedProducts(store_id): Observable<any> {
+    getSelectedProducts(store_id, cart_id): Observable<any> {
         let params = {
             modify_cart_current_products: true,
-            store_id: store_id
+            store_id: store_id,
+            cart_id: cart_id
         }
         return this._httpClient.get<any>(environment.quotes, { params: params }).pipe(
             tap((quote) => {

@@ -43,7 +43,7 @@ export class QuoteModifyComponent implements OnInit, OnDestroy {
       .subscribe((quote) => {
         this._quoteService.ModifyCurrentProducts$.subscribe(res => {
           if (!res) {
-            this._quoteService.getSelectedProducts(quote["data"][0].storeID).subscribe(() => {
+            this._quoteService.getSelectedProducts(quote["data"][0].storeID, quote["data"][0].pk_cartID).subscribe(() => {
               this.isLoading = false;
               this._changeDetectorRef.markForCheck();
             });
