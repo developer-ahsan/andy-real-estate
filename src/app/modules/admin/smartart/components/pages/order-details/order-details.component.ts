@@ -1310,7 +1310,7 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
         proofComments: imprint.proofComments,
         blnApproved: blnApprove,
         smartArtLoggedInUserName: this.smartArtUser.firstName + ' ' + this.smartArtUser.lastName,
-        blnAdditionalArtApproval: false,
+        blnAdditionalArtApproval: this.orderData.blnAdditionalArtApproval,
         blnAdditionalApprovalOverride: this.orderData.blnAdditionalApprovalOverride,
         storePrimaryHighlight: this.orderData.storePrimaryHighlight,
         billingStudentOrgCode: this.orderData.sessionArtworkBillingStudentOrgCode,

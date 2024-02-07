@@ -261,8 +261,20 @@ export class QuoteProductsComponent implements OnInit {
   }
   onItemSelect(item: any) {
     this.ngNewProduct = [this.allProducts.find(product => product.fk_productID == item.fk_productID)];
+
+    this.ngNewProduct[0].colorListData = this.parseList(this.ngNewProduct[0].colorsList).map(({ pk_id, name }) => ({ pk_colorID: pk_id, colorName: name }));
+    this.ngNewProduct[0].sizesListData = this.parseList(this.ngNewProduct[0].sizesList).map(({ pk_id, name }) => ({ pk_sizeID: pk_id, sizeName: name }));
+
     this._changeDetectorRef.markForCheck();
   };
+  parseList(listString: string): { pk_id: string, name: string }[] {
+    if (!listString) return [];
+    return listString.split(',').map(item => {
+      const [pk_id, name] = item.split(':');
+      return { pk_id, name };
+    });
+  }
+
   onItemSelectUpdate(item: any) {
     this.ngCurrentProduct = [this.allProducts.find(product => product.fk_productID == item.fk_productID)];
     this._changeDetectorRef.markForCheck();
@@ -280,7 +292,7 @@ export class QuoteProductsComponent implements OnInit {
     this.ngCurrentProduct[0].displayText = this.ngCurrentProduct[0].pk_storeProductID + ' - ' + this.ngCurrentProduct[0].productNumber + ': ' + this.ngCurrentProduct[0].productName
 
     // Group Run Master
-    this.ngCurrentGroupProduct = cartLine;
+    this.ngCurrentGroupProduct = [cartLine];
     this.ngCurrentGroupProduct[0].displayText = this.ngCurrentGroupProduct[0].pk_storeProductID + ' - ' + this.ngCurrentGroupProduct[0].productNumber + ': ' + this.ngCurrentGroupProduct[0].productName
     this._changeDetectorRef.markForCheck();
   }
@@ -308,6 +320,8 @@ export class QuoteProductsComponent implements OnInit {
       });
       this.selectedProduct = this.allProducts[0];
       this.ngNewProduct = [this.allProducts[0]];
+      this.ngNewProduct[0].colorListData = this.parseList(this.ngNewProduct[0].colorsList).map(({ pk_id, name }) => ({ pk_colorID: pk_id, colorName: name }));
+      this.ngNewProduct[0].sizesListData = this.parseList(this.ngNewProduct[0].sizesList).map(({ pk_id, name }) => ({ pk_sizeID: pk_id, sizeName: name }));
       // this.currentSelectedProduct = this.allProducts[0];
       this.searchProductCtrl.setValue(this.selectedProduct)
       // this.isLoading = false;

@@ -219,7 +219,6 @@ export class DashboardsService {
     }
     assignPermissions(name, permissionsObject) {
         const adminUserPermission = this.allPermissions.find(permission => permission.name === name);
-        console.log(adminUserPermission);
         if (adminUserPermission) {
             const { blnChecked, children } = adminUserPermission;
 

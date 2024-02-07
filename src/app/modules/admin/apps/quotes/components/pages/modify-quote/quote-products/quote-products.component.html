@@ -179,7 +179,7 @@
                         <mat-form-field class="w-full">
                             <mat-label>Color</mat-label>
                             <mat-select matInput [(ngModel)]="newProductColor">
-                                <mat-option *ngFor="let color of selectedCartLine.ColorsListData"
+                                <mat-option *ngFor="let color of ngNewProduct[0]?.colorListData"
                                     [value]="color.pk_colorID">{{color.colorName}}</mat-option>
                             </mat-select>
                         </mat-form-field>
@@ -188,9 +188,8 @@
                         <mat-form-field class="w-full">
                             <mat-label>Size</mat-label>
                             <mat-select matInput [(ngModel)]="newProductSize">
-                                <mat-option *ngIf="selectedCartLine?.sizesListData?.length == 0"
-                                    [value]="0">N/A</mat-option>
-                                <mat-option *ngFor="let size of selectedCartLine.sizesListData"
+                                <mat-option *ngIf="ngNewProduct[0]?.sizesListData == 0" [value]="0">N/A</mat-option>
+                                <mat-option *ngFor="let size of ngNewProduct[0]?.sizesListData"
                                     [value]="size.pk_sizeID">{{size.sizeName}}</mat-option>
                             </mat-select>
                         </mat-form-field>

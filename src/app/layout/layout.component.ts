@@ -110,7 +110,6 @@ export class LayoutComponent implements OnInit, OnDestroy {
         this._renderer2.setAttribute(this._document.querySelector('[ng-version]'), 'fuse-version', FUSE_VERSION);
         this._commonService.userPermssions$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
             this._commonService.allPermissions = res;
-            console.log(this._commonService.allPermissions);
         });
     }
 
