@@ -841,7 +841,7 @@
                                             item
                                             is <b>{{imprint.statusName}}</b>
                                             <ng-container *ngIf="imprint.pk_statusID == 9">
-                                                <span *ngIf="imprint.approvalName">{{imprint.approvalName}} </span>
+                                                <span *ngIf="imprint.approvalName"> by {{imprint.approvalName}} </span>
                                                 <span *ngIf="imprint.approvalEmail">({{imprint.approvalEmail}})</span>
                                             </ng-container>.
                                         </div>
