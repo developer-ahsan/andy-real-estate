@@ -33,7 +33,7 @@ export const companyRoutes: Route[] = [
                 }
             },
             {
-                path: 'company-location',
+                path: 'company-location/:companyId/:storeId',
                 component: CompanyProfileLocationComponent,
                 data: {
                     title: 'Comapny Profile Form',
@@ -41,7 +41,7 @@ export const companyRoutes: Route[] = [
                 }
             },
             {
-                path: 'company-logo',
+                path: 'company-logo/:companyId/:storeId',
                 component: ProfileLogoBankComponent,
                 data: {
                     title: 'Comapny Profile Form',

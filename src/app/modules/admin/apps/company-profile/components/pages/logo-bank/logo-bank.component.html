@@ -1,23 +1,31 @@
-<div class="flex flex-col w-full">
-  <button class="min-w-40 cursor-pointer" mat-button mat-flat-button (click)="navigateToCompany()">
-    <span>Back to Companies</span>
-  </button>
+<div class="w-full bg-card p-5" *ngIf="isLoading">
+  <ngx-skeleton-loader class="w-full h-full" count="8" appearance="line" animation="pulse">
+  </ngx-skeleton-loader>
+</div>
+<div class="flex flex-col w-full" *ngIf="!isLoading">
+  <div class="flex flex-row gap-x-5 mt-4 ml-4">
+    <button class="min-w-40 cursor-pointer" mat-button mat-flat-button (click)="navigateToCompany()">
+      <span>Back to Companies</span>
+    </button>
+  </div>
   <div class="rounded-2xl shadow-lg border border-gray-300 bg-card pb-5 m-4">
     <div class="px-4 sm:px-4 lg:px-8 pt-4 w-full">
       <h2 class="text-xl sm:text-xl font-extrabold mb-3">
-        Edit Company Profile
+        Company Logo Bank
       </h2>
       <div [formGroup]="ticketForm">
         <div class="grid grid-cols-1 gap-4 w-full">
 
-          <ngx-dropzone [multiple]="false" accept="image/jpeg,image/jpg,image/png,application/pdf,application/msword"
-            (change)="onSelectMain($event)">
+          <ngx-dropzone [multiple]="false" accept="image/jpeg,image/jpg" (change)="onSelectMain($event)">
             <ngx-dropzone-label>Choose File</ngx-dropzone-label>
             <ngx-dropzone-image-preview *ngFor="let file of files;let i=index" [file]="file" [removable]="true"
               (removed)="onRemoveMain(i)">
               <!-- <img [src]="file?.preview" alt="Preview Image" class="preview-image"> -->
             </ngx-dropzone-image-preview>
           </ngx-dropzone>
+          <div class="text-red-500">
+            JPG
+          </div>
 
 
           <div>
@@ -45,7 +53,8 @@
         </div>
         <div class="flex width full justify-between">
           <button color="primary" class="sm:min-w-40 min-w-24 sm:text-md text-sm cursor-pointer" mat-button
-            mat-flat-button (click)="createTicket()" [disabled]="ticketForm.invalid || isCreateTicketLoader">
+            mat-flat-button (click)="addLogobank()"
+            [disabled]="ticketForm.invalid || files?.length == 0 || isCreateTicketLoader">
             <span *ngIf="!isCreateTicketLoader">Add Logo</span>
             <mat-progress-spinner *ngIf="isCreateTicketLoader" [diameter]="24" [mode]="'indeterminate'">
             </mat-progress-spinner>
@@ -61,9 +70,57 @@
       Logo bank
     </h2>
 
-    <div class="alert alert-warning no-bottom-margin">
+    <div class="alert alert-warning no-bottom-margin" *ngIf="!companyData.logoBanksData.length">
       <span class="fa fa-exclamation-circle"></span> There are currently no logos uploaded to this location's logo bank
       or your search did not return any results.
+    </div>
+    <div *ngIf="companyData.logoBanksData.length">
+      <div class="row border-b p-2" *ngFor="let item of companyData.logoBanksData;let i=index">
+        <div class="col-2">
+          <img
+            src="https://assets.consolidus.com/globalAssets/customerCompany/logoBank/{{route.snapshot.params.companyId}}/{{item.id}}.{{item.type}}">
+        </div>
+        <div class="col-10">
+          <div>
+            <mat-form-field class="w-full">
+              <mat-label>Name</mat-label>
+              <input matInput [(ngModel)]="item.name">
+            </mat-form-field>
+
+          </div>
+          <div>
+            <mat-form-field class="w-full">
+              <mat-label>Description</mat-label>
+              <textarea matInput [(ngModel)]="item.description"></textarea>
+            </mat-form-field>
+          </div>
+          <div>
+            <mat-form-field class="w-full">
+              <mat-label><span class="font-bold">Imprint colors </span> : <span>(optional, comma-separated list of color
+                  names or PMS colors)</span></mat-label>
+              <textarea matInput [(ngModel)]="item.imprintColors"></textarea>
+            </mat-form-field>
+          </div>
+          <div>
+            <a href="https://assets.consolidus.com/globalAssets/customerCompany/logoBank/{{route.snapshot.params.companyId}}/{{item.id}}.{{item.type}}"
+              target="_blank">View vector file</a>
+          </div>
+          <div class="text-right">
+            <button color="warn" class="sm:min-w-40 min-w-24 mr-2 sm:text-md text-sm cursor-pointer" mat-button
+              mat-flat-button (click)="removeLogoBank(item, index)" [disabled]="item.delLoader">
+              <span *ngIf="!item.delLoader">Remove</span>
+              <mat-progress-spinner *ngIf="item.delLoader" [diameter]="24" [mode]="'indeterminate'">
+              </mat-progress-spinner>
+            </button>
+            <button color="primary" class="sm:min-w-40 min-w-24 sm:text-md text-sm cursor-pointer" mat-button
+              mat-flat-button (click)="createTicket()">
+              <span *ngIf="!isCreateTicketLoader">Update</span>
+              <mat-progress-spinner *ngIf="isCreateTicketLoader" [diameter]="24" [mode]="'indeterminate'">
+              </mat-progress-spinner>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

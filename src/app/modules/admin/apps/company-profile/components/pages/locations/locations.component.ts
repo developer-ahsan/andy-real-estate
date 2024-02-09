@@ -1,13 +1,15 @@
 import { Component, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { SupportTicketService } from 'app/modules/admin/support-tickets/components/support-tickets.service';
 import { CreateTicket } from 'app/modules/admin/support-tickets/components/support-tickets.types';
 import { FLPSService } from 'app/modules/admin/apps/flps/components/flps.service';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
+import { CompaniesService } from '../../companies.service';
+import { addCompanyLocation } from '../../companies.types';
 @Component({
   selector: 'app-locations',
   templateUrl: './locations.component.html'
@@ -18,7 +20,7 @@ export class CompanyProfileLocationComponent implements OnInit, OnDestroy {
 
   isLoading: boolean = false;
   userData: any;
-  isCreateTicketLoader: boolean = false;
+  isCreateLocation: boolean = false;
 
   config = {
     maxFiles: 1,
@@ -26,12 +28,14 @@ export class CompanyProfileLocationComponent implements OnInit, OnDestroy {
 
   files = [];
   locationName: any = '';
-
+  params: any;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
+    private _companiesService: CompaniesService,
     private _supportService: SupportTicketService,
     private router: Router,
+    private route: ActivatedRoute,
     private _flpsService: FLPSService,
     private _commonService: DashboardsService
   ) { }
@@ -39,9 +43,55 @@ export class CompanyProfileLocationComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     let user = localStorage.getItem('userDetails');
     this.userData = JSON.parse(user);
+    this.route.params.subscribe(param => {
+      this.isLoading = true;
+      this.params = param;
+      this.getLocations();
+    })
   };
+  getLocations() {
+    let params = {
+      company_locations: true,
+      company_profile_id: this.params.companyId
+    }
+    this._companiesService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      console.log(res);
+      if (res["data"][0].locations) {
+        const locations = res["data"][0].locations.split(',,');
+        locations.forEach(location => {
+          // const []
+        });
+      }
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    })
+  }
   navigateToCompany() {
-    this.router.navigateByUrl('/apps/companies');
+    this.router.navigateByUrl('/apps/companies/company-profile-update/' + this.params.companyId + '/' + this.params.storeId);
+  }
+  addLocation() {
+    if (this.locationName.trim('') == '') {
+      this._commonService.snackBar('Location Name is required');
+      return;
+    }
+    let payload: addCompanyLocation = {
+      companyProfileID: Number(this.params.companyId),
+      locationName: this.locationName,
+      add_company_location: true
+    }
+    payload = this._commonService.replaceNullSpaces(payload);
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
+    this.isCreateLocation = true;
+    this._companiesService.postCompaniesData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      if (res["success"]) {
+        this._companiesService.snackBar(res["message"]);
+        this.locationName = '';
+      } else {
+        this._companiesService.snackBar(res["message"]);
+      }
+      this.isCreateLocation = false;
+      this._changeDetectorRef.markForCheck();
+    });
   }
 
   createTicket() {

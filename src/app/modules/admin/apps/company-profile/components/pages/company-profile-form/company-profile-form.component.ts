@@ -401,8 +401,8 @@ export class CompanyProfileFormComponent implements OnInit, OnDestroy {
 
   navigate(location: boolean) {
     location ?
-      this.router.navigateByUrl('/apps/companies/company-location')
-      : this.router.navigateByUrl('/apps/companies/company-logo');
+      this.router.navigateByUrl('/apps/companies/company-location/' + this.route.snapshot.params.companyId + '/' + this.route.snapshot.params['storeId'])
+      : this.router.navigateByUrl('/apps/companies/company-logo/' + this.route.snapshot.params.companyId + '/' + this.route.snapshot.params['storeId']);
   }
 
   /**
