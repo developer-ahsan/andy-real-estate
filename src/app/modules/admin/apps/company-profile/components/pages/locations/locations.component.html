@@ -1,40 +1,42 @@
 <div class="flex flex-col w-full">
+  <button class="min-w-40 cursor-pointer" mat-button mat-flat-button (click)="navigateToCompany()">
+    <span>Back to Companies</span>
+  </button>
+  <div class="rounded-2xl shadow-lg border border-gray-300 bg-card m-4 px-5 py-5">
+    <h2 class="text-xl sm:text-xl font-extrabold mb-3">
+      Add a New Location
+    </h2>
 
-    <div class="rounded-2xl shadow-lg border border-gray-300 bg-card m-4 px-5 py-5">
-        <h2 class="text-xl sm:text-xl font-extrabold mb-3">
-          Add a New Location
-        </h2>
-    
-        <div >
-          <div>
-            <mat-form-field class="w-full">
-              <mat-label>Location Name</mat-label>
-              <input matInput [(ngModel)]="locationName">
-            </mat-form-field>
-          </div>
-    
-          <button color="primary" class="min-w-40 cursor-pointer mt-2" mat-button mat-flat-button [disabled]="false">
-            <span class="text-white">Add Location</span>
-            <mat-progress-spinner *ngIf="isCreateTicketLoader" [diameter]="24" [mode]="'indeterminate'">
-            </mat-progress-spinner>
-          </button>
-    
-        </div>
+    <div>
+      <div>
+        <mat-form-field class="w-full">
+          <mat-label>Location Name</mat-label>
+          <input matInput [(ngModel)]="locationName">
+        </mat-form-field>
       </div>
-    
-  
-    <div class="rounded-2xl shadow-lg border border-gray-300 bg-card m-4 px-5 py-5">
-      <h2 class="text-xl sm:text-xl font-extrabold mb-3">
-        Locations for 10K Promo & Print
-      </h2>
-  
-      <div class="alert alert-warning no-bottom-margin">
-        <span class="fa fa-exclamation-circle"></span> There are no locations defined for this company.
-      </div>
+
+      <button color="primary" class="min-w-40 cursor-pointer mt-2" mat-button mat-flat-button [disabled]="false">
+        <span class="text-white">Add Location</span>
+        <mat-progress-spinner *ngIf="isCreateTicketLoader" [diameter]="24" [mode]="'indeterminate'">
+        </mat-progress-spinner>
+      </button>
+
     </div>
-  
-    
-  
-  
-  
   </div>
+
+
+  <div class="rounded-2xl shadow-lg border border-gray-300 bg-card m-4 px-5 py-5">
+    <h2 class="text-xl sm:text-xl font-extrabold mb-3">
+      Locations for 10K Promo & Print
+    </h2>
+
+    <div class="alert alert-warning no-bottom-margin">
+      <span class="fa fa-exclamation-circle"></span> There are no locations defined for this company.
+    </div>
+  </div>
+
+
+
+
+
+</div>

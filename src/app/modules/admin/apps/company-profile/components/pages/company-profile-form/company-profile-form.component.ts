@@ -10,6 +10,7 @@ import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.servic
 import { CompaniesService } from '../../companies.service';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { addAttachment, removeAttachment, updateCompanyProfile } from '../../companies.types';
 declare var $: any;
 @Component({
   selector: 'app-company-profile-form',
@@ -68,6 +69,8 @@ export class CompanyProfileFormComponent implements OnInit, OnDestroy {
 
   attachmentName: any = '';
 
+  companyData: any;
+
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -124,6 +127,7 @@ export class CompanyProfileFormComponent implements OnInit, OnDestroy {
         city: data?.city,
         state: data?.state,
         zip: data?.zip,
+        dateCreated: data?.zip,
         APContactName: data?.APContactName,
         APEmail: data?.APEmail,
         remitEmail: data?.remitEmail,
@@ -138,6 +142,27 @@ export class CompanyProfileFormComponent implements OnInit, OnDestroy {
         blnPORequired: data?.blnPORequired,
         storeID: this.storeOptions?.find(item => item.pk_storeID === data.fk_storeID)?.pk_storeID || '',
       });
+
+      data.attachments = [];
+      if (data.companyAttachmentFiles) {
+        const attachments = data.companyAttachmentFiles.split(',,');
+        attachments.forEach(attachment => {
+          const [id, name, type] = attachment.split('::');
+          data.attachments.push({ id, name, type });
+        });
+      }
+
+      data.companyUsers = [];
+      if (data.currentUsers) {
+        const users = data.currentUsers.split(',,');
+        users.forEach(user => {
+          const [id, name, email] = user.split('::');
+          data.companyUsers.push({ id, name, email });
+        });
+      }
+
+      this.companyData = data;
+
       this.selectedStoreId = data.fk_storeID
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
@@ -145,7 +170,11 @@ export class CompanyProfileFormComponent implements OnInit, OnDestroy {
   }
 
   openRemoveModal() {
-    $(this.removeCompanyProfile.nativeElement).modal('show');
+    this._commonService.showConfirmation('Are you sure you want to remove this Company Profile? This cannot be undone.', (confirmed) => {
+      if (confirmed) {
+        this.deleteCompanyProfile();
+      }
+    });
   }
 
 
@@ -157,22 +186,49 @@ export class CompanyProfileFormComponent implements OnInit, OnDestroy {
 
     this._companiesService.UpdateCompaniesData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this._supportService.snackBar("Company Profile deleted succesfuly");
-      $(this.removeCompanyProfile.nativeElement).modal('hide');
       this.router.navigateByUrl('/apps/companies');
-    })
+    });
+  }
+  navigateToCompany() {
+    this.router.navigateByUrl('/apps/companies');
   }
 
   addAttachment() {
-    let params = {
+    let payload: addAttachment = {
       companyProfileID: this.route.snapshot.params['companyId'],
       extension: this.files[0].type.slice(-3),
       name: this.attachmentName,
       mimeType: this.files[0].type,
       add_company_attachment: true
     }
-    this.uploadFile(params);
+    this.imageUploadLoader = true;
+    payload = this._commonService.replaceNullSpaces(payload);
+    payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
+    this._companiesService.postCompaniesData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.uploadFile(payload, res);
+      this._changeDetectorRef.markForCheck();
+    })
   }
 
+  removeAttachements(item, index) {
+    item.delLoader = true;
+    let payload = {
+      files: [`/globalAssets/customerCompany/attachments/${this.route.snapshot.params.companyId}/${item.id}.${item.type}`],
+      delete_multiple_files: true
+    }
+    let attachmentPayload: removeAttachment = {
+      attachmentID: item.id,
+      delete_company_attachment: true
+    }
+    this._companiesService.putCompaniesData(attachmentPayload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      item.delLoader = false;
+      this._companiesService.snackBar(res["message"]);
+      this.companyData.attachments.splice(index, 1);
+      this._changeDetectorRef.markForCheck();
+      this._commonService.removeMediaFiles(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      });
+    });
+  }
 
 
   initForm() {
@@ -185,6 +241,7 @@ export class CompanyProfileFormComponent implements OnInit, OnDestroy {
       city: new FormControl('', Validators.required),
       state: new FormControl('', Validators.required),
       zip: new FormControl('', Validators.required),
+      dateCreated: new FormControl(''),
 
       APContactName: new FormControl('', Validators.required),
       APEmail: new FormControl('', [Validators.required, Validators.email]),
@@ -212,28 +269,19 @@ export class CompanyProfileFormComponent implements OnInit, OnDestroy {
   }
 
   onSelectMain(event) {
-    if (event.addedFiles.length > 1) {
-      this._supportService.snackBar("Please select maximum 5 images.");
-      return;
-    }
-    if (this.files.length == 1) {
-      this._supportService.snackBar("Max limit reached for image upload.");
-      return;
-    } else {
-      event.addedFiles.forEach(element => {
-        this.files.push(element);
-      });
+    event.addedFiles.forEach(element => {
+      this.files.push(element);
+    });
 
-      // this.files = event.addedFiles[0];
-      // const reader = new FileReader();
-      // reader.readAsDataURL(event.addedFiles[0]);
-      // reader.onload = () => {
-      //   this.files = {
-      //     imageUpload: reader.result,
-      //     type: event.addedFiles[0]["type"]
-      //   };
-      // }
-    }
+    // this.files = event.addedFiles[0];
+    // const reader = new FileReader();
+    // reader.readAsDataURL(event.addedFiles[0]);
+    // reader.onload = () => {
+    //   this.files = {
+    //     imageUpload: reader.result,
+    //     type: event.addedFiles[0]["type"]
+    //   };
+    // }
     setTimeout(() => {
       this._changeDetectorRef.markForCheck();
     }, 200);
@@ -244,7 +292,7 @@ export class CompanyProfileFormComponent implements OnInit, OnDestroy {
   }
 
   updateCompanyProfile() {
-    let params = {
+    let params: updateCompanyProfile = {
       companyProfileID: this.route.snapshot.params['companyId']?.trim(),
       companyName: this.ticketForm.get('companyName').value?.trim(),
       companyWebsite: this.ticketForm.get('companyWebsite').value?.trim(),
@@ -259,7 +307,7 @@ export class CompanyProfileFormComponent implements OnInit, OnDestroy {
       creditLimit: this.ticketForm.get('creditLimit').value,
       netTerms: this.ticketForm.get('netTerms').value?.trim(),
       paymentMethod: this.ticketForm.get('paymentMethod').value?.trim(),
-      // dateCreated: this.ticketForm.get('dateCreated').value,
+      dateCreated: this.ticketForm.get('dateCreated').value,
       storeID: this.selectedStoreId,
       blnSalesTaxExempt: this.ticketForm.get('blnSalesTaxExempt').value === 'Yes' ? true : false,
       phone: this.ticketForm.get('phone').value,
@@ -289,7 +337,7 @@ export class CompanyProfileFormComponent implements OnInit, OnDestroy {
       return;
     }
     this._companiesService.putCompaniesData(this.replaceSingleQuotesWithDoubleSingleQuotes(params)).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-      this._supportService.snackBar("Company Profile is updated successfuly");
+      this._supportService.snackBar(res["message"]);
       this.isCreateTicketLoader = false;
       this._changeDetectorRef.markForCheck();
     })
@@ -308,50 +356,47 @@ export class CompanyProfileFormComponent implements OnInit, OnDestroy {
     this.selectedStoreId = id;
   }
 
-  uploadFile(params: any): void {
+  uploadFile(params: any, response): void {
+    const reader = new FileReader();
+    reader.readAsDataURL(this.files[0]);
+    reader.onload = () => {
+      let files: any = {
+        fileUpload: reader.result,
+        fileType: this.files[0]["type"]
+      };
+      const { fileUpload, fileType } = files;
+      const base64 = fileUpload.split(",")[1];
+      let d = new Date();
 
-    const { fileUpload, fileType } = this.files;
+      const payload = [{
+        image_file: base64,
+        image_path: `/globalAssets/customerCompany/attachments/${this.route.snapshot.params.companyId}/${response.newID}.${fileType.split('/')[1]}`
+      }];
 
-    const { pk_productID } = this.route.snapshot.params['companyId'];
-    const base64 = fileUpload.split(",")[1];
-    let d = new Date();
+      this.imageUploadLoader = true;
+      this._commonService.uploadMultipleMediaFiles(payload)
+        .subscribe((res) => {
+          this.companyData.attachments.push({ type: fileType.split('/')[1], name: this.attachmentName, id: response.newID });
+          this._companiesService.snackBar(response["message"])
+          this.imageUploadLoader = false;
+          this.files = null;
+          this.attachmentName = '';
 
-    const payload = {
-      file_upload: true,
-      image_file: base64,
-      image_path: `/globalAssets/customerCompany/attachments/${pk_productID}/${d.getTime()}.${fileType.slice(-3)}`
-    };
+          // Mark for check
+          this._changeDetectorRef.markForCheck();
+        }, err => {
+          this.imageUploadLoader = false;
+          this._snackBar.open("Some error occured", '', {
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+            duration: 3500
+          });
 
-    this.imageUploadLoader = true;
-    this._inventoryService.addDefaultImage(payload)
-      .subscribe((response) => {
-        this._companiesService.postCompaniesData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-          this._supportService.snackBar("Attachment is added successfuly");
-          this.isCreateTicketLoader = false;
+          // Mark for check
           this._changeDetectorRef.markForCheck();
         })
-        this._snackBar.open(response["message"], '', {
-          horizontalPosition: 'center',
-          verticalPosition: 'bottom',
-          duration: 3500
-        });
-        this.imageUploadLoader = false;
-        this.files = null;
-        // this.imagesArray.push({ FILENAME: `${pk_productID}-${this.fileName}.jpg` })
+    }
 
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      }, err => {
-        this.imageUploadLoader = false;
-        this._snackBar.open("Some error occured", '', {
-          horizontalPosition: 'center',
-          verticalPosition: 'bottom',
-          duration: 3500
-        });
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-      })
   };
 
   navigate(location: boolean) {

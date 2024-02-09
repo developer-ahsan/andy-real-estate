@@ -48,7 +48,9 @@ export class ProfileLogoBankComponent implements OnInit, OnDestroy {
       imprint: new FormControl(''),
     });
   }
-
+  navigateToCompany() {
+    this.router.navigateByUrl('/apps/companies');
+  }
 
   createTicket() {
     const { userID, subject, description, blnUrgent } = this.ticketForm.getRawValue();

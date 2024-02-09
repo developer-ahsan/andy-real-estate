@@ -2,6 +2,10 @@
 </ngx-skeleton-loader>
 <div class="flex flex-col w-full" *ngIf="!isLoading">
   <div *ngIf="isUpdate === true" class="flex flex-row gap-x-5 mt-4 ml-4">
+    <button class="min-w-40 cursor-pointer" mat-button mat-flat-button (click)="navigateToCompany()">
+      <span>Back to Companies</span>
+    </button>
+
     <button color="primary" class="min-w-40 cursor-pointer" mat-button mat-flat-button (click)="navigate(true)">
       <span>View Locations</span>
     </button>
@@ -268,8 +272,28 @@
       Current users assigned to this company profile
     </h2>
 
-    <div class="alert alert-warning no-bottom-margin">
+    <div class="alert alert-warning no-bottom-margin" *ngIf="companyData.companyUsers.length == 0">
       <span class="fa fa-exclamation-circle"></span> There are no users assigned to this company profile.
+    </div>
+    <div class="w-full" *ngIf="companyData.companyUsers.length">
+      <table class="table table-striped w-full">
+        <tr>
+          <th></th>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Email</th>
+        </tr>
+        <tr *ngFor="let item of companyData.companyUsers;let i=index">
+          <td width="1%">{{i+1}}</td>
+          <td width="19%">
+            <a target="_blank" [routerLink]="['/apps/customers',item.id,'user-info']">{{item.id}}</a>
+          </td>
+          <td width="40%">{{item.name}}</td>
+          <td width="40%">
+            {{item.email}}
+          </td>
+        </tr>
+      </table>
     </div>
   </div>
 
@@ -278,8 +302,32 @@
       Attachments
     </h2>
 
-    <div class="alert alert-warning no-bottom-margin">
+    <div class="alert alert-warning no-bottom-margin" *ngIf="companyData.attachments.length == 0">
       <span class="fa fa-exclamation-circle"></span> There are no attachments for this company profile.
+    </div>
+    <div class="w-full" *ngIf="companyData.attachments.length">
+      <table class="table table-striped w-full">
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th></th>
+        </tr>
+        <tr *ngFor="let item of companyData.attachments;let i=index">
+          <td width="10%">
+            <a target="_blank"
+              href="https://assets.consolidus.com/globalAssets/customerCompany/attachments/{{route.snapshot.params.companyId}}/{{item.id}}.{{item.type}}">{{item.id}}</a>
+          </td>
+          <td width="70%">{{item.name}}</td>
+          <td width="20%">
+            <button (click)="removeAttachements(item,i)" class="min-w-40 bg-red-500 border-red-500 text-white"
+              mat-stroked-button [disabled]="item.delLoader">
+              <mat-progress-spinner *ngIf="item.delLoader" [diameter]="24"
+                [mode]="'indeterminate'"></mat-progress-spinner>
+              <span *ngIf="!item.delLoader" class="ml-1 mr-1">Delete</span>
+            </button>
+          </td>
+        </tr>
+      </table>
     </div>
 
     <div class="">
@@ -303,9 +351,9 @@
         JPG, PNG, DOC, PDF only
       </div>
 
-      <button (click)="addAttachment()" color="primary" class="min-w-40 cursor-pointer mt-2" mat-flat-button 
-      [disabled]="attachmentName?.length == 0 || files?.length == 0">
-        <span class="text-white">Add Attachment</span>
+      <button (click)="addAttachment()" color="primary" class="min-w-40 cursor-pointer mt-2" mat-flat-button
+        [disabled]="attachmentName?.length == 0 || files?.length == 0 || imageUploadLoader">
+        <span class="text-white" *ngIf="!imageUploadLoader">Add Attachment</span>
         <mat-progress-spinner *ngIf="imageUploadLoader" [diameter]="24" [mode]="'indeterminate'">
         </mat-progress-spinner>
       </button>

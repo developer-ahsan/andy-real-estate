@@ -40,7 +40,9 @@ export class CompanyProfileLocationComponent implements OnInit, OnDestroy {
     let user = localStorage.getItem('userDetails');
     this.userData = JSON.parse(user);
   };
-
+  navigateToCompany() {
+    this.router.navigateByUrl('/apps/companies');
+  }
 
   createTicket() {
     // const { userID, subject, description, blnUrgent } = this.ticketForm.getRawValue();

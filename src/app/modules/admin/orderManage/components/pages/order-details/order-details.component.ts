@@ -442,7 +442,11 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     this.adjustmentsList.forEach(adjustment => {
       this.totalAdjustmentCost += Number(adjustment.unitCost);
     });
-    this.orderDataPO.POTotal = Number(this.totalColorsListCost + this.totalImprintCost + this.totalAccessoryCost + this.totalAdjustmentCost).toFixed(4);
+    if (this.orderDataPO.blnSupplier) {
+      this.orderDataPO.POTotal = Number(this.totalColorsListCost + this.totalImprintCost + this.totalAccessoryCost + this.totalAdjustmentCost).toFixed(4);
+    } else {
+      this.orderDataPO.POTotal = Number(this.totalImprintCost + this.totalAccessoryCost + this.totalAdjustmentCost).toFixed(4);
+    }
   }
   backToList() {
     this.router.navigateByUrl('ordermanage/dashboard');
