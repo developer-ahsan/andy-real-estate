@@ -212,14 +212,44 @@
                             <mat-label>Add a comment:</mat-label>
                             <textarea matInput rows="5" maxlength="1000" [(ngModel)]="ngComment"></textarea>
                         </mat-form-field>
-                        <mat-form-field class="w-full">
+
+                        <span class="mb-px font-medium leading-tight">Select Recipients:</span>
+                        <div
+                            class="mt-1.5 rounded-md border border-gray-300 dark:border-gray-500 shadow-sm overflow-hidden">
+                            <!-- Header -->
+                            <div class="flex items-center -my-px py-2 px-3">
+                                <div class="flex items-center flex-auto min-w-0">
+                                    <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:search'"></mat-icon>
+                                    <input class="min-w-0 ml-2 py-1 border-0" type="text"
+                                        placeholder="Enter recipient email" (input)="filterRecipients($event)">
+                                </div>
+                            </div>
+                            <div
+                                class="max-h-44 leading-none overflow-y-auto border-t border-gray-300 dark:border-gray-500">
+                                <ng-container>
+                                    <ng-container *ngFor="let item of orderEmailRecipients">
+                                        <mat-checkbox class="flex items-center h-10 min-h-10 px-4" [color]="'primary'"
+                                            [checked]="selectedEmailRecipients.includes(item)"
+                                            (change)="selectRecipient(item, $event)">
+                                            {{item}}
+                                        </mat-checkbox>
+                                    </ng-container>
+                                </ng-container>
+                            </div>
+                        </div>
+
+
+
+
+
+                        <!-- <mat-form-field class="w-full">
                             <mat-label>Select Recipients:</mat-label>
                             <input matInput placeholder="Search Recipients" [(ngModel)]="searchRecipient">
                             <mat-select matInput multiple [(ngModel)]="selectedEmailRecipients">
                                 <mat-option *ngFor="let item of orderEmailRecipients | filter: searchRecipient"
                                     [value]="item">{{item}}</mat-option>
                             </mat-select>
-                        </mat-form-field>
+                        </mat-form-field> -->
                         <mat-checkbox>Urgent</mat-checkbox>
                         <br>
                         <button class="min-w-40 btn buttonComment hover:bg-gray-200" (click)="updateComments()"

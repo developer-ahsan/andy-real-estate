@@ -148,6 +148,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   isDuplicatePOLoader: boolean = false;
   ordermanageUserData: any;
   orderEmailRecipients = [];
+  orderEmailRecipientsFilter = [];
   selectedEmailRecipients = [];
   imageAttachmentValue: any;
 
@@ -291,6 +292,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
           this.orderEmailRecipients.push(email);
         });
       }
+      this.orderEmailRecipientsFilter = this.orderEmailRecipients;
 
       this.getImprintData();
       this._changeDetectorRef.markForCheck();
@@ -298,6 +300,19 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     });
+  }
+  filterRecipients(event) {
+    const value = event.target.value.toLowerCase();
+    this.orderEmailRecipients = this.orderEmailRecipientsFilter.filter(email => email.toLowerCase().includes(value));
+  }
+  selectRecipient(email, change): void {
+    if (change.checked) {
+      this.selectedEmailRecipients.unshift(email);
+    }
+    else {
+      this.selectedEmailRecipients.splice(this.selectedEmailRecipients.findIndex(item => item === email), 1);
+    }
+    this._changeDetectorRef.markForCheck();
   }
   // 
   setValues() {
