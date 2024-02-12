@@ -5,25 +5,25 @@
 <div class="flex flex-col w-full" *ngIf="!isLoading">
   <div class="flex flex-row gap-x-5 mt-4 ml-4">
     <button class="min-w-40 cursor-pointer" mat-button mat-flat-button (click)="navigateToCompany()">
-      <span>Back to Companies</span>
+      <span>Back to Locations</span>
     </button>
   </div>
   <div class="rounded-2xl shadow-lg border border-gray-300 bg-card m-4 px-5 py-5">
     <h2 class="text-xl sm:text-xl font-extrabold mb-3">
-      Add a New Location
+      Add a New Department
     </h2>
 
     <div>
       <div>
         <mat-form-field class="w-full">
-          <mat-label>Location Name</mat-label>
+          <mat-label>Department Name</mat-label>
           <input matInput [(ngModel)]="locationName">
         </mat-form-field>
       </div>
 
       <button color="primary" class="min-w-40 cursor-pointer mt-2" mat-button mat-flat-button
         [disabled]="isCreateLocation" (click)="addLocation()">
-        <span class="text-white" *ngIf="!isCreateLocation">Add Location</span>
+        <span class="text-white" *ngIf="!isCreateLocation">Add Department</span>
         <mat-progress-spinner *ngIf="isCreateLocation" [diameter]="24" [mode]="'indeterminate'">
         </mat-progress-spinner>
       </button>
@@ -31,34 +31,33 @@
     </div>
   </div>
 
+
   <div class="rounded-2xl shadow-lg border border-gray-300 bg-card m-4 px-5 py-5">
     <h2 class="text-xl sm:text-xl font-extrabold mb-3">
-      Locations <span *ngIf="companyName">for {{companyName}}</span>
+      Deparments <span *ngIf="companyName">for {{companyName}} - {{locationNameString}}</span>
     </h2>
 
     <div class="alert alert-warning no-bottom-margin" *ngIf="locationsData.length == 0">
-      <span class="fa fa-exclamation-circle"></span> There are no locations defined for this company.
+      <span class="fa fa-exclamation-circle"></span> There are no departments defined for this location.
     </div>
     <div *ngIf="locationsData.length">
       <table class="table table-striped">
         <thead>
           <tr>
             <th>ID</th>
-            <th>Location name</th>
-            <th class="text-center">Departments</th>
+            <th>Department name</th>
             <th class="text-center">Users</th>
             <th>Action</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let location of locationsData">
-            <td width="10%">{{location.id}}</td>
+            <td width="20%">{{location.id}}</td>
             <td width="40%">
               <mat-form-field class="w-full">
-                <input matInput [(ngModel)]="location.locationName">
+                <input matInput [(ngModel)]="location.department">
               </mat-form-field>
             </td>
-            <td width="10%" class="text-center">{{location.departments}}</td>
             <td width="10%" class="text-center">{{location.users}}</td>
             <td width="30%">
               <button mat-button mat-flat-button class="min-w-20 mr-1 rounded-md" color="warn"
@@ -74,16 +73,57 @@
                 </mat-progress-spinner>
               </button>
               <button mat-button mat-flat-button class="min-w-20 rounded-md" color="accent"
-                (click)="viewDepartments(location)">View</button>
+                (click)="openUsersModal(location)">View</button>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
   </div>
+</div>
 
+<!-- Users Modal -->
+<div #usersModal class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog"
+  aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 *ngIf="modalData" class="modal-title font-bold text-xl" id="exampleModalLongTitle">Users for {{companyName}}
+          -
+          {{locationNameString}}
+          - {{modalData.department}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" *ngIf="modalData">
+        <div class="flex justify-center" *ngIf="modalData.isUserLoader">
+          <mat-progress-spinner [diameter]="40" [mode]="'indeterminate'">
+          </mat-progress-spinner>
+        </div>
+        <ng-container *ngIf="!modalData.isUserLoader">
+          <div class="alert alert-warning no-bottom-margin" *ngIf="!modalData.users.length">
+            <span class="fa fa-exclamation-circle"></span> There are no users added to this department.
+          </div>
+          <table *ngIf="modalData.users.length" class="table table-striped w-full">
+            <thead>
+              <tr>
+                <th width="10%">ID</th>
+                <th width="45%">Name</th>
+                <th width="45%">Email</th>
+              </tr>
+            </thead>
 
-
-
-
+            <tbody>
+              <tr *ngFor="let user of modalData.users">
+                <td>{{user.pk_userID}}</td>
+                <td>{{user.firstName + ' ' + user.lastName}}</td>
+                <td>{{user.email}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </ng-container>
+      </div>
+    </div>
+  </div>
 </div>

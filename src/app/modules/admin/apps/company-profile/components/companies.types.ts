@@ -94,7 +94,6 @@ export interface addCompanyDepartment {
     add_company_department: boolean;
 };
 
-
 export interface updateCompanyDepartment {
     locationID: number;
     departmentID: number;

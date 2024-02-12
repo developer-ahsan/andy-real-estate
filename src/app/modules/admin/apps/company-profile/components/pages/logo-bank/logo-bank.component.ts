@@ -126,7 +126,7 @@ export class ProfileLogoBankComponent implements OnInit, OnDestroy {
           });
 
       }), err => {
-        this._companiesService.snackBar('Error occured whild creating a ticket.');
+        this._companiesService.snackBar('Error occured while creating a ticket.');
       }
     };
   }

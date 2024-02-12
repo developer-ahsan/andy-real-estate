@@ -44,6 +44,7 @@ import { CompanyProfileComponent } from './components/pages/company-profile/comp
 import { CompanyProfileFormComponent } from './components/pages/company-profile-form/company-profile-form.component';
 import { CompanyProfileLocationComponent } from './components/pages/locations/locations.component';
 import { ProfileLogoBankComponent } from './components/pages/logo-bank/logo-bank.component';
+import { CompanyProfileLocationDepartmentsComponent } from './components/pages/location-deparments/location-deparments.component';
 
 
 
@@ -53,7 +54,8 @@ import { ProfileLogoBankComponent } from './components/pages/logo-bank/logo-bank
         CompanyProfileComponent,
         CompanyProfileFormComponent,
         CompanyProfileLocationComponent,
-        ProfileLogoBankComponent
+        ProfileLogoBankComponent,
+        CompanyProfileLocationDepartmentsComponent
     ],
     imports: [
         RouterModule.forChild(companyRoutes),
@@ -96,7 +98,7 @@ import { ProfileLogoBankComponent } from './components/pages/logo-bank/logo-bank
         MatDialogModule,
         MatDatepickerModule,
         MatNativeDateModule,
-        
+
     ],
     entryComponents: []
 })

@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -9,12 +9,14 @@ import { CreateTicket } from 'app/modules/admin/support-tickets/components/suppo
 import { FLPSService } from 'app/modules/admin/apps/flps/components/flps.service';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 import { CompaniesService } from '../../companies.service';
-import { addCompanyLocation, removeCompanyLocation, updateCompanyLocation } from '../../companies.types';
+import { addCompanyDepartment, addCompanyLocation, removeCompanyDepartment, removeCompanyLocation, updateCompanyDepartment, updateCompanyLocation } from '../../companies.types';
+declare var $: any;
+
 @Component({
-  selector: 'app-locations',
-  templateUrl: './locations.component.html'
+  selector: 'app-location-deparments',
+  templateUrl: './location-deparments.component.html'
 })
-export class CompanyProfileLocationComponent implements OnInit, OnDestroy {
+export class CompanyProfileLocationDepartmentsComponent implements OnInit, OnDestroy {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   locationsData = [];
@@ -30,8 +32,11 @@ export class CompanyProfileLocationComponent implements OnInit, OnDestroy {
   files = [];
   locationName: any = '';
   params: any;
-
   companyName: string = '';
+  locationNameString: string = '';
+  @ViewChild('usersModal') commentModal: ElementRef;
+
+  modalData: any;
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
@@ -54,17 +59,19 @@ export class CompanyProfileLocationComponent implements OnInit, OnDestroy {
   };
   getLocations() {
     let params = {
-      company_locations: true,
+      company_locations_departments: true,
+      location_id: this.params.locationId,
       company_profile_id: this.params.companyId
     }
     this._companiesService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.companyName = res["companyName"];
+      this.locationNameString = res["locationName"];
       this.locationsData = [];
-      if (res["data"][0].locations) {
-        const locations = res["data"][0].locations.split(',,');
-        locations.forEach(location => {
-          const [id, company, locationName, departments, users] = location.split('::');
-          this.locationsData.push({ id, company, locationName, departments, users });
+      if (res["data"][0].departments) {
+        const departments = res["data"][0].departments.split(',,');
+        departments.forEach(location => {
+          const [id, department, users] = location.split('::');
+          this.locationsData.push({ id, department, users });
         });
       }
       this.isLoading = false;
@@ -72,17 +79,17 @@ export class CompanyProfileLocationComponent implements OnInit, OnDestroy {
     })
   }
   navigateToCompany() {
-    this.router.navigateByUrl('/apps/companies/company-profile-update/' + this.params.companyId + '/' + this.params.storeId);
+    this.router.navigateByUrl('/apps/companies/company-location/' + this.params.companyId);
   }
   addLocation() {
     if (this.locationName.trim('') == '') {
       this._commonService.snackBar('Location Name is required');
       return;
     }
-    let payload: addCompanyLocation = {
-      companyProfileID: Number(this.params.companyId),
-      locationName: this.locationName,
-      add_company_location: true
+    let payload: addCompanyDepartment = {
+      locationID: Number(this.params.locationId),
+      departmentName: this.locationName,
+      add_company_department: true
     }
     payload = this._commonService.replaceNullSpaces(payload);
     payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
@@ -101,12 +108,12 @@ export class CompanyProfileLocationComponent implements OnInit, OnDestroy {
     });
   }
   removeLoactions(item) {
-    const msg = 'Are you sure you want to remove this location?  This will remove all departments and disassociate all users with this location.  This cannot be undone.';
+    const msg = 'Are you sure you want to remove this department?  This will disassociate all users with this department.  This cannot be undone.';
     this._commonService.showConfirmation(msg, (confirmed) => {
       if (confirmed) {
-        let payload: removeCompanyLocation = {
-          locationID: Number(item.id),
-          delete_company_location: true
+        let payload: removeCompanyDepartment = {
+          departmentID: Number(item.id),
+          delete_company_department: true
         }
         item.delLocation = true;
         this._companiesService.putCompaniesData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
@@ -121,30 +128,43 @@ export class CompanyProfileLocationComponent implements OnInit, OnDestroy {
     });
   }
 
-  updateLocation(location) {
-    if (location.locationName.trim('') == '') {
+  updateLocation(item) {
+    if (item.department.trim('') == '') {
       this._commonService.snackBar('Location Name is required');
       return;
     }
-    let payload: updateCompanyLocation = {
-      companyProfileID: Number(this.params.companyId),
-      locationID: Number(location.id),
-      locationName: location.locationName,
-      update_company_location: true
+    let payload: updateCompanyDepartment = {
+      locationID: Number(this.params.locationId),
+      departmentID: Number(item.id),
+      departmentName: item.department,
+      update_company_department: true
     }
     payload = this._commonService.replaceNullSpaces(payload);
     payload = this._commonService.replaceSingleQuotesWithDoubleSingleQuotes(payload);
-    location.updateLocation = true;
+    item.updateLocation = true;
     this._companiesService.putCompaniesData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (res["success"]) {
         this._companiesService.snackBar(res["message"]);
       }
-      location.updateLocation = false;
+      item.updateLocation = false;
       this._changeDetectorRef.markForCheck();
     });
   }
-  viewDepartments(location) {
-    this.router.navigate([`apps/companies/company-location-deparments/${this.params.companyId}/${location.id}`]);
+  openUsersModal(item) {
+    this.modalData = item;
+    this.modalData.isUserLoader = true;
+    let params = {
+      company_locations_department_users: true,
+      deparment_id: item.id,
+      location_id: Number(this.params.locationId),
+      company_profile_id: Number(this.params.companyId)
+    }
+    this._companiesService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.modalData.users = res["data"];
+      this.modalData.isUserLoader = false;
+      this._changeDetectorRef.markForCheck();
+    });
+    $(this.commentModal.nativeElement).modal('show');
   }
 
   /**
