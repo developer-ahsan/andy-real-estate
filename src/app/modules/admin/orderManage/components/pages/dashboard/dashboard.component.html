@@ -171,7 +171,7 @@
                                 {{item?.storeCode}}
                             </td>
                             <td (click)="goToOrderDetails(item)">{{item?.purchaseOrderNum || '---'}}</td>
-                            <td (click)="goToOrderDetails(item)">{{item?.CC || '---'}}</td>
+                            <td (click)="goToOrderDetails(item)">{{item?.accountChargeCode || '---'}}</td>
                             <td (click)="goToOrderDetails(item)">
                                 <mat-icon svgIcon="heroicons_outline:x" class="text-red-500"
                                     *ngIf="!item.paymentDate"></mat-icon>

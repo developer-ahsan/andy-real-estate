@@ -72,11 +72,13 @@
                         </div>
                         <mat-form-field class="w-full">
                             <mat-label>Add or Update In-Hands Date</mat-label>
-                            <input matInput [matDatepicker]="picker" readonly
+                            <input matInput [(ngModel)]="orderData.formattedInHandsDate">
+                            <mat-hint>mm/dd/yyyy</mat-hint>
+                            <!-- <input matInput [matDatepicker]="picker" readonly
                                 [matDatepickerFilter]="weekendsDatesFilter" [(ngModel)]="orderData.formattedInHandsDate"
                                 (click)="picker.open()">
                             <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                            <mat-datepicker #picker></mat-datepicker>
+                            <mat-datepicker #picker></mat-datepicker> -->
                         </mat-form-field>
                         <button class="min-w-40 btn buttonComment hover:bg-gray-200" (click)="updateInhandsDate()"
                             [disabled]="isHandsDateLoader">
@@ -212,8 +214,9 @@
                         </mat-form-field>
                         <mat-form-field class="w-full">
                             <mat-label>Select Recipients:</mat-label>
+                            <input matInput placeholder="Search Recipients" [(ngModel)]="searchRecipient">
                             <mat-select matInput multiple [(ngModel)]="selectedEmailRecipients">
-                                <mat-option *ngFor="let item of orderEmailRecipients"
+                                <mat-option *ngFor="let item of orderEmailRecipients | filter: searchRecipient"
                                     [value]="item">{{item}}</mat-option>
                             </mat-select>
                         </mat-form-field>

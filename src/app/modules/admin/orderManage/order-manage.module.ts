@@ -46,12 +46,13 @@ import { OrderManageDetailsComponent } from './components/pages/order-details/or
 import { OrderExportComponent } from './components/pages/export/export.component';
 import { CreatePoComponent } from './components/pages/order-details/create-po/create-po.component';
 import { OrderImportShippingComponent } from './components/pages/import-shipping/import-shipping.component';
+import { FilterPipe } from './components/pages/order-details/filter.pipe';
 
 @NgModule({
     declarations: [
         OrderManageComponent,
         OrderManageDashboardComponent,
-        OrderManageDetailsComponent, OrderExportComponent, CreatePoComponent, OrderImportShippingComponent
+        OrderManageDetailsComponent, OrderExportComponent, CreatePoComponent, OrderImportShippingComponent, FilterPipe
     ],
     imports: [
         RouterModule.forChild(orderManageRoutes),

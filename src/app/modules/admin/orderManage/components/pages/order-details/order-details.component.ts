@@ -179,6 +179,8 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   totalAdjustmentCost = 0
 
 
+  searchRecipient = ''
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _activeRoute: ActivatedRoute,
@@ -300,7 +302,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   // 
   setValues() {
     this.orderDataPO.blnNotDuplicate = this.orderDataPO.blnDuplicate ? false : true;
-    this.orderData.formattedInHandsDate = this.orderData?.formattedInHandsDate ? new Date(this.orderData.formattedInHandsDate) : null;
+    this.orderData.formattedInHandsDate = this.orderData?.formattedInHandsDate ? moment(this.orderData.formattedInHandsDate).format('L') : null;
     this.orderDataPO.formattedShippingDate = this.orderDataPO?.formattedShippingDate ? new Date(this.orderDataPO.formattedShippingDate) : null;
     this.orderDataPO.formattedEstimatedShippingDate = this.orderDataPO.formattedEstimatedShippingDate ? new Date(this.orderDataPO.formattedEstimatedShippingDate) : null;
     if (!this.orderDataPO.shippingCarrier) {
