@@ -51,8 +51,7 @@ export class QuoteModifyComponent implements OnInit, OnDestroy {
             this.isLoading = false;
             this._changeDetectorRef.markForCheck();
           }
-        })
-
+        });
       });
   };
   calledScreen(screen) {

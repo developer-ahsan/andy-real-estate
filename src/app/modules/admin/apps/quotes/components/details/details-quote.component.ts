@@ -102,10 +102,27 @@ export class QuotesDetailsComponent implements OnInit, OnDestroy {
           this.selectedQuoteDetail.statusName = 'Artwork pending';
           this.selectedQuoteDetail.statusColor = 'text-red-600';
         }
+        if (this.selectedRoute != 'modify-reports') {
+          this.getCurrentQuoteProducts();
+        }
         this._changeDetectorRef.markForCheck();
       });
   }
 
+
+  getCurrentQuoteProducts() {
+    this._quoteService.ModifyCurrentProducts$.subscribe(res => {
+      if (!res) {
+        this._quoteService.getSelectedProducts(this.selectedQuoteDetail.storeID, this.selectedQuoteDetail.pk_cartID).subscribe(() => {
+          this.isLoading = false;
+          this._changeDetectorRef.markForCheck();
+        });
+      } else {
+        this.isLoading = false;
+        this._changeDetectorRef.markForCheck();
+      }
+    });
+  }
   doSomething() {
     // this.panel.close();
   }

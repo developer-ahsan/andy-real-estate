@@ -97,7 +97,6 @@ export class QuoteProductsComponent implements OnInit {
         this._changeDetectorRef.markForCheck();
         this.selectedQuoteDetail = quote["data"][0];
         this.cartLines = quote["cartLines"];
-        console.log(this.cartLines);
         this.refactorCartLinesData();
         this.selectedCartLine = this.cartLines[0];
         this.currentSelectedProduct = this.cartLines[0];
@@ -316,10 +315,21 @@ export class QuoteProductsComponent implements OnInit {
     this._quoteService.ModifyCurrentProducts$.subscribe(res => {
       this.allProducts = res["data"];
       res["data"].forEach(element => {
+        if (element.minValues) {
+          const [minCost, minPrice, minQuantity] = element.minValues.split('::');
+          element.minCost = minCost;
+          element.minPrice = minPrice;
+          element.minQuantity = minQuantity;
+        } else {
+          element.minCost = 0;
+          element.minPrice = 0;
+          element.minQuantity = 0;
+        }
         element.displayText = element.pk_storeProductID + ' - ' + element.productNumber + ': ' + element.productName
       });
       this.selectedProduct = this.allProducts[0];
       this.ngNewProduct = [this.allProducts[0]];
+
       this.ngNewProduct[0].colorListData = this.parseList(this.ngNewProduct[0].colorsList).map(({ pk_id, name }) => ({ pk_colorID: pk_id, colorName: name }));
       this.ngNewProduct[0].sizesListData = this.parseList(this.ngNewProduct[0].sizesList).map(({ pk_id, name }) => ({ pk_sizeID: pk_id, sizeName: name }));
       // this.currentSelectedProduct = this.allProducts[0];
