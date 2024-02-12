@@ -47,6 +47,9 @@ export class QuoteModifyComponent implements OnInit, OnDestroy {
               this.isLoading = false;
               this._changeDetectorRef.markForCheck();
             });
+          } else {
+            this.isLoading = false;
+            this._changeDetectorRef.markForCheck();
           }
         })
 
