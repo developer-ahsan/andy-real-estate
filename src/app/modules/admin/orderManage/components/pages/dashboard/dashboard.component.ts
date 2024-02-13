@@ -200,7 +200,7 @@ export class OrderManageDashboardComponent implements OnInit, OnDestroy {
     } else if (qryDashboardData.fk_groupOrderID) {
       styles['background-color'] = '#fca769';
     } else if (qryDashboardData.blnDuplicated) {
-      styles['background-color'] = '#4512de';
+      styles['background-color'] = '#ff7575';
       styles['color'] = '#ffffff';
     }
 

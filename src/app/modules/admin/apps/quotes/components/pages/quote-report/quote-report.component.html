@@ -41,7 +41,8 @@
                                             <div class="col-span-3 font-bold ">Total</div>
                                         </div>
                                         <div class="grid grid-cols-12" *ngFor="let color of quote.colors">
-                                            <div class="col-span-6 text-sm">{{color.colorName}}</div>
+                                            <div class="col-span-6 text-sm font-bold" [innerHTML]="color.colorName">
+                                            </div>
                                             <div class="col-span-3 font-bold text-sm ">{{color.unitPrice |
                                                 currency}}
                                             </div>
@@ -50,14 +51,15 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-span-12 text-sm font-bold">Total Quantity: {{quote.orderQuantity}}
+                                    <div class="col-span-12 text-lg font-bold">Total Quantity: {{quote.orderQuantity}}
                                     </div>
                                     <!-- Decorations -->
-                                    <div class="col-span-12 pb-2 my-2 border-b font-medium text-md text-secondary">
+                                    <div
+                                        class="col-span-12 pb-2 my-2 border-b font-medium text-lg font-bold text-secondary">
                                         Decoration</div>
                                     <div class="col-span-12">
                                         <div class="grid grid-cols-12" *ngFor="let decoration of quote.decorators">
-                                            <div class="col-span-6 text-sm">
+                                            <div class="col-span-6 text-md font-bold">
                                                 {{decoration.locationName}} / {{decoration.methodName}}</div>
                                             <div class="col-span-3 font-bold text-sm ">
                                             </div>
@@ -69,15 +71,18 @@
                                             <div class="col-span-3 font-bold text-sm "></div>
                                             <div class="text-sm col-span-3 font-bold ">
                                             </div>
-                                            <div class="col-span-6 text-sm" *ngIf="runningPrice > 0"> Add Running:
+                                            <div class="col-span-6 text-sm" *ngIf="decoration.runningPrice > 0"> Add
+                                                Running:
                                                 {{decoration.runningPrice |
-                                                currency}}</div>
-                                            <div class="col-span-3 font-bold text-sm " *ngIf="runningPrice > 0">
+                                                currency}}/unit</div>
+                                            <div class="col-span-3 font-bold text-sm "
+                                                *ngIf="decoration.runningPrice > 0">
                                             </div>
-                                            <div class="text-sm col-span-3 font-bold " *ngIf="runningPrice > 0">
+                                            <div class="text-sm col-span-3 font-bold "
+                                                *ngIf="decoration.runningPrice > 0">
 
                                             </div>
-                                            <div class="col-span-6 text-sm">Colors: {{decoration.colors}}</div>
+                                            <div class="col-span-6 text-sm">Color(s): {{decoration.colors}}</div>
                                             <div class="col-span-3 font-bold text-sm "></div>
                                             <div class="text-sm col-span-3 font-bold ">
                                             </div>
