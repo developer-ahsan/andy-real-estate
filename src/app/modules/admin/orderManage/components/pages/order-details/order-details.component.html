@@ -428,7 +428,7 @@
                             <div>
                                 <mat-form-field class="min-w-80">
                                     <mat-label>Purchase Order</mat-label>
-                                    <input maxlength="20" matInput value="{{orderDataPO.purchaseOrderNumber}}">
+                                    <input maxlength="20" matInput [(ngModel)]="orderDataPO.purchaseOrderNumber">
                                 </mat-form-field>
                             </div>
                         </div>
