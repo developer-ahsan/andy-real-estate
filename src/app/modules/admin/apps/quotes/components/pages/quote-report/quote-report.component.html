@@ -89,7 +89,7 @@
                                         </div>
                                     </div>
                                     <!-- Royalities -->
-                                    <div class="col-span-12 my-2">
+                                    <div class="col-span-12 my-2" *ngIf="quote.royaltyPrice || quote.royaltyName">
                                         <div class="grid grid-cols-12">
                                             <div class="col-span-6 font-medium text-secondary">
                                                 {{quote.royaltyName}}</div>
