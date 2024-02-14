@@ -10,7 +10,39 @@ import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.servic
 @Component({
   selector: 'app-ordermanage-dashboard',
   templateUrl: './dashboard.component.html',
-  styles: [".mat-paginator  {border-radius: 16px !important} .mat-drawer-container {border-radius: 16px !important} ::-webkit-scrollbar {height: 3px !important}"]
+  styles: [`.mat-paginator  {border-radius: 16px !important} .mat-drawer-container {border-radius: 16px !important} ::-webkit-scrollbar {height: 3px !important} 
+  .loading{
+    width:5px;
+    height:5px;
+    background:#FFF;
+    border-radius:100%;
+    float:left;
+    margin:5px;
+  }
+  .loading-0{
+      -webkit-animation:bounce 1s infinite;
+      -webkit-animation-delay:.1s;
+      background:#6e6f70
+  }
+  .loading-1{
+      -webkit-animation:bounce 1s infinite;
+      -webkit-animation-delay:.3s;
+      background:#6e6f70;
+  }
+  .loading-2{
+      -webkit-animation:bounce 1s infinite ease;
+      -webkit-animation-delay:.5s;
+      background:#6e6f70;
+  }
+  @-webkit-keyframes bounce {
+    0%, 100% {
+      opacity:1;
+    }
+    60% {
+      opacity:.0;
+     
+    }
+  }`]
 })
 export class OrderManageDashboardComponent implements OnInit, OnDestroy {
   @ViewChild('paginator') paginator: MatPaginator;
@@ -116,7 +148,7 @@ export class OrderManageDashboardComponent implements OnInit, OnDestroy {
       sort_by: this.sort_by,
       sort_order: this.sort_order,
       bln_fulfillment: this.userData.blnFulfillment,
-      size: 30,
+      size: 100,
       page: page,
       view_dashboard: true
     }
@@ -172,6 +204,11 @@ export class OrderManageDashboardComponent implements OnInit, OnDestroy {
           }
         }
       });
+      this.dataSource.forEach(element => {
+        element.fileLoader = false;
+      });
+      this._changeDetectorRef.markForCheck();
+
     });
   }
   goToOrderDetails(item) {

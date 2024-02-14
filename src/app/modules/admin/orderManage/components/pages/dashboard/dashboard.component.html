@@ -185,10 +185,15 @@
                                     *ngIf="item.trackingNumber"></mat-icon>
                             </td>
                             <td>
-                                <ng-container>
+                                <ng-container *ngIf="!item.fileLoader">
                                     <a *ngIf="item?.fileProof" href="{{item.fileProof}}" target="_blank">View</a>
                                     <span *ngIf="!item?.fileProof">---</span>
                                 </ng-container>
+                                <div class="flex" *ngIf="item.fileLoader">
+                                    <div class="loading loading-0"></div>
+                                    <div class="loading loading-1"></div>
+                                    <div class="loading loading-2"></div>
+                                </div>
                             </td>
                         </tr>
                     </ng-container>
@@ -196,7 +201,7 @@
             </table>
             <mat-paginator #paginator *ngIf="dataSource.length>0"
                 class="border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                [disabled]="isPaginatedLoader" [length]="totalRecords" [pageIndex]="0" [pageSize]="30"
+                [disabled]="isPaginatedLoader" [length]="totalRecords" [pageIndex]="0" [pageSize]="100"
                 (page)="getNextData($event)" [hidePageSize]="true">
             </mat-paginator>
             <div *ngIf="dataSource.length == 0" class="alert alert-warning">
