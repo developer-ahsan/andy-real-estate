@@ -126,24 +126,49 @@
                                         </div>
                                     </div>
                                     <div class="col-span-12 my-2">
-                                        <div class="grid grid-cols-12">
-                                            <div class="col-span-6 font-medium text-secondary">
-                                                Per unit average: {{quote.perUnitAverage | currency}}</div>
-                                            <div class="col-span-3 font-bold text-sm ">
-                                            </div>
-                                            <div class="text-secondary col-span-3 font-bold font-medium ">
+                                        <ng-container *ngIf="quote.blnMSRP || quote.blnPercentSavings;else perUnitAvg">
+                                            <div class="grid grid-cols-12" *ngIf="quote.blnMSRP">
+                                                <div class="col-span-6 font-medium text-secondary">
+                                                    MSRP: {{quote.productMSRP | currency}}</div>
+                                                <div class="col-span-3 font-bold text-sm ">
+                                                </div>
+                                                <div class="text-secondary col-span-3 font-bold font-medium ">
 
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="grid grid-cols-12">
-                                            <div class="col-span-6 font-medium text-secondary">
-                                                Setup: {{quote.setupPriceTotal | currency}}</div>
-                                            <div class="col-span-3 font-bold text-sm ">
-                                            </div>
-                                            <div class="text-secondary col-span-3 font-bold font-medium ">
+                                            <div class="grid grid-cols-12" *ngIf="quote.blnPercentSavings">
+                                                <div class="col-span-6 font-medium text-secondary">
+                                                    TCCD BASE PRICE: <span *ngIf="quote.tccdPrice">{{quote.tccdPrice |
+                                                        currency}}</span><span
+                                                        *ngIf="!quote.tccdPrice">{{(quote.cartLineOptionRunPrice +
+                                                        quote.cartLinePrice) | currency}}</span></div>
+                                                <div class="col-span-3 font-bold text-sm ">
+                                                </div>
+                                                <div class="text-secondary col-span-3 font-bold font-medium ">
 
+                                                </div>
                                             </div>
-                                        </div>
+                                        </ng-container>
+                                        <ng-template #perUnitAvg>
+                                            <div class="grid grid-cols-12">
+                                                <div class="col-span-6 font-medium text-secondary">
+                                                    Per unit average: {{quote.perUnitAverage | currency}}</div>
+                                                <div class="col-span-3 font-bold text-sm ">
+                                                </div>
+                                                <div class="text-secondary col-span-3 font-bold font-medium ">
+
+                                                </div>
+                                            </div>
+                                            <div class="grid grid-cols-12">
+                                                <div class="col-span-6 font-medium text-secondary">
+                                                    Setup: {{quote.setupPriceTotal | currency}}</div>
+                                                <div class="col-span-3 font-bold text-sm ">
+                                                </div>
+                                                <div class="text-secondary col-span-3 font-bold font-medium ">
+
+                                                </div>
+                                            </div>
+                                        </ng-template>
                                     </div>
                                     <div class="col-span-12 my-2 border-b pb-2">
                                         <div *ngFor="let file of quote.artworkFiles;let i=index">
