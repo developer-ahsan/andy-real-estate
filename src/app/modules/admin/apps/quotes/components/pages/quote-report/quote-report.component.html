@@ -31,8 +31,23 @@
                                     <div class="col-span-12 my-2 font-bold">{{quote.pk_cartID + '-' +
                                         quote.pk_cartLineID}}
                                     </div>
+                                    <div class="col-span-12 my-2">
+                                        <div *ngIf="quote.details.blnGroupRun">
+                                            <div class="alert alert-warning">GROUP RUN MASTER PRODUCT
+                                            </div>
+                                            <br />
+                                        </div>
+
+                                        <div *ngIf="quote.details.groupRunCartLineID">
+                                            <div class="alert alert-warning">
+                                                GROUP RUN ITEM (from {{ quote.details.productName
+                                                }})
+                                            </div>
+                                        </div>
+
+                                    </div>
                                     <div class="col-span-12 pb-2 mb-2 border-b font-medium text-md text-secondary">
-                                        Colors</div>
+                                        Colors <span *ngIf="quote.details.blnApparel">& Sizes</span></div>
                                     <!-- Colors -->
                                     <div class="col-span-12">
                                         <div class="grid grid-cols-12">
@@ -53,6 +68,37 @@
                                     </div>
                                     <div class="col-span-12 text-lg font-bold">Total Quantity: {{quote.orderQuantity}}
                                     </div>
+                                    <!-- Accessories -->
+                                    <ng-container *ngIf="quote.accessories.length">
+                                        <div
+                                            class="col-span-12 pb-2 my-2 border-b font-medium text-lg font-bold text-secondary">
+                                            Accessories</div>
+                                        <div class="col-span-12">
+                                            <div class="grid grid-cols-12">
+                                                <div class="col-span-3"></div>
+                                                <div class="col-span-3 font-bold ">Unit</div>
+                                                <div class="col-span-3 font-bold ">Setup</div>
+                                                <div class="col-span-3 font-bold ">Total</div>
+                                            </div>
+                                            <div class="grid grid-cols-12" *ngFor="let accessory of quote.accessories">
+                                                <div class="col-span-3 text-sm font-bold">
+                                                    {{accessory.quantityPerPackage}} X {{accessory.packagingName}}
+                                                </div>
+                                                <div class="col-span-3  text-sm ">
+                                                    {{accessory.cartLineAccessoryRunPrice |
+                                                    currency}}
+                                                </div>
+                                                <div class="col-span-3  text-sm ">
+                                                    {{accessory.cartLineAccessorySetupPrice |
+                                                    currency}}
+                                                </div>
+                                                <div class="text-sm col-span-3  ">
+                                                    {{accessory.totalSetupRunPrice |
+                                                    currency}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </ng-container>
                                     <!-- Decorations -->
                                     <div
                                         class="col-span-12 pb-2 my-2 border-b font-medium text-lg font-bold text-secondary">
@@ -171,13 +217,18 @@
                                         </ng-template>
                                     </div>
                                     <div class="col-span-12 my-2 border-b pb-2">
-                                        <div *ngFor="let file of quote.artworkFiles;let i=index">
-                                            <a href="https://assets.consolidus.com/artwork/temp/{{quote.pk_cartID}}/{{quote.pk_cartLineID}}/{{file.imprintID}}/{{file.FILENAME}}"
-                                                target="_blank">View
-                                                Artwork File #{{i+1}}</a>
-                                            <br />
-                                        </div>
-
+                                        <ng-container *ngIf="quote.artworkFiles.length > 0">
+                                            <div *ngFor="let file of quote.artworkFiles;let i=index">
+                                                <a href="https://assets.consolidus.com/artwork/temp/{{quote.pk_cartID}}/{{quote.pk_cartLineID}}/{{file.imprintID}}/{{file.FILENAME}}"
+                                                    target="_blank">View
+                                                    Artwork File #{{i+1}}</a>
+                                                <br />
+                                            </div>
+                                        </ng-container>
+                                        <ng-container *ngIf="quote.artworkFiles.length == 0">
+                                            <div class="alert alert-info">No artwork attached to this item.
+                                            </div>
+                                        </ng-container>
                                     </div>
                                 </div>
                             </div>

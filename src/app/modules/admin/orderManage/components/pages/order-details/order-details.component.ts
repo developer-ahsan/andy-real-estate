@@ -479,11 +479,16 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   }
   updateInhandsDate() {
     if (this.orderData.formattedInHandsDate) {
-      this.isHandsDateLoader = true;
+
       let date = null;
       if (this.orderData.formattedInHandsDate) {
         date = moment(this.orderData.formattedInHandsDate).format('L');
       }
+      if (date == 'Invalid date') {
+        this._OrderManageService.snackBar('Please add a valid date');
+        return;
+      }
+      this.isHandsDateLoader = true;
       let payload: UpdateInHandsDate = {
         inHandsDate: String(date),
         orderLinePOID: this.orderDataPO.pk_orderLinePOID,

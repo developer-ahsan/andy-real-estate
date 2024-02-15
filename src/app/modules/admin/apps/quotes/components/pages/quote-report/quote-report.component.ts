@@ -48,21 +48,38 @@ export class QuoteReportsComponent implements OnInit, OnDestroy {
   getQuoteDetails() {
     this._quotesService.qoutesDetails$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       this.selectedQuote = res["data"][0];
-      this.getQuotesData();
+      this.getQuotesData(res["cartLines"]);
     });
   }
-  getQuotesData() {
+  getQuotesData(cartLines) {
     let params = {
       quote_report: true,
       cart_id: this.selectedQuote.pk_cartID
     }
     this._quotesService.getQuoteData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       res["data"].forEach(element => {
+        const matchingItem = cartLines.find(item => element.pk_cartLineID === item.pk_cartLineID);
+
+        if (matchingItem) {
+          element.details = matchingItem;
+        } else {
+          element.details = null;
+        }
         element.subTotal = Number(element.royaltyPrice) + Number(element.shippingGroundPrice);
         element.setupPriceTotal = 0;
         element.decorators = [];
+        element.accessories = [];
         element.colors = [];
         element.artworkFiles = [];
+        if (element.Accessories) {
+          let accessories = element.Accessories.split("#_");
+          accessories.forEach((imprint, index) => {
+            const [packagingID, quantityPerPackage, packagingName, cartLineAccessoryRunPrice, cartLineAccessorySetupPrice, totalSetupRunPrice] = imprint.split('||');
+            element.accessories.push({ packagingID, quantityPerPackage, packagingName, cartLineAccessoryRunPrice, cartLineAccessorySetupPrice, totalSetupRunPrice });
+
+            element.subTotal += Number(totalSetupRunPrice)
+          });
+        }
         if (element.Decoration) {
           let decoration = element.Decoration.split("#_");
           decoration.forEach((imprint, index) => {
