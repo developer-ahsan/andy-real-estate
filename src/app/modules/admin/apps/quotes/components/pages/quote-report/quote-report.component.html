@@ -198,7 +198,9 @@
                                         <ng-template #perUnitAvg>
                                             <div class="grid grid-cols-12">
                                                 <div class="col-span-6 font-medium text-secondary">
-                                                    Per unit average: {{quote.perUnitAverage | currency}}</div>
+                                                    Per unit average: {{(quote.perUnitAverage ? quote.perUnitAverage :
+                                                    0)
+                                                    | currency: 'USD': 'symbol':'1.4-4'}}</div>
                                                 <div class="col-span-3 font-bold text-sm ">
                                                 </div>
                                                 <div class="text-secondary col-span-3 font-bold font-medium ">

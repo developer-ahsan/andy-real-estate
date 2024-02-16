@@ -1436,7 +1436,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       this.orderDataPO.vendorShippingState = vendor.state;
       this.orderDataPO.vendorShippingZip = vendor.zipCode;
       this.orderDataPO.vendorShippingEmail = vendor.ordersEmail;
-      this.orderDataPO.vendorShippingComment = vendor.shippingComment;
+      this.orderDataPO.shippingComment = vendor.shippingComment;
       this.orderDataPO.vendorShippingPhone = vendor.phone;
       if (vendor.additionalOrderEmails) {
         this.orderDataPO.vendorShippingEmail = this.orderDataPO.vendorShippingEmail + ',' + vendor.additionalOrderEmails;

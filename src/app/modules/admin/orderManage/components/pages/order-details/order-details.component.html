@@ -140,6 +140,7 @@
                                     [(ngModel)]="orderDataPO.formattedShippingDate" (click)="shipDate.open()">
                                 <mat-datepicker-toggle matIconSuffix [for]="shipDate"></mat-datepicker-toggle>
                                 <mat-datepicker #shipDate></mat-datepicker>
+                                <mat-hint>mm/dd/yyyy</mat-hint>
                             </mat-form-field>
                         </div>
                         <div>
@@ -182,6 +183,7 @@
                                 [(ngModel)]="orderDataPO.formattedEstimatedShippingDate" (click)="Estpicker.open()">
                             <mat-datepicker-toggle matIconSuffix [for]="Estpicker"></mat-datepicker-toggle>
                             <mat-datepicker #Estpicker></mat-datepicker>
+                            <mat-hint>mm/dd/yyyy</mat-hint>
                         </mat-form-field>
                         <button class="min-w-40 btn buttonComment hover:bg-gray-200" (click)="updateEstimatedShipping()"
                             [disabled]="isEstimatedDateLoader">

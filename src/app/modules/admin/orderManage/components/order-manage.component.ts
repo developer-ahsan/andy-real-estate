@@ -129,6 +129,7 @@ export class OrderManageComponent {
         }
     }
     filterOrderManageData() {
+        this.status = 0;
         const queryParams: NavigationExtras = {
             queryParams: {}
         };
