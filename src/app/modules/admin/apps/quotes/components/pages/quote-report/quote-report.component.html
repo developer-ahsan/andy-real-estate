@@ -174,7 +174,7 @@
                                     <div class="col-span-12 my-2">
                                         <ng-container *ngIf="quote.blnMSRP || quote.blnPercentSavings;else perUnitAvg">
                                             <div class="grid grid-cols-12" *ngIf="quote.blnMSRP">
-                                                <div class="col-span-6 font-medium text-secondary">
+                                                <div class="col-span-6 font-medium text-secondary text-red-500">
                                                     MSRP: {{quote.productMSRP | currency}}</div>
                                                 <div class="col-span-3 font-bold text-sm ">
                                                 </div>
