@@ -181,7 +181,12 @@ export class OrderManageComponent {
                     this.loginCheck = true;
                     this.userData = res["data"][0];
                     sessionStorage.setItem('orderManage', JSON.stringify(res["data"][0]));
-                    this._router.navigateByUrl(this._router.url);
+                    if (this._router.url == '/ordermanage/dashboard') {
+                        this.status = 2;
+                        this._router.navigate([this._router.url], { queryParams: { status: 2 } });
+                    } else {
+                        this._router.navigateByUrl(this._router.url);
+                    }
                     this._changeDetectorRef.markForCheck();
                 } else {
                     this._rapidService.snackBar('Please check your credentials');
