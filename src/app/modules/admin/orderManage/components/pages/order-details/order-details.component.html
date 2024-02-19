@@ -136,7 +136,7 @@
                         <div>
                             <mat-form-field class="w-full">
                                 <mat-label>Ship Date:</mat-label>
-                                <input matInput [matDatepicker]="shipDate" readonly
+                                <input matInput [matDatepicker]="shipDate"
                                     [(ngModel)]="orderDataPO.formattedShippingDate" (click)="shipDate.open()">
                                 <mat-datepicker-toggle matIconSuffix [for]="shipDate"></mat-datepicker-toggle>
                                 <mat-datepicker #shipDate></mat-datepicker>
@@ -204,8 +204,11 @@
                         Order Comments
                     </h2>
                     <div class="space-y-2">
-                        <div class="h-50 overflow-y-auto border p-3" *ngIf="orderData.internalComments"
-                            [innerHTML]="orderData.internalComments"></div>
+                        <div class="h-50 overflow-y-auto border p-3" id="outerContainer"
+                            *ngIf="orderData.internalComments">
+                            <p [innerHTML]="orderData.internalComments"></p>
+                            <p id="scrollBottomComment" #scrollBottomComment></p>
+                        </div>
                         <fuse-alert [appearance]="'soft'" [type]="'warning'" *ngIf="!orderData.internalComments">
                             No comments yet for this order.
                         </fuse-alert>
@@ -593,7 +596,11 @@
                                     <p class="font-medium text-secondary py-1 border-b">Product Color/Size Breakdown</p>
                                     <div class="w-full" *ngIf="orderDataPO.blnSupplier; else notBlnSupplier">
                                         <div class="row my-3 w-full" *ngIf="colorsList.length > 0">
-                                            <div class="col-md-3 font-bold">Product</div>
+                                            <div class="col-md-3 font-bold">Product
+                                                <span
+                                                    *ngIf="orderLineData.fk_orderLineID && orderLineData.txtColorParts"
+                                                    style="font-weight: bold; color: #ff0000;">({{orderLineData.txtColorParts}})</span>
+                                            </div>
                                             <div class="col-md-2 font-bold">Color/size:</div>
                                             <div class="col-md-2 font-bold">Quantity</div>
                                             <div class="col-md-2 font-bold">Unit</div>

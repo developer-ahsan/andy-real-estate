@@ -27,6 +27,8 @@ declare var $: any;
     font-size: 12px;}`]
 })
 export class OrderManageDetailsComponent implements OnInit, OnDestroy {
+  @ViewChild('scrollBottomComment') scrollBottomComment!: ElementRef;
+
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   paramData: any;
   isLoading: boolean = false;
@@ -531,6 +533,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
           let comment = res["newComment"];
           this.orderData.internalComments = this.orderData.internalComments + comment;
           this._OrderManageService.snackBar(res["message"]);
+          this.scrollToComments();
           this.ngComment = '';
           this.selectedEmailRecipients = [];
         }
@@ -1799,6 +1802,25 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       event.target.value = +inputValue.slice(0, maxDigits);
       event.preventDefault();
     }
+  }
+  scrollToComments() {
+    setTimeout(() => {
+      const outerContainer = document.getElementById('outerContainer'); // Replace 'outerContainer' with the ID of your outer container
+      const innerDiv = document.getElementById('scrollBottomComment');
+
+      // Calculate the offset of the inner div relative to the outer container
+      const offset = innerDiv.offsetTop - outerContainer.offsetTop;
+
+      // Scroll only the inner div
+      outerContainer.scrollTop = offset;
+
+      // Optionally, you can add smooth scrolling using CSS
+      innerDiv.style.scrollBehavior = 'smooth';
+
+      // const element = document.getElementById('scrollBottomComment');
+      // element.scrollIntoView({ behavior: 'smooth' });
+      this._changeDetectorRef.markForCheck();
+    }, 500);
   }
   /**
      * On destroy
