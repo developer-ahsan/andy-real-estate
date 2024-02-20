@@ -15,6 +15,7 @@ import { SmartArtService } from 'app/modules/admin/smartart/components/smartart.
 import { lowerCase } from 'lodash';
 import * as pdfMake from "pdfmake/build/pdfmake";
 import * as pdfFonts from "pdfmake/build/vfs_fonts";
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 declare var $: any;
 @Component({
@@ -139,8 +140,11 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
   isPDFPOLoader: boolean = false;
   isRemovePOLoader: boolean = false;
   ngImprint = '';
-
+  // Vendors
   allVendors: any = []
+  filteredVendors: any[] = [];
+  searchVendorTerm: string = '';
+  searchVendorControl = new FormControl();
 
   isAddPOOder: boolean = false;
   @ViewChild('removePO') removePO: ElementRef;
@@ -209,10 +213,27 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     this._commonService.suppliersData$.pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       const activeSuppliers = res["data"].filter(element => element.blnActiveVendor);
       this.allVendors.push(...activeSuppliers);
+      this.filteredVendors = this.allVendors;
+      this._changeDetectorRef.markForCheck();
     });
     const storedValue = JSON.parse(sessionStorage.getItem('storeStateSupplierData'));
     this.allStates = this.splitData(storedValue.data[2][0].states);
   }
+  filterVendors(ev) {
+    this.filteredVendors = this.allVendors.filter(vendor =>
+      vendor.companyName.toLowerCase().includes(ev.target.value.toLowerCase())
+    );
+  }
+
+  displayVendor(vendor: any): string {
+    return vendor ? vendor.companyName : '';
+  }
+
+  selectVendor(event: MatAutocompleteSelectedEvent) {
+    this.orderDataPO.fk_vendorID = event.option.value.pk_companyID;
+    this.getVendorsDataByID(this.orderDataPO.fk_vendorID);
+  }
+
   splitData(data) {
     const dataArray = data.split(",,");
     const result = [];
@@ -245,7 +266,9 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       }
       if (res["purchaseOrders"].length > 0) {
         this.orderDataPO = res["purchaseOrders"][0];
-        const { shippingCarrierName, shippingServiceName, shippingCustomerAccountNumber, blnSupplier, blnDecorator, POinHandsDate } = this.orderDataPO;
+        const { shippingCarrierName, shippingServiceName, shippingCustomerAccountNumber, blnSupplier, blnDecorator, POinHandsDate, vendorShippingName } = this.orderDataPO;
+        this.searchVendorControl.setValue({ companyName: vendorShippingName });
+
         if (this.orderDataPO.POinHandsDate) {
           const date = POinHandsDate?.replace("{", '')?.replace('}', '')?.replace('ts ', '')?.replace(`'`, '')?.replace(`'`, '');
           this.orderDataPO.POinHandsDate = new Date(date);
@@ -1432,6 +1455,8 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     this.router.navigate(['/ordermanage/order-details'], queryParams);
   }
   getVendorsDataByID(id) {
+    this.searchVendorControl.disable();
+    this._changeDetectorRef.markForCheck();
     this._vendorService.getVendorsSupplierById(id).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       const vendor = res["data"][0];
       this.orderDataPO.vendorShippingAddress1 = vendor.address;
@@ -1444,6 +1469,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
       if (vendor.additionalOrderEmails) {
         this.orderDataPO.vendorShippingEmail = this.orderDataPO.vendorShippingEmail + ',' + vendor.additionalOrderEmails;
       }
+      this.searchVendorControl.enable();
       this._changeDetectorRef.markForCheck();
     });
   }
@@ -1618,6 +1644,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
 
     const { pk_orderID, storeName, fk_storeID, pk_companyID, currentTotal, fk_storeUserID, blnEProcurement, blnCashBack, qryStoreUserCashbackSettingsBlnCashBack } = this.orderData;
     let { pk_orderLinePOID, shippingDate, estimatedShippingDate, trackingNumber, blnSample, fk_orderLineID, shippingCustomerAccountNumber, POinHandsDate, stockFrom, fk_vendorID, vendorShippingName, vendorShippingAddress1, vendorShippingAddress2, vendorShippingCity, vendorShippingState, vendorShippingZip, vendorShippingPhone, vendorShippingEmail, shippingComment, shipToCompanyName, shipToCustomerName, shipToLocation, shipToPurchaseOrder, shipToAddress, shipToCity, shipToState, shipToZip, shipToCountry, imprintComment, POTotal, shipToDeliverTo, productName, quantity, purchaseOrderNumber, purchaseOrderComments, blnDuplicate, blnDecorator, blnSupplier, coop, imprintDetail, blnExported } = this.orderDataPO;
+    let { txtColorParts } = this.orderLineData
     if (POinHandsDate) {
       POinHandsDate = moment(new Date(POinHandsDate)).format('MM/DD/yyyy');
     }
@@ -1710,6 +1737,7 @@ export class OrderManageDetailsComponent implements OnInit, OnDestroy {
     }
     // OrderLinePO
     let OrderLinePO = {
+      txtColorParts,
       fk_vendorID: fk_vendorID,
       vendorShippingName: vendorShippingName,
       vendorShippingAddress1: vendorShippingAddress1,

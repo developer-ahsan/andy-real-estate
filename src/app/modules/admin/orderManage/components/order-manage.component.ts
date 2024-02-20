@@ -47,7 +47,7 @@ export class OrderManageComponent {
     ngPassword = '';
     userData: any;
 
-    status = 2;
+    status = 0;
     storesList: any = [];
     selectedStore: any;
     rangeStart: any = '';
@@ -125,10 +125,19 @@ export class OrderManageComponent {
     calledScreen(route) {
         if (this.selectedRoute != route) {
             this.selectedRoute = route;
-            this._router.navigate([`ordermanage/${route}`]);
+            if (route == 'dashboard') {
+                this.status = 2;
+                this._changeDetectorRef.markForCheck();
+                this._router.navigate([`ordermanage/${route}`], { queryParams: { status: 2 } });
+            } else {
+                this._router.navigate([`ordermanage/${route}`]);
+            }
         }
     }
-    filterOrderManageData() {
+    filterOrderManageData(type) {
+        if (type == 'enter') {
+            this.status = 0;
+        }
         const queryParams: NavigationExtras = {
             queryParams: {}
         };

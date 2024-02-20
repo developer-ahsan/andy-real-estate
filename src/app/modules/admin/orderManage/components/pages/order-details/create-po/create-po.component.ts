@@ -7,6 +7,7 @@ import { Subject } from 'rxjs';
 import { OrderManageService } from '../../../order-manage.service';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
 import { NavigationExtras, Router } from '@angular/router';
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 
 @Component({
   selector: 'app-create-po',
@@ -25,6 +26,11 @@ export class CreatePoComponent implements OnInit {
   isCreateOrder: boolean = false;
   selectedVendorID = 0;
   allStates = [];
+
+  filteredVendors: any[] = [];
+  searchVendorControl = new FormControl();
+
+
   constructor(
     private _vendorService: VendorsService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -78,10 +84,26 @@ export class CreatePoComponent implements OnInit {
       // this.allVendors = res["data"];
       const activeSuppliers = res["data"].filter(element => element.blnActiveVendor);
       this.allVendors.push(...activeSuppliers);
+      this.filteredVendors = this.allVendors;
     });
     const storedValue = JSON.parse(sessionStorage.getItem('storeStateSupplierData'));
     this.allStates = this.splitData(storedValue.data[2][0].states);
   }
+  filterVendors(ev) {
+    this.filteredVendors = this.allVendors.filter(vendor =>
+      vendor.companyName.toLowerCase().includes(ev.target.value.toLowerCase())
+    );
+  }
+
+  displayVendor(vendor: any): string {
+    return vendor ? vendor.companyName : '';
+  }
+
+  selectVendor(event: MatAutocompleteSelectedEvent) {
+    this.poData.fk_vendorID = event.option.value.pk_companyID;
+    this.getVendorsData(this.poData.fk_vendorID);
+  }
+
   splitData(data) {
     const dataArray = data.split(",,");
     const result = [];
@@ -94,10 +116,12 @@ export class CreatePoComponent implements OnInit {
     return result;
   }
   getVendorsData(id) {
+    this.searchVendorControl.disable();
     this.selectedVendorID = id;
     this._vendorService.getVendorsSupplierById(id).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       const vendor = res["data"][0];
       this.createPOForm.patchValue({
+        companyName: vendor.companyName,
         vendorShippingAddress1: vendor.address,
         // vendorShippingAddress2: new FormControl('vendorShippingAddress2', Validators.required),
         vendorShippingCity: vendor.city,
@@ -112,8 +136,8 @@ export class CreatePoComponent implements OnInit {
           ? `${this.createPOForm.get('vendorShippingEmail').value},${vendor.additionalOrderEmails}`
           : this.createPOForm.get('vendorShippingEmail').value,
       });
-
-    })
+      this.searchVendorControl.enable();
+    });
   }
   CreatePurchaseOrder() {
     const { vendorShippingAddress1, vendorShippingAddress2, vendorShippingCity, vendorShippingState, vendorShippingZip, vendorShippingPhone, shipToCompanyName, shipToCustomerName, shipToLocation, shipToPurchaseOrder, shipToAddress, shipToCity, shipToState, shipToZip, shipToCountry, shipToDeliverTo, vendorShippingEmail, vendorShippingComment, companyName, productName, quantity, blnSupplier, blnDecorator } = this.createPOForm.getRawValue();

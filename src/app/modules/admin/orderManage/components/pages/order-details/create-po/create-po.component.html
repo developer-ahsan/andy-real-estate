@@ -15,13 +15,25 @@
                     <div class="row border-b py-2">
                         <div class="col-12 col-md-6">
                             <mat-form-field class="w-full">
+                                <mat-label>Vendor</mat-label>
+                                <input type="text" placeholder="Search vendors" aria-label="Search vendors" matInput
+                                    [formControl]="searchVendorControl" [matAutocomplete]="auto"
+                                    (input)="filterVendors($event)">
+                                <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayVendor"
+                                    (optionSelected)="selectVendor($event)">
+                                    <mat-option *ngFor="let supplier of filteredVendors" [value]="supplier">
+                                        {{supplier.companyName}}
+                                    </mat-option>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                            <!-- <mat-form-field class="w-full">
                                 <mat-label>Select a Vendor *</mat-label>
                                 <mat-select matInput formControlName="companyName">
                                     <mat-option *ngFor="let supplier of allVendors"
                                         (click)="getVendorsData(supplier.pk_companyID)"
                                         [value]="supplier.companyName">{{supplier.companyName}}</mat-option>
                                 </mat-select>
-                            </mat-form-field>
+                            </mat-form-field> -->
                         </div>
                         <div class="col-12 col-md-6">
                             <mat-form-field class="w-full">

@@ -23,14 +23,14 @@
                         <mat-form-field class="w-full">
                             <mat-label>Order/PO</mat-label>
                             <input matInput [(ngModel)]="ngOrderID" placeholder="Order/PO"
-                                (keyup.enter)="filterOrderManageData()">
+                                (keyup.enter)="filterOrderManageData('enter')">
                         </mat-form-field>
                     </li>
                     <li class="col-span-1">
                         <mat-form-field class="w-full">
                             <mat-label>Customer/Product/Vendor</mat-label>
                             <input matInput placeholder="Customer/Product/Vendor" [(ngModel)]="customerKeyword"
-                                (keyup.enter)="filterOrderManageData()">
+                                (keyup.enter)="filterOrderManageData('enter')">
                         </mat-form-field>
                     </li>
                     <li class="col-span-1">
@@ -66,7 +66,7 @@
                 </ul>
                 <div class="text-right">
                     <button mat-flat-button [color]="'primary'" [disabled]="isLoading" class="min-w-40"
-                        (click)="filterOrderManageData()">
+                        (click)="filterOrderManageData('filter')">
                         <span>Filter</span>
                         <!-- <mat-progress-spinner *ngIf="isLoading" [diameter]="24" [mode]="'indeterminate'">
                         </mat-progress-spinner> -->

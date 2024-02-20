@@ -232,7 +232,7 @@ export class OrderManageDashboardComponent implements OnInit, OnDestroy {
       styles['background-color'] = '#d9b5f4';
     } else if (qryDashboardData.blnBackorder) {
       styles['background-color'] = '#00d7c0';
-    } else if (qryDashboardData.fk_orderLineID && qryDashboardData.blnGroupRun) {
+    } else if (qryDashboardData.fk_orderLineID && qryDashboardData.blnGroupRun || qryDashboardData.groupRunOrderLineID) {
       styles['background-color'] = '#ADFFB6';
     } else if (qryDashboardData.fk_groupOrderID) {
       styles['background-color'] = '#fca769';
