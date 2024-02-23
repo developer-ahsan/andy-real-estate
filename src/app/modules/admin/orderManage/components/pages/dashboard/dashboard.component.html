@@ -151,9 +151,16 @@
                                 {{item?.companyName}}
                             </td>
                             <td (click)="goToOrderDetails(item)">
-                                <p *ngFor="let prod of item.prducts">
-                                    <span [innerHTML]="prod"></span>
-                                </p>
+                                <div class="flex" *ngIf="item.isProdLoader">
+                                    <div class="loading loading-0"></div>
+                                    <div class="loading loading-1"></div>
+                                    <div class="loading loading-2"></div>
+                                </div>
+                                <ng-container *ngIf="!item.isProdLoader">
+                                    <p *ngFor="let prod of item.prducts">
+                                        <span [innerHTML]="prod"></span>
+                                    </p>
+                                </ng-container>
                             </td>
                             <td (click)="goToOrderDetails(item)">
                                 {{item?.vendorShippingName}}

@@ -7,6 +7,7 @@ import { OrderManageService } from '../../order-manage.service';
 import { updateOrderManageBulkStatusUpdate } from '../../order-manage.types';
 import moment from 'moment';
 import { DashboardsService } from 'app/modules/admin/dashboards/dashboard.service';
+import { products } from 'app/mock-api/apps/ecommerce/inventory/data';
 @Component({
   selector: 'app-ordermanage-dashboard',
   templateUrl: './dashboard.component.html',
@@ -154,16 +155,14 @@ export class OrderManageDashboardComponent implements OnInit, OnDestroy {
     }
     this._orderService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       res["data"].forEach(element => {
+        element.isProdLoader = true;
         element.fileLoader = true;
         element.checked = false;
-        element.prducts = [];
-        if (element.productName) {
-          element.prducts = element.productName.split(',');
-        }
         element.age = this._commonService.convertMinutesToDaysAndHours(element.Age);
         element.styles = this.getRowStyles(element);
       });
       this.dataSource = res["data"];
+      this.getOrderManageProducts(page);
       this.getFilesData();
       this.totalRecords = res["totalRecords"];
       if (this.isPaginatedLoader) {
@@ -177,6 +176,34 @@ export class OrderManageDashboardComponent implements OnInit, OnDestroy {
       this.isLoading = false;
       this._changeDetectorRef.markForCheck();
     });
+  }
+  getOrderManageProducts(page) {
+    let params = {
+      user_id: this.userData.pk_userID,
+      status: this.status,
+      store_id: this.store_id,
+      orderID: this.orderID,
+      customer_keyword: this.customerKeyword,
+      range_start: this.rangeStart,
+      range_end: this.rangeEnd,
+      sort_by: this.sort_by,
+      sort_order: this.sort_order,
+      bln_fulfillment: this.userData.blnFulfillment,
+      size: 100,
+      page: page,
+      ordermanage_products: true
+    }
+    this._orderService.getAPIData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      this.dataSource.forEach(element => {
+        const product = res["data"].find(p => p.orderLinePOID === element.pk_orderLinePOID);
+        if (product) {
+          element.prducts = product.productName ? product.productName.split(',') : [];
+        }
+        element.isProdLoader = false;
+      });
+      this._changeDetectorRef.markForCheck();
+    });
+
   }
   getNextData(event) {
     this.isPaginatedLoader = true;
