@@ -52,6 +52,10 @@ export class QuoteDashboardComponent implements OnInit, OnDestroy {
   // BUlk Update
   status_id = 2;
   isBulkLoader: boolean = false;
+  isSortingLoader: boolean = false;
+  sortDirection: string = '';
+  sortBy: string = '';
+
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _smartartService: SmartArtService,
@@ -111,6 +115,8 @@ export class QuoteDashboardComponent implements OnInit, OnDestroy {
       filter_field: this.paramsData.filterField ? this.paramsData.filterField : '2',
       search_field: this.paramsData.search ? this.paramsData.search : '',
       user_search_field: this.paramsData.customer ? this.paramsData.customer : '',
+      sort_by: this.sortBy,
+      sort_direction: this.sortDirection
     }
     this._smartartService.getSmartArtData(params).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
       if (this.isFilterLoader) {
@@ -132,6 +138,7 @@ export class QuoteDashboardComponent implements OnInit, OnDestroy {
         this.tempRecords = res["totalRecords"];
       }
       this.isLoading = false;
+      this.isSortingLoader = false;
       this.isFilterLoader = false;
       if (type == 'update') {
         this.isBulkLoader = false;
@@ -142,12 +149,34 @@ export class QuoteDashboardComponent implements OnInit, OnDestroy {
       this._changeDetectorRef.markForCheck();
     }, err => {
       this.isBulkLoader = false;
+      this.isSortingLoader = false;
       this.isFilterLoader = false;
       this.isLoading = false;
       // this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
     });
   }
+  sortData(event) {
+    this.isSortingLoader = true;
+    this.sortDirection = event.direction;
+
+    const sortByMapping = {
+      'date': 'dateCreated',
+      'inhands': 'inHandsDate',
+      'order': 'fk_cartID',
+      'line': 'pk_cartLineID',
+      'customer': 'firstName',
+      'product': 'productName',
+      'supplier': 'supplierCompanyName',
+      'age': 'ageInHours',
+      'store': 'storeCode'
+    };
+
+    this.sortBy = sortByMapping[event.active] || '';
+
+    this.getSmartArtList(1, 'get', '');
+  }
+
   setColor(quote) {
     let theInHandsDate = moment(quote.dateCreated).add('days', quote.prodTimeMax[0]);
     quote.bgColor = '';
