@@ -1920,6 +1920,14 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
               this._changeDetectorRef.markForCheck();
               return;
             };
+            console.log(fileExtension)
+            if (fileExtension != 'jpg' || fileExtension != 'jpeg') {
+              this._smartartService.snackBar("Virtual proof images must be jPG format only.");
+              this.virtualProofImageValue = null;
+              this.virtualProofInput.nativeElement.value = '';
+              this._changeDetectorRef.markForCheck();
+              return;
+            }
             this.virtualProofImageValue = {
               imageUpload: reader.result,
               type: file.type,

@@ -58,7 +58,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
         this.imprintStatuses = quote['imprintStatuses']
         this.setQuoteTracker();
         this.imprintStatus = this.getCartImprintStatus()
-        if (this.selectedQuoteDetail.artworkStatus.includes('7') || this.selectedQuoteDetail.artworkStatus.includes('9')) {
+        if (this.selectedQuoteDetail.artworkStatus && (this.selectedQuoteDetail.artworkStatus.includes('7') || this.selectedQuoteDetail.artworkStatus.includes('9'))) {
           this.selectedQuoteDetail.statusName = 'All artwork approved';
           this.selectedQuoteDetail.statusColor = 'text-green-600';
         } else {
@@ -92,7 +92,9 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
         this.ifCase = true;
         return;
       }
+
       this.setCartLineTrackerData();
+      console.log(this.strReturn.statusID)
 
       if (this.strReturn.statusID === 2) {
         this.strReturn.statusID = 2;
@@ -155,7 +157,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
     if (this.selectedQuoteDetail.blnEProcurement) {
       let blnApproved = true;
 
-      blnApproved = this.imprintStatuses.every(obj =>
+      blnApproved = !this.imprintStatuses.every(obj =>
         obj["fk_statusID"] !== 7 || obj["fk_statusID"] !== 9
       );
 

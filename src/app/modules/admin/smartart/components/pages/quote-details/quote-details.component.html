@@ -438,9 +438,9 @@
                                     For any stores using CLC Reporting functionality, we must designate the Artwork
                                     Tag(s) for each product by selecting them from the list below.
                                 </p>
-                                <mat-form-field appearance="fill" class="w-full mt-2" *ngIf="artworktags">
+                                <mat-form-field appearance="fill" class="w-full mt-2" *ngIf="artworkTags">
                                     <mat-select [(ngModel)]="selectedMultipleTags" multiple>
-                                        <mat-option *ngFor="let tags of artworktags"
+                                        <mat-option *ngFor="let tags of artworkTags"
                                             [value]="tags.id">{{tags.name}}</mat-option>
                                     </mat-select>
                                 </mat-form-field>

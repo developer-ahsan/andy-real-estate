@@ -160,14 +160,14 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
       }
 
       this.approvalHistoryData = res["approvalHistory"];
-      let tags = [];
-      if (this.quoteData.artworkTags) {
-        tags = this.quoteData.artworkTags.split(',');
-        tags.forEach(element => {
-          let tag = element.split(':');
-          this.artworktags.push({ id: tag[0], name: tag[1] });
-        });
-      }
+      // let tags = [];
+      // if (this.quoteData.artworkTags) {
+      //   tags = this.quoteData.artworkTags.split(',');
+      //   tags.forEach(element => {
+      //     let tag = element.split(':');
+      //     this.artworktags.push({ id: tag[0], name: tag[1] });
+      //   });
+      // }
       this.selectedMultipleTags = [];
       let selectedTags = [];
       if (this.quoteData.cartlineArtworkTags) {
@@ -344,7 +344,7 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
           let storeArtworkTag = res['storeArtworkTag'][0].storeArtworkTag.split(',,');
           storeArtworkTag.forEach(tag => {
             let tags = tag.split('::');
-            this.artworkTags.push({ pk_artworkTagID: tags[0], name: tags[1] });
+            this.artworkTags.push({ id: tags[0], name: tags[1] });
           });
           // this.artworkTags = res["storeArtworkTag"];
           this.selectedArtworkTags = [];
@@ -355,6 +355,7 @@ export class QuoteDashboardDetailsComponent implements OnInit, OnDestroy {
               this.selectedArtworkTags.push(tags[0]);
             });
           }
+          this._changeDetectorRef.markForCheck();
         }
         // this.quoteData["cartLineArtworkTags"].forEach(element => {
         //   this.selectedArtworkTags.push(element.fk_artworkTagID);

@@ -50,7 +50,7 @@ export class CatalogComponent {
     company_search: '',
     color_search: '',
     method_search: '',
-    bln_active: '',
+    bln_active: 1,
     vendor_relation: 0
   }
   isFilterLoader: boolean = false;
