@@ -14,7 +14,39 @@ import moment from 'moment';
 @Component({
   selector: 'app-order-dashboard',
   templateUrl: './order-dashboard.component.html',
-  styles: [".mat-paginator  {border-radius: 16px !important} .mat-drawer-container {border-radius: 16px !important} ::-webkit-scrollbar {height: 3px !important}"],
+  styles: [`.mat-paginator  {border-radius: 16px !important} .mat-drawer-container {border-radius: 16px !important} ::-webkit-scrollbar {height: 3px !important}
+  .loading{
+    width:5px;
+    height:5px;
+    background:#FFF;
+    border-radius:100%;
+    float:left;
+    margin:5px;
+  }
+  .loading-0{
+      -webkit-animation:bounce 1s infinite;
+      -webkit-animation-delay:.1s;
+      background:#6e6f70
+  }
+  .loading-1{
+      -webkit-animation:bounce 1s infinite;
+      -webkit-animation-delay:.3s;
+      background:#6e6f70;
+  }
+  .loading-2{
+      -webkit-animation:bounce 1s infinite ease;
+      -webkit-animation-delay:.5s;
+      background:#6e6f70;
+  }
+  @-webkit-keyframes bounce {
+    0%, 100% {
+      opacity:1;
+    }
+    60% {
+      opacity:.0;
+     
+    }
+  }`],
   animations: [
     trigger('modalAnimation', [
       state('void', style({
