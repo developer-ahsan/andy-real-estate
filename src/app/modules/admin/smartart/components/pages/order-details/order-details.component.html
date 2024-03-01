@@ -147,8 +147,24 @@
                                     <br>
                                     <a class="min-w-60 btn buttonComment hover:bg-gray-200"
                                         [routerLink]="['/apps/customers', orderData.fk_storeUserID, 'order-history']"
-                                        target="_blank">Order
-                                        History</a>
+                                        target="_blank">Order History</a>
+                                    <!-- Send additional proof email -->
+                                    <ng-container *ngIf="orderData.additionalProofEmails.length">
+                                        <mat-form-field class="w-full">
+                                            <mat-label>Send additional proof email</mat-label>
+                                            <mat-select>
+                                                <mat-option
+                                                    *ngFor="let email of orderData.additionalProofEmails">{{email.subject}}</mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                        <button [disabled]="isAutoRequestLoader"
+                                            class="min-w-60 btn buttonComment hover:bg-gray-200">
+                                            <span *ngIf="!isAutoRequestLoader">Send Email</span>
+                                            <mat-progress-spinner *ngIf="isAutoRequestLoader" [diameter]="24"
+                                                [mode]="'indeterminate'">
+                                            </mat-progress-spinner>
+                                        </button>
+                                    </ng-container>
                                 </div>
                             </div>
                             <div *ngIf="!smartArtUser.blnMaster">

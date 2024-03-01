@@ -449,6 +449,11 @@ export class OrderDashboardDetailsComponent implements OnInit, OnDestroy {
           this._changeDetectorRef.markForCheck();
         }
       });
+      // Proof Emails
+      this.orderData.additionalProofEmails = [];
+      if (res["proofEmails"]) {
+        this.orderData.additionalProofEmails = res["proofEmails"];
+      }
       // Contact Proof
       if (res["contactProofs"]) {
         res["contactProofs"].forEach(element => {
