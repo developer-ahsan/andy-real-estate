@@ -103,7 +103,7 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
       if (filterFields.includes(Number(res.filterField)) || res.search || res.customer) {
         this.displayedColumns.push('proof_contact')
       }
-      this.displayedColumns = this.displayedColumns.concat(['proof', 'action']);
+      this.displayedColumns = this.displayedColumns.concat(['proof', 'pop', 'action']);
       this.isLoading = true;
       this.getSmartArtList(1, 'get', '');
     });
@@ -160,6 +160,7 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
         this.drawer.toggle();
       }
       res["data"].forEach(element => {
+        element.fileLoader = true;
         this.setColor(element);
         element.ageInHours = Math.floor(element.age / 60);
         if (element.viewProofDetails) {
@@ -178,6 +179,7 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
 
       });
       this.dataSource = res["data"];
+      this.getFilesData();
       this.totalRecords = res["totalRecords"];
       if (this.tempDataSource.length == 0) {
         this.tempDataSource = res["data"];
@@ -200,6 +202,29 @@ export class OrderDashboardComponent implements OnInit, OnDestroy {
       this.isLoading = false;
       // this.isLoadingChange.emit(false);
       this._changeDetectorRef.markForCheck();
+    });
+  }
+  getFilesData() {
+    const payload = this.dataSource.map(element => ({
+      ID: element.pk_orderLineID,
+      path: `/artwork/POProof/${element.pk_orderLineID}/`,
+    }));
+
+    this._smartartService.getMultipleFilesData(payload).pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
+      res["data"].forEach(element => {
+        if (element.data.length) {
+          const foundItem = this.dataSource.find(item => item.pk_orderLineID === element.orderLineID);
+          if (foundItem) {
+            foundItem.fileProof = `https://assets.consolidus.com/artwork/POProof/${foundItem.pk_orderLineID}/${element.data?.[0]?.FILENAME || ''}`;
+            this._changeDetectorRef.markForCheck();
+          }
+        }
+      });
+      this.dataSource.forEach(element => {
+        element.fileLoader = false;
+      });
+      this._changeDetectorRef.markForCheck();
+
     });
   }
   setColor(element) {
